@@ -8,6 +8,12 @@ import org.robolectric.res.FileFsFile;
 import org.robolectric.util.Logger;
 import org.robolectric.util.ReflectionHelpers;
 
+/**
+ * This is a custom version of the {@link RobolectricGradleTestRunner} that adds support for data
+ * binding library
+ *
+ * @see <a href="https://philio.me/android-data-binding-with-robolectric-3/">https://philio.me/android-data-binding-with-robolectric-3/</a>
+ */
 public class RobolectricDataBindingTestRunner extends RobolectricGradleTestRunner {
 
     private static final String BUILD_OUTPUT = "build/intermediates";
@@ -32,6 +38,7 @@ public class RobolectricDataBindingTestRunner extends RobolectricGradleTestRunne
         if (FileFsFile.from(BUILD_OUTPUT, "res", flavor, type).exists()) {
             res = FileFsFile.from(BUILD_OUTPUT, "res", flavor, type);
         } else {
+            // Use res/merged if the output directory doesn't exist for Data Binding compatibility
             res = FileFsFile.from(BUILD_OUTPUT, "res/merged", flavor, type);
         }
         final FileFsFile assets = FileFsFile.from(BUILD_OUTPUT, "assets", flavor, type);
