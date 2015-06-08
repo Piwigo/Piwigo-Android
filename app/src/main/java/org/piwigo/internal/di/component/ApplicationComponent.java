@@ -1,6 +1,5 @@
 package org.piwigo.internal.di.component;
 
-
 import android.content.Context;
 
 import org.piwigo.internal.di.module.ApplicationModule;
