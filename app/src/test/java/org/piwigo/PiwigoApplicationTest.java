@@ -11,7 +11,7 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 
 @RunWith(RobolectricDataBindingTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 21)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class PiwigoApplicationTest {
 
     private PiwigoApplication application;

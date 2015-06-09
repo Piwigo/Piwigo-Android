@@ -12,7 +12,7 @@ import static org.hamcrest.core.Is.is;
 import static org.robolectric.Robolectric.setupActivity;
 
 @RunWith(RobolectricDataBindingTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 21)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class MainActivityTest {
 
     private MainActivity activity;
