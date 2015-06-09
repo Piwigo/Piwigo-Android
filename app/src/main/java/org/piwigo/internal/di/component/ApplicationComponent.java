@@ -15,6 +15,6 @@ public interface ApplicationComponent {
 
     void inject(BaseActivity baseActivity);
 
-    Context applicationContext();
+    Context context();
 
 }

@@ -2,8 +2,8 @@ package org.piwigo.internal.di.component;
 
 import android.app.Activity;
 
-import org.piwigo.internal.di.PerActivity;
 import org.piwigo.internal.di.module.ActivityModule;
+import org.piwigo.internal.di.scope.PerActivity;
 
 import dagger.Component;
 

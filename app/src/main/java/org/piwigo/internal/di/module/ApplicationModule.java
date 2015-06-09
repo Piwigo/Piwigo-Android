@@ -1,5 +1,6 @@
 package org.piwigo.internal.di.module;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 
 import org.piwigo.PiwigoApplication;
@@ -21,7 +22,13 @@ public class ApplicationModule {
     @Provides
     @Singleton
     Context provideApplicationContext() {
-        return this.application;
+        return application;
+    }
+
+    @Provides
+    @Singleton
+    AccountManager provideAccountManager() {
+        return AccountManager.get(application);
     }
 
 }

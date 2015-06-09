@@ -1,4 +1,4 @@
-package org.piwigo.internal.di;
+package org.piwigo.internal.di.scope;
 
 import java.lang.annotation.Retention;
 
