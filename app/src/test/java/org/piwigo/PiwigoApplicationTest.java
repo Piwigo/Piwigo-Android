@@ -22,7 +22,7 @@ public class PiwigoApplicationTest {
     }
 
     @Test
-    public void shouldInitialiseInjector() {
+    public void initialiseInjector() {
         assertThat(application.getApplicationComponent(), instanceOf(ApplicationComponent.class));
     }
 

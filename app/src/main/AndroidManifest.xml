@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.piwigo">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".PiwigoApplication"
         android:allowBackup="true"
