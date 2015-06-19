@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.activity;
+package org.piwigo.io;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.piwigo.BuildConfig;
-import org.piwigo.RobolectricDataBindingTestRunner;
-import org.robolectric.annotation.Config;
+import retrofit.Endpoint;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+public class DynamicEndpoint implements Endpoint {
 
-@RunWith(RobolectricDataBindingTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
-public class BaseActivityTest {
+    private String url;
 
-    // TODO a dummy test to prevent no tests found error
-    @Test
-    public void dummyTest() {
-        assertThat(true, is(true));
+    private String name;
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
+    @Override public String getUrl() {
+        return url;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override public String getName() {
+        return name;
+    }
 }

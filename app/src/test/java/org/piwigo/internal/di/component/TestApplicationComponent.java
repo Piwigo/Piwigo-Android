@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.activity;
+package org.piwigo.internal.di.component;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.piwigo.BuildConfig;
-import org.piwigo.RobolectricDataBindingTestRunner;
-import org.robolectric.annotation.Config;
+import org.piwigo.internal.di.module.ApplicationModule;
+import org.piwigo.internal.di.module.MockApiModule;
+import org.piwigo.internal.di.module.NetworkModule;
+import org.piwigo.io.provider.LoginProviderTest;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import javax.inject.Singleton;
 
-@RunWith(RobolectricDataBindingTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
-public class BaseActivityTest {
+import dagger.Component;
 
-    // TODO a dummy test to prevent no tests found error
-    @Test
-    public void dummyTest() {
-        assertThat(true, is(true));
-    }
+@Singleton
+@Component(modules = {ApplicationModule.class, NetworkModule.class, MockApiModule.class})
+public interface TestApplicationComponent extends ApplicationComponent {
+
+    void inject(LoginProviderTest loginObservableTest);
 
 }

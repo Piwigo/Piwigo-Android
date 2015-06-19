@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
 
 import org.piwigo.BuildConfig;
+import org.piwigo.io.MockRestService;
 import org.piwigo.io.RestService;
 import org.piwigo.io.provider.LoginProvider;
 import org.piwigo.manager.SessionManager;
@@ -33,29 +34,31 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit.MockRestAdapter;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
 import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static retrofit.RestAdapter.LogLevel.FULL;
 import static retrofit.RestAdapter.LogLevel.NONE;
 
 @Module
-public class ApiModule {
+public class MockApiModule {
 
     @Provides @Singleton SessionManager provideSessionManager(AccountManager accountManager) {
         return new SessionManager(accountManager);
     }
 
     @Provides @Singleton RequestInterceptor provideRequestInterceptor(final SessionManager sessionManager) {
-        return request -> {
-            request.addQueryParam("format", "json");
-            if (sessionManager.getCookie() != null) {
-                request.addHeader("Cookie", "pwg_id=" + sessionManager.getCookie());
+        return new RequestInterceptor() {
+            @Override public void intercept(RequestFacade request) {
+                request.addQueryParam("format", "json");
+                if (sessionManager.getCookie() != null) {
+                    request.addHeader("Cookie", "pwg_id=" + sessionManager.getCookie());
+                }
             }
         };
     }
@@ -76,16 +79,24 @@ public class ApiModule {
                 .build();
     }
 
-    @Provides @Singleton RestService provideRestService(RestAdapter restAdapter) {
-        return restAdapter.create(RestService.class);
+    @Provides @Singleton MockRestAdapter provideMockRestAdapter(RestAdapter restAdapter) {
+        return MockRestAdapter.from(restAdapter);
+    }
+
+    @Provides @Singleton MockRestService provideMockRestService() {
+        return new MockRestService();
+    }
+
+    @Provides @Singleton RestService provideRestService(MockRestAdapter mockRestAdapter, MockRestService mockRestService) {
+        return mockRestAdapter.create(RestService.class, mockRestService);
     }
 
     @Provides @Singleton @Named("IoScheduler") Scheduler provideIoScheduler() {
-        return Schedulers.io();
+        return Schedulers.immediate();
     }
 
     @Provides @Singleton @Named("UiScheduler") Scheduler provideUiScheduler() {
-        return AndroidSchedulers.mainThread();
+        return Schedulers.immediate();
     }
 
     @Provides @Singleton LoginProvider provideLoginProvider(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
