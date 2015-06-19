@@ -43,7 +43,7 @@ import static org.hamcrest.core.Is.is;
 public class LoginProviderTest {
 
     @Inject SessionManager sessionManager;
-    @Inject LoginProvider loginHelper;
+    @Inject LoginProvider loginProvider;
 
     @Before
     public void setUp() throws Exception {
@@ -62,7 +62,7 @@ public class LoginProviderTest {
 
     @Test
     public void loginSuccess() {
-        BlockingObservable<StatusResponse> observable = loginHelper
+        BlockingObservable<StatusResponse> observable = loginProvider
                 .username("test")
                 .password("test")
                 .create()
@@ -76,7 +76,7 @@ public class LoginProviderTest {
 
     @Test(expected = Throwable.class)
     public void loginFailure() {
-        loginHelper
+        loginProvider
                 .username("bad")
                 .password("bad")
                 .create()

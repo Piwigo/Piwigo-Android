@@ -21,10 +21,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class SuccessResponse {
 
-    @SerializedName("stat")
-    public String stat;
+    @SerializedName("stat") public String stat;
 
-    @SerializedName("result")
-    public boolean result;
+    @SerializedName("result") public boolean result;
 
 }
