@@ -52,10 +52,12 @@ public class ApiModule {
     }
 
     @Provides @Singleton RequestInterceptor provideRequestInterceptor(final SessionManager sessionManager) {
-        return request -> {
-            request.addQueryParam("format", "json");
-            if (sessionManager.getCookie() != null) {
-                request.addHeader("Cookie", "pwg_id=" + sessionManager.getCookie());
+        return new RequestInterceptor() {
+            @Override public void intercept(RequestFacade request) {
+                request.addQueryParam("format", "json");
+                if (sessionManager.getCookie() != null) {
+                    request.addHeader("Cookie", "pwg_id=" + sessionManager.getCookie());
+                }
             }
         };
     }

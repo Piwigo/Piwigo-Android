@@ -31,9 +31,7 @@ import java.util.List;
 
 import retrofit.client.Header;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsMapContaining.hasEntry;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricDataBindingTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -53,15 +51,18 @@ public class CookieHelperTest {
     public void extractAll() {
         ArrayMap<String, String> cookies = CookieHelper.extractAll(headers);
 
-        assertThat(cookies, hasEntry("pwg_id", "asdfghjklqwertyuiop"));
-        assertThat(cookies, hasEntry("something", "else"));
+        assertThat(cookies).hasSize(2)
+                .containsEntry("pwg_id", "asdfghjklqwertyuiop")
+                .containsEntry("something", "else")
+                .doesNotContainEntry("Not-Cookie", "aValue")
+                .doesNotContainEntry("Also-Not-Cookie", "anotherValue");
     }
 
     @Test
     public void extract() {
         String value = CookieHelper.extract("pwg_id", headers);
 
-        assertThat(value, is("asdfghjklqwertyuiop"));
+        assertThat(value).isEqualTo("asdfghjklqwertyuiop");
     }
 
 }

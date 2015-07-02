@@ -17,15 +17,21 @@
 
 package org.piwigo.ui.activity;
 
+import android.view.MenuItem;
+
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.piwigo.BuildConfig;
+import org.piwigo.R;
 import org.piwigo.RobolectricDataBindingTestRunner;
 import org.robolectric.annotation.Config;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static android.support.v4.view.GravityCompat.START;
+import static org.assertj.android.api.Assertions.assertThat;
+import static org.assertj.android.appcompat.v7.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.Robolectric.setupActivity;
 
 @RunWith(RobolectricDataBindingTestRunner.class)
@@ -34,15 +40,50 @@ public class MainActivityTest {
 
     private MainActivity activity;
 
-    @Before
-    public void setUp() {
+    @Before public void setUp() {
         activity = setupActivity(MainActivity.class);
     }
 
-    // TODO a dummy test to prevent no tests found error
-    @Test
-    public void dummyTest() {
-        assertThat(true, is(true));
+    @Test public void hasToolbar() {
+        assertThat(activity.hasActionBar()).isTrue();
+        assertThat(activity.hasToolbar()).isTrue();
+        assertThat(activity.getSupportActionBar()).isShowing();
+    }
+
+    @Test public void hasNavigationDrawer() {
+        assertThat(activity.hasDrawer()).isTrue();
+    }
+
+    @Test public void featuresSettingsVisible() {
+        assertThat(findMenuItem(R.id.nav_albums)).isVisible();
+        assertThat(findMenuItem(R.id.nav_upload)).isVisible();
+        assertThat(findMenuItem(R.id.nav_settings)).isVisible();
+        assertThat(findMenuItem(R.id.nav_add_account)).isNotVisible();
+    }
+
+    @Test public void accountsVisibleOnHeaderClick() {
+        activity.findViewById(R.id.drawer_header).performClick();
+
+        assertThat(findMenuItem(R.id.nav_albums)).isNotVisible();
+        assertThat(findMenuItem(R.id.nav_upload)).isNotVisible();
+        assertThat(findMenuItem(R.id.nav_settings)).isNotVisible();
+        assertThat(findMenuItem(R.id.nav_add_account)).isVisible();
+    }
+
+    // TODO This test needs fixing
+    @Test @Ignore public void accountsHiddenOnDrawerClosed() {
+        activity.getDrawerLayout().openDrawer(START);
+        activity.findViewById(R.id.drawer_header).performClick();
+        activity.getDrawerLayout().closeDrawers();
+
+        assertThat(findMenuItem(R.id.nav_albums)).isVisible();
+        assertThat(findMenuItem(R.id.nav_upload)).isVisible();
+        assertThat(findMenuItem(R.id.nav_settings)).isVisible();
+        assertThat(findMenuItem(R.id.nav_add_account)).isNotVisible();
+    }
+
+    private MenuItem findMenuItem(int id) {
+        return activity.getNavigationView().getMenu().findItem(id);
     }
 
 }

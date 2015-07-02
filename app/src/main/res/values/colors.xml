@@ -1,0 +1,5 @@
+<resources>
+    <color name="primary_orange">#FF7700</color>
+    <color name="secondary_orange">#E65E00</color>
+    <color name="header_background">#333333</color>
+</resources>

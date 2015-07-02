@@ -1,0 +1,45 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="user"
+            type="org.piwigo.ui.databinding.User" />
+    </data>
+
+    <FrameLayout
+        android:id="@+id/drawer_header"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/nav_header_size"
+        android:background="@color/header_background"
+        android:paddingTop="@dimen/nav_header_top_margin">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_margin="@dimen/nav_header_padding"
+            android:src="@drawable/piwigo_logo" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="@dimen/nav_header_padding">
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{user.username}"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/nav_header_user_text_size" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/username"
+                android:text="@{user.url}"
+                android:textColor="@android:color/white" />
+        </RelativeLayout>
+    </FrameLayout>
+</layout>

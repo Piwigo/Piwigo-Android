@@ -35,8 +35,7 @@ import javax.inject.Inject;
 
 import rx.observables.BlockingObservable;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricDataBindingTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -57,7 +56,7 @@ public class LoginProviderTest {
         application.setApplicationComponent(applicationComponent);
 
         // Needs a valid URL
-        sessionManager.setUrl("http://test.piwigo.org");
+        sessionManager.setUrl("http://demo.piwigo.org");
     }
 
     @Test
@@ -69,9 +68,9 @@ public class LoginProviderTest {
                 .toBlocking();
         StatusResponse statusResponse = observable.first();
 
-        assertThat(statusResponse.stat, is("ok"));
-        assertThat(sessionManager.getCookie(), is("1234567890"));
-        assertThat(statusResponse.result.pwgToken, is("abcdefghijklmnop"));
+        assertThat(statusResponse.stat).isEqualTo("ok");
+        assertThat(sessionManager.getCookie()).isEqualTo("1234567890");
+        assertThat(statusResponse.result.pwgToken).isEqualTo("abcdefghijklmnop");
     }
 
     @Test(expected = Throwable.class)

@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.activity;
+package org.piwigo.ui.databinding;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.piwigo.BuildConfig;
-import org.piwigo.RobolectricDataBindingTestRunner;
-import org.robolectric.annotation.Config;
+public class User {
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+    public final String url;
 
-@RunWith(RobolectricDataBindingTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
-public class BaseActivityTest {
+    public final String username;
 
-    // TODO a dummy test to prevent no tests found error
-    @Test
-    public void dummyTest() {
-        assertThat(true, is(true));
+    public User(String url, String username) {
+        this.url = url;
+        this.username = username;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
 }

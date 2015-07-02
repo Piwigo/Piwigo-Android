@@ -24,8 +24,7 @@ import org.piwigo.internal.di.component.ApplicationComponent;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricDataBindingTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -40,7 +39,7 @@ public class PiwigoApplicationTest {
 
     @Test
     public void initialiseInjector() {
-        assertThat(application.getApplicationComponent(), instanceOf(ApplicationComponent.class));
+        assertThat(application.getApplicationComponent()).isInstanceOf(ApplicationComponent.class);
     }
 
 }

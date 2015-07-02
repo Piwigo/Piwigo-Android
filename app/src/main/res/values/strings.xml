@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Piwigo</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">@string/app_name</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="nav_albums">Albums</string>
+    <string name="nav_upload">Upload</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_add_account">Add account</string>
 </resources>

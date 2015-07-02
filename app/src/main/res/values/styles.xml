@@ -1,8 +1,11 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="Theme.Piwigo" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary_orange</item>
+        <item name="colorPrimaryDark">@color/secondary_orange</item>
+        <item name="colorAccent">@color/primary_orange</item>
     </style>
+
+    <style name="Theme.Piwigo.NavDrawer" />
 
 </resources>

@@ -17,18 +17,100 @@
 
 package org.piwigo.ui.activity;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.view.MenuItem;
+import android.view.View;
 
 import org.piwigo.R;
+import org.piwigo.databinding.DrawerHeaderBinding;
 
 public class MainActivity extends BaseActivity {
 
     private static final String TAG = MainActivity.class.getName();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    private static final String STATE_VISIBLE_GROUP = "visible_group";
+    private static final String STATE_SELECTED_ITEM = "selected_item";
+
+    private int visibleGroup;
+    private int selectedItem;
+
+    DrawerHeaderBinding headerBinding;
+
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setUpDrawer(savedInstanceState);
+    }
+
+    @Override public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_VISIBLE_GROUP, visibleGroup);
+        outState.putInt(STATE_SELECTED_ITEM, selectedItem);
+    }
+
+    private void setUpDrawer(Bundle savedInstanceState) {
+        // Inflate the drawer header and add click listener
+        headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, getNavigationView(), false);
+        headerBinding.drawerHeader.setOnClickListener(v -> swapDrawerMenu());
+        getNavigationView().addHeaderView(headerBinding.getRoot());
+
+        // Handle nav selections
+        addNavListener();
+
+        // Set initial state
+        if (savedInstanceState != null) {
+            visibleGroup = savedInstanceState.getInt(STATE_VISIBLE_GROUP);
+            selectedItem = savedInstanceState.getInt(STATE_SELECTED_ITEM);
+        } else {
+            visibleGroup = R.id.nav_group_features;
+            selectedItem = getNavigationView().getMenu().getItem(0).getItemId();
+        }
+        findMenuItem(selectedItem).setChecked(true);
+        if (visibleGroup != R.id.nav_group_features) {
+            swapDrawerMenu();
+        }
+
+        // Make sure that menu is reset when drawer is closed
+        getDrawerLayout().setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                if (!findMenuItem(selectedItem).isVisible()) {
+                    swapDrawerMenu();
+                }
+            }
+        });
+    }
+
+    private void addNavListener() {
+        getNavigationView().setNavigationItemSelectedListener(menuItem -> {
+            if (menuItem.getGroupId() == R.id.nav_group_features) {
+                selectedItem = menuItem.getItemId();
+                menuItem.setChecked(true);
+                // TODO show content
+            }
+            getDrawerLayout().closeDrawers();
+            return true;
+        });
+    }
+
+    private void swapDrawerMenu() {
+        if (findMenuItem(selectedItem).isVisible()) {
+            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_features, false);
+            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_settings, false);
+            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_accounts, true);
+            visibleGroup = R.id.nav_group_accounts;
+        } else {
+            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_features, true);
+            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_settings, true);
+            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_accounts, false);
+            visibleGroup = R.id.nav_group_features;
+        }
+    }
+
+    private MenuItem findMenuItem(int item) {
+        return getNavigationView().getMenu().findItem(item);
     }
 
 }
