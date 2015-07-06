@@ -98,6 +98,8 @@ public class MainActivity extends BaseActivity {
                     break;
                 case R.id.nav_settings:
                     break;
+                case R.id.nav_about:
+                    break;
                 case R.id.nav_add_account:
                     break;
                 case R.id.nav_manage_accounts:
