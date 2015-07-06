@@ -18,17 +18,18 @@
 package org.piwigo.ui.activity;
 
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.piwigo.BuildConfig;
 import org.piwigo.R;
 import org.piwigo.RobolectricDataBindingTestRunner;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowDrawable;
 
-import static android.support.v4.view.GravityCompat.START;
 import static org.assertj.android.api.Assertions.assertThat;
 import static org.assertj.android.appcompat.v7.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,20 +71,25 @@ public class MainActivityTest {
         assertThat(findMenuItem(R.id.nav_add_account)).isVisible();
     }
 
-    // TODO This test needs fixing
-    @Test @Ignore public void accountsHiddenOnDrawerClosed() {
-        activity.getDrawerLayout().openDrawer(START);
-        activity.findViewById(R.id.drawer_header).performClick();
-        activity.getDrawerLayout().closeDrawers();
+    @Test public void headerHasDownArrow() {
+        int id = getResourceId(activity.headerBinding.arrow);
+        assertThat(id).isEqualTo(R.drawable.ic_action_arrow_drop_down);
+    }
 
-        assertThat(findMenuItem(R.id.nav_albums)).isVisible();
-        assertThat(findMenuItem(R.id.nav_upload)).isVisible();
-        assertThat(findMenuItem(R.id.nav_settings)).isVisible();
-        assertThat(findMenuItem(R.id.nav_add_account)).isNotVisible();
+    @Test public void toggleArrowOnHeaderClick() {
+        activity.findViewById(R.id.drawer_header).performClick();
+
+        int id = getResourceId(activity.headerBinding.arrow);
+        assertThat(id).isEqualTo(R.drawable.ic_action_arrow_drop_up);
     }
 
     private MenuItem findMenuItem(int id) {
         return activity.getNavigationView().getMenu().findItem(id);
+    }
+
+    private int getResourceId(ImageView imageView) {
+        ShadowDrawable shadowDrawable = Shadows.shadowOf(imageView.getDrawable());
+        return shadowDrawable.getCreatedFromResId();
     }
 
 }

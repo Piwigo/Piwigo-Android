@@ -20,6 +20,7 @@ package org.piwigo.ui.activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -88,23 +89,39 @@ public class MainActivity extends BaseActivity {
             if (menuItem.getGroupId() == R.id.nav_group_features) {
                 selectedItem = menuItem.getItemId();
                 menuItem.setChecked(true);
-                // TODO show content
             }
+
+            switch (menuItem.getItemId()) {
+                case R.id.nav_albums:
+                    break;
+                case R.id.nav_upload:
+                    break;
+                case R.id.nav_settings:
+                    break;
+                case R.id.nav_add_account:
+                    break;
+                case R.id.nav_manage_accounts:
+                    break;
+            }
+
             getDrawerLayout().closeDrawers();
             return true;
         });
     }
 
     private void swapDrawerMenu() {
+        Menu menu = getNavigationView().getMenu();
         if (findMenuItem(selectedItem).isVisible()) {
-            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_features, false);
-            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_settings, false);
-            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_accounts, true);
+            menu.setGroupVisible(R.id.nav_group_features, false);
+            menu.setGroupVisible(R.id.nav_group_settings, false);
+            menu.setGroupVisible(R.id.nav_group_accounts, true);
+            headerBinding.arrow.setImageResource(R.drawable.ic_action_arrow_drop_up);
             visibleGroup = R.id.nav_group_accounts;
         } else {
-            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_features, true);
-            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_settings, true);
-            getNavigationView().getMenu().setGroupVisible(R.id.nav_group_accounts, false);
+            menu.setGroupVisible(R.id.nav_group_features, true);
+            menu.setGroupVisible(R.id.nav_group_settings, true);
+            menu.setGroupVisible(R.id.nav_group_accounts, false);
+            headerBinding.arrow.setImageResource(R.drawable.ic_action_arrow_drop_down);
             visibleGroup = R.id.nav_group_features;
         }
     }

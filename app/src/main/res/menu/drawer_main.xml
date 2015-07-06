@@ -18,6 +18,10 @@
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_action_settings"
             android:title="@string/nav_settings" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_action_help"
+            android:title="@string/nav_about" />
     </group>
     <group
         android:id="@+id/nav_group_accounts"
@@ -27,5 +31,9 @@
             android:id="@+id/nav_add_account"
             android:icon="@drawable/ic_action_add"
             android:title="@string/nav_add_account" />
+        <item
+            android:id="@+id/nav_manage_accounts"
+            android:icon="@drawable/ic_action_settings"
+            android:title="@string/nav_manage_accounts"/>
     </group>
 </menu>
