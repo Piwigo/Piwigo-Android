@@ -3,7 +3,7 @@
     <data>
         <variable
             name="user"
-            type="org.piwigo.ui.databinding.User" />
+            type="org.piwigo.ui.viewmodel.User" />
     </data>
 
     <FrameLayout

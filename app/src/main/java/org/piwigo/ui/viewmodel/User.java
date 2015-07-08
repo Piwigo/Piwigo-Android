@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.databinding;
+package org.piwigo.ui.viewmodel;
 
 public class User {
 
