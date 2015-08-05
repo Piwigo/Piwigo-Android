@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.android.databinding'
+apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 
@@ -37,7 +38,7 @@ dependencies {
     compile 'com.android.support:design:22.2.1'
 
     compile 'com.google.dagger:dagger:2.0.1'
-    provided 'com.google.dagger:dagger-compiler:2.0.1'
+    apt 'com.google.dagger:dagger-compiler:2.0.1'
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
     compile 'com.jakewharton:butterknife:7.0.1'
@@ -67,9 +68,28 @@ dependencies {
         exclude group: 'com.android.support'
     }
 
-    testProvided 'com.google.dagger:dagger-compiler:2.0.1'
+    testApt 'com.google.dagger:dagger-compiler:2.0.1'
     testProvided 'org.glassfish:javax.annotation:10.0-b28'
 
     testCompile 'com.squareup.okhttp:mockwebserver:2.4.0'
     testCompile 'com.squareup.retrofit:retrofit-mock:1.9.0'
 }
+
+task addGeneratedTestSources {
+    def file = file(project.name + ".iml")
+    doLast {
+        try {
+            def parsedXml = (new XmlParser()).parse(file)
+            def node = parsedXml.component[1].content[0]
+
+            new Node(node, 'sourceFolder', ['url': 'file://$MODULE_DIR$/build/generated/source/apt/test/debug', 'isTestSource': 'true', 'generated': 'true'])
+
+            def writer = new StringWriter()
+            new XmlNodePrinter(new PrintWriter(writer)).print(parsedXml)
+            file.text = writer.toString()
+        } catch (FileNotFoundException e) {
+            // iml not found, common on command line only builds
+        }
+    }
+}
+tasks.preBuild.dependsOn addGeneratedTestSources
