@@ -25,7 +25,7 @@ import com.squareup.okhttp.OkHttpClient;
 
 import org.piwigo.BuildConfig;
 import org.piwigo.io.RestService;
-import org.piwigo.io.provider.LoginProvider;
+import org.piwigo.io.observable.LoginObservable;
 import org.piwigo.manager.SessionManager;
 
 import javax.inject.Named;
@@ -52,12 +52,10 @@ public class ApiModule {
     }
 
     @Provides @Singleton RequestInterceptor provideRequestInterceptor(final SessionManager sessionManager) {
-        return new RequestInterceptor() {
-            @Override public void intercept(RequestFacade request) {
-                request.addQueryParam("format", "json");
-                if (sessionManager.getCookie() != null) {
-                    request.addHeader("Cookie", "pwg_id=" + sessionManager.getCookie());
-                }
+        return request -> {
+            request.addQueryParam("format", "json");
+            if (sessionManager.getCookie() != null) {
+                request.addHeader("Cookie", "pwg_id=" + sessionManager.getCookie());
             }
         };
     }
@@ -90,8 +88,9 @@ public class ApiModule {
         return AndroidSchedulers.mainThread();
     }
 
-    @Provides @Singleton LoginProvider provideLoginProvider(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
-        return new LoginProvider(sessionManager, restService, ioScheduler, uiScheduler, gson);
+    @Provides @Singleton
+    LoginObservable provideLoginProvider(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
+        return new LoginObservable(sessionManager, restService, ioScheduler, uiScheduler, gson);
     }
 
 }

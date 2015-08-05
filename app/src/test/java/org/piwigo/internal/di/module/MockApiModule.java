@@ -26,7 +26,7 @@ import com.squareup.okhttp.OkHttpClient;
 import org.piwigo.BuildConfig;
 import org.piwigo.io.MockRestService;
 import org.piwigo.io.RestService;
-import org.piwigo.io.provider.LoginProvider;
+import org.piwigo.io.observable.LoginObservable;
 import org.piwigo.manager.SessionManager;
 
 import javax.inject.Named;
@@ -99,8 +99,9 @@ public class MockApiModule {
         return Schedulers.immediate();
     }
 
-    @Provides @Singleton LoginProvider provideLoginProvider(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
-        return new LoginProvider(sessionManager, restService, ioScheduler, uiScheduler, gson);
+    @Provides @Singleton
+    LoginObservable provideLoginProvider(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
+        return new LoginObservable(sessionManager, restService, ioScheduler, uiScheduler, gson);
     }
 
 }

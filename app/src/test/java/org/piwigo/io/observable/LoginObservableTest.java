@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.piwigo.io.provider;
+package org.piwigo.io.observable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,10 +39,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricDataBindingTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class LoginProviderTest {
+public class LoginObservableTest {
 
     @Inject SessionManager sessionManager;
-    @Inject LoginProvider loginProvider;
+    @Inject
+    LoginObservable loginProvider;
 
     @Before
     public void setUp() throws Exception {

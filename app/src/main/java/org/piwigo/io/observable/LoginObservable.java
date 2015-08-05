@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.piwigo.io.provider;
+package org.piwigo.io.observable;
 
 import com.google.gson.Gson;
 
@@ -29,7 +29,7 @@ import retrofit.mime.TypedByteArray;
 import rx.Observable;
 import rx.Scheduler;
 
-public class LoginProvider extends BaseProvider<StatusResponse> {
+public class LoginObservable extends BaseObservable<StatusResponse> {
 
     private Gson gson;
 
@@ -37,7 +37,7 @@ public class LoginProvider extends BaseProvider<StatusResponse> {
 
     private String password;
 
-    public LoginProvider(SessionManager sessionManager, RestService restService, Scheduler ioScheduler, Scheduler uiScheduler, Gson gson) {
+    public LoginObservable(SessionManager sessionManager, RestService restService, Scheduler ioScheduler, Scheduler uiScheduler, Gson gson) {
         super(sessionManager, restService, ioScheduler, uiScheduler);
         this.gson = gson;
     }
@@ -48,7 +48,7 @@ public class LoginProvider extends BaseProvider<StatusResponse> {
      * @param username
      * @return
      */
-    public LoginProvider username(String username) {
+    public LoginObservable username(String username) {
         this.username = username;
         return this;
     }
@@ -59,7 +59,7 @@ public class LoginProvider extends BaseProvider<StatusResponse> {
      * @param password
      * @return
      */
-    public LoginProvider password(String password) {
+    public LoginObservable password(String password) {
         this.password = password;
         return this;
     }

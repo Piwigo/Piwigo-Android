@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.android.databinding'
-apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 22
@@ -32,13 +32,12 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.android.support:support-annotations:22.2.0'
-    compile 'com.android.support:design:22.2.0'
-    apt 'com.android.databinding:compiler:1.0-rc0'
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.android.support:support-annotations:22.2.1'
+    compile 'com.android.support:design:22.2.1'
 
     compile 'com.google.dagger:dagger:2.0.1'
-    apt 'com.google.dagger:dagger-compiler:2.0.1'
+    provided 'com.google.dagger:dagger-compiler:2.0.1'
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
     compile 'com.jakewharton:butterknife:7.0.1'
@@ -48,11 +47,15 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
 
-    compile 'io.reactivex:rxjava:1.0.11'
-    compile 'io.reactivex:rxandroid:0.24.0'
+    compile 'io.reactivex:rxjava:1.0.13'
+    compile 'io.reactivex:rxandroid:0.25.0'
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.0@aar') {
+        transitive = true;
+    }
 
     testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.0-rc3'
+    testCompile 'org.robolectric:robolectric:3.0'
 
     testCompile ('com.squareup.assertj:assertj-android:1.0.0') {
         exclude group: 'com.android.support'
@@ -64,7 +67,7 @@ dependencies {
         exclude group: 'com.android.support'
     }
 
-    testApt 'com.google.dagger:dagger-compiler:2.0.1'
+    testProvided 'com.google.dagger:dagger-compiler:2.0.1'
     testProvided 'org.glassfish:javax.annotation:10.0-b28'
 
     testCompile 'com.squareup.okhttp:mockwebserver:2.4.0'

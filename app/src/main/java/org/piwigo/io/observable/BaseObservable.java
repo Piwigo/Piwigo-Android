@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.piwigo.io.provider;
+package org.piwigo.io.observable;
 
 import org.piwigo.io.RestService;
 import org.piwigo.manager.SessionManager;
@@ -23,7 +23,7 @@ import org.piwigo.manager.SessionManager;
 import rx.Observable;
 import rx.Scheduler;
 
-public abstract class BaseProvider<T> {
+public abstract class BaseObservable<T> {
 
     protected SessionManager sessionManager;
 
@@ -35,7 +35,7 @@ public abstract class BaseProvider<T> {
 
     protected Observable<T> observable;
 
-    public BaseProvider(SessionManager sessionManager, RestService restService, Scheduler ioScheduler, Scheduler uiScheduler) {
+    public BaseObservable(SessionManager sessionManager, RestService restService, Scheduler ioScheduler, Scheduler uiScheduler) {
         this.sessionManager = sessionManager;
         this.restService = restService;
         this.ioScheduler = ioScheduler;

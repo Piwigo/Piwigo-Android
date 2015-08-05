@@ -15,21 +15,13 @@
  * limitations under the License.
  */
 
-package org.piwigo.internal.di.component;
+package org.piwigo;
 
-import org.piwigo.internal.di.module.ApplicationModule;
-import org.piwigo.internal.di.module.MockApiModule;
-import org.piwigo.internal.di.module.NetworkModule;
-import org.piwigo.io.observable.LoginObservableTest;
+public class TestPiwigoApplication extends PiwigoApplication {
 
-import javax.inject.Singleton;
-
-import dagger.Component;
-
-@Singleton
-@Component(modules = {ApplicationModule.class, NetworkModule.class, MockApiModule.class})
-public interface TestApplicationComponent extends ApplicationComponent {
-
-    void inject(LoginObservableTest loginObservableTest);
+    @Override
+    protected void initializeCrashlytics() {
+        // Do nothing, we don't want Crashlytics for unit tests
+    }
 
 }

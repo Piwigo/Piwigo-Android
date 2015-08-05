@@ -42,16 +42,19 @@ public class MainActivity extends BaseActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setUpDrawer(savedInstanceState);
+        setUpDrawer();
+        restoreDrawerState(savedInstanceState);
     }
 
-    @Override public void onSaveInstanceState(Bundle outState) {
+    @Override protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        // Save drawer state
         outState.putInt(STATE_VISIBLE_GROUP, visibleGroup);
         outState.putInt(STATE_SELECTED_ITEM, selectedItem);
     }
 
-    private void setUpDrawer(Bundle savedInstanceState) {
+    private void setUpDrawer() {
         // Inflate the drawer header and add click listener
         headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, getNavigationView(), false);
         headerBinding.drawerHeader.setOnClickListener(v -> swapDrawerMenu());
@@ -60,7 +63,18 @@ public class MainActivity extends BaseActivity {
         // Handle nav selections
         addNavListener();
 
-        // Set initial state
+        // Make sure that menu is reset when drawer is closed
+        getDrawerLayout().setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                if (!findMenuItem(selectedItem).isVisible()) {
+                    swapDrawerMenu();
+                }
+            }
+        });
+    }
+
+    private void restoreDrawerState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             visibleGroup = savedInstanceState.getInt(STATE_VISIBLE_GROUP);
             selectedItem = savedInstanceState.getInt(STATE_SELECTED_ITEM);
@@ -72,16 +86,6 @@ public class MainActivity extends BaseActivity {
         if (visibleGroup != R.id.nav_group_features) {
             swapDrawerMenu();
         }
-
-        // Make sure that menu is reset when drawer is closed
-        getDrawerLayout().setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                if (!findMenuItem(selectedItem).isVisible()) {
-                    swapDrawerMenu();
-                }
-            }
-        });
     }
 
     private void addNavListener() {

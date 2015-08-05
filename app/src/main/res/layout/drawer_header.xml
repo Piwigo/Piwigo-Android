@@ -1,4 +1,5 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -32,14 +33,16 @@
                 android:layout_height="wrap_content"
                 android:text="@{user.username}"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/nav_header_user_text_size" />
+                android:textSize="@dimen/nav_header_user_text_size"
+                tools:text="guest" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/username"
                 android:text="@{user.url}"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                tools:text="demo.piwigo.org" />
 
             <ImageView
                 android:id="@+id/arrow"
