@@ -22,12 +22,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.piwigo.BuildConfig;
 import org.piwigo.PiwigoApplication;
-import org.piwigo.RobolectricDataBindingTestRunner;
 import org.piwigo.internal.di.component.DaggerTestApplicationComponent;
 import org.piwigo.internal.di.component.TestApplicationComponent;
 import org.piwigo.internal.di.module.ApplicationModule;
 import org.piwigo.io.response.StatusResponse;
 import org.piwigo.manager.SessionManager;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -37,7 +37,7 @@ import rx.observables.BlockingObservable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(RobolectricDataBindingTestRunner.class)
+@RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class LoginObservableTest {
 

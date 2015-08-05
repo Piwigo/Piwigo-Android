@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.piwigo.BuildConfig;
 import org.piwigo.R;
-import org.piwigo.RobolectricDataBindingTestRunner;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
@@ -35,7 +35,7 @@ import static org.assertj.android.appcompat.v7.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.Robolectric.setupActivity;
 
-@RunWith(RobolectricDataBindingTestRunner.class)
+@RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class MainActivityTest {
 
