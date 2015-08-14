@@ -89,7 +89,7 @@ public class ApiModule {
     }
 
     @Provides @Singleton
-    LoginObservable provideLoginProvider(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
+    LoginObservable provideLoginObservable(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
         return new LoginObservable(sessionManager, restService, ioScheduler, uiScheduler, gson);
     }
 
