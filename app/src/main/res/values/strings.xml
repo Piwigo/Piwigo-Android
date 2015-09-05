@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Piwigo</string>
     <string name="title_activity_main">@string/app_name</string>
+    <string name="title_activity_login">Login</string>
 
     <!-- Navigation drawer menu items -->
     <string name="nav_albums">Albums</string>
@@ -9,4 +10,9 @@
     <string name="nav_about">About</string>
     <string name="nav_add_account">Add account</string>
     <string name="nav_manage_accounts">Manage accounts</string>
+
+    <!-- Login -->
+    <string name="login_url_hint">Site URL</string>
+    <string name="login_username_hint">Username</string>
+    <string name="login_password_hint">Password</string>
 </resources>

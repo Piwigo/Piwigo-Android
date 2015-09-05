@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import org.piwigo.R;
+import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
 
 public class MainActivity extends BaseActivity {
@@ -41,7 +42,9 @@ public class MainActivity extends BaseActivity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        setToolbar(binding.toolbar);
+        setDrawerComponents(binding.drawerLayout, binding.navigationView);
         setUpDrawer();
         restoreDrawerState(savedInstanceState);
     }

@@ -8,4 +8,8 @@
 
     <style name="Theme.Piwigo.NavDrawer" />
 
+    <style name="Theme.Piwigo.CollapsingToolbar.Expanded" parent="@style/TextAppearance.Design.CollapsingToolbar.Expanded">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
 </resources>
