@@ -21,10 +21,6 @@ import android.support.v4.util.ArrayMap;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.piwigo.BuildConfig;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +29,6 @@ import retrofit.client.Header;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public class CookieHelperTest {
 
     List<Header> headers = new ArrayList<>();

@@ -6,7 +6,7 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.0'
+    buildToolsVersion '23.0.1'
 
     defaultConfig {
         applicationId "org.piwigo"
@@ -35,16 +35,22 @@ android {
     useLibrary 'org.apache.http.legacy'
 }
 
+ext {
+    supportVersion = '23.1.1'
+    okhttpVersion = '2.6.0'
+    assertjVersion = '1.1.1'
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.0.0'
-    compile 'com.android.support:support-annotations:23.0.0'
-    compile 'com.android.support:design:23.0.0'
-    compile 'com.google.dagger:dagger:2.0.1'
-    apt 'com.google.dagger:dagger-compiler:2.0.1'
+    compile "com.android.support:appcompat-v7:${supportVersion}"
+    compile "com.android.support:support-annotations:${supportVersion}"
+    compile "com.android.support:design:${supportVersion}"
+    compile 'com.google.dagger:dagger:2.0.2'
+    apt 'com.google.dagger:dagger-compiler:2.0.2'
     provided 'org.glassfish:javax.annotation:10.0-b28'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
+    compile "com.squareup.okhttp:okhttp:${okhttpVersion}"
+    compile "com.squareup.okhttp:okhttp-urlconnection:${okhttpVersion}"
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'io.reactivex:rxjava:1.0.13'
@@ -54,17 +60,17 @@ dependencies {
     }
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.0'
-    testCompile('com.squareup.assertj:assertj-android:1.0.0') {
+    testCompile("com.squareup.assertj:assertj-android:${assertjVersion}") {
         exclude group: 'com.android.support'
     }
-    testCompile('com.squareup.assertj:assertj-android-support-v4:1.0.0') {
+    testCompile("com.squareup.assertj:assertj-android-support-v4:${assertjVersion}") {
         exclude group: 'com.android.support'
     }
-    testCompile('com.squareup.assertj:assertj-android-appcompat-v7:1.0.0') {
+    testCompile("com.squareup.assertj:assertj-android-appcompat-v7:${assertjVersion}") {
         exclude group: 'com.android.support'
     }
-    testApt 'com.google.dagger:dagger-compiler:2.0.1'
+    testApt 'com.google.dagger:dagger-compiler:2.0.2'
     testProvided 'org.glassfish:javax.annotation:10.0-b28'
-    testCompile 'com.squareup.okhttp:mockwebserver:2.4.0'
+    testCompile "com.squareup.okhttp:mockwebserver:${okhttpVersion}"
     testCompile 'com.squareup.retrofit:retrofit-mock:1.9.0'
 }

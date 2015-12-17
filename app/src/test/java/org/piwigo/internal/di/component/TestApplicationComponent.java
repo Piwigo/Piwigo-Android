@@ -20,7 +20,6 @@ package org.piwigo.internal.di.component;
 import org.piwigo.internal.di.module.ApplicationModule;
 import org.piwigo.internal.di.module.MockApiModule;
 import org.piwigo.internal.di.module.NetworkModule;
-import org.piwigo.io.observable.LoginObservableTest;
 
 import javax.inject.Singleton;
 
@@ -29,7 +28,5 @@ import dagger.Component;
 @Singleton
 @Component(modules = {ApplicationModule.class, NetworkModule.class, MockApiModule.class})
 public interface TestApplicationComponent extends ApplicationComponent {
-
-    void inject(LoginObservableTest loginObservableTest);
 
 }
