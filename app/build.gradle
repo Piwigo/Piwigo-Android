@@ -3,6 +3,9 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 
+def isCi = "true".equals(System.getenv("CI"))
+def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
+
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.2'
@@ -30,6 +33,9 @@ android {
     lintOptions {
         disable 'InvalidPackage'
         abortOnError false
+    }
+    dexOptions {
+        preDexLibraries = preDexEnabled && !isCi
     }
     dataBinding {
         enabled = true
