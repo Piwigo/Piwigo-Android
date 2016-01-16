@@ -17,16 +17,19 @@
 
 package org.piwigo.internal.di.component;
 
-import org.piwigo.internal.di.module.ApplicationModule;
-import org.piwigo.internal.di.module.MockApiModule;
+import org.piwigo.internal.di.module.TestApiModule;
+import org.piwigo.internal.di.module.TestApplicationModule;
 import org.piwigo.internal.di.module.NetworkModule;
+import org.piwigo.io.repository.UserRepositoryTest;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
 
 @Singleton
-@Component(modules = {ApplicationModule.class, NetworkModule.class, MockApiModule.class})
+@Component(modules = {TestApplicationModule.class, NetworkModule.class, TestApiModule.class})
 public interface TestApplicationComponent extends ApplicationComponent {
+
+    void inject(UserRepositoryTest test);
 
 }

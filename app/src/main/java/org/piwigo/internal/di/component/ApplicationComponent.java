@@ -22,6 +22,7 @@ import android.content.Context;
 import org.piwigo.internal.di.module.ApiModule;
 import org.piwigo.internal.di.module.ApplicationModule;
 import org.piwigo.internal.di.module.NetworkModule;
+import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.activity.BaseActivity;
 
 import javax.inject.Singleton;
@@ -35,5 +36,7 @@ public interface ApplicationComponent {
     void inject(BaseActivity baseActivity);
 
     Context context();
+
+    UserRepository userRepository();
 
 }

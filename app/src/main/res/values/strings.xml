@@ -12,7 +12,12 @@
     <string name="nav_manage_accounts">Manage accounts</string>
 
     <!-- Login -->
-    <string name="login_url_hint">Site URL</string>
-    <string name="login_username_hint">Username</string>
-    <string name="login_password_hint">Password</string>
+    <string name="login_url_hint">Site address</string>
+    <string name="login_username_hint">Username (optional)</string>
+    <string name="login_password_hint">Password (optional)</string>
+    <string name="login_button_text">Login</string>
+    <string name="login_url_empty">Enter your site address</string>
+    <string name="login_url_invalid">Not a valid site address</string>
+    <string name="login_username_empty">Enter your username</string>
+    <string name="login_password_empty">Enter your password</string>
 </resources>

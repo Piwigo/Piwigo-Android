@@ -25,8 +25,8 @@ import com.squareup.okhttp.OkHttpClient;
 
 import org.piwigo.BuildConfig;
 import org.piwigo.io.RestService;
-import org.piwigo.io.observable.LoginObservable;
-import org.piwigo.manager.SessionManager;
+import org.piwigo.io.SessionManager;
+import org.piwigo.io.repository.UserRepository;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -88,9 +88,8 @@ public class ApiModule {
         return AndroidSchedulers.mainThread();
     }
 
-    @Provides @Singleton
-    LoginObservable provideLoginObservable(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
-        return new LoginObservable(sessionManager, restService, ioScheduler, uiScheduler, gson);
+    @Provides @Singleton UserRepository provideUserRepository(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
+        return new UserRepository(sessionManager, restService, ioScheduler, uiScheduler, gson);
     }
 
 }

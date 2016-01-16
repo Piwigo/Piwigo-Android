@@ -21,12 +21,15 @@ import android.app.Activity;
 
 import org.piwigo.internal.di.module.ActivityModule;
 import org.piwigo.internal.di.scope.PerActivity;
+import org.piwigo.ui.activity.LoginActivity;
 
 import dagger.Component;
 
 @PerActivity
 @Component(dependencies = ApplicationComponent.class, modules = ActivityModule.class)
 public interface ActivityComponent {
+
+    void inject(LoginActivity activity);
 
     Activity activity();
 

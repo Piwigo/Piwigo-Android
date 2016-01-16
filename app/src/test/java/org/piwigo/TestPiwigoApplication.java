@@ -19,8 +19,7 @@ package org.piwigo;
 
 public class TestPiwigoApplication extends PiwigoApplication {
 
-    @Override
-    protected void initializeCrashlytics() {
+    @Override protected void initializeCrashlytics() {
         // Do nothing, we don't want Crashlytics for unit tests
     }
 

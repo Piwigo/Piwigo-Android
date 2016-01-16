@@ -21,21 +21,23 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 
 import org.piwigo.R;
-import org.piwigo.ui.fragment.LoginFragment;
+import org.piwigo.databinding.ActivityLoginBinding;
+import org.piwigo.ui.viewmodel.LoginViewModel;
+
+import javax.inject.Inject;
 
 public class LoginActivity extends BaseActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        DataBindingUtil.setContentView(this, R.layout.activity_login);
+    private static final String TAG = LoginActivity.class.getName();
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.container, new LoginFragment())
-                    .commit();
-        }
+    @Inject LoginViewModel viewModel;
+
+    @Override protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getActivityComponent().inject(this);
+        ActivityLoginBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
+        bindLifecycleEvents(viewModel);
+        binding.setViewModel(viewModel);
     }
 
 }

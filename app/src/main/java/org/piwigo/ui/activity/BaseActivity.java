@@ -18,90 +18,72 @@
 package org.piwigo.ui.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import org.piwigo.PiwigoApplication;
-import org.piwigo.R;
+import org.piwigo.internal.di.component.ActivityComponent;
 import org.piwigo.internal.di.component.ApplicationComponent;
+import org.piwigo.internal.di.component.DaggerActivityComponent;
 import org.piwigo.internal.di.module.ActivityModule;
-
-import static android.support.v4.view.GravityCompat.START;
+import org.piwigo.ui.viewmodel.ViewModel;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
+    private static final String TAG = BaseActivity.class.getName();
+
+    private ActivityComponent activityComponent;
+    private ViewModel viewModel;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getApplicationComponent().inject(this);
+        initializeInjector();
     }
 
-    @Override public void onBackPressed() {
-        if (hasDrawer() && getDrawerLayout().isDrawerOpen(START)) {
-            getDrawerLayout().closeDrawers();
-        } else {
-            super.onBackPressed();
+    @Override protected void onSaveInstanceState(Bundle outState) {
+        if (viewModel != null) {
+            viewModel.onSave(outState);
         }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (viewModel != null) {
+            viewModel.onRestore(savedInstanceState);
+        }
+    }
+
+    @Override protected void onDestroy() {
+        if (viewModel != null) {
+            viewModel.onDestroy();
+            viewModel = null;
+        }
+        super.onDestroy();
     }
 
     protected ApplicationComponent getApplicationComponent() {
         return ((PiwigoApplication) getApplication()).getApplicationComponent();
     }
 
-    protected ActivityModule getActivityModule() {
-        return new ActivityModule(this);
+    protected void bindLifecycleEvents(ViewModel viewModel) {
+        this.viewModel = viewModel;
     }
 
-    protected void setToolbar(Toolbar toolbar) {
-        this.toolbar = toolbar;
-        setSupportActionBar(toolbar);
+    private void initializeInjector() {
+        ActivityComponent activityComponent = DaggerActivityComponent.builder()
+                .applicationComponent(getApplicationComponent())
+                .activityModule(new ActivityModule(this))
+                .build();
+        setActivityComponent(activityComponent);
     }
 
-    protected boolean hasToolbar() {
-        return toolbar != null;
+    public void setActivityComponent(ActivityComponent activityComponent) {
+        this.activityComponent = activityComponent;
     }
 
-    protected Toolbar getToolbar() {
-        return toolbar;
-    }
-
-    protected boolean hasActionBar() {
-        return getSupportActionBar() != null;
-    }
-
-    protected void setDrawerComponents(DrawerLayout drawerLayout, NavigationView navigationView) {
-        this.drawerLayout = drawerLayout;
-        this.navigationView = navigationView;
-        setUpNavigationDrawer();
-    }
-
-    protected boolean hasDrawer() {
-        return drawerLayout != null && navigationView != null;
-    }
-
-    protected DrawerLayout getDrawerLayout() {
-        return drawerLayout;
-    }
-
-    protected NavigationView getNavigationView() {
-        return navigationView;
-    }
-
-    private void setUpNavigationDrawer() {
-        if (hasDrawer()) {
-            if (hasActionBar()) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            }
-            if (hasToolbar()) {
-                getToolbar().setNavigationIcon(R.drawable.ic_action_menu);
-                getToolbar().setNavigationOnClickListener(v -> drawerLayout.openDrawer(START));
-            }
-        }
+    public ActivityComponent getActivityComponent() {
+        return activityComponent;
     }
 
 }

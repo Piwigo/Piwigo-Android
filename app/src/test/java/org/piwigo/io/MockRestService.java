@@ -17,9 +17,9 @@
 
 package org.piwigo.io;
 
-import org.piwigo.io.response.AddSuccessResponse;
-import org.piwigo.io.response.StatusResponse;
-import org.piwigo.io.response.SuccessResponse;
+import org.piwigo.io.model.response.AddSuccessResponse;
+import org.piwigo.io.model.response.StatusResponse;
+import org.piwigo.io.model.response.SuccessResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,15 +34,19 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 public class MockRestService implements RestService {
 
+    public static final String STATUS_OK = "ok";
+    public static final String TOKEN = "abcdefghijklmnop";
+    public static final String COOKIE_PWG_ID = "1234567890";
+
     @Override public Observable<AddSuccessResponse> addCategory(@Field("name") String name, @Field("parent") Integer parent, @Field("comment") String comment, @Field("visible") Boolean visible, @Field("status") String status, @Field("commentable") Boolean commentable) {
         return null;
     }
 
     @Override public Observable<StatusResponse> getStatus() {
         StatusResponse statusResponse = new StatusResponse();
-        statusResponse.stat = "ok";
+        statusResponse.stat = STATUS_OK;
         statusResponse.result = new StatusResponse.Status();
-        statusResponse.result.pwgToken = "abcdefghijklmnop";
+        statusResponse.result.pwgToken = TOKEN;
         return Observable.from(new StatusResponse[]{statusResponse});
     }
 
@@ -58,7 +62,7 @@ public class MockRestService implements RestService {
         }
 
         List<Header> headers = new ArrayList<>();
-        headers.add(new Header("Set-Cookie", "pwg_id=1234567890"));
+        headers.add(new Header("Set-Cookie", "pwg_id=" + COOKIE_PWG_ID));
 
         TypedByteArray body = new TypedByteArray("application/json", data.getBytes());
 

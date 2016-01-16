@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.piwigo.io.response;
+package org.piwigo.io.model.response;
 
 import com.google.gson.annotations.SerializedName;
 

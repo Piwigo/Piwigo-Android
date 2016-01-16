@@ -26,8 +26,8 @@ import com.squareup.okhttp.OkHttpClient;
 import org.piwigo.BuildConfig;
 import org.piwigo.io.MockRestService;
 import org.piwigo.io.RestService;
-import org.piwigo.io.observable.LoginObservable;
-import org.piwigo.manager.SessionManager;
+import org.piwigo.io.SessionManager;
+import org.piwigo.io.repository.UserRepository;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -46,19 +46,17 @@ import static retrofit.RestAdapter.LogLevel.FULL;
 import static retrofit.RestAdapter.LogLevel.NONE;
 
 @Module
-public class MockApiModule {
+public class TestApiModule {
 
     @Provides @Singleton SessionManager provideSessionManager(AccountManager accountManager) {
         return new SessionManager(accountManager);
     }
 
-    @Provides @Singleton RequestInterceptor provideRequestInterceptor(final SessionManager sessionManager) {
-        return new RequestInterceptor() {
-            @Override public void intercept(RequestFacade request) {
-                request.addQueryParam("format", "json");
-                if (sessionManager.getCookie() != null) {
-                    request.addHeader("Cookie", "pwg_id=" + sessionManager.getCookie());
-                }
+    @Provides @Singleton RequestInterceptor provideRequestInterceptor(SessionManager sessionManager) {
+        return request -> {
+            request.addQueryParam("format", "json");
+            if (sessionManager.getCookie() != null) {
+                request.addHeader("Cookie", "pwg_id=" + sessionManager.getCookie());
             }
         };
     }
@@ -99,9 +97,8 @@ public class MockApiModule {
         return Schedulers.immediate();
     }
 
-    @Provides @Singleton
-    LoginObservable provideLoginProvider(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
-        return new LoginObservable(sessionManager, restService, ioScheduler, uiScheduler, gson);
+    @Provides @Singleton UserRepository provideUserRepository(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
+        return new UserRepository(sessionManager, restService, ioScheduler, uiScheduler, gson);
     }
 
 }

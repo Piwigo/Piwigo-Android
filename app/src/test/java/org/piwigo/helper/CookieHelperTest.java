@@ -33,16 +33,14 @@ public class CookieHelperTest {
 
     List<Header> headers = new ArrayList<>();
 
-    @Before
-    public void setUp() {
+    @Before public void setUp() {
         headers.add(new Header("Not-Cookie", "aValue"));
         headers.add(new Header("Set-Cookie", "pwg_id=asdfghjklqwertyuiop"));
         headers.add(new Header("Also-Not-Cookie", "anotherValue"));
         headers.add(new Header("Set-Cookie", "something=else"));
     }
 
-    @Test
-    public void extractAll() {
+    @Test public void shouldExtractAllCookies() {
         ArrayMap<String, String> cookies = CookieHelper.extractAll(headers);
 
         assertThat(cookies).hasSize(2)
@@ -52,8 +50,7 @@ public class CookieHelperTest {
                 .doesNotContainEntry("Also-Not-Cookie", "anotherValue");
     }
 
-    @Test
-    public void extract() {
+    @Test public void shouldExtractCookie() {
         String value = CookieHelper.extract("pwg_id", headers);
 
         assertThat(value).isEqualTo("asdfghjklqwertyuiop");

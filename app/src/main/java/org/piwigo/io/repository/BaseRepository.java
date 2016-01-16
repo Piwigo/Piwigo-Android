@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2016 Phil Bayfield https://philio.me
+ * Copyright 2016 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.piwigo.io.observable;
+package org.piwigo.io.repository;
 
 import org.piwigo.io.RestService;
-import org.piwigo.manager.SessionManager;
+import org.piwigo.io.SessionManager;
 
 import rx.Observable;
 import rx.Scheduler;
 
-public abstract class BaseObservable<T> {
+public abstract class BaseRepository {
 
-    protected SessionManager sessionManager;
+    protected final SessionManager sessionManager;
+    protected final RestService restService;
+    protected final Scheduler ioScheduler;
+    protected final Scheduler uiScheduler;
 
-    protected RestService restService;
-
-    protected Scheduler ioScheduler;
-
-    protected Scheduler uiScheduler;
-
-    protected Observable<T> observable;
-
-    public BaseObservable(SessionManager sessionManager, RestService restService, Scheduler ioScheduler, Scheduler uiScheduler) {
+    protected BaseRepository(SessionManager sessionManager, RestService restService, Scheduler ioScheduler, Scheduler uiScheduler) {
         this.sessionManager = sessionManager;
         this.restService = restService;
         this.ioScheduler = ioScheduler;
@@ -46,10 +41,5 @@ public abstract class BaseObservable<T> {
         return observable -> observable.subscribeOn(ioScheduler)
                 .observeOn(uiScheduler);
     }
-
-    /**
-     * Create observable and return it
-     */
-    abstract Observable<T> create();
 
 }

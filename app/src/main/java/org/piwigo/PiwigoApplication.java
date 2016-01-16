@@ -20,17 +20,18 @@ package org.piwigo;
 import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
+
 import org.piwigo.internal.di.component.ApplicationComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
 import org.piwigo.internal.di.module.ApplicationModule;
+
+import io.fabric.sdk.android.Fabric;
 
 public class PiwigoApplication extends Application {
 
     private ApplicationComponent applicationComponent;
 
-    @Override
-    public void onCreate() {
+    @Override public void onCreate() {
         super.onCreate();
         initializeCrashlytics();
         initializeInjector();

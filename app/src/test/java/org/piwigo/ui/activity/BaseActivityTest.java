@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2016 Phil Bayfield https://philio.me
+ * Copyright 2016 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,31 @@
  * limitations under the License.
  */
 
-package org.piwigo;
+package org.piwigo.ui.activity;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.piwigo.internal.di.component.ApplicationComponent;
-import org.robolectric.RuntimeEnvironment;
+import org.piwigo.PiwigoRobolectricTestRunner;
+import org.piwigo.internal.di.component.ActivityComponent;
+import org.robolectric.Robolectric;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(PiwigoRobolectricTestRunner.class)
-public class PiwigoApplicationTest {
+public class BaseActivityTest {
 
-    private PiwigoApplication application;
+    private BaseActivity baseActivity;
 
     @Before public void setUp() {
-        application = (PiwigoApplication) RuntimeEnvironment.application;
+        baseActivity = Robolectric.setupActivity(TestBaseActivity.class);
     }
 
     @Test public void shouldInitialiseInjector() {
-        assertThat(application.getApplicationComponent()).isInstanceOf(ApplicationComponent.class);
+        assertThat(baseActivity.getActivityComponent()).isInstanceOf(ActivityComponent.class);
+    }
+
+    public static class TestBaseActivity extends BaseActivity {
     }
 
 }
