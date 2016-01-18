@@ -20,42 +20,60 @@ package org.piwigo.io.repository;
 import com.google.gson.Gson;
 
 import org.piwigo.helper.CookieHelper;
-import org.piwigo.io.RestService;
-import org.piwigo.io.SessionManager;
-import org.piwigo.io.model.response.StatusResponse;
+import org.piwigo.io.model.response.LoginResponse;
 import org.piwigo.io.model.response.SuccessResponse;
+
+import javax.inject.Inject;
 
 import retrofit.mime.TypedByteArray;
 import rx.Observable;
-import rx.Scheduler;
 
 public class UserRepository extends BaseRepository {
 
-    private Gson gson;
+    @Inject Gson gson;
 
-    public UserRepository(SessionManager sessionManager, RestService restService, Scheduler ioScheduler, Scheduler uiScheduler, Gson gson) {
-        super(sessionManager, restService, ioScheduler, uiScheduler);
-        this.gson = gson;
-    }
+    @Inject public UserRepository() {}
 
-    public Observable<StatusResponse> login(String url, String username, String password) {
-        sessionManager.setUrl(url);
+    public Observable<LoginResponse> login(String url, String username, String password) {
+        endpoint.setUrl(url);
+
+        final LoginResponse loginResponse = new LoginResponse();
+        loginResponse.url = url;
+        loginResponse.username = username;
+        loginResponse.password = password;
+
         return restService
                 .login(username, password)
                 .flatMap(response -> {
                     String body = new String(((TypedByteArray) response.getBody()).getBytes());
                     SuccessResponse successResponse = gson.fromJson(body, SuccessResponse.class);
                     if (successResponse.result) {
-                        String cookie = CookieHelper.extract("pwg_id", response.getHeaders());
-                        sessionManager.setCookie(cookie);
+                        String sessionId = CookieHelper.extract("pwg_id", response.getHeaders());
+                        loginResponse.sessionId = sessionId;
+                        session.setCookie(sessionId);
                         return Observable.just(successResponse);
                     }
                     return Observable.error(new Throwable("Login failed"));
                 })
                 .flatMap(successResponse -> restService.getStatus())
                 .map(statusResponse -> {
-                    sessionManager.setToken(statusResponse.result.pwgToken);
-                    return statusResponse;
+                    loginResponse.statusResponse = statusResponse;
+                    return loginResponse;
+                })
+                .compose(applySchedulers());
+    }
+
+    public Observable<LoginResponse> status(String url) {
+        endpoint.setUrl(url);
+
+        final LoginResponse loginResponse = new LoginResponse();
+        loginResponse.url = url;
+
+        return restService
+                .getStatus()
+                .map(statusResponse -> {
+                    loginResponse.statusResponse = statusResponse;
+                    return loginResponse;
                 })
                 .compose(applySchedulers());
     }

@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2016 Phil Bayfield https://philio.me
+ * Copyright 2016 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,30 +15,18 @@
  * limitations under the License.
  */
 
-package org.piwigo.io;
+package org.piwigo.io.model.response;
 
-import retrofit.Endpoint;
+public class LoginResponse {
 
-public class DynamicEndpoint implements Endpoint {
+    public String url;
 
-    private String url;
+    public String username;
 
-    private String name;
+    public String password;
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+    public String sessionId;
 
-    @Override public String getUrl() {
-        return url;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override public String getName() {
-        return name;
-    }
+    public StatusResponse statusResponse;
 
 }

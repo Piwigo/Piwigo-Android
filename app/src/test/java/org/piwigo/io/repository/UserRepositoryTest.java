@@ -24,8 +24,8 @@ import org.piwigo.internal.di.component.DaggerTestApplicationComponent;
 import org.piwigo.internal.di.component.TestApplicationComponent;
 import org.piwigo.internal.di.module.TestApplicationModule;
 import org.piwigo.io.MockRestService;
-import org.piwigo.io.SessionManager;
-import org.piwigo.io.model.response.StatusResponse;
+import org.piwigo.io.Session;
+import org.piwigo.io.model.response.LoginResponse;
 
 import javax.inject.Inject;
 
@@ -34,7 +34,11 @@ import static org.mockito.Mockito.mock;
 
 public class UserRepositoryTest {
 
-    @Inject SessionManager sessionManager;
+    private static final String URL = "http://demo.piwigo.org";
+    private static final String USERNAME = "test";
+    private static final String PASSWORD = "test";
+
+    @Inject Session session;
     @Inject UserRepository userRepository;
 
     @Before public void setUp() {
@@ -46,14 +50,17 @@ public class UserRepositoryTest {
     }
 
     @Test public void shouldLogin() {
-        StatusResponse statusResponse = userRepository
-                .login("http://demo.piwigo.org", "test", "test")
+        LoginResponse loginResponse = userRepository
+                .login(URL, USERNAME, PASSWORD)
                 .toBlocking()
                 .first();
-
-        assertThat(statusResponse.stat).isEqualTo(MockRestService.STATUS_OK);
-        assertThat(statusResponse.result.pwgToken).isEqualTo(MockRestService.TOKEN);
-        assertThat(sessionManager.getCookie()).isEqualTo(MockRestService.COOKIE_PWG_ID);
+        assertThat(loginResponse.url).isEqualTo(URL);
+        assertThat(loginResponse.username).isEqualTo(USERNAME);
+        assertThat(loginResponse.password).isEqualTo(PASSWORD);
+        assertThat(loginResponse.sessionId).isEqualTo(MockRestService.COOKIE_PWG_ID);
+        assertThat(loginResponse.statusResponse.stat).isEqualTo(MockRestService.STATUS_OK);
+        assertThat(loginResponse.statusResponse.result.pwgToken).isEqualTo(MockRestService.TOKEN);
+        assertThat(loginResponse.statusResponse.result.username).isEqualTo(USERNAME);
     }
 
     @Test(expected = Throwable.class) public void shouldThrowOnFailure() {
@@ -61,6 +68,16 @@ public class UserRepositoryTest {
                 .login("http://demo.piwigo.org", "bad", "bad")
                 .toBlocking()
                 .first();
+    }
+
+    @Test public void shouldGetStatus() {
+        LoginResponse loginResponse = userRepository
+                .status(URL)
+                .toBlocking()
+                .first();
+        assertThat(loginResponse.url).isEqualTo(URL);
+        assertThat(loginResponse.statusResponse.stat).isEqualTo(MockRestService.STATUS_OK);
+        assertThat(loginResponse.statusResponse.result.username).isEqualTo(MockRestService.GUEST_USER);
     }
 
 }

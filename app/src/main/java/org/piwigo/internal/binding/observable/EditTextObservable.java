@@ -30,6 +30,10 @@ public class EditTextObservable extends BaseObservable {
         return text;
     }
 
+    public boolean isEmpty() {
+        return text == null || text.isEmpty();
+    }
+
     public void setError(int resId) {
         errorResId = resId;
         notifyChange();

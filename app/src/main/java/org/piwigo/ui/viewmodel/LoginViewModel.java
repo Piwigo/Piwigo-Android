@@ -25,8 +25,9 @@ import android.view.View;
 
 import org.piwigo.R;
 import org.piwigo.internal.binding.observable.EditTextObservable;
-import org.piwigo.io.model.response.StatusResponse;
+import org.piwigo.io.model.response.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
+import org.piwigo.ui.view.LoginView;
 
 import java.util.regex.Pattern;
 
@@ -50,47 +51,73 @@ public class LoginViewModel extends BaseViewModel {
 
     @Inject UserRepository userRepository;
 
+    private LoginView view;
+
     @Inject public LoginViewModel() {}
 
-    @Override public void onSave(Bundle outState) {
+    public void setView(LoginView view) {
+        this.view = view;
+    }
+
+    @Override public void onSaveState(Bundle outState) {
         outState.putString(STATE_URL, url.get());
         outState.putString(STATE_USERNAME, username.get());
         outState.putString(STATE_PASSWORD, password.get());
     }
 
-    @Override public void onRestore(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            url.set(savedInstanceState.getString(STATE_URL));
-            username.set(savedInstanceState.getString(STATE_USERNAME));
-            password.set(savedInstanceState.getString(STATE_PASSWORD));
+    @Override public void onRestoreState(Bundle savedState) {
+        if (savedState != null) {
+            url.set(savedState.getString(STATE_URL));
+            username.set(savedState.getString(STATE_USERNAME));
+            password.set(savedState.getString(STATE_PASSWORD));
         }
+    }
+
+    @Override public void onDestroy() {
+        view = null;
     }
 
     public void onLoginClick(View view) {
-        if (isValid()) {
-            userRepository
-                    .login(url.get(), username.get(), password.get())
-                    .subscribe(new LoginSubscriber());
+        boolean siteValid = isSiteValid();
+        boolean loginValid = isGuest() || isLoginValid();
+
+        if (siteValid) {
+            if (isGuest()) {
+                userRepository
+                        .status(url.get())
+                        .subscribe(new LoginSubscriber());
+            } else if (loginValid) {
+                userRepository
+                        .login(url.get(), username.get(), password.get())
+                        .subscribe(new LoginSubscriber());
+            }
         }
     }
 
-    private boolean isValid() {
-        boolean valid = true;
-
+    private boolean isSiteValid() {
         if (url.get() == null || url.get().isEmpty()) {
             url.setError(R.string.login_url_empty);
-            valid = false;
+            return false;
         } else if (!WEB_URL.matcher(url.get()).matches()) {
             url.setError(R.string.login_url_invalid);
-            valid = false;
+            return false;
         }
+        return true;
+    }
 
-        if (username.get() == null || username.get().isEmpty()) {
+    private boolean isGuest() {
+        return username.isEmpty() && password.isEmpty();
+    }
+
+    private boolean isLoginValid() {
+        boolean valid = true;
+
+        if (username.isEmpty()) {
             username.setError(R.string.login_username_empty);
             valid = false;
         }
 
-        if (password.get() == null || password.get().isEmpty()) {
+        if (password.isEmpty()) {
             password.setError(R.string.login_password_empty);
             valid = false;
         }
@@ -98,18 +125,25 @@ public class LoginViewModel extends BaseViewModel {
         return valid;
     }
 
-    private class LoginSubscriber extends Subscriber<StatusResponse> {
+    private boolean hasView() {
+        return view != null;
+    }
 
-        @Override public void onCompleted() {
+    private class LoginSubscriber extends Subscriber<LoginResponse> {
 
-        }
+        @Override public void onCompleted() {}
 
         @Override public void onError(Throwable e) {
             Log.e(TAG, e.getMessage());
+            if (hasView()) {
+                view.onError();
+            }
         }
 
-        @Override public void onNext(StatusResponse statusResponse) {
-
+        @Override public void onNext(LoginResponse loginResponse) {
+            if (hasView()) {
+                view.onSuccess(loginResponse);
+            }
         }
 
     }

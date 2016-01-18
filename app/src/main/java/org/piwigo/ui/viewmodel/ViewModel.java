@@ -4,9 +4,9 @@ import android.os.Bundle;
 
 public interface ViewModel {
 
-    void onSave(Bundle outState);
+    void onSaveState(Bundle outState);
 
-    void onRestore(Bundle savedInstanceState);
+    void onRestoreState(Bundle savedInstanceState);
 
     void onDestroy();
 

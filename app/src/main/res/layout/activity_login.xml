@@ -102,7 +102,7 @@
                         android:id="@+id/login_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
+                        android:layout_marginTop="8dp"
                         android:nextFocusUp="@+id/password"
                         android:onClick="@{viewModel.onLoginClick}"
                         android:text="@string/login_button_text"

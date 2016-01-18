@@ -42,7 +42,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override protected void onSaveInstanceState(Bundle outState) {
         if (viewModel != null) {
-            viewModel.onSave(outState);
+            viewModel.onSaveState(outState);
         }
         super.onSaveInstanceState(outState);
     }
@@ -50,7 +50,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if (viewModel != null) {
-            viewModel.onRestore(savedInstanceState);
+            viewModel.onRestoreState(savedInstanceState);
         }
     }
 

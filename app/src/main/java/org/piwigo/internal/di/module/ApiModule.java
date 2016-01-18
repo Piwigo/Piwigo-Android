@@ -17,16 +17,14 @@
 
 package org.piwigo.internal.di.module;
 
-import android.accounts.AccountManager;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
 
 import org.piwigo.BuildConfig;
+import org.piwigo.io.DynamicEndpoint;
 import org.piwigo.io.RestService;
-import org.piwigo.io.SessionManager;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.Session;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -47,15 +45,19 @@ import static retrofit.RestAdapter.LogLevel.NONE;
 @Module
 public class ApiModule {
 
-    @Provides @Singleton SessionManager provideSessionManager(AccountManager accountManager) {
-        return new SessionManager(accountManager);
+    @Provides @Singleton Session provideSession() {
+        return new Session();
     }
 
-    @Provides @Singleton RequestInterceptor provideRequestInterceptor(final SessionManager sessionManager) {
+    @Provides @Singleton DynamicEndpoint provideDynamicEndpoint() {
+        return new DynamicEndpoint();
+    }
+
+    @Provides @Singleton RequestInterceptor provideRequestInterceptor(Session session) {
         return request -> {
             request.addQueryParam("format", "json");
-            if (sessionManager.getCookie() != null) {
-                request.addHeader("Cookie", "pwg_id=" + sessionManager.getCookie());
+            if (session.getCookie() != null) {
+                request.addHeader("Cookie", "pwg_id=" + session.getCookie());
             }
         };
     }
@@ -66,11 +68,11 @@ public class ApiModule {
                 .create();
     }
 
-    @Provides @Singleton RestAdapter provideRestAdapter(OkHttpClient client, SessionManager sessionManager, RequestInterceptor interceptor, Gson gson) {
+    @Provides @Singleton RestAdapter provideRestAdapter(OkHttpClient client, DynamicEndpoint endpoint, RequestInterceptor interceptor, Gson gson) {
         return new RestAdapter.Builder()
                 .setClient(new OkClient(client))
                 .setLogLevel(BuildConfig.DEBUG ? FULL : NONE)
-                .setEndpoint(sessionManager.getEndpoint())
+                .setEndpoint(endpoint)
                 .setRequestInterceptor(interceptor)
                 .setConverter(new GsonConverter(gson))
                 .build();
@@ -86,10 +88,6 @@ public class ApiModule {
 
     @Provides @Singleton @Named("UiScheduler") Scheduler provideUiScheduler() {
         return AndroidSchedulers.mainThread();
-    }
-
-    @Provides @Singleton UserRepository provideUserRepository(SessionManager sessionManager, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
-        return new UserRepository(sessionManager, restService, ioScheduler, uiScheduler, gson);
     }
 
 }

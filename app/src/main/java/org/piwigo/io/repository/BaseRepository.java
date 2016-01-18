@@ -17,25 +17,23 @@
 
 package org.piwigo.io.repository;
 
+import org.piwigo.io.DynamicEndpoint;
 import org.piwigo.io.RestService;
-import org.piwigo.io.SessionManager;
+import org.piwigo.io.Session;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import rx.Observable;
 import rx.Scheduler;
 
 public abstract class BaseRepository {
 
-    protected final SessionManager sessionManager;
-    protected final RestService restService;
-    protected final Scheduler ioScheduler;
-    protected final Scheduler uiScheduler;
-
-    protected BaseRepository(SessionManager sessionManager, RestService restService, Scheduler ioScheduler, Scheduler uiScheduler) {
-        this.sessionManager = sessionManager;
-        this.restService = restService;
-        this.ioScheduler = ioScheduler;
-        this.uiScheduler = uiScheduler;
-    }
+    @Inject Session session;
+    @Inject DynamicEndpoint endpoint;
+    @Inject RestService restService;
+    @Inject @Named("IoScheduler") Scheduler ioScheduler;
+    @Inject @Named("UiScheduler") Scheduler uiScheduler;
 
     protected <T> Observable.Transformer<T, T> applySchedulers() {
         return observable -> observable.subscribeOn(ioScheduler)

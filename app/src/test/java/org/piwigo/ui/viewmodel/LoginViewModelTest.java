@@ -26,9 +26,10 @@ public class LoginViewModelTest {
 
     @Before public void setUp() {
         viewModel = new LoginViewModel();
-        viewModel.WEB_URL = Pattern.compile("http://demo.piwigo.org");
+        LoginViewModel.WEB_URL = Pattern.compile("http://demo\\.piwigo\\.org");
         viewModel.userRepository = mock(UserRepository.class);
         when(viewModel.userRepository.login(URL, USERNAME, PASSWORD)).thenReturn(Observable.empty());
+        when(viewModel.userRepository.status(URL)).thenReturn(Observable.empty());
     }
 
     @Test public void shouldSaveState() {
@@ -36,12 +37,21 @@ public class LoginViewModelTest {
         viewModel.username.set(USERNAME);
         viewModel.password.set(PASSWORD);
         Bundle bundle = mock(Bundle.class);
-
-        viewModel.onSave(bundle);
-
+        viewModel.onSaveState(bundle);
         verify(bundle).putString(LoginViewModel.STATE_URL, URL);
         verify(bundle).putString(LoginViewModel.STATE_USERNAME, USERNAME);
         verify(bundle).putString(LoginViewModel.STATE_PASSWORD, PASSWORD);
+    }
+
+    @Test public void shouldRestoreState() {
+        Bundle bundle = mock(Bundle.class);
+        when(bundle.getString(LoginViewModel.STATE_URL)).thenReturn(URL);
+        when(bundle.getString(LoginViewModel.STATE_USERNAME)).thenReturn(USERNAME);
+        when(bundle.getString(LoginViewModel.STATE_PASSWORD)).thenReturn(PASSWORD);
+        viewModel.onRestoreState(bundle);
+        assertThat(viewModel.url.get()).isEqualTo(URL);
+        assertThat(viewModel.username.get()).isEqualTo(USERNAME);
+        assertThat(viewModel.password.get()).isEqualTo(PASSWORD);
     }
 
     @Test public void shouldSetEmptyUrlError() {
@@ -58,11 +68,13 @@ public class LoginViewModelTest {
 
     @Test public void shouldSetEmptyUsernameError() {
         viewModel.username.set(null);
+        viewModel.password.set(PASSWORD);
         viewModel.onLoginClick(null);
         assertThat(viewModel.username.getError()).isEqualTo(R.string.login_username_empty);
     }
 
     @Test public void shouldSetEmptyPasswordError() {
+        viewModel.username.set(USERNAME);
         viewModel.password.set(null);
         viewModel.onLoginClick(null);
         assertThat(viewModel.password.getError()).isEqualTo(R.string.login_password_empty);
@@ -72,23 +84,14 @@ public class LoginViewModelTest {
         viewModel.url.set(URL);
         viewModel.username.set(USERNAME);
         viewModel.password.set(PASSWORD);
-
         viewModel.onLoginClick(null);
-
         verify(viewModel.userRepository).login(URL, USERNAME, PASSWORD);
     }
 
-    @Test public void shouldRestoreState() {
-        Bundle bundle = mock(Bundle.class);
-        when(bundle.getString(LoginViewModel.STATE_URL)).thenReturn(URL);
-        when(bundle.getString(LoginViewModel.STATE_USERNAME)).thenReturn(USERNAME);
-        when(bundle.getString(LoginViewModel.STATE_PASSWORD)).thenReturn(PASSWORD);
-
-        viewModel.onRestore(bundle);
-
-        assertThat(viewModel.url.get()).isEqualTo(URL);
-        assertThat(viewModel.username.get()).isEqualTo(USERNAME);
-        assertThat(viewModel.password.get()).isEqualTo(PASSWORD);
+    @Test public void shouldGetStatusIfUrlValid() {
+        viewModel.url.set(URL);
+        viewModel.onLoginClick(null);
+        verify(viewModel.userRepository).status(URL);
     }
 
 }

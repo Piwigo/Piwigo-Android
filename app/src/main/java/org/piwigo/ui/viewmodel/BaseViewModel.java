@@ -2,11 +2,11 @@ package org.piwigo.ui.viewmodel;
 
 import android.os.Bundle;
 
-public class BaseViewModel implements ViewModel {
+public abstract class BaseViewModel implements ViewModel {
 
-    @Override public void onSave(Bundle outState) {}
+    @Override public void onSaveState(Bundle outState) {}
 
-    @Override public void onRestore(Bundle savedInstanceState) {}
+    @Override public void onRestoreState(Bundle savedState) {}
 
     @Override public void onDestroy() {}
 

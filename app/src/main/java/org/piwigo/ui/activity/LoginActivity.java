@@ -22,11 +22,13 @@ import android.os.Bundle;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
+import org.piwigo.io.model.response.LoginResponse;
+import org.piwigo.ui.view.LoginView;
 import org.piwigo.ui.viewmodel.LoginViewModel;
 
 import javax.inject.Inject;
 
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements LoginView {
 
     private static final String TAG = LoginActivity.class.getName();
 
@@ -36,8 +38,17 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         getActivityComponent().inject(this);
         ActivityLoginBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
+        viewModel.setView(this);
         bindLifecycleEvents(viewModel);
         binding.setViewModel(viewModel);
+    }
+
+    @Override public void onSuccess(LoginResponse response) {
+
+    }
+
+    @Override public void onError() {
+
     }
 
 }

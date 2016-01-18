@@ -17,19 +17,38 @@
 
 package org.piwigo.internal.di.component;
 
+import com.google.gson.Gson;
+
 import org.piwigo.internal.di.module.TestApiModule;
 import org.piwigo.internal.di.module.TestApplicationModule;
 import org.piwigo.internal.di.module.NetworkModule;
+import org.piwigo.io.DynamicEndpoint;
+import org.piwigo.io.RestService;
+import org.piwigo.io.Session;
 import org.piwigo.io.repository.UserRepositoryTest;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import rx.Scheduler;
 
 @Singleton
 @Component(modules = {TestApplicationModule.class, NetworkModule.class, TestApiModule.class})
 public interface TestApplicationComponent extends ApplicationComponent {
 
     void inject(UserRepositoryTest test);
+
+    Session session();
+
+    DynamicEndpoint endpoint();
+
+    Gson gson();
+
+    RestService restService();
+
+    @Named("IoScheduler") Scheduler ioScheduler();
+
+    @Named("UiScheduler") Scheduler uiScheduler();
 
 }

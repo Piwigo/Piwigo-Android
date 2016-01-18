@@ -37,6 +37,9 @@ public class MockRestService implements RestService {
     public static final String STATUS_OK = "ok";
     public static final String TOKEN = "abcdefghijklmnop";
     public static final String COOKIE_PWG_ID = "1234567890";
+    public static final String GUEST_USER = "guest";
+
+    private String loggedInUser = GUEST_USER;
 
     @Override public Observable<AddSuccessResponse> addCategory(@Field("name") String name, @Field("parent") Integer parent, @Field("comment") String comment, @Field("visible") Boolean visible, @Field("status") String status, @Field("commentable") Boolean commentable) {
         return null;
@@ -46,6 +49,7 @@ public class MockRestService implements RestService {
         StatusResponse statusResponse = new StatusResponse();
         statusResponse.stat = STATUS_OK;
         statusResponse.result = new StatusResponse.Status();
+        statusResponse.result.username = loggedInUser;
         statusResponse.result.pwgToken = TOKEN;
         return Observable.from(new StatusResponse[]{statusResponse});
     }
@@ -55,6 +59,7 @@ public class MockRestService implements RestService {
         final String data;
         if (username.equals("test") && password.equals("test")) {
             code = HTTP_OK;
+            loggedInUser = "test";
             data = "{\"stat\":\"ok\",\"result\":true}";
         } else {
             code = HTTP_OK;

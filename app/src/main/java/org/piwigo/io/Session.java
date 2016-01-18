@@ -17,49 +17,11 @@
 
 package org.piwigo.io;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-
-public class SessionManager {
-
-    private AccountManager accountManager;
-
-    private DynamicEndpoint endpoint = new DynamicEndpoint();
+public class Session {
 
     private String cookie;
 
     private String token;
-
-    public SessionManager(AccountManager accountManager) {
-        this.accountManager = accountManager;
-    }
-
-    /**
-     * Populate the session data from an account
-     *
-     * @param account Account to get session data from
-     */
-    public void from(Account account) {
-
-    }
-
-    /**
-     * Set the endpoint URL
-     *
-     * @param url New endpoint URL
-     */
-    public void setUrl(String url) {
-        endpoint.setUrl(url);
-    }
-
-    /**
-     * Get the endpoint
-     *
-     * @return Retrofit endpoint
-     */
-    public DynamicEndpoint getEndpoint() {
-        return endpoint;
-    }
 
     /**
      * Set the session cookie
