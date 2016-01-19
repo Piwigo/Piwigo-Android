@@ -1,29 +1,15 @@
 <resources>
 
     <style name="Theme.Piwigo" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/primary_orange</item>
-        <item name="colorPrimaryDark">@color/secondary_orange</item>
-        <item name="colorAccent">@color/primary_orange</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/secondary</item>
+        <item name="colorAccent">@color/accent</item>
     </style>
 
     <style name="Theme.Piwigo.Login">
-        <!--<item name="colorAccent">@android:color/white</item>-->
-        <item name="android:windowBackground">@color/primary_orange</item>
-        <!--<item name="colorControlNormal">@color/light_grey</item>-->
-        <!--<item name="colorControlActivated">@android:color/white</item>-->
-        <!--<item name="colorControlHighlight">@android:color/white</item>-->
-        <!--<item name="android:textColorHint">@color/light_grey</item>-->
-        <item name="colorButtonNormal">@color/secondary_orange</item>
+        <item name="android:windowBackground">@color/primary</item>
     </style>
 
     <style name="Theme.Piwigo.NavDrawer" />
-
-    <style name="Theme.Piwigo.CollapsingToolbar.Expanded" parent="@style/TextAppearance.Design.CollapsingToolbar.Expanded">
-        <item name="android:textColor">@android:color/white</item>
-    </style>
-
-    <style name="TextAppearance.Piwigo.Error" parent="@style/TextAppearance.Design.Error">
-        <item name="android:textColor">@color/login_error</item>
-    </style>
 
 </resources>

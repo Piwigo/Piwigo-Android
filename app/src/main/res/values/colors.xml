@@ -1,7 +1,8 @@
 <resources>
-    <color name="primary_orange">#FF7700</color>
-    <color name="secondary_orange">#E65E00</color>
+    <color name="piwigo_orange">#FF7700</color>
+    <color name="primary">#4E4E4E</color>
+    <color name="secondary">#353535</color>
+    <color name="accent">@color/piwigo_orange</color>
     <color name="header_background">#333333</color>
     <color name="light_grey">#CCCCCC</color>
-    <color name="login_error">#FFEB3B</color>
 </resources>

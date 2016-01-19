@@ -13,7 +13,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/primary_orange"
+        android:background="@color/primary"
         android:fitsSystemWindows="true">
 
         <LinearLayout
@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="40dp"
-                android:src="@drawable/piwigo_logo_white" />
+                android:src="@drawable/piwigo_logo" />
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
@@ -82,13 +82,13 @@
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginTop="8dp">
 
                         <EditText
                             android:id="@+id/password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
                             android:hint="@string/login_password_hint"
                             android:imeOptions="actionDone"
                             android:inputType="textPassword"
@@ -98,15 +98,24 @@
                             app:observable="@{viewModel.password}" />
                     </android.support.design.widget.TextInputLayout>
 
-                    <Button
-                        android:id="@+id/login_button"
-                        android:layout_width="match_parent"
+                    <com.github.jorgecastilloprz.FABProgressCircle
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:nextFocusUp="@+id/password"
-                        android:onClick="@{viewModel.onLoginClick}"
-                        android:text="@string/login_button_text"
-                        android:textColor="@android:color/white" />
+                        android:layout_gravity="center_horizontal"
+                        app:arcColor="@color/primary"
+                        app:finalIcon="@drawable/ic_check"
+                        app:observable="@{viewModel.progressCircle}">
+
+                        <android.support.design.widget.FloatingActionButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="24dp"
+                            android:onClick="@{viewModel.onLoginClick}"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_chevron_right"
+                            app:elevation="8dp"
+                            app:fabSize="normal" />
+                    </com.github.jorgecastilloprz.FABProgressCircle>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
         </LinearLayout>

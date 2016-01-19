@@ -23,8 +23,11 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 
+import com.github.jorgecastilloprz.listeners.FABProgressListener;
+
 import org.piwigo.R;
 import org.piwigo.internal.binding.observable.EditTextObservable;
+import org.piwigo.internal.binding.observable.FABProgressCircleObservable;
 import org.piwigo.io.model.response.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.view.LoginView;
@@ -48,6 +51,7 @@ public class LoginViewModel extends BaseViewModel {
     public EditTextObservable url = new EditTextObservable("http://");
     public EditTextObservable username = new EditTextObservable();
     public EditTextObservable password = new EditTextObservable();
+    public FABProgressCircleObservable progressCircle = new FABProgressCircleObservable();
 
     @Inject UserRepository userRepository;
 
@@ -83,10 +87,12 @@ public class LoginViewModel extends BaseViewModel {
 
         if (siteValid) {
             if (isGuest()) {
+                progressCircle.show();
                 userRepository
                         .status(url.get())
                         .subscribe(new LoginSubscriber());
             } else if (loginValid) {
+                progressCircle.show();
                 userRepository
                         .login(url.get(), username.get(), password.get())
                         .subscribe(new LoginSubscriber());
@@ -131,19 +137,31 @@ public class LoginViewModel extends BaseViewModel {
 
     private class LoginSubscriber extends Subscriber<LoginResponse> {
 
-        @Override public void onCompleted() {}
+        @Override public void onCompleted() {
+            progressCircle.beginFinalAnimation();
+        }
 
         @Override public void onError(Throwable e) {
             Log.e(TAG, e.getMessage());
             if (hasView()) {
                 view.onError();
             }
+            progressCircle.hide();
         }
 
         @Override public void onNext(LoginResponse loginResponse) {
             if (hasView()) {
                 view.onSuccess(loginResponse);
             }
+        }
+
+    }
+
+    private class LoginFABProgressListener implements FABProgressListener {
+
+        @Override
+        public void onFABProgressAnimationEnd() {
+
         }
 
     }
