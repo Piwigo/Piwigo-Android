@@ -56,6 +56,7 @@ public class LoginViewModel extends BaseViewModel {
     @Inject UserRepository userRepository;
 
     private LoginView view;
+    private LoginResponse loginResponse;
 
     @Inject public LoginViewModel() {}
 
@@ -79,6 +80,7 @@ public class LoginViewModel extends BaseViewModel {
 
     @Override public void onDestroy() {
         view = null;
+        loginResponse = null;
     }
 
     public void onLoginClick(View view) {
@@ -150,9 +152,7 @@ public class LoginViewModel extends BaseViewModel {
         }
 
         @Override public void onNext(LoginResponse loginResponse) {
-            if (hasView()) {
-                view.onSuccess(loginResponse);
-            }
+            LoginViewModel.this.loginResponse = loginResponse;
         }
 
     }
@@ -161,7 +161,9 @@ public class LoginViewModel extends BaseViewModel {
 
         @Override
         public void onFABProgressAnimationEnd() {
-
+            if (hasView()) {
+                view.onSuccess(loginResponse);
+            }
         }
 
     }

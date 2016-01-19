@@ -20,4 +20,5 @@
     <string name="login_url_invalid">Not a valid site address</string>
     <string name="login_username_empty">Enter your username</string>
     <string name="login_password_empty">Enter your password</string>
+    <string name="login_error">Login failed, please try again</string>
 </resources>

@@ -19,6 +19,7 @@ package org.piwigo.ui.activity;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
@@ -34,21 +35,24 @@ public class LoginActivity extends BaseActivity implements LoginView {
 
     @Inject LoginViewModel viewModel;
 
+    private ActivityLoginBinding binding;
+
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivityComponent().inject(this);
-        ActivityLoginBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         viewModel.setView(this);
         bindLifecycleEvents(viewModel);
         binding.setViewModel(viewModel);
     }
 
     @Override public void onSuccess(LoginResponse response) {
-
+        // TODO create the account
     }
 
     @Override public void onError() {
-
+        Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG)
+                .show();
     }
 
 }
