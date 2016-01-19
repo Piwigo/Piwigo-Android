@@ -1,0 +1,7 @@
+<resources>
+
+    <!-- Login logo position -->
+    <dimen name="login_logo_margin_top">64dp</dimen>
+    <dimen name="login_logo_margin_bottom">24dp</dimen>
+
+</resources>

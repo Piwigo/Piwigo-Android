@@ -3,6 +3,10 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <!-- Login logo position -->
+    <dimen name="login_logo_margin_top">40dp</dimen>
+    <dimen name="login_logo_margin_bottom">0dp</dimen>
+
     <!-- Height of the header view of the navigation drawer -->
     <dimen name="nav_header_size">150dp</dimen>
     <!-- Top margin header view of the navigation drawer -->

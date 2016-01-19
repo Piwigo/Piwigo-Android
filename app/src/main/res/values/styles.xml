@@ -12,4 +12,8 @@
 
     <style name="Theme.Piwigo.NavDrawer" />
 
+    <style name="Theme.Piwigo.Login.CardView" parent="CardView">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
 </resources>

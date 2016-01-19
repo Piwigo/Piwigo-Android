@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Piwigo.Login.CardView" parent="CardView">
+        <item name="android:layout_width">@dimen/login_width</item>
+    </style>
+
+</resources>
