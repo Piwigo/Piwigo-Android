@@ -28,6 +28,7 @@ import org.piwigo.io.DynamicEndpoint;
 import org.piwigo.io.RestService;
 import org.piwigo.io.Session;
 import org.piwigo.ui.activity.BaseActivity;
+import org.piwigo.ui.activity.LauncherActivity;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -39,7 +40,9 @@ import rx.Scheduler;
 @Component(modules = {ApplicationModule.class, NetworkModule.class, ApiModule.class})
 public interface ApplicationComponent {
 
-    void inject(BaseActivity baseActivity);
+    void inject(BaseActivity activity);
+
+    void inject(LauncherActivity activity);
 
     Context context();
 

@@ -27,7 +27,8 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="@dimen/login_logo_margin_bottom"
                 android:layout_marginTop="@dimen/login_logo_margin_top"
-                android:src="@drawable/piwigo_logo" />
+                android:src="@drawable/piwigo_logo"
+                android:transitionName="@string/logo_transition_name" />
 
             <android.support.v7.widget.CardView
                 style="@style/Theme.Piwigo.Login.CardView"

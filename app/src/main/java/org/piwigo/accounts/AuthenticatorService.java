@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2016 Phil Bayfield https://philio.me
+ * Copyright 2016 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.piwigo.internal.di.module;
+package org.piwigo.accounts;
 
-import android.content.Context;
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 
-import org.piwigo.PiwigoApplication;
+public class AuthenticatorService extends Service {
 
-import javax.inject.Singleton;
+    private PiwigoAccountAuthenticator authenticator;
 
-import dagger.Module;
-import dagger.Provides;
-
-@Module
-public class ApplicationModule {
-
-    private final PiwigoApplication application;
-
-    public ApplicationModule(PiwigoApplication application) {
-        this.application = application;
+    @Override public void onCreate() {
+        authenticator = new PiwigoAccountAuthenticator(this);
     }
 
-    @Provides @Singleton Context provideApplicationContext() {
-        return application;
+    @Nullable @Override public IBinder onBind(Intent intent) {
+        return authenticator.getIBinder();
     }
 
 }

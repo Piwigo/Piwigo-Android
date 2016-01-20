@@ -12,26 +12,32 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Piwigo">
         <activity
-            android:name=".ui.activity.MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.Piwigo.NavDrawer">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
-
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            android:name=".ui.activity.LauncherActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Piwigo.Login">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.Piwigo.Login"
-            android:windowSoftInputMode="stateHidden|adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.Piwigo.NavDrawer" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+        <service android:name=".accounts.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
-        </activity>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
 
         <meta-data
             android:name="io.fabric.ApiKey"

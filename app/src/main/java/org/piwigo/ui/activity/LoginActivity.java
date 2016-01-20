@@ -23,6 +23,7 @@ import android.support.design.widget.Snackbar;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
+import org.piwigo.helper.AccountHelper;
 import org.piwigo.io.model.response.LoginResponse;
 import org.piwigo.ui.view.LoginView;
 import org.piwigo.ui.viewmodel.LoginViewModel;
@@ -34,6 +35,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     private static final String TAG = LoginActivity.class.getName();
 
     @Inject LoginViewModel viewModel;
+    @Inject AccountHelper accountHelper;
 
     private ActivityLoginBinding binding;
 
