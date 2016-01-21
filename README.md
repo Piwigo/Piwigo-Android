@@ -6,8 +6,8 @@
 
 ### Login
 
-![](https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/login-phone.png =500)
-![](https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/login-tablet.png =800)
+![](https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/login-phone.png =500x)
+![](https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/login-tablet.png =800x)
 
 #### Done
 
