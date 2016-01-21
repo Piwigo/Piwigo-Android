@@ -7,7 +7,7 @@
 ### Login
 
 <img src="https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/login-phone.png" width="250" />
-<img src="https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/login-tablet.png" width="500" />
+<img src="https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/login-tablet.png" width="600" />
 
 #### Done
 
