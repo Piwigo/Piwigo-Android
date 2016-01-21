@@ -20,12 +20,24 @@ package org.piwigo.helper;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.net.Uri;
+import android.os.Bundle;
 
 import org.piwigo.R;
+import org.piwigo.io.model.response.LoginResponse;
 
 import javax.inject.Inject;
 
 public class AccountHelper {
+
+    private static final String GUEST_ACCOUNT_NAME = "guest";
+
+    private static final String KEY_IS_GUEST = "is_guest";
+    private static final String KEY_URL = "url";
+    private static final String KEY_USERNAME = "username";
+
+    private static final String PWG_COOKIE = "pwg_id";
+    private static final String PWG_TOKEN  = "pwg_token";
 
     private Context context;
     private AccountManager accountManager;
@@ -35,12 +47,41 @@ public class AccountHelper {
         accountManager = AccountManager.get(context);
     }
 
-    public void createAccount(String url, String username, String password) {
-        Account account = new Account("Account Name", context.getString(R.string.account_type));
+    public Account createAccount(LoginResponse loginResponse) {
+        // TODO check for duplicates
+        if (loginResponse.statusResponse.result.username.equals(GUEST_ACCOUNT_NAME)) {
+            return createUserAccount(loginResponse);
+        } else {
+            return createGuestAccount(loginResponse);
+        }
     }
 
-    public void createGuestAccount(String url) {
-        Account account = new Account("Guest", context.getString(R.string.account_type));
+    private Account createUserAccount(LoginResponse loginResponse) {
+        String accountName = getAccountName(loginResponse);
+        Account account = new Account(accountName, context.getString(R.string.account_type));
+        Bundle userdata = new Bundle();
+        userdata.putBoolean(KEY_IS_GUEST, false);
+        userdata.putString(KEY_URL, loginResponse.url);
+        userdata.putString(KEY_USERNAME, loginResponse.statusResponse.result.username);
+        accountManager.addAccountExplicitly(account, loginResponse.password, userdata);
+        accountManager.setAuthToken(account, PWG_COOKIE, loginResponse.pwgId);
+        accountManager.setAuthToken(account, PWG_TOKEN, loginResponse.statusResponse.result.pwgToken);
+        return account;
+    }
+
+    private Account createGuestAccount(LoginResponse loginResponse) {
+        String accountName = getAccountName(loginResponse);
+        Account account = new Account(accountName, context.getString(R.string.account_type));
+        Bundle userdata = new Bundle();
+        userdata.putBoolean(KEY_IS_GUEST, true);
+        accountManager.addAccountExplicitly(account, null, userdata);
+        return account;
+    }
+
+    private String getAccountName(LoginResponse loginResponse) {
+        String username = loginResponse.statusResponse.result.username;
+        String hostname = Uri.parse(loginResponse.url).getHost();
+        return context.getString(R.string.account_name, username, hostname);
     }
 
 }

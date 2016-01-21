@@ -17,8 +17,14 @@
 
 package org.piwigo.ui.activity;
 
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorActivity;
+import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 
 import org.piwigo.R;
@@ -37,24 +43,60 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @Inject LoginViewModel viewModel;
     @Inject AccountHelper accountHelper;
 
+    private AccountAuthenticatorResponse authenticatorResponse;
+    private Bundle resultBundle;
+
     private ActivityLoginBinding binding;
+
+    private Handler handler = new Handler();
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivityComponent().inject(this);
+
+        // Account authenticator stuff, applicable if user comes from "add account" in settings only
+        // as ordinarily this is skipped to enable activity scene transitions
+        authenticatorResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+        if (authenticatorResponse != null) {
+            authenticatorResponse.onRequestContinued();
+        }
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         viewModel.setView(this);
         bindLifecycleEvents(viewModel);
         binding.setViewModel(viewModel);
     }
 
+    @Override public void finish() {
+        /** Clean up the account authenticator stuff, see {@link AccountAuthenticatorActivity} */
+        if (authenticatorResponse != null) {
+            if (resultBundle != null) {
+                authenticatorResponse.onResult(resultBundle);
+            } else {
+                authenticatorResponse.onError(AccountManager.ERROR_CODE_CANCELED, "canceled");
+            }
+            authenticatorResponse = null;
+        }
+        super.finish();
+    }
+
     @Override public void onSuccess(LoginResponse response) {
-        // TODO create the account
+        Account account = accountHelper.createAccount(response);
+        setResultIntent(account);
+        handler.postDelayed(this::finishAfterTransition, 500);
     }
 
     @Override public void onError() {
         Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG)
                 .show();
+    }
+
+    private void setResultIntent(Account account) {
+        Intent intent = new Intent();
+        intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, account.name);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+        resultBundle = intent.getExtras();
+        setResult(RESULT_OK, intent);
     }
 
 }

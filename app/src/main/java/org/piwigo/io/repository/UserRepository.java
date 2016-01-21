@@ -49,7 +49,7 @@ public class UserRepository extends BaseRepository {
                     SuccessResponse successResponse = gson.fromJson(body, SuccessResponse.class);
                     if (successResponse.result) {
                         String sessionId = CookieHelper.extract("pwg_id", response.getHeaders());
-                        loginResponse.sessionId = sessionId;
+                        loginResponse.pwgId = sessionId;
                         session.setCookie(sessionId);
                         return Observable.just(successResponse);
                     }

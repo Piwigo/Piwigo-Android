@@ -25,7 +25,7 @@ public class LoginResponse {
 
     public String password;
 
-    public String sessionId;
+    public String pwgId;
 
     public StatusResponse statusResponse;
 

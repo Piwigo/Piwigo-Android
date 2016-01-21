@@ -17,6 +17,7 @@
 
 package org.piwigo.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -36,6 +37,16 @@ public class LauncherActivity extends BaseActivity {
         getApplicationComponent().inject(this);
         setContentView(R.layout.activity_launcher);
         handler.postDelayed(this::startLogin, 1000);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Navigator.REQUEST_CODE_LOGIN && resultCode == RESULT_OK) {
+            // TODO start main UI
+        } else {
+            finish();
+        }
     }
 
     private void startLogin() {

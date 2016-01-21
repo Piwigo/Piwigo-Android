@@ -52,6 +52,7 @@ public class LoginViewModel extends BaseViewModel {
     public EditTextObservable username = new EditTextObservable();
     public EditTextObservable password = new EditTextObservable();
     public FABProgressCircleObservable progressCircle = new FABProgressCircleObservable();
+    public FABProgressListener progressListener = new LoginFABProgressListener();
 
     @Inject UserRepository userRepository;
 

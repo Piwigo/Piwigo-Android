@@ -57,7 +57,7 @@ public class UserRepositoryTest {
         assertThat(loginResponse.url).isEqualTo(URL);
         assertThat(loginResponse.username).isEqualTo(USERNAME);
         assertThat(loginResponse.password).isEqualTo(PASSWORD);
-        assertThat(loginResponse.sessionId).isEqualTo(MockRestService.COOKIE_PWG_ID);
+        assertThat(loginResponse.pwgId).isEqualTo(MockRestService.COOKIE_PWG_ID);
         assertThat(loginResponse.statusResponse.stat).isEqualTo(MockRestService.STATUS_OK);
         assertThat(loginResponse.statusResponse.result.pwgToken).isEqualTo(MockRestService.TOKEN);
         assertThat(loginResponse.statusResponse.result.username).isEqualTo(USERNAME);

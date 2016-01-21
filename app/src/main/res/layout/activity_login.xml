@@ -48,8 +48,8 @@
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp">
+                        android:layout_marginTop="8dp"
+                        app:errorEnabled="true">
 
                         <EditText
                             android:id="@+id/url"
@@ -66,8 +66,7 @@
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp">
+                        app:errorEnabled="true">
 
                         <EditText
                             android:id="@+id/username"
@@ -85,7 +84,7 @@
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp">
+                        app:errorEnabled="true">
 
                         <EditText
                             android:id="@+id/password"
@@ -107,6 +106,7 @@
                         android:layout_gravity="center_horizontal"
                         app:arcColor="@color/primary"
                         app:arcWidth="4dp"
+                        app:attachListener="@{viewModel.progressListener}"
                         app:finalIcon="@drawable/ic_check"
                         app:observable="@{viewModel.progressCircle}">
 
