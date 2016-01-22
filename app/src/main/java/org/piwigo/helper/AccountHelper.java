@@ -26,6 +26,9 @@ import android.os.Bundle;
 import org.piwigo.R;
 import org.piwigo.io.model.response.LoginResponse;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Inject;
 
 public class AccountHelper {
@@ -54,6 +57,15 @@ public class AccountHelper {
         } else {
             return createGuestAccount(loginResponse);
         }
+    }
+
+    public boolean hasAccount() {
+        List<Account> accounts = getAccounts();
+        return accounts.size() > 0;
+    }
+
+    public List<Account> getAccounts() {
+        return Arrays.asList(accountManager.getAccountsByType(context.getString(R.string.account_type)));
     }
 
     private Account createUserAccount(LoginResponse loginResponse) {

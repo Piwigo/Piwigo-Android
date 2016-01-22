@@ -20,11 +20,13 @@ package org.piwigo.ui;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.view.View;
 
 import org.piwigo.ui.activity.LoginActivity;
+import org.piwigo.ui.activity.MainActivity;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,6 +48,11 @@ public class Navigator {
         Intent intent = new Intent(activity, LoginActivity.class);
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(activity, sharedElement, sharedElementName);
         activity.startActivityForResult(intent, REQUEST_CODE_LOGIN, options.toBundle());
+    }
+
+    public void startMain(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        context.startActivity(intent);
     }
 
 }

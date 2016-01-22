@@ -22,12 +22,14 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import org.piwigo.R;
+import org.piwigo.helper.AccountHelper;
 import org.piwigo.ui.Navigator;
 
 import javax.inject.Inject;
 
 public class LauncherActivity extends BaseActivity {
 
+    @Inject AccountHelper accountHelper;
     @Inject Navigator navigator;
 
     private final Handler handler = new Handler();
@@ -36,14 +38,17 @@ public class LauncherActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         getApplicationComponent().inject(this);
         setContentView(R.layout.activity_launcher);
-        handler.postDelayed(this::startLogin, 1000);
+        if (accountHelper.hasAccount()) {
+            navigator.startMain(this);
+        } else {
+            handler.postDelayed(this::startLogin, 1000);
+        }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Navigator.REQUEST_CODE_LOGIN && resultCode == RESULT_OK) {
-            // TODO start main UI
+            navigator.startMain(this);
         } else {
             finish();
         }
