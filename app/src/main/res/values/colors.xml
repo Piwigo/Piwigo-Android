@@ -1,8 +1,6 @@
 <resources>
     <color name="piwigo_orange">#FF7700</color>
-    <color name="primary">#4E4E4E</color>
-    <color name="secondary">#353535</color>
-    <color name="accent">@color/piwigo_orange</color>
-    <color name="header_background">#333333</color>
-    <color name="light_grey">#CCCCCC</color>
+    <color name="piwigo_orange_secondary">#E65E00</color>
+    <color name="piwigo_grey">#4E4E4E</color>
+    <color name="piwigo_grey_secondary">#353535</color>
 </resources>

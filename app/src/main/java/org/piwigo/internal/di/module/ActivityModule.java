@@ -18,6 +18,7 @@
 package org.piwigo.internal.di.module;
 
 import android.app.Activity;
+import android.content.res.Resources;
 
 import org.piwigo.internal.di.scope.PerActivity;
 
@@ -35,6 +36,10 @@ public class ActivityModule {
 
     @Provides @PerActivity Activity provideActivity() {
         return activity;
+    }
+
+    @Provides @PerActivity Resources provideResources(Activity activity) {
+        return activity.getResources();
     }
 
 }

@@ -8,7 +8,7 @@
         android:id="@+id/drawer_header"
         android:layout_width="match_parent"
         android:layout_height="@dimen/nav_header_size"
-        android:background="@color/header_background"
+        android:background="@color/piwigo_grey"
         android:paddingTop="@dimen/nav_header_top_margin">
 
         <ImageView
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/username"
                 android:textColor="@android:color/white"
-                tools:text="demo.piwigo.org" />
+                tools:text="piwigo.org" />
 
             <ImageView
                 android:id="@+id/arrow"

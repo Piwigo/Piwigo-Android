@@ -1,5 +1,6 @@
 package org.piwigo.ui.viewmodel;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import org.junit.Before;
@@ -22,6 +23,11 @@ public class LoginViewModelTest {
     private static final String USERNAME = "demo";
     private static final String PASSWORD = "demo";
 
+    private static final String ERROR_URL_EMPTY = "Enter your site address";
+    private static final String ERROR_URL_INVALID = "Not a valid site address";
+    private static final String ERROR_USERNAME = "Enter your username";
+    private static final String ERROR_PASSWORD = "Enter your password";
+
     private LoginViewModel viewModel;
 
     @Before public void setUp() {
@@ -30,6 +36,11 @@ public class LoginViewModelTest {
         viewModel.userRepository = mock(UserRepository.class);
         when(viewModel.userRepository.login(URL, USERNAME, PASSWORD)).thenReturn(Observable.empty());
         when(viewModel.userRepository.status(URL)).thenReturn(Observable.empty());
+        viewModel.resources = mock(Resources.class);
+        when(viewModel.resources.getString(R.string.login_url_empty)).thenReturn(ERROR_URL_EMPTY);
+        when(viewModel.resources.getString(R.string.login_url_invalid)).thenReturn(ERROR_URL_INVALID);
+        when(viewModel.resources.getString(R.string.login_username_empty)).thenReturn(ERROR_USERNAME);
+        when(viewModel.resources.getString(R.string.login_password_empty)).thenReturn(ERROR_PASSWORD);
     }
 
     @Test public void shouldSaveState() {
@@ -57,27 +68,27 @@ public class LoginViewModelTest {
     @Test public void shouldSetEmptyUrlError() {
         viewModel.url.set(null);
         viewModel.onLoginClick(null);
-        assertThat(viewModel.url.getError()).isEqualTo(R.string.login_url_empty);
+        assertThat(viewModel.urlError.get()).isEqualTo(ERROR_URL_EMPTY);
     }
 
     @Test public void shouldSetInvalidUrlError() {
         viewModel.url.set("Junk");
         viewModel.onLoginClick(null);
-        assertThat(viewModel.url.getError()).isEqualTo(R.string.login_url_invalid);
+        assertThat(viewModel.urlError.get()).isEqualTo(ERROR_URL_INVALID);
     }
 
     @Test public void shouldSetEmptyUsernameError() {
         viewModel.username.set(null);
         viewModel.password.set(PASSWORD);
         viewModel.onLoginClick(null);
-        assertThat(viewModel.username.getError()).isEqualTo(R.string.login_username_empty);
+        assertThat(viewModel.usernameError.get()).isEqualTo(ERROR_USERNAME);
     }
 
     @Test public void shouldSetEmptyPasswordError() {
         viewModel.username.set(USERNAME);
         viewModel.password.set(null);
         viewModel.onLoginClick(null);
-        assertThat(viewModel.password.getError()).isEqualTo(R.string.login_password_empty);
+        assertThat(viewModel.passwordError.get()).isEqualTo(ERROR_PASSWORD);
     }
 
     @Test public void shouldLoginIfValid() {

@@ -17,8 +17,20 @@
 
 package org.piwigo.ui.activity;
 
+import android.databinding.DataBindingUtil;
+import android.os.Bundle;
+
+import org.piwigo.R;
+import org.piwigo.databinding.ActivityMainBinding;
+import org.piwigo.databinding.DrawerHeaderBinding;
+
 public class MainActivity extends BaseActivity {
 
-    private static final String TAG = MainActivity.class.getName();
+    @Override protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
+        binding.navigationView.addHeaderView(headerBinding.getRoot());
+    }
 
 }

@@ -18,10 +18,12 @@
 package org.piwigo.ui.activity;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 
 import org.piwigo.R;
+import org.piwigo.databinding.ActivityLauncherBinding;
 import org.piwigo.helper.AccountHelper;
 import org.piwigo.ui.Navigator;
 
@@ -33,13 +35,16 @@ public class LauncherActivity extends BaseActivity {
     @Inject Navigator navigator;
 
     private final Handler handler = new Handler();
+    private ActivityLauncherBinding binding;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getApplicationComponent().inject(this);
-        setContentView(R.layout.activity_launcher);
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_launcher);
+
         if (accountHelper.hasAccount()) {
-            navigator.startMain(this);
+            handler.postDelayed(this::startMain, 1000);
         } else {
             handler.postDelayed(this::startLogin, 1000);
         }
@@ -48,15 +53,20 @@ public class LauncherActivity extends BaseActivity {
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Navigator.REQUEST_CODE_LOGIN && resultCode == RESULT_OK) {
-            navigator.startMain(this);
+            handler.postDelayed(this::startMain, 1000);
         } else {
             finish();
         }
     }
 
+    private void startMain() {
+        navigator.startMain(this);
+        finish();
+    }
+
     private void startLogin() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            navigator.startLogin(this, findViewById(R.id.logo), getString(R.string.logo_transition_name));
+            navigator.startLogin(this, binding.logo, getString(R.string.logo_transition_name));
         } else {
             navigator.startLogin(this);
         }

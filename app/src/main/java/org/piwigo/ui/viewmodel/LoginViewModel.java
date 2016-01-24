@@ -17,6 +17,7 @@
 
 package org.piwigo.ui.viewmodel;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
@@ -27,6 +28,7 @@ import com.github.jorgecastilloprz.listeners.FABProgressListener;
 
 import org.piwigo.R;
 import org.piwigo.internal.binding.observable.EditTextObservable;
+import org.piwigo.internal.binding.observable.ErrorObservable;
 import org.piwigo.internal.binding.observable.FABProgressCircleObservable;
 import org.piwigo.io.model.response.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
@@ -49,12 +51,16 @@ public class LoginViewModel extends BaseViewModel {
     @VisibleForTesting static Pattern WEB_URL = Patterns.WEB_URL;
 
     public EditTextObservable url = new EditTextObservable("http://");
+    public ErrorObservable urlError = new ErrorObservable();
     public EditTextObservable username = new EditTextObservable();
+    public ErrorObservable usernameError = new ErrorObservable();
     public EditTextObservable password = new EditTextObservable();
+    public ErrorObservable passwordError = new ErrorObservable();
     public FABProgressCircleObservable progressCircle = new FABProgressCircleObservable();
     public FABProgressListener progressListener = new LoginFABProgressListener();
 
     @Inject UserRepository userRepository;
+    @Inject Resources resources;
 
     private LoginView view;
     private LoginResponse loginResponse;
@@ -105,10 +111,10 @@ public class LoginViewModel extends BaseViewModel {
 
     private boolean isSiteValid() {
         if (url.get() == null || url.get().isEmpty()) {
-            url.setError(R.string.login_url_empty);
+            urlError.set(resources.getString(R.string.login_url_empty));
             return false;
         } else if (!WEB_URL.matcher(url.get()).matches()) {
-            url.setError(R.string.login_url_invalid);
+            urlError.set(resources.getString(R.string.login_url_invalid));
             return false;
         }
         return true;
@@ -122,12 +128,12 @@ public class LoginViewModel extends BaseViewModel {
         boolean valid = true;
 
         if (username.isEmpty()) {
-            username.setError(R.string.login_username_empty);
+            usernameError.set(resources.getString(R.string.login_username_empty));
             valid = false;
         }
 
         if (password.isEmpty()) {
-            password.setError(R.string.login_password_empty);
+            passwordError.set(resources.getString(R.string.login_password_empty));
             valid = false;
         }
 

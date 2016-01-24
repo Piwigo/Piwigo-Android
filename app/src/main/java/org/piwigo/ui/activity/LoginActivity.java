@@ -38,8 +38,6 @@ import javax.inject.Inject;
 
 public class LoginActivity extends BaseActivity implements LoginView {
 
-    private static final String TAG = LoginActivity.class.getName();
-
     @Inject LoginViewModel viewModel;
     @Inject AccountHelper accountHelper;
 

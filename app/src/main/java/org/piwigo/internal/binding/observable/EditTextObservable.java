@@ -5,7 +5,6 @@ import android.databinding.BaseObservable;
 public class EditTextObservable extends BaseObservable {
 
     private String text;
-    private int errorResId;
 
     public EditTextObservable() {}
 
@@ -32,15 +31,6 @@ public class EditTextObservable extends BaseObservable {
 
     public boolean isEmpty() {
         return text == null || text.isEmpty();
-    }
-
-    public void setError(int resId) {
-        errorResId = resId;
-        notifyChange();
-    }
-
-    public int getError() {
-        return errorResId;
     }
 
 }

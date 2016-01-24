@@ -1,0 +1,52 @@
+/*
+ * Copyright 2016 Phil Bayfield https://philio.me
+ * Copyright 2016 Piwigo Team http://piwigo.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.piwigo.internal.binding.observable;
+
+import android.databinding.Observable;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+
+public class ErrorObservableTest {
+
+    private ErrorObservable observable = new ErrorObservable("An error");
+    private Observable.OnPropertyChangedCallback callback = spy(new Observable.OnPropertyChangedCallback() {
+        @Override
+        public void onPropertyChanged(Observable sender, int propertyId) {
+
+        }
+    });
+
+    @Before public void setUp() {
+        observable.addOnPropertyChangedCallback(callback);
+    }
+
+    @Test public void shouldNotifyChangeOnSet() {
+        observable.set("Another error");
+        verify(callback).onPropertyChanged(observable, 0);
+    }
+
+    @Test public void shouldNotifyChangeOnClear() {
+        observable.clear();
+        verify(callback).onPropertyChanged(observable, 0);
+    }
+
+}

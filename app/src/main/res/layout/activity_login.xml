@@ -13,7 +13,6 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/primary"
         android:fitsSystemWindows="true">
 
         <LinearLayout
@@ -49,6 +48,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        app:error="@{viewModel.urlError}"
                         app:errorEnabled="true">
 
                         <EditText
@@ -60,12 +60,14 @@
                             android:inputType="textUri"
                             android:maxLines="1"
                             android:nextFocusDown="@+id/username"
+                            app:error="@{viewModel.urlError}"
                             app:observable="@{viewModel.url}" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        app:error="@{viewModel.usernameError}"
                         app:errorEnabled="true">
 
                         <EditText
@@ -78,12 +80,14 @@
                             android:maxLines="1"
                             android:nextFocusDown="@+id/password"
                             android:nextFocusUp="@+id/url"
+                            app:error="@{viewModel.usernameError}"
                             app:observable="@{viewModel.username}" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        app:error="@{viewModel.passwordError}"
                         app:errorEnabled="true">
 
                         <EditText
@@ -97,6 +101,7 @@
                             android:maxLines="1"
                             android:nextFocusDown="@+id/login_button"
                             android:nextFocusUp="@+id/username"
+                            app:error="@{viewModel.passwordError}"
                             app:observable="@{viewModel.password}" />
                     </android.support.design.widget.TextInputLayout>
 
@@ -104,7 +109,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        app:arcColor="@color/primary"
+                        app:arcColor="@color/piwigo_grey"
                         app:arcWidth="4dp"
                         app:attachListener="@{viewModel.progressListener}"
                         app:finalIcon="@drawable/ic_check"
