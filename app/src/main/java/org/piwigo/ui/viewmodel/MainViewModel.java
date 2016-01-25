@@ -17,5 +17,33 @@
 
 package org.piwigo.ui.viewmodel;
 
+import android.databinding.ObservableField;
+
+import org.piwigo.ui.model.User;
+import org.piwigo.ui.view.MainView;
+
+import javax.inject.Inject;
+
 public class MainViewModel extends BaseViewModel {
+
+    public ObservableField<String> username = new ObservableField<>();
+    public ObservableField<String> url = new ObservableField<>();
+
+    private MainView view;
+
+    @Inject public MainViewModel() {}
+
+    public void setView(MainView view) {
+        this.view = view;
+    }
+
+    @Override public void onDestroy() {
+        view = null;
+    }
+
+    public void setUser(User user) {
+        username.set(user.username);
+        url.set(user.url);
+    }
+
 }

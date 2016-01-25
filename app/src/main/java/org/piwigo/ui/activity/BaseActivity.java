@@ -21,18 +21,23 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import org.piwigo.PiwigoApplication;
+import org.piwigo.helper.AccountHelper;
+import org.piwigo.helper.PreferencesHelper;
 import org.piwigo.internal.di.component.ActivityComponent;
 import org.piwigo.internal.di.component.ApplicationComponent;
 import org.piwigo.internal.di.component.DaggerActivityComponent;
 import org.piwigo.internal.di.module.ActivityModule;
 import org.piwigo.ui.viewmodel.ViewModel;
 
-public abstract class BaseActivity extends AppCompatActivity {
+import javax.inject.Inject;
 
-    private static final String TAG = BaseActivity.class.getName();
+public abstract class BaseActivity extends AppCompatActivity {
 
     private ActivityComponent activityComponent;
     private ViewModel viewModel;
+
+    @Inject AccountHelper accountHelper;
+    @Inject PreferencesHelper preferencesHelper;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

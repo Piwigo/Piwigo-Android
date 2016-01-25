@@ -4,7 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <!-- Height of the header view of the navigation drawer -->
-    <dimen name="nav_header_size">175dp</dimen>
+    <dimen name="nav_header_size">205dp</dimen>
     <!-- Top margin header view of the navigation drawer -->
     <dimen name="nav_header_top_margin">25dp</dimen>
 </resources>

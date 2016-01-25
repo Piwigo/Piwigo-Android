@@ -22,6 +22,7 @@ import android.app.Activity;
 import org.piwigo.internal.di.module.ActivityModule;
 import org.piwigo.internal.di.scope.PerActivity;
 import org.piwigo.ui.activity.LoginActivity;
+import org.piwigo.ui.activity.MainActivity;
 
 import dagger.Component;
 
@@ -30,6 +31,8 @@ import dagger.Component;
 public interface ActivityComponent {
 
     void inject(LoginActivity activity);
+
+    void inject(MainActivity activity);
 
     Activity activity();
 

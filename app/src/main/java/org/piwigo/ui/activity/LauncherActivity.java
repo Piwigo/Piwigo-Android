@@ -31,7 +31,6 @@ import javax.inject.Inject;
 
 public class LauncherActivity extends BaseActivity {
 
-    @Inject AccountHelper accountHelper;
     @Inject Navigator navigator;
 
     private final Handler handler = new Handler();

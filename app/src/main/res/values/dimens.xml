@@ -8,7 +8,7 @@
     <dimen name="login_logo_margin_bottom">0dp</dimen>
 
     <!-- Height of the header view of the navigation drawer -->
-    <dimen name="nav_header_size">150dp</dimen>
+    <dimen name="nav_header_size">180dp</dimen>
     <!-- Top margin header view of the navigation drawer -->
     <dimen name="nav_header_top_margin">0dp</dimen>
     <!-- Content padding in nav header -->

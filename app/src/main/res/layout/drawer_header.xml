@@ -2,6 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <variable
+            name="viewModel"
+            type="org.piwigo.ui.viewmodel.MainViewModel" />
     </data>
 
     <FrameLayout
@@ -28,6 +32,7 @@
                 android:id="@+id/username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{viewModel.username}"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/nav_header_user_text_size"
                 tools:text="guest" />
@@ -36,6 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/username"
+                android:text="@{viewModel.url}"
                 android:textColor="@android:color/white"
                 tools:text="piwigo.org" />
 

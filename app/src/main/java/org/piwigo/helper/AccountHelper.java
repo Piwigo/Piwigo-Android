@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import org.piwigo.R;
 import org.piwigo.io.model.response.LoginResponse;
+import org.piwigo.ui.model.User;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,9 +54,9 @@ public class AccountHelper {
     public Account createAccount(LoginResponse loginResponse) {
         // TODO check for duplicates
         if (loginResponse.statusResponse.result.username.equals(GUEST_ACCOUNT_NAME)) {
-            return createUserAccount(loginResponse);
-        } else {
             return createGuestAccount(loginResponse);
+        } else {
+            return createUserAccount(loginResponse);
         }
     }
 
@@ -64,15 +65,39 @@ public class AccountHelper {
         return accounts.size() > 0;
     }
 
+    public Account getAccount(String name, boolean firstIfInvalid) {
+        List<Account> accounts = getAccounts();
+        if (accounts.size() == 0) {
+            return null;
+        }
+        if (name == null) {
+            return accounts.get(0);
+        }
+        for (Account account : accounts) {
+            if (account.name.equals(name)) {
+                return account;
+            }
+        }
+        return firstIfInvalid ? accounts.get(0) : null;
+    }
+
     public List<Account> getAccounts() {
         return Arrays.asList(accountManager.getAccountsByType(context.getString(R.string.account_type)));
+    }
+
+    public User createUser(Account account) {
+        User user = new User();
+        user.guest = Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
+        user.url = accountManager.getUserData(account, KEY_URL);
+        user.username = accountManager.getUserData(account, KEY_USERNAME);
+        return user;
     }
 
     private Account createUserAccount(LoginResponse loginResponse) {
         String accountName = getAccountName(loginResponse);
         Account account = new Account(accountName, context.getString(R.string.account_type));
         Bundle userdata = new Bundle();
-        userdata.putBoolean(KEY_IS_GUEST, false);
+        userdata.putString(KEY_IS_GUEST, Boolean.toString(false));
         userdata.putString(KEY_URL, loginResponse.url);
         userdata.putString(KEY_USERNAME, loginResponse.statusResponse.result.username);
         accountManager.addAccountExplicitly(account, loginResponse.password, userdata);
@@ -85,7 +110,9 @@ public class AccountHelper {
         String accountName = getAccountName(loginResponse);
         Account account = new Account(accountName, context.getString(R.string.account_type));
         Bundle userdata = new Bundle();
-        userdata.putBoolean(KEY_IS_GUEST, true);
+        userdata.putString(KEY_IS_GUEST, Boolean.toString(true));
+        userdata.putString(KEY_URL, loginResponse.url);
+        userdata.putString(KEY_USERNAME, GUEST_ACCOUNT_NAME);
         accountManager.addAccountExplicitly(account, null, userdata);
         return account;
     }

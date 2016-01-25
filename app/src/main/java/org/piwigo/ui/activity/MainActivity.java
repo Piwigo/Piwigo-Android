@@ -17,20 +17,63 @@
 
 package org.piwigo.ui.activity;
 
+import android.accounts.Account;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
+import org.piwigo.ui.model.User;
+import org.piwigo.ui.view.MainView;
+import org.piwigo.ui.viewmodel.MainViewModel;
 
-public class MainActivity extends BaseActivity {
+import javax.inject.Inject;
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+public class MainActivity extends BaseActivity implements MainView {
+
+    @Inject
+    MainViewModel viewModel;
+
+    private Account account;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivityComponent().inject(this);
+
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
+
+        viewModel.setView(this);
+        bindLifecycleEvents(viewModel);
+        headerBinding.setViewModel(viewModel);
         binding.navigationView.addHeaderView(headerBinding.getRoot());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkAccount();
+        if (account == null) {
+            loadAccount();
+        }
+    }
+
+    private void checkAccount() {
+        if (account != null) {
+            account = accountHelper.getAccount(account.name, false);
+        }
+    }
+
+    private void loadAccount() {
+        String name = preferencesHelper.getDefaultAccount();
+        account = accountHelper.getAccount(name, true);
+        if (!account.name.equals(name)) {
+            preferencesHelper.setDefaultAccount(account.name);
+        }
+        User user = accountHelper.createUser(account);
+        viewModel.setUser(user);
     }
 
 }
