@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.piwigo.helper;
+package org.piwigo.io.repository;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -23,21 +23,21 @@ import android.preference.PreferenceManager;
 
 import javax.inject.Inject;
 
-public class PreferencesHelper {
+public class PreferencesRepository {
 
     private static final String KEY_DEFAULT_ACCOUNT = "default_account";
 
     SharedPreferences preferences;
 
-    @Inject public PreferencesHelper(Context context) {
+    @Inject public PreferencesRepository(Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public void setDefaultAccount(String name) {
+    public void setAccountName(String name) {
         set(KEY_DEFAULT_ACCOUNT, name);
     }
 
-    public String getDefaultAccount() {
+    public String getAccountName() {
         return preferences.getString(KEY_DEFAULT_ACCOUNT, null);
     }
 

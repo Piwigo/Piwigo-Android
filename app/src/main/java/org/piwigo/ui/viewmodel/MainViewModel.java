@@ -18,6 +18,7 @@
 package org.piwigo.ui.viewmodel;
 
 import android.databinding.ObservableField;
+import android.view.View;
 
 import org.piwigo.ui.model.User;
 import org.piwigo.ui.view.MainView;
@@ -26,6 +27,7 @@ import javax.inject.Inject;
 
 public class MainViewModel extends BaseViewModel {
 
+    public ObservableField<String> title = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
 
@@ -41,9 +43,17 @@ public class MainViewModel extends BaseViewModel {
         view = null;
     }
 
+    public void setTitle(String title) {
+        this.title.set(title);
+    }
+
     public void setUser(User user) {
         username.set(user.username);
         url.set(user.url);
+    }
+
+    public void navigationClick(View view) {
+        this.view.onNavigationClick();
     }
 
 }

@@ -18,4 +18,7 @@
 package org.piwigo.ui.view;
 
 public interface MainView {
+
+    void onNavigationClick();
+
 }

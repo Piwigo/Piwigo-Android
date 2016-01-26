@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="org.piwigo.ui.activity.MainActivity">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="org.piwigo.ui.viewmodel.MainViewModel" />
+    </data>
+
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
@@ -19,7 +26,10 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:navigationIcon="@drawable/ic_action_menu"
+                app:navigationOnClickListener="@{viewModel.navigationClick}"
+                app:title="@{viewModel.title}" />
 
             <FrameLayout
                 android:id="@+id/content"

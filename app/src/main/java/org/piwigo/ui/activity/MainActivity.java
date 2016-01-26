@@ -20,6 +20,7 @@ package org.piwigo.ui.activity;
 import android.accounts.Account;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
@@ -32,32 +33,36 @@ import javax.inject.Inject;
 
 public class MainActivity extends BaseActivity implements MainView {
 
-    @Inject
-    MainViewModel viewModel;
+    @Inject MainViewModel viewModel;
 
+    private ActivityMainBinding binding;
     private Account account;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivityComponent().inject(this);
 
-        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
 
         viewModel.setView(this);
         bindLifecycleEvents(viewModel);
+        binding.setViewModel(viewModel);
         headerBinding.setViewModel(viewModel);
         binding.navigationView.addHeaderView(headerBinding.getRoot());
+        setSupportActionBar(binding.toolbar);
     }
 
-    @Override
-    protected void onResume() {
+    @Override protected void onResume() {
         super.onResume();
         checkAccount();
         if (account == null) {
             loadAccount();
         }
+    }
+
+    @Override public void onNavigationClick() {
+        binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
     private void checkAccount() {
@@ -67,10 +72,10 @@ public class MainActivity extends BaseActivity implements MainView {
     }
 
     private void loadAccount() {
-        String name = preferencesHelper.getDefaultAccount();
+        String name = preferencesRepository.getAccountName();
         account = accountHelper.getAccount(name, true);
         if (!account.name.equals(name)) {
-            preferencesHelper.setDefaultAccount(account.name);
+            preferencesRepository.setAccountName(account.name);
         }
         User user = accountHelper.createUser(account);
         viewModel.setUser(user);

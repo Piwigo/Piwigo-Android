@@ -22,7 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import org.piwigo.PiwigoApplication;
 import org.piwigo.helper.AccountHelper;
-import org.piwigo.helper.PreferencesHelper;
+import org.piwigo.io.repository.PreferencesRepository;
 import org.piwigo.internal.di.component.ActivityComponent;
 import org.piwigo.internal.di.component.ApplicationComponent;
 import org.piwigo.internal.di.component.DaggerActivityComponent;
@@ -37,7 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private ViewModel viewModel;
 
     @Inject AccountHelper accountHelper;
-    @Inject PreferencesHelper preferencesHelper;
+    @Inject PreferencesRepository preferencesRepository;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
