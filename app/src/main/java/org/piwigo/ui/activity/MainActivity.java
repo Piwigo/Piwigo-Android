@@ -74,6 +74,10 @@ public class MainActivity extends BaseActivity implements MainView {
     private void loadAccount() {
         String name = preferencesRepository.getAccountName();
         account = accountHelper.getAccount(name, true);
+        if (account == null) {
+            finish();
+            return;
+        }
         if (!account.name.equals(name)) {
             preferencesRepository.setAccountName(account.name);
         }
