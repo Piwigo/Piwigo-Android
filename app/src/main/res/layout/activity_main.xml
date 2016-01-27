@@ -14,7 +14,8 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        app:state="@{viewModel.drawerState}">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -26,9 +27,9 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:navigationIcon="@drawable/ic_action_menu"
-                app:navigationOnClickListener="@{viewModel.navigationClick}"
+                app:navigationOnClickListener="@{viewModel.navigationIconClick}"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:title="@{viewModel.title}" />
 
             <FrameLayout
@@ -44,6 +45,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
-            app:menu="@menu/drawer_main" />
+            app:menu="@menu/drawer_main"
+            app:navigationItemSelectedListener="@{viewModel.navigationListener}" />
     </android.support.v4.widget.DrawerLayout>
 </layout>

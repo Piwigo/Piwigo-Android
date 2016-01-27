@@ -15,12 +15,29 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.view;
+package org.piwigo.internal.binding.observable;
 
-import android.view.MenuItem;
+import android.databinding.BaseObservable;
 
-public interface MainView {
+public class DrawerStateObservable extends BaseObservable {
 
-    void onItemSelected(MenuItem menuItem);
+    private boolean open = false;
+
+    public DrawerStateObservable() {}
+
+    public DrawerStateObservable(boolean open) {
+        this.open = open;
+    }
+
+    public void set(boolean open) {
+        if (this.open != open) {
+            this.open = open;
+            notifyChange();
+        }
+    }
+
+    public boolean get() {
+        return open;
+    }
 
 }

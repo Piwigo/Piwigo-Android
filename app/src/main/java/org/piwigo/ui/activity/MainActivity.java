@@ -20,7 +20,7 @@ package org.piwigo.ui.activity;
 import android.accounts.Account;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
+import android.view.MenuItem;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
@@ -35,14 +35,13 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Inject MainViewModel viewModel;
 
-    private ActivityMainBinding binding;
     private Account account;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivityComponent().inject(this);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
 
         viewModel.setView(this);
@@ -61,8 +60,8 @@ public class MainActivity extends BaseActivity implements MainView {
         }
     }
 
-    @Override public void onNavigationClick() {
-        binding.drawerLayout.openDrawer(GravityCompat.START);
+    @Override public void onItemSelected(MenuItem menuItem) {
+        // TODO handle selection
     }
 
     private void checkAccount() {

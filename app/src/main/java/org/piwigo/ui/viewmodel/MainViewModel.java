@@ -18,8 +18,13 @@
 package org.piwigo.ui.viewmodel;
 
 import android.databinding.ObservableField;
+import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
+import android.support.design.widget.NavigationView;
+import android.view.MenuItem;
 import android.view.View;
 
+import org.piwigo.internal.binding.observable.DrawerStateObservable;
 import org.piwigo.ui.model.User;
 import org.piwigo.ui.view.MainView;
 
@@ -27,9 +32,13 @@ import javax.inject.Inject;
 
 public class MainViewModel extends BaseViewModel {
 
+    @VisibleForTesting static final String STATE_DRAWER_OPEN = "drawer_open";
+
     public ObservableField<String> title = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
+    public DrawerStateObservable drawerState = new DrawerStateObservable(false);
+    public NavigationListener navigationListener = new NavigationListener();
 
     private MainView view;
 
@@ -37,6 +46,14 @@ public class MainViewModel extends BaseViewModel {
 
     public void setView(MainView view) {
         this.view = view;
+    }
+
+    @Override public void onSaveState(Bundle outState) {
+        outState.putBoolean(STATE_DRAWER_OPEN, drawerState.get());
+    }
+
+    @Override public void onRestoreState(Bundle savedState) {
+        drawerState.set(savedState.getBoolean(STATE_DRAWER_OPEN));
     }
 
     @Override public void onDestroy() {
@@ -52,8 +69,18 @@ public class MainViewModel extends BaseViewModel {
         url.set(user.url);
     }
 
-    public void navigationClick(View view) {
-        this.view.onNavigationClick();
+    public void navigationIconClick(View view) {
+        drawerState.set(true);
+    }
+
+    public class NavigationListener implements NavigationView.OnNavigationItemSelectedListener {
+
+        @Override public boolean onNavigationItemSelected(MenuItem item) {
+            view.onItemSelected(item);
+            drawerState.set(false);
+            return true;
+        }
+
     }
 
 }
