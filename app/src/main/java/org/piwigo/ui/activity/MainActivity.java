@@ -20,7 +20,6 @@ package org.piwigo.ui.activity;
 import android.accounts.Account;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
@@ -60,7 +59,7 @@ public class MainActivity extends BaseActivity implements MainView {
         }
     }
 
-    @Override public void onItemSelected(MenuItem menuItem) {
+    @Override public void onItemSelected(int menuItemId) {
         // TODO handle selection
     }
 

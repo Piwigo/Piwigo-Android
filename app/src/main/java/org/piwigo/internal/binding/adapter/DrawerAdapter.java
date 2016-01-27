@@ -26,7 +26,7 @@ import org.piwigo.internal.binding.observable.DrawerStateObservable;
 
 public class DrawerAdapter {
 
-    @BindingAdapter("bind:state") public static void bindOpen(DrawerLayout drawerLayout, DrawerStateObservable observable) {
+    @BindingAdapter("bind:state") public static void bindState(DrawerLayout drawerLayout, DrawerStateObservable observable) {
         boolean bound = drawerLayout.getTag() != null && (boolean) drawerLayout.getTag();
         if (!bound) {
             drawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {

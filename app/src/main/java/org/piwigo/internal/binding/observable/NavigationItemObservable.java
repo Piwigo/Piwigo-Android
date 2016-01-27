@@ -15,10 +15,29 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.view;
+package org.piwigo.internal.binding.observable;
 
-public interface MainView {
+import android.databinding.BaseObservable;
 
-    void onItemSelected(int menuItemId);
+public class NavigationItemObservable extends BaseObservable {
+
+    private int itemId;
+
+    public NavigationItemObservable() {}
+
+    public NavigationItemObservable(int itemId) {
+        this.itemId = itemId;
+    }
+
+    public void set(int itemId) {
+        if (this.itemId != itemId) {
+            this.itemId = itemId;
+            notifyChange();
+        }
+    }
+
+    public int get() {
+        return itemId;
+    }
 
 }

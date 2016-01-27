@@ -17,14 +17,14 @@
 
 package org.piwigo.ui.viewmodel;
 
+import android.databinding.Observable;
 import android.databinding.ObservableField;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
-import android.support.design.widget.NavigationView;
-import android.view.MenuItem;
 import android.view.View;
 
 import org.piwigo.internal.binding.observable.DrawerStateObservable;
+import org.piwigo.internal.binding.observable.NavigationItemObservable;
 import org.piwigo.ui.model.User;
 import org.piwigo.ui.view.MainView;
 
@@ -33,30 +33,36 @@ import javax.inject.Inject;
 public class MainViewModel extends BaseViewModel {
 
     @VisibleForTesting static final String STATE_DRAWER_OPEN = "drawer_open";
+    @VisibleForTesting static final String STATE_NAVIGATION_ITEM = "navigation_item";
 
     public ObservableField<String> title = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
     public DrawerStateObservable drawerState = new DrawerStateObservable(false);
-    public NavigationListener navigationListener = new NavigationListener();
+    public NavigationItemObservable navigationItem = new NavigationItemObservable();
 
     private MainView view;
+    private NavigationChangedCallback navigationChangedCallback = new NavigationChangedCallback();
 
     @Inject public MainViewModel() {}
 
     public void setView(MainView view) {
         this.view = view;
+        navigationItem.addOnPropertyChangedCallback(navigationChangedCallback);
     }
 
     @Override public void onSaveState(Bundle outState) {
         outState.putBoolean(STATE_DRAWER_OPEN, drawerState.get());
+        outState.putInt(STATE_NAVIGATION_ITEM, navigationItem.get());
     }
 
     @Override public void onRestoreState(Bundle savedState) {
         drawerState.set(savedState.getBoolean(STATE_DRAWER_OPEN));
+        navigationItem.set(savedState.getInt(STATE_NAVIGATION_ITEM));
     }
 
     @Override public void onDestroy() {
+        navigationItem.removeOnPropertyChangedCallback(navigationChangedCallback);
         view = null;
     }
 
@@ -73,12 +79,17 @@ public class MainViewModel extends BaseViewModel {
         drawerState.set(true);
     }
 
-    public class NavigationListener implements NavigationView.OnNavigationItemSelectedListener {
+    private class NavigationChangedCallback extends Observable.OnPropertyChangedCallback {
 
-        @Override public boolean onNavigationItemSelected(MenuItem item) {
-            view.onItemSelected(item);
-            drawerState.set(false);
-            return true;
+        private boolean firstChange = true;
+
+        @Override public void onPropertyChanged(Observable sender, int propertyId) {
+            view.onItemSelected(navigationItem.get());
+            if (firstChange) {
+                firstChange = false;
+            } else {
+                drawerState.set(false);
+            }
         }
 
     }
