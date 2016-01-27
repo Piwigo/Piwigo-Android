@@ -17,12 +17,14 @@
 
 package org.piwigo.ui.viewmodel;
 
-import android.databinding.Observable;
 import android.databinding.ObservableField;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
+import android.support.design.widget.NavigationView;
+import android.view.MenuItem;
 import android.view.View;
 
+import org.piwigo.R;
 import org.piwigo.internal.binding.observable.DrawerStateObservable;
 import org.piwigo.internal.binding.observable.NavigationItemObservable;
 import org.piwigo.ui.model.User;
@@ -39,16 +41,15 @@ public class MainViewModel extends BaseViewModel {
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
     public DrawerStateObservable drawerState = new DrawerStateObservable(false);
-    public NavigationItemObservable navigationItem = new NavigationItemObservable();
+    public NavigationItemObservable navigationItem = new NavigationItemObservable(R.id.nav_albums);
+    public NavigationItemSelectedListener navigationListener = new NavigationItemSelectedListener();
 
     private MainView view;
-    private NavigationChangedCallback navigationChangedCallback = new NavigationChangedCallback();
 
     @Inject public MainViewModel() {}
 
     public void setView(MainView view) {
         this.view = view;
-        navigationItem.addOnPropertyChangedCallback(navigationChangedCallback);
     }
 
     @Override public void onSaveState(Bundle outState) {
@@ -62,7 +63,6 @@ public class MainViewModel extends BaseViewModel {
     }
 
     @Override public void onDestroy() {
-        navigationItem.removeOnPropertyChangedCallback(navigationChangedCallback);
         view = null;
     }
 
@@ -79,17 +79,12 @@ public class MainViewModel extends BaseViewModel {
         drawerState.set(true);
     }
 
-    private class NavigationChangedCallback extends Observable.OnPropertyChangedCallback {
+    public class NavigationItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener {
 
-        private boolean firstChange = true;
-
-        @Override public void onPropertyChanged(Observable sender, int propertyId) {
-            view.onItemSelected(navigationItem.get());
-            if (firstChange) {
-                firstChange = false;
-            } else {
-                drawerState.set(false);
-            }
+        @Override public boolean onNavigationItemSelected(MenuItem item) {
+            view.onItemSelected(item);
+            drawerState.set(false);
+            return true;
         }
 
     }

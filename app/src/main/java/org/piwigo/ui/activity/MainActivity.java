@@ -20,6 +20,7 @@ package org.piwigo.ui.activity;
 import android.accounts.Account;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
@@ -59,8 +60,11 @@ public class MainActivity extends BaseActivity implements MainView {
         }
     }
 
-    @Override public void onItemSelected(int menuItemId) {
-        // TODO handle selection
+    @Override public void onItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_albums:
+                break;
+        }
     }
 
     private void checkAccount() {

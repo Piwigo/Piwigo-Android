@@ -24,11 +24,14 @@ import org.piwigo.internal.binding.observable.NavigationItemObservable;
 
 public class NavigationAdapter {
 
-    @BindingAdapter("bind:item") public static void bindItem(NavigationView navigationView, NavigationItemObservable observable) {
+    @BindingAdapter({"bind:item", "bind:itemSelectedListener"}) public static void bindItem(NavigationView navigationView, NavigationItemObservable observable, NavigationView.OnNavigationItemSelectedListener listener) {
         boolean bound = navigationView.getTag() != null && (boolean) navigationView.getTag();
         if (!bound) {
             navigationView.setNavigationItemSelectedListener(item -> {
-                observable.set(item.getItemId());
+                listener.onNavigationItemSelected(item);
+                if (item.isCheckable()) {
+                    observable.set(item.getItemId());
+                }
                 return true;
             });
             navigationView.setTag(true);

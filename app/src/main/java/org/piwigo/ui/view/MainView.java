@@ -17,8 +17,10 @@
 
 package org.piwigo.ui.view;
 
+import android.view.MenuItem;
+
 public interface MainView {
 
-    void onItemSelected(int menuItemId);
+    void onItemSelected(MenuItem item);
 
 }
