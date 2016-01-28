@@ -17,7 +17,23 @@
 
 package org.piwigo.ui.fragment;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 
+import org.piwigo.internal.di.component.ActivityComponent;
+import org.piwigo.ui.activity.BaseActivity;
+
 public abstract class BaseFragment extends Fragment {
+
+    private ActivityComponent activityComponent;
+
+    @Override public void onAttach(Context context) {
+        super.onAttach(context);
+        activityComponent = ((BaseActivity) context).getActivityComponent();
+    }
+
+    protected ActivityComponent getActivityComponent() {
+        return activityComponent;
+    }
+
 }

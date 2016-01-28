@@ -24,6 +24,8 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import org.piwigo.R;
+import org.piwigo.io.DynamicEndpoint;
+import org.piwigo.io.Session;
 import org.piwigo.io.model.response.LoginResponse;
 import org.piwigo.ui.model.User;
 
@@ -39,20 +41,32 @@ public class AccountHelper {
     private static final String KEY_IS_GUEST = "is_guest";
     private static final String KEY_URL = "url";
     private static final String KEY_USERNAME = "username";
-
-    private static final String PWG_COOKIE = "pwg_id";
-    private static final String PWG_TOKEN  = "pwg_token";
+    private static final String KEY_COOKIE = "cookie";
+    private static final String KEY_TOKEN  = "token";
 
     private Context context;
     private AccountManager accountManager;
+
+    @Inject Session session;
+    @Inject DynamicEndpoint endpoint;
 
     @Inject public AccountHelper(Context context) {
         this.context = context;
         accountManager = AccountManager.get(context);
     }
 
+    public boolean accountExists(LoginResponse loginResponse) {
+        String name = getAccountName(loginResponse);
+        List<Account> accounts = getAccounts();
+        for (Account account : accounts) {
+            if (account.name.equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Account createAccount(LoginResponse loginResponse) {
-        // TODO check for duplicates
         if (loginResponse.statusResponse.result.username.equals(GUEST_ACCOUNT_NAME)) {
             return createGuestAccount(loginResponse);
         } else {
@@ -66,19 +80,12 @@ public class AccountHelper {
     }
 
     public Account getAccount(String name, boolean firstIfInvalid) {
-        List<Account> accounts = getAccounts();
-        if (accounts.size() == 0) {
-            return null;
+        Account account = getAccountIfAvailable(name, firstIfInvalid);
+        if (account != null) {
+            updateSession(account);
+            updateEndpoint(account);
         }
-        if (name == null) {
-            return accounts.get(0);
-        }
-        for (Account account : accounts) {
-            if (account.name.equals(name)) {
-                return account;
-            }
-        }
-        return firstIfInvalid ? accounts.get(0) : null;
+        return account;
     }
 
     public List<Account> getAccounts() {
@@ -100,9 +107,9 @@ public class AccountHelper {
         userdata.putString(KEY_IS_GUEST, Boolean.toString(false));
         userdata.putString(KEY_URL, loginResponse.url);
         userdata.putString(KEY_USERNAME, loginResponse.statusResponse.result.username);
+        userdata.putString(KEY_COOKIE, loginResponse.pwgId);
+        userdata.putString(KEY_TOKEN, loginResponse.statusResponse.result.pwgToken);
         accountManager.addAccountExplicitly(account, loginResponse.password, userdata);
-        accountManager.setAuthToken(account, PWG_COOKIE, loginResponse.pwgId);
-        accountManager.setAuthToken(account, PWG_TOKEN, loginResponse.statusResponse.result.pwgToken);
         return account;
     }
 
@@ -121,6 +128,32 @@ public class AccountHelper {
         String username = loginResponse.statusResponse.result.username;
         String hostname = Uri.parse(loginResponse.url).getHost();
         return context.getString(R.string.account_name, username, hostname);
+    }
+
+    private Account getAccountIfAvailable(String name, boolean firstIfInvalid) {
+        List<Account> accounts = getAccounts();
+        if (accounts.size() == 0) {
+            return null;
+        }
+        if (name == null) {
+            return accounts.get(0);
+        }
+        for (Account account : accounts) {
+            if (account.name.equals(name)) {
+                return account;
+            }
+        }
+        return firstIfInvalid ? accounts.get(0) : null;
+    }
+
+    private void updateSession(Account account) {
+        boolean guest = Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
+        session.setCookie(guest ? null : accountManager.getUserData(account, KEY_COOKIE));
+        session.setToken(guest ? null : accountManager.getUserData(account, KEY_TOKEN));
+    }
+
+    private void updateEndpoint(Account account) {
+        endpoint.setUrl(accountManager.getUserData(account, KEY_URL));
     }
 
 }

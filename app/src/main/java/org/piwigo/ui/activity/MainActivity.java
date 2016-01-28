@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
+import org.piwigo.ui.fragment.AlbumsFragment;
 import org.piwigo.ui.model.User;
 import org.piwigo.ui.view.MainView;
 import org.piwigo.ui.viewmodel.MainViewModel;
@@ -50,6 +51,13 @@ public class MainActivity extends BaseActivity implements MainView {
         headerBinding.setViewModel(viewModel);
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.content, new AlbumsFragment())
+                    .commit();
+        }
     }
 
     @Override protected void onResume() {

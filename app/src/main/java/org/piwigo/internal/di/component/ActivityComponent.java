@@ -23,6 +23,7 @@ import org.piwigo.internal.di.module.ActivityModule;
 import org.piwigo.internal.di.scope.PerActivity;
 import org.piwigo.ui.activity.LoginActivity;
 import org.piwigo.ui.activity.MainActivity;
+import org.piwigo.ui.fragment.AlbumsFragment;
 
 import dagger.Component;
 
@@ -33,6 +34,8 @@ public interface ActivityComponent {
     void inject(LoginActivity activity);
 
     void inject(MainActivity activity);
+
+    void inject(AlbumsFragment fragment);
 
     Activity activity();
 

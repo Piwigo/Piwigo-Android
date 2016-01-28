@@ -17,7 +17,8 @@
 
 package org.piwigo.io;
 
-import org.piwigo.io.model.response.AddSuccessResponse;
+import org.piwigo.io.model.response.AddCategoryResponse;
+import org.piwigo.io.model.response.CategoryListResponse;
 import org.piwigo.io.model.response.StatusResponse;
 import org.piwigo.io.model.response.SuccessResponse;
 
@@ -40,10 +41,6 @@ public class MockRestService implements RestService {
     public static final String GUEST_USER = "guest";
 
     private String loggedInUser = GUEST_USER;
-
-    @Override public Observable<AddSuccessResponse> addCategory(@Field("name") String name, @Field("parent") Integer parent, @Field("comment") String comment, @Field("visible") Boolean visible, @Field("status") String status, @Field("commentable") Boolean commentable) {
-        return null;
-    }
 
     @Override public Observable<StatusResponse> getStatus() {
         StatusResponse statusResponse = new StatusResponse();
@@ -79,6 +76,14 @@ public class MockRestService implements RestService {
         successResponse.stat = "ok";
         successResponse.result = true;
         return Observable.from(new SuccessResponse[]{successResponse});
+    }
+
+    @Override public Observable<AddCategoryResponse> addCategory(@Field("name") String name, @Field("parent") Integer parent, @Field("comment") String comment, @Field("visible") Boolean visible, @Field("status") String status, @Field("commentable") Boolean commentable) {
+        return null;
+    }
+
+    @Override public Observable<CategoryListResponse> getCategories() {
+        return null;
     }
 
 }

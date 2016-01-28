@@ -63,7 +63,6 @@ public class LoginViewModel extends BaseViewModel {
     @Inject Resources resources;
 
     private LoginView view;
-    private LoginResponse loginResponse;
 
     @Inject public LoginViewModel() {}
 
@@ -87,7 +86,6 @@ public class LoginViewModel extends BaseViewModel {
 
     @Override public void onDestroy() {
         view = null;
-        loginResponse = null;
     }
 
     public void onLoginClick(View view) {
@@ -107,6 +105,14 @@ public class LoginViewModel extends BaseViewModel {
                         .subscribe(new LoginSubscriber());
             }
         }
+    }
+
+    public void onAccountCreated() {
+        progressCircle.beginFinalAnimation();
+    }
+
+    public void onAccountExists() {
+        progressCircle.hide();
     }
 
     private boolean isSiteValid() {
@@ -146,9 +152,7 @@ public class LoginViewModel extends BaseViewModel {
 
     private class LoginSubscriber extends Subscriber<LoginResponse> {
 
-        @Override public void onCompleted() {
-            progressCircle.beginFinalAnimation();
-        }
+        @Override public void onCompleted() {}
 
         @Override public void onError(Throwable e) {
             Log.e(TAG, e.getMessage());
@@ -159,7 +163,9 @@ public class LoginViewModel extends BaseViewModel {
         }
 
         @Override public void onNext(LoginResponse loginResponse) {
-            LoginViewModel.this.loginResponse = loginResponse;
+            if (hasView()) {
+                view.onSuccess(loginResponse);
+            }
         }
 
     }
@@ -169,7 +175,7 @@ public class LoginViewModel extends BaseViewModel {
         @Override
         public void onFABProgressAnimationEnd() {
             if (hasView()) {
-                view.onSuccess(loginResponse);
+                view.onAnimationFinished();
             }
         }
 

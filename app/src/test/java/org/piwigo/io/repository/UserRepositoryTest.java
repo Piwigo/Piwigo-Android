@@ -24,7 +24,6 @@ import org.piwigo.internal.di.component.DaggerTestApplicationComponent;
 import org.piwigo.internal.di.component.TestApplicationComponent;
 import org.piwigo.internal.di.module.TestApplicationModule;
 import org.piwigo.io.MockRestService;
-import org.piwigo.io.Session;
 import org.piwigo.io.model.response.LoginResponse;
 
 import javax.inject.Inject;
@@ -38,7 +37,6 @@ public class UserRepositoryTest {
     private static final String USERNAME = "test";
     private static final String PASSWORD = "test";
 
-    @Inject Session session;
     @Inject UserRepository userRepository;
 
     @Before public void setUp() {

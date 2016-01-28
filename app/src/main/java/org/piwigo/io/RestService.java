@@ -17,7 +17,8 @@
 
 package org.piwigo.io;
 
-import org.piwigo.io.model.response.AddSuccessResponse;
+import org.piwigo.io.model.response.AddCategoryResponse;
+import org.piwigo.io.model.response.CategoryListResponse;
 import org.piwigo.io.model.response.StatusResponse;
 import org.piwigo.io.model.response.SuccessResponse;
 
@@ -30,15 +31,6 @@ import rx.Observable;
 
 public interface RestService {
 
-    @POST("/ws.php?method=pwg.categories.add") @FormUrlEncoded Observable<AddSuccessResponse> addCategory(
-            @Field("name") String name,
-            @Field("parent") Integer parent,
-            @Field("comment") String comment,
-            @Field("visible") Boolean visible,
-            @Field("status") String status,
-            @Field("commentable") Boolean commentable
-    );
-
     @GET("/ws.php?method=pwg.session.getStatus") Observable<StatusResponse> getStatus();
 
     @POST("/ws.php?method=pwg.session.login") @FormUrlEncoded Observable<Response> login(
@@ -47,5 +39,16 @@ public interface RestService {
     );
 
     @GET("/ws.php?method=pwg.session.logout") Observable<SuccessResponse> logout();
+
+    @POST("/ws.php?method=pwg.categories.add") @FormUrlEncoded Observable<AddCategoryResponse> addCategory(
+            @Field("name") String name,
+            @Field("parent") Integer parent,
+            @Field("comment") String comment,
+            @Field("visible") Boolean visible,
+            @Field("status") String status,
+            @Field("commentable") Boolean commentable
+    );
+
+    @GET("/ws.php?method=pwg.categories.getList") Observable<CategoryListResponse> getCategories();
 
 }

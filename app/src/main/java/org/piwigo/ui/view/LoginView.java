@@ -25,4 +25,6 @@ public interface LoginView {
 
     void onError();
 
+    void onAnimationFinished();
+
 }

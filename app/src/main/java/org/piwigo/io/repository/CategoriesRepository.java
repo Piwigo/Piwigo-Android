@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.fragment;
+package org.piwigo.io.repository;
 
-import android.content.Context;
-import android.os.Bundle;
+import org.piwigo.io.model.response.CategoryListResponse;
 
-import org.piwigo.ui.viewmodel.AlbumsViewModel;
+import java.util.List;
 
 import javax.inject.Inject;
 
-public class AlbumsFragment extends BaseFragment {
+import rx.Observable;
 
-    @Inject AlbumsViewModel viewModel;
+public class CategoriesRepository extends BaseRepository {
 
-    @Override public void onAttach(Context context) {
-        super.onAttach(context);
-        getActivityComponent().inject(this);
-    }
+    @Inject public CategoriesRepository() {}
 
-    @Override public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        viewModel.loadAlbums();
+    public Observable<List<CategoryListResponse.Result.Category>> getCategories() {
+        return restService
+                .getCategories()
+                .map(categoryListResponse -> categoryListResponse.result.categories)
+                .compose(applySchedulers());
     }
 
 }

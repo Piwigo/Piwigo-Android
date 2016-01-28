@@ -19,7 +19,7 @@ package org.piwigo.io.model.response;
 
 import com.google.gson.annotations.SerializedName;
 
-public class AddSuccessResponse {
+public class AddCategoryResponse {
 
     @SerializedName("stat") public String stat;
 

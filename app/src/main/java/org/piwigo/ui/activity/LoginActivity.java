@@ -77,14 +77,24 @@ public class LoginActivity extends BaseActivity implements LoginView {
     }
 
     @Override public void onSuccess(LoginResponse response) {
-        Account account = accountHelper.createAccount(response);
-        setResultIntent(account);
-        handler.postDelayed(this::finishAfterTransition, 500);
+        if (accountHelper.accountExists(response)) {
+            Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
+                    .show();
+            viewModel.onAccountExists();
+        } else {
+            Account account = accountHelper.createAccount(response);
+            setResultIntent(account);
+            viewModel.onAccountCreated();
+        }
     }
 
     @Override public void onError() {
         Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG)
                 .show();
+    }
+
+    @Override public void onAnimationFinished() {
+        handler.postDelayed(this::finishAfterTransition, 500);
     }
 
     private void setResultIntent(Account account) {
