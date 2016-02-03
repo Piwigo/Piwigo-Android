@@ -2,7 +2,7 @@
 
 ![](https://travis-ci.org/Piwigo/Piwigo-Android.svg)
 
-Currently under development by @Philio, please get in touch if you're interested in contributing to
+Currently under development by [@Philio](https://github.com/Philio), please get in touch if you're interested in contributing to
 the project.
 
 If you're considering contributing, a working knowledge of the following would be extremely useful:
