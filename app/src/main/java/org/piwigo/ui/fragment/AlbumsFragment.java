@@ -17,6 +17,7 @@
 
 package org.piwigo.ui.fragment;
 
+import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -33,13 +34,16 @@ import javax.inject.Inject;
 
 public class AlbumsFragment extends BaseFragment {
 
+    private static final int PHONE_MIN_WIDTH = 320;
+    private static final int TABLET_MIN_WIDTH = 360;
+
     @Inject AlbumsViewModel viewModel;
 
     FragmentAlbumsBinding binding;
 
     @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_albums, container, false);
-        binding.recycler.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        binding.recycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
         return binding.getRoot();
     }
 
@@ -49,6 +53,13 @@ public class AlbumsFragment extends BaseFragment {
         bindLifecycleEvents(viewModel);
         binding.setViewModel(viewModel);
         viewModel.loadAlbums(null);
+    }
+
+    private int calculateColumnCount() {
+        Configuration configuration = getResources().getConfiguration();
+        int screenSize = configuration.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+        boolean largeScreen = screenSize == Configuration.SCREENLAYOUT_SIZE_LARGE || screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE;
+        return (int) Math.floor(configuration.screenWidthDp / (largeScreen ? TABLET_MIN_WIDTH : PHONE_MIN_WIDTH));
     }
 
 }
