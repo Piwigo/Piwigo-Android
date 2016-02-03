@@ -2,6 +2,15 @@
 
 ![](https://travis-ci.org/Piwigo/Piwigo-Android.svg)
 
+Currently under development by @Philio, please get in touch if you're interested in contributing to
+the project.
+
+If you're considering contributing, a working knowledge of the following would be extremely useful:
+
+* MVVM with Android Data Binding
+* Dependency injection with Dagger 2
+* Unit testing with Mockito and Robolectric
+
 ## Progress
 
 ### Login
@@ -16,10 +25,5 @@
 - Should scale well on all phone and table screens
 - Animations on most devices
 - Better animations on L+ devices
-
-#### TODO
-
-- Don't allow account to be logged in more than once
-- Only show on launch when no account exists on the device
 
 ### Main screen
