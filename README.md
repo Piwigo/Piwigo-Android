@@ -27,3 +27,6 @@ If you're considering contributing, a working knowledge of the following would b
 - Better animations on L+ devices
 
 ### Main screen
+
+<img src="https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/albums-phone.png" width="238" />
+<img src="https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/albums-tablet.png" width="600" />
