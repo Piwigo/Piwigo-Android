@@ -26,7 +26,7 @@ import android.os.Bundle;
 import org.piwigo.R;
 import org.piwigo.io.DynamicEndpoint;
 import org.piwigo.io.Session;
-import org.piwigo.io.model.response.LoginResponse;
+import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.model.User;
 
 import java.util.Arrays;

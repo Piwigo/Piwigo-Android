@@ -29,7 +29,7 @@ import android.support.design.widget.Snackbar;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
-import org.piwigo.io.model.response.LoginResponse;
+import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.view.LoginView;
 import org.piwigo.ui.viewmodel.LoginViewModel;
 

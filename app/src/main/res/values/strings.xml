@@ -24,4 +24,14 @@
 
     <!-- Account -->
     <string name="account_name">%1$s@%2$s</string>
+
+    <!-- Albumbs -->
+    <plurals name="album_photos">
+        <item quantity="one">1 photo</item>
+        <item quantity="other">%1$d photos</item>
+    </plurals>
+    <plurals name="album_photos_subs">
+        <item quantity="one">, 1 photo in sub-albums</item>
+        <item quantity="other">, %1$d photos in sub-albums</item>
+    </plurals>
 </resources>

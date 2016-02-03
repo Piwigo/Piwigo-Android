@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.view;
+package org.piwigo.io.model;
 
-import org.piwigo.io.model.LoginResponse;
+public class LoginResponse {
 
-public interface LoginView {
+    public String url;
 
-    void onSuccess(LoginResponse response);
+    public String username;
 
-    void onError();
+    public String password;
 
-    void onAnimationFinished();
+    public String pwgId;
+
+    public StatusResponse statusResponse;
 
 }

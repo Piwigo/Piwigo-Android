@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.view;
+package org.piwigo.io.model;
 
-import org.piwigo.io.model.LoginResponse;
+import com.google.gson.annotations.SerializedName;
 
-public interface LoginView {
+public class GetImageInfoResponse {
 
-    void onSuccess(LoginResponse response);
+    @SerializedName("stat") public String stat;
 
-    void onError();
-
-    void onAnimationFinished();
+    @SerializedName("result") public ImageInfo imageInfo;
 
 }

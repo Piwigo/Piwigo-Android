@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2015 Phil Bayfield https://philio.me
+ * Copyright 2015 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.view;
+package org.piwigo.io.model;
 
-import org.piwigo.io.model.LoginResponse;
+import com.google.gson.annotations.SerializedName;
 
-public interface LoginView {
+public class SuccessResponse {
 
-    void onSuccess(LoginResponse response);
+    @SerializedName("stat") public String stat;
 
-    void onError();
-
-    void onAnimationFinished();
+    @SerializedName("result") public boolean result;
 
 }

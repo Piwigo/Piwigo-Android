@@ -30,7 +30,7 @@ import org.piwigo.R;
 import org.piwigo.internal.binding.observable.EditTextObservable;
 import org.piwigo.internal.binding.observable.ErrorObservable;
 import org.piwigo.internal.binding.observable.FABProgressCircleObservable;
-import org.piwigo.io.model.response.LoginResponse;
+import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.view.LoginView;
 
@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import rx.Subscriber;
+import rx.Subscription;
 
 public class LoginViewModel extends BaseViewModel {
 
@@ -63,6 +64,7 @@ public class LoginViewModel extends BaseViewModel {
     @Inject Resources resources;
 
     private LoginView view;
+    private Subscription subscription;
 
     @Inject public LoginViewModel() {}
 
@@ -86,6 +88,9 @@ public class LoginViewModel extends BaseViewModel {
 
     @Override public void onDestroy() {
         view = null;
+        if (subscription != null) {
+            subscription.unsubscribe();
+        }
     }
 
     public void onLoginClick(View view) {
@@ -95,12 +100,12 @@ public class LoginViewModel extends BaseViewModel {
         if (siteValid) {
             if (isGuest()) {
                 progressCircle.show();
-                userRepository
+                subscription = userRepository
                         .status(url.get())
                         .subscribe(new LoginSubscriber());
             } else if (loginValid) {
                 progressCircle.show();
-                userRepository
+                subscription = userRepository
                         .login(url.get(), username.get(), password.get())
                         .subscribe(new LoginSubscriber());
             }
@@ -156,16 +161,11 @@ public class LoginViewModel extends BaseViewModel {
 
         @Override public void onError(Throwable e) {
             Log.e(TAG, e.getMessage());
-            if (hasView()) {
-                view.onError();
-            }
             progressCircle.hide();
         }
 
         @Override public void onNext(LoginResponse loginResponse) {
-            if (hasView()) {
-                view.onSuccess(loginResponse);
-            }
+            view.onSuccess(loginResponse);
         }
 
     }

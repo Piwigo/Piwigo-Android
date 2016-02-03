@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.view;
+package org.piwigo.io.model;
 
-import org.piwigo.io.model.LoginResponse;
+import com.google.gson.annotations.SerializedName;
 
-public interface LoginView {
+public class Derivatives {
 
-    void onSuccess(LoginResponse response);
+    @SerializedName("thumb") public Derivative thumb;
 
-    void onError();
+    @SerializedName("small") public Derivative small;
 
-    void onAnimationFinished();
+    @SerializedName("medium") public Derivative medium;
+
+    @SerializedName("large") public Derivative large;
+
+    @SerializedName("xlarge") public Derivative xlarge;
+
+    @SerializedName("xxlarge") public Derivative xxlarge;
 
 }

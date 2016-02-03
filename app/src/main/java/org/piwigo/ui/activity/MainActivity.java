@@ -53,6 +53,7 @@ public class MainActivity extends BaseActivity implements MainView {
         setSupportActionBar(binding.toolbar);
 
         if (savedInstanceState == null) {
+            viewModel.setTitle(getString(R.string.nav_albums));
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.content, new AlbumsFragment())

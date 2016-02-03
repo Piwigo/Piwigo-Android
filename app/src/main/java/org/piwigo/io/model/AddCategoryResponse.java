@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.piwigo.io.model.response;
+package org.piwigo.io.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class FailureResponse {
+public class AddCategoryResponse {
 
     @SerializedName("stat") public String stat;
 
-    @SerializedName("err") public int err;
+    @SerializedName("result") public Result result;
 
-    @SerializedName("message") public String message;
+    public class Result {
+
+        @SerializedName("id") public int id;
+
+        @SerializedName("info") public String info;
+
+    }
 
 }

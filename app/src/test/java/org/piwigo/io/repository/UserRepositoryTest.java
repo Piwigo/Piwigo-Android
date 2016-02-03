@@ -24,7 +24,7 @@ import org.piwigo.internal.di.component.DaggerTestApplicationComponent;
 import org.piwigo.internal.di.component.TestApplicationComponent;
 import org.piwigo.internal.di.module.TestApplicationModule;
 import org.piwigo.io.MockRestService;
-import org.piwigo.io.model.response.LoginResponse;
+import org.piwigo.io.model.LoginResponse;
 
 import javax.inject.Inject;
 

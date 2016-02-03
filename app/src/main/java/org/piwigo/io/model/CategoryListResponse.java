@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.piwigo.io.model.response;
+package org.piwigo.io.model;
 
-public class LoginResponse {
+import com.google.gson.annotations.SerializedName;
 
-    public String url;
+import java.util.ArrayList;
+import java.util.List;
 
-    public String username;
+public class CategoryListResponse {
 
-    public String password;
+    @SerializedName("stat") public String stat;
 
-    public String pwgId;
+    @SerializedName("result") public Result result;
 
-    public StatusResponse statusResponse;
+    public class Result {
+
+        @SerializedName("categories") public List<Category> categories = new ArrayList<>();
+
+    }
 
 }

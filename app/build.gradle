@@ -69,6 +69,7 @@ dependencies {
         transitive = true;
     }
     compile 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
+    compile 'org.apache.commons:commons-lang3:3.4'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.0'

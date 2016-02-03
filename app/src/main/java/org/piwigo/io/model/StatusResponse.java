@@ -15,14 +15,38 @@
  * limitations under the License.
  */
 
-package org.piwigo.io.model.response;
+package org.piwigo.io.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SuccessResponse {
+import java.util.Date;
+
+public class StatusResponse {
 
     @SerializedName("stat") public String stat;
 
-    @SerializedName("result") public boolean result;
+    @SerializedName("result") public Status result;
+
+    public static class Status {
+
+        @SerializedName("username") public String username;
+
+        @SerializedName("status") public String status;
+
+        @SerializedName("theme") public String theme;
+
+        @SerializedName("language") public String language;
+
+        @SerializedName("pwg_token") public String pwgToken;
+
+        @SerializedName("charset") public String charset;
+
+        @SerializedName("current_datetime") public Date currentDatetime;
+
+        @SerializedName("version") public String version;
+
+        @SerializedName("upload_file_types") public String uploadFileTypes;
+
+    }
 
 }

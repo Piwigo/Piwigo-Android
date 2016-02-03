@@ -46,7 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
-        if (viewModel != null) {
+        if (hasViewModel()) {
             viewModel.onSaveState(outState);
         }
         super.onSaveInstanceState(outState);
@@ -54,17 +54,25 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (viewModel != null) {
+        if (hasViewModel()) {
             viewModel.onRestoreState(savedInstanceState);
         }
     }
 
     @Override protected void onDestroy() {
-        if (viewModel != null) {
+        if (hasViewModel()) {
             viewModel.onDestroy();
             viewModel = null;
         }
         super.onDestroy();
+    }
+
+    public void setActivityComponent(ActivityComponent activityComponent) {
+        this.activityComponent = activityComponent;
+    }
+
+    public ActivityComponent getActivityComponent() {
+        return activityComponent;
     }
 
     protected ApplicationComponent getApplicationComponent() {
@@ -83,12 +91,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         setActivityComponent(activityComponent);
     }
 
-    public void setActivityComponent(ActivityComponent activityComponent) {
-        this.activityComponent = activityComponent;
-    }
-
-    public ActivityComponent getActivityComponent() {
-        return activityComponent;
+    private boolean hasViewModel() {
+        return viewModel != null;
     }
 
 }

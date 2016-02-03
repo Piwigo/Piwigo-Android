@@ -15,16 +15,30 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.view;
+package org.piwigo.ui.viewmodel;
 
-import org.piwigo.io.model.LoginResponse;
+public class AlbumItemViewModel extends BaseViewModel {
 
-public interface LoginView {
+    private final String url;
+    private final String title;
+    private final String photos;
 
-    void onSuccess(LoginResponse response);
+    public AlbumItemViewModel(String url, String title, String photos) {
+        this.url = url;
+        this.title = title;
+        this.photos = photos;
+    }
 
-    void onError();
+    public String getUrl() {
+        return url;
+    }
 
-    void onAnimationFinished();
+    public String getTitle() {
+        return title;
+    }
+
+    public String getPhotos() {
+        return photos;
+    }
 
 }

@@ -17,10 +17,11 @@
 
 package org.piwigo.io;
 
-import org.piwigo.io.model.response.AddCategoryResponse;
-import org.piwigo.io.model.response.CategoryListResponse;
-import org.piwigo.io.model.response.StatusResponse;
-import org.piwigo.io.model.response.SuccessResponse;
+import org.piwigo.io.model.AddCategoryResponse;
+import org.piwigo.io.model.CategoryListResponse;
+import org.piwigo.io.model.GetImageInfoResponse;
+import org.piwigo.io.model.StatusResponse;
+import org.piwigo.io.model.SuccessResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.List;
 import retrofit.client.Header;
 import retrofit.client.Response;
 import retrofit.http.Field;
+import retrofit.http.Query;
 import retrofit.mime.TypedByteArray;
 import rx.Observable;
 
@@ -82,7 +84,11 @@ public class MockRestService implements RestService {
         return null;
     }
 
-    @Override public Observable<CategoryListResponse> getCategories() {
+    @Override public Observable<CategoryListResponse> getCategories(@Query("cat_id") Integer categoryId) {
+        return null;
+    }
+
+    @Override public Observable<GetImageInfoResponse> getImageInfo(@Query("image_id") int imageId) {
         return null;
     }
 

@@ -17,9 +17,16 @@
 
 package org.piwigo.ui.fragment;
 
-import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import org.piwigo.R;
+import org.piwigo.databinding.FragmentAlbumsBinding;
 import org.piwigo.ui.viewmodel.AlbumsViewModel;
 
 import javax.inject.Inject;
@@ -28,14 +35,20 @@ public class AlbumsFragment extends BaseFragment {
 
     @Inject AlbumsViewModel viewModel;
 
-    @Override public void onAttach(Context context) {
-        super.onAttach(context);
-        getActivityComponent().inject(this);
+    FragmentAlbumsBinding binding;
+
+    @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_albums, container, false);
+        binding.recycler.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        return binding.getRoot();
     }
 
-    @Override public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        viewModel.loadAlbums();
+    @Override public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getActivityComponent().inject(this);
+        bindLifecycleEvents(viewModel);
+        binding.setViewModel(viewModel);
+        viewModel.loadAlbums(null);
     }
 
 }

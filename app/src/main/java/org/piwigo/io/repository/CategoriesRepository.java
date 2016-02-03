@@ -17,22 +17,39 @@
 
 package org.piwigo.io.repository;
 
-import org.piwigo.io.model.response.CategoryListResponse;
+import android.util.Pair;
+
+import org.piwigo.io.model.Category;
+import org.piwigo.io.model.ImageInfo;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.functions.Func2;
 
 public class CategoriesRepository extends BaseRepository {
 
     @Inject public CategoriesRepository() {}
 
-    public Observable<List<CategoryListResponse.Result.Category>> getCategories() {
+    public Observable<List<Pair<Category, ImageInfo>>> getCategories(Integer categoryId) {
         return restService
-                .getCategories()
-                .map(categoryListResponse -> categoryListResponse.result.categories)
+                .getCategories(categoryId)
+                .flatMapIterable(categoryListResponse -> categoryListResponse.result.categories)
+                .filter(category -> categoryId == null || category.id != categoryId)
+                .flatMap(category -> {
+                    Observable<ImageInfo> imageInfo = restService.getImageInfo(category.representativePictureId)
+                            .map(getImageInfoResponse -> getImageInfoResponse.imageInfo);
+                    return Observable.zip(Observable.just(category), imageInfo, (Func2<Category, ImageInfo, Pair<Category, ImageInfo>>) Pair::new);
+                })
+                .toSortedList((firstPair, secondPair) -> {
+                    String firstRank = firstPair.first.globalRank;
+                    String secondRank = secondPair.first.globalRank;
+                    int firstRankIndex = firstRank.contains(".") ? firstRank.lastIndexOf(".") + 1 : 0;
+                    int secondRankIndex = secondRank.contains(".") ? secondRank.lastIndexOf(".") + 1 : 0;
+                    return Integer.parseInt(firstRank.substring(firstRankIndex)) - Integer.parseInt(secondRank.substring(secondRankIndex));
+                })
                 .compose(applySchedulers());
     }
 

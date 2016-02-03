@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2016 Phil Bayfield https://philio.me
+ * Copyright 2016 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package org.piwigo.io.model.response;
+package org.piwigo.io.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class AddCategoryResponse {
+public class Derivative {
 
-    @SerializedName("stat") public String stat;
+    @SerializedName("url") public String url;
 
-    @SerializedName("result") public Result result;
+    @SerializedName("width") public int width;
 
-    public class Result {
-
-        @SerializedName("id") public int id;
-
-        @SerializedName("info") public String info;
-
-    }
+    @SerializedName("height") public int height;
 
 }

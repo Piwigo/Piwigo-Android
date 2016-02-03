@@ -17,16 +17,18 @@
 
 package org.piwigo.io;
 
-import org.piwigo.io.model.response.AddCategoryResponse;
-import org.piwigo.io.model.response.CategoryListResponse;
-import org.piwigo.io.model.response.StatusResponse;
-import org.piwigo.io.model.response.SuccessResponse;
+import org.piwigo.io.model.AddCategoryResponse;
+import org.piwigo.io.model.CategoryListResponse;
+import org.piwigo.io.model.GetImageInfoResponse;
+import org.piwigo.io.model.StatusResponse;
+import org.piwigo.io.model.SuccessResponse;
 
 import retrofit.client.Response;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.Query;
 import rx.Observable;
 
 public interface RestService {
@@ -49,6 +51,8 @@ public interface RestService {
             @Field("commentable") Boolean commentable
     );
 
-    @GET("/ws.php?method=pwg.categories.getList") Observable<CategoryListResponse> getCategories();
+    @GET("/ws.php?method=pwg.categories.getList") Observable<CategoryListResponse> getCategories(@Query("cat_id") Integer categoryId);
+
+    @GET("/ws.php?method=pwg.images.getInfo") Observable<GetImageInfoResponse> getImageInfo(@Query("image_id") int imageId);
 
 }

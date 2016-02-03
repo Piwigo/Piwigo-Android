@@ -17,23 +17,55 @@
 
 package org.piwigo.ui.fragment;
 
-import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import org.piwigo.internal.di.component.ActivityComponent;
 import org.piwigo.ui.activity.BaseActivity;
+import org.piwigo.ui.viewmodel.ViewModel;
 
 public abstract class BaseFragment extends Fragment {
 
     private ActivityComponent activityComponent;
+    private ViewModel viewModel;
 
-    @Override public void onAttach(Context context) {
-        super.onAttach(context);
-        activityComponent = ((BaseActivity) context).getActivityComponent();
+    @Override public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        activityComponent = ((BaseActivity) getActivity()).getActivityComponent();
+    }
+
+    @Override public void onSaveInstanceState(Bundle outState) {
+        if (hasViewModel()) {
+            viewModel.onSaveState(outState);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (hasViewModel()) {
+            viewModel.onRestoreState(savedInstanceState);
+        }
+    }
+
+    @Override public void onDestroy() {
+        if (hasViewModel()) {
+            viewModel.onDestroy();
+            viewModel = null;
+        }
+        super.onDestroy();
     }
 
     protected ActivityComponent getActivityComponent() {
         return activityComponent;
+    }
+
+    protected void bindLifecycleEvents(ViewModel viewModel) {
+        this.viewModel = viewModel;
+    }
+
+    private boolean hasViewModel() {
+        return viewModel != null;
     }
 
 }

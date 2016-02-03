@@ -20,8 +20,8 @@ package org.piwigo.io.repository;
 import com.google.gson.Gson;
 
 import org.piwigo.helper.CookieHelper;
-import org.piwigo.io.model.response.LoginResponse;
-import org.piwigo.io.model.response.SuccessResponse;
+import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.model.SuccessResponse;
 
 import javax.inject.Inject;
 

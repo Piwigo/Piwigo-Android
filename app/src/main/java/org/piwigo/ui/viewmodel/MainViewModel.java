@@ -34,6 +34,7 @@ import javax.inject.Inject;
 
 public class MainViewModel extends BaseViewModel {
 
+    @VisibleForTesting static final String STATE_TITLE = "title";
     @VisibleForTesting static final String STATE_DRAWER_OPEN = "drawer_open";
     @VisibleForTesting static final String STATE_NAVIGATION_ITEM = "navigation_item";
 
@@ -53,11 +54,13 @@ public class MainViewModel extends BaseViewModel {
     }
 
     @Override public void onSaveState(Bundle outState) {
+        outState.putString(STATE_TITLE, title.get());
         outState.putBoolean(STATE_DRAWER_OPEN, drawerState.get());
         outState.putInt(STATE_NAVIGATION_ITEM, navigationItem.get());
     }
 
     @Override public void onRestoreState(Bundle savedState) {
+        title.set(savedState.getString(STATE_TITLE));
         drawerState.set(savedState.getBoolean(STATE_DRAWER_OPEN));
         navigationItem.set(savedState.getInt(STATE_NAVIGATION_ITEM));
     }
