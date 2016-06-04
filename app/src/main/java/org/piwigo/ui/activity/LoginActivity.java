@@ -26,6 +26,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
@@ -94,7 +95,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     }
 
     @Override public void onAnimationFinished() {
-        handler.postDelayed(this::finishAfterTransition, 500);
+        handler.postDelayed(() -> ActivityCompat.finishAfterTransition(LoginActivity.this), 500);
     }
 
     private void setResultIntent(Account account) {
