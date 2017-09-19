@@ -23,6 +23,8 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import org.piwigo.R;
+
 public class ImageViewAdapter {
 
     @BindingAdapter("bind:heightRatio") public static void bindHeighRatio(ImageView imageView, double ratio) {
@@ -32,11 +34,17 @@ public class ImageViewAdapter {
     }
 
     @BindingAdapter("bind:srcUrl") public static void bindImageUrl(ImageView imageView, String url) {
-        Picasso.with(imageView.getContext())
-                .load(url)
-                .fit()
-                .centerCrop()
-                .into(imageView);
+        if(url != null) {
+            /* a real URL for the iamge is available */
+            Picasso.with(imageView.getContext())
+                    .load(url)
+                    .fit()
+                    .centerCrop()
+                    .into(imageView);
+        }else{
+            /* put the default image for empty albums */
+            imageView.setImageResource(R.drawable.piwigo_logo);
+        }
     }
 
 }

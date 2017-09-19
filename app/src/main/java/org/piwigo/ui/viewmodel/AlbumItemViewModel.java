@@ -29,6 +29,9 @@ public class AlbumItemViewModel extends BaseViewModel {
         this.photos = photos;
     }
 
+    /* The URL of the image to show for that category.
+    *  might be null (for categories without a category image)
+    * */
     public String getUrl() {
         return url;
     }

@@ -91,11 +91,15 @@ public class AlbumsViewModel extends BaseViewModel {
 
         @Override public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, Pair<Category, ImageInfo> item) {
             String photos = resources.getQuantityString(R.plurals.album_photos, item.first.nbImages, item.first.nbImages);
+            String url = null;
             if (item.first.totalNbImages > item.first.nbImages) {
                 int subPhotos = item.first.totalNbImages - item.first.nbImages;
                 photos += resources.getQuantityString(R.plurals.album_photos_subs, subPhotos, subPhotos);
             }
-            AlbumItemViewModel viewModel = new AlbumItemViewModel(item.second.derivatives.large.url, item.first.name, photos);
+            if(item.second != null) {
+                url = item.second.derivatives.large.url;
+            }
+            AlbumItemViewModel viewModel = new AlbumItemViewModel(url, item.first.name, photos);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
 
