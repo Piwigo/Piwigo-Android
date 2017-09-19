@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Piwigo</string>
-    <string name="title_activity_main">@string/app_name</string>
+    <string name="title_activity_main" translatable="false">@string/app_name</string>
     <string name="title_activity_login">Login</string>
 
     <!-- Navigation drawer menu items -->
@@ -23,7 +23,7 @@
     <string name="login_account_error">An account for this site already exists</string>
 
     <!-- Account -->
-    <string name="account_name">%1$s@%2$s</string>
+    <string name="account_name" translatable="false">%1$s@%2$s</string>
 
     <!-- Albumbs -->
     <plurals name="album_photos">
