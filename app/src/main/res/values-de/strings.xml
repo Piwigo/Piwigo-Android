@@ -34,4 +34,14 @@
     <string name="nav_albums">Alben</string>
     <string name="nav_add_account">Konto hinzufügen</string>
     <string name="nav_about">Über</string>
+
+    <!-- Albumbs -->
+    <plurals name="album_photos">
+        <item quantity="one">1 Foto</item>
+        <item quantity="other">%1$d Fotos</item>
+    </plurals>
+    <plurals name="album_photos_subs">
+        <item quantity="one">, 1 Foto in Unteralben</item>
+        <item quantity="other">, %1$d Foto in Unteralben</item>
+    </plurals>
 </resources>
