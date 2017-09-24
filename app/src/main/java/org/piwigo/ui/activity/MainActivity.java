@@ -18,9 +18,11 @@
 package org.piwigo.ui.activity;
 
 import android.accounts.Account;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
@@ -73,7 +75,20 @@ public class MainActivity extends BaseActivity implements MainView {
         switch (item.getItemId()) {
             case R.id.nav_albums:
                 break;
+            case R.id.nav_about:
+                /* TODO: implement about */
+            case R.id.nav_settings:
+                /* TODO: implement settings */
+            case R.id.nav_upload:
+                /* TODO: implement upload */
+                Context context = getApplicationContext();
+                CharSequence text = item.getTitle() + " not yet implemented.";
+                int duration = Toast.LENGTH_LONG;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
         }
+
     }
 
     private void checkAccount() {
