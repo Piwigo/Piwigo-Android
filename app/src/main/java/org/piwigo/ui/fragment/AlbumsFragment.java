@@ -20,11 +20,14 @@ package org.piwigo.ui.fragment;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.piwigo.R;
 import org.piwigo.databinding.FragmentAlbumsBinding;
@@ -32,7 +35,7 @@ import org.piwigo.ui.viewmodel.AlbumsViewModel;
 
 import javax.inject.Inject;
 
-public class AlbumsFragment extends BaseFragment {
+public class AlbumsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final int PHONE_MIN_WIDTH = 320;
     private static final int TABLET_MIN_WIDTH = 360;
@@ -44,6 +47,7 @@ public class AlbumsFragment extends BaseFragment {
     @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_albums, container, false);
         binding.recycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
+        ((SwipeRefreshLayout)binding.getRoot()).setOnRefreshListener(this);
         return binding.getRoot();
     }
 
@@ -62,4 +66,18 @@ public class AlbumsFragment extends BaseFragment {
         return (int) Math.floor(configuration.screenWidthDp / (largeScreen ? TABLET_MIN_WIDTH : PHONE_MIN_WIDTH));
     }
 
+    @Override
+    public void onRefresh()
+    {
+        Toast.makeText(getActivity().getApplicationContext(), "Refreshing is not yet implemented :-(", Toast.LENGTH_LONG).show();
+        /* for now just stop the refresh animation after 1 sec. */
+        /* TODO: implement real refresh and call setRefreshing(false) after finishing the refresh */
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ((SwipeRefreshLayout)binding.getRoot()).setRefreshing(false);
+            }
+        }, 1000);
+    }
 }
