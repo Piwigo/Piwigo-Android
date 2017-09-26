@@ -44,4 +44,11 @@
         <item quantity="one">, 1 Foto in Unteralben</item>
         <item quantity="other">, %1$d Foto in Unteralben</item>
     </plurals>
+    <string name="about_text"><![CDATA[
+        <p><b>%1$s</b>
+        <br />Version <b>%2$s</b></p>
+        <p>Bereitgestellt under der <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a> Lizenz</p>
+        <p>Fehler und Verbesserungsvorschläge bitte im <a href="https://github.com/Piwigo/Piwigo-Android/issues">issue tacker</a> melden</p>
+        <p>Quellcode steht auf <a href="https://github.com/Piwigo/Piwigo-Android">Github</a> zur Verfügung</p>]]></string>
+    <string name="title_activity_about">Über</string>
 </resources>
