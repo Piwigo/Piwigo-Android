@@ -25,11 +25,11 @@ import org.piwigo.internal.binding.observable.ErrorObservable;
 
 public class ErrorAdapter {
 
-    @BindingAdapter("bind:error") public static void bindError(EditText editText, ErrorObservable observable) {
+    @BindingAdapter("error") public static void bindError(EditText editText, ErrorObservable observable) {
         editText.setError(observable.get());
     }
 
-    @BindingAdapter("bind:error") public static void bindError(TextInputLayout textInputLayout, ErrorObservable observable) {
+    @BindingAdapter("error") public static void bindError(TextInputLayout textInputLayout, ErrorObservable observable) {
         textInputLayout.setError(observable.get());
     }
 

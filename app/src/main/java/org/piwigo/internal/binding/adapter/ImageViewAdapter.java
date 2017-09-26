@@ -27,13 +27,13 @@ import org.piwigo.R;
 
 public class ImageViewAdapter {
 
-    @BindingAdapter("bind:heightRatio") public static void bindHeighRatio(ImageView imageView, double ratio) {
+    @BindingAdapter("heightRatio") public static void bindHeighRatio(ImageView imageView, double ratio) {
         ViewGroup.LayoutParams params = imageView.getLayoutParams();
         params.height = (int) (imageView.getMeasuredWidth() * ratio);
         imageView.setLayoutParams(params);
     }
 
-    @BindingAdapter("bind:srcUrl") public static void bindImageUrl(ImageView imageView, String url) {
+    @BindingAdapter("srcUrl") public static void bindImageUrl(ImageView imageView, String url) {
         if(url != null) {
             /* a real URL for the iamge is available */
             Picasso.with(imageView.getContext())

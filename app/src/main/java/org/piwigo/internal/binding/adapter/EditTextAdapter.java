@@ -15,11 +15,11 @@ public class EditTextAdapter {
         return observable.get();
     }
 
-    @BindingAdapter("bind:observable") public static void bindObservable(EditText editText, EditTextObservable observable) {
+    @BindingAdapter("observable") public static void bindObservable(EditText editText, EditTextObservable observable) {
         bindObservable(editText, observable, null);
     }
 
-    @BindingAdapter({"bind:observable", "bind:error"}) public static void bindObservable(EditText editText, EditTextObservable observable, ErrorObservable errorObservable) {
+    @BindingAdapter({"observable", "error"}) public static void bindObservable(EditText editText, EditTextObservable observable, ErrorObservable errorObservable) {
         // Track if TextWatcher is bound via the tag to avoid added multiple
         boolean bound = editText.getTag() != null && (boolean) editText.getTag();
         if (!bound) {

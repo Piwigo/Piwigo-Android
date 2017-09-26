@@ -25,12 +25,12 @@ import org.piwigo.ui.adapter.BindingRecyclerViewAdapter;
 
 public class RecyclerViewAdapter {
 
-    @BindingAdapter({"bind:items", "bind:viewBinder"}) public static <T> void bindRecyclerView(RecyclerView recyclerView, ObservableList items, BindingRecyclerViewAdapter.ViewBinder<T> viewBinder) {
+    @BindingAdapter({"items", "viewBinder"}) public static <T> void bindRecyclerView(RecyclerView recyclerView, ObservableList items, BindingRecyclerViewAdapter.ViewBinder<T> viewBinder) {
         bindViewBinder(recyclerView, viewBinder);
         bindItems(recyclerView, items);
     }
 
-    @BindingAdapter("bind:items") public static <T> void bindItems(RecyclerView recyclerView, ObservableList<T> items) {
+    @BindingAdapter("items") public static <T> void bindItems(RecyclerView recyclerView, ObservableList<T> items) {
         if (recyclerView.getAdapter() == null) {
             throw new IllegalStateException("RecyclerView doesn't have an adapter, did you bind a ViewBinder?");
         }
@@ -38,7 +38,7 @@ public class RecyclerViewAdapter {
         adapter.update(items);
     }
 
-    @BindingAdapter("bind:viewBinder") public static <T> void bindViewBinder(RecyclerView recyclerView, BindingRecyclerViewAdapter.ViewBinder<T> viewBinder) {
+    @BindingAdapter("viewBinder") public static <T> void bindViewBinder(RecyclerView recyclerView, BindingRecyclerViewAdapter.ViewBinder<T> viewBinder) {
         RecyclerView.Adapter adapter = recyclerView.getAdapter();
         if (adapter == null) {
             adapter = new BindingRecyclerViewAdapter<>(viewBinder);
