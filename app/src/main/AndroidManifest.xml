@@ -35,6 +35,10 @@
             android:name=".ui.activity.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.Piwigo.NavDrawer" />
+        <activity
+            android:name=".ui.activity.AboutActivity"
+            android:label="@string/title_activity_about"
+            android:theme="@style/Theme.Piwigo.Login" />
 
         <service android:name=".accounts.AuthenticatorService">
             <intent-filter>

@@ -2,6 +2,7 @@
     <string name="app_name">Piwigo</string>
     <string name="title_activity_main" translatable="false">@string/app_name</string>
     <string name="title_activity_login">Login</string>
+    <string name="title_activity_about">About</string>
 
     <!-- Navigation drawer menu items -->
     <string name="nav_albums">Albums</string>
@@ -24,6 +25,13 @@
 
     <!-- Account -->
     <string name="account_name" translatable="false">%1$s@%2$s</string>
+    <string name="about_text"><![CDATA[
+        <p><b>%1$s</b>
+        <br />version <b>%2$s</b></p>
+        <p>distributed under <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a> license</p>
+        <p>For bugs and suggestions use the <a href="https://github.com/Piwigo/Piwigo-Android/issues">issue tacker</a></p>
+        <p>Source Code can be found on <a href="https://github.com/Piwigo/Piwigo-Android">Github</a></p>]]>
+    </string>
 
     <!-- Albumbs -->
     <plurals name="album_photos">

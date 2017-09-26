@@ -19,6 +19,7 @@ package org.piwigo.ui.activity;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -71,12 +72,15 @@ public class MainActivity extends BaseActivity implements MainView {
         }
     }
 
+    /* handle menu entries */
     @Override public void onItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.nav_albums:
-                break;
             case R.id.nav_about:
-                /* TODO: implement about */
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_albums:
+                /* TODO: implement Albums */
             case R.id.nav_settings:
                 /* TODO: implement settings */
             case R.id.nav_upload:
