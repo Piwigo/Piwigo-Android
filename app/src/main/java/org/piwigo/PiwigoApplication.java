@@ -19,13 +19,9 @@ package org.piwigo;
 
 import android.app.Application;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.piwigo.internal.di.component.ApplicationComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
 import org.piwigo.internal.di.module.ApplicationModule;
-
-import io.fabric.sdk.android.Fabric;
 
 public class PiwigoApplication extends Application {
 
@@ -33,12 +29,7 @@ public class PiwigoApplication extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
-        initializeCrashlytics();
         initializeInjector();
-    }
-
-    protected void initializeCrashlytics() {
-        Fabric.with(this, new Crashlytics());
     }
 
     private void initializeInjector() {

@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.fernandocejas.frodo'
-apply plugin: 'io.fabric'
 
 def isCi = "true".equals(System.getenv("CI"))
 def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
@@ -64,9 +63,6 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'io.reactivex:rxjava:1.0.13'
     compile 'io.reactivex:rxandroid:0.25.0'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
-        transitive = true;
-    }
     compile 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     compile 'org.apache.commons:commons-lang3:3.4'
 
