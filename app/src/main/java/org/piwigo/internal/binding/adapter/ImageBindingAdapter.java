@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +23,24 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-public class ImageViewAdapter {
+public class ImageBindingAdapter {
 
-    @BindingAdapter("bind:heightRatio") public static void bindHeighRatio(ImageView imageView, double ratio) {
-        ViewGroup.LayoutParams params = imageView.getLayoutParams();
-        params.height = (int) (imageView.getMeasuredWidth() * ratio);
-        imageView.setLayoutParams(params);
+    private final Picasso picasso;
+
+    public ImageBindingAdapter(Picasso picasso) {
+        this.picasso = picasso;
     }
 
-    @BindingAdapter("bind:srcUrl") public static void bindImageUrl(ImageView imageView, String url) {
-        Picasso.with(imageView.getContext())
-                .load(url)
+    @BindingAdapter("android:src") public void loadImage(ImageView imageView, String url) {
+        picasso.load(url)
                 .fit()
                 .centerCrop()
                 .into(imageView);
     }
 
+    @BindingAdapter("heightRatio") public void setHeighRatio(ImageView imageView, double ratio) {
+        ViewGroup.LayoutParams params = imageView.getLayoutParams();
+        params.height = (int) (imageView.getMeasuredWidth() * ratio);
+        imageView.setLayoutParams(params);
+    }
 }

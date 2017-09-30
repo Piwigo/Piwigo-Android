@@ -22,25 +22,20 @@ import android.support.v4.util.ArrayMap;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import retrofit.client.Header;
+import okhttp3.Headers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CookieHelperTest {
 
-    List<Header> headers = new ArrayList<>();
+    private Headers headers;
 
-    @Before public void setUp() {
-        headers.add(new Header("Not-Cookie", "aValue"));
-        headers.add(new Header("Set-Cookie", "pwg_id=asdfghjklqwertyuiop"));
-        headers.add(new Header("Also-Not-Cookie", "anotherValue"));
-        headers.add(new Header("Set-Cookie", "something=else"));
+    @Before
+    public void setUp() {
+        headers = Headers.of("Not-Cookie", "aValue", "Set-Cookie", "pwg_id=asdfghjklqwertyuiop", "Also-Not-Cookie", "anotherValue", "Set-Cookie", "something=else");
     }
 
-    @Test public void shouldExtractAllCookies() {
+    @Test public void extractAllCookies() {
         ArrayMap<String, String> cookies = CookieHelper.extractAll(headers);
 
         assertThat(cookies).hasSize(2)
@@ -50,10 +45,9 @@ public class CookieHelperTest {
                 .doesNotContainEntry("Also-Not-Cookie", "anotherValue");
     }
 
-    @Test public void shouldExtractCookie() {
+    @Test public void extractPwgIdCookie() {
         String value = CookieHelper.extract("pwg_id", headers);
 
         assertThat(value).isEqualTo("asdfghjklqwertyuiop");
     }
-
 }

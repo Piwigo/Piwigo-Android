@@ -57,6 +57,8 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
 
+        loadAccount();
+
         if (savedInstanceState == null) {
             viewModel.setTitle(getString(R.string.nav_albums));
             getSupportFragmentManager()

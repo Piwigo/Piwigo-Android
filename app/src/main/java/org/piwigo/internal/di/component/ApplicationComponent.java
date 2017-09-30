@@ -17,6 +17,8 @@
 
 package org.piwigo.internal.di.component;
 
+import com.squareup.picasso.Picasso;
+
 import org.piwigo.PiwigoApplication;
 import org.piwigo.internal.di.module.ApiModule;
 import org.piwigo.internal.di.module.ApplicationModule;
@@ -32,4 +34,6 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     void inject(PiwigoApplication application);
+
+    Picasso picasso();
 }

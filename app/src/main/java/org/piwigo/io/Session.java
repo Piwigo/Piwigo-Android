@@ -17,54 +17,43 @@
 
 package org.piwigo.io;
 
+import android.accounts.Account;
+
 public class Session {
+
+    private Account account;
 
     private String cookie;
 
     private String token;
 
-    /**
-     * Set the session cookie
-     *
-     * @param cookie New session cookie
-     */
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
     public void setCookie(String cookie) {
         this.cookie = cookie;
     }
 
-    /**
-     * Get the session cookie
-     *
-     * @return Current session cookie
-     */
     public String getCookie() {
         return cookie;
     }
 
-    /**
-     * Set the user token
-     *
-     * @param token New user token
-     */
     public void setToken(String token) {
         this.token = token;
     }
 
-    /**
-     * Get the user token
-     *
-     * @return Current user token
-     */
     public String getToken() {
         return token;
     }
 
-    /**
-     * Purge the current session data
-     */
     public void purge() {
+        account = null;
         cookie = null;
         token = null;
     }
-
 }

@@ -50,7 +50,7 @@ public class AlbumsViewModel extends BaseViewModel {
     private Integer categoryId;
     private Subscription subscription;
 
-    @Inject public AlbumsViewModel() {}
+    @Inject AlbumsViewModel() {}
 
     @Override public void onDestroy() {
         if (subscription != null) {

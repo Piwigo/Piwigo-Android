@@ -22,7 +22,7 @@ import android.support.v4.util.ArrayMap;
 import java.net.HttpCookie;
 import java.util.List;
 
-import retrofit.client.Header;
+import okhttp3.Headers;
 
 public class CookieHelper {
 
@@ -35,7 +35,7 @@ public class CookieHelper {
      * @param headers List of headers
      * @return Value of the cookie if present
      */
-    public static String extract(String name, List<Header> headers) {
+    public static String extract(String name, Headers headers) {
         ArrayMap<String, String> cookies = extractAll(headers);
         if (cookies.containsKey(name)) {
             return cookies.get(name);
@@ -49,11 +49,12 @@ public class CookieHelper {
      * @param headers List of headers
      * @return Map of cookies
      */
-    public static ArrayMap<String, String> extractAll(List<Header> headers) {
+    public static ArrayMap<String, String> extractAll(Headers headers) {
         ArrayMap<String, String> cookies = new ArrayMap<>();
-        for (Header header : headers) {
-            if (header.getName().equalsIgnoreCase(COOKIE_HEADER)) {
-                List<HttpCookie> httpCookies = HttpCookie.parse(header.getValue());
+        for (int i = 0; i < headers.size(); i++) {
+            String name = headers.name(i);
+            if (name.equalsIgnoreCase(COOKIE_HEADER)) {
+                List<HttpCookie> httpCookies = HttpCookie.parse(headers.value(i));
                 for (HttpCookie httpCookie : httpCookies) {
                     cookies.put(httpCookie.getName(), httpCookie.getValue());
                 }

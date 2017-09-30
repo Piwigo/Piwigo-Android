@@ -43,5 +43,4 @@ public class EditTextObservableTest {
         observable.set("New text");
         verify(callback).onPropertyChanged(observable, 0);
     }
-
 }

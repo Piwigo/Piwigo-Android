@@ -17,27 +17,37 @@
 
 package org.piwigo.io.repository;
 
-import org.piwigo.io.DynamicEndpoint;
+import android.text.TextUtils;
+
+import org.piwigo.io.DynamicRetrofit;
 import org.piwigo.io.RestService;
+import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.Session;
 
 import rx.Observable;
 import rx.Scheduler;
 
+import static android.view.View.Z;
+
 abstract class BaseRepository {
 
     final Session session;
-    final DynamicEndpoint endpoint;
-    final RestService restService;
-    final Scheduler ioScheduler;
-    final Scheduler uiScheduler;
+    final RestServiceFactory restServiceFactory;
+    private final Scheduler ioScheduler;
+    private final Scheduler uiScheduler;
 
-    BaseRepository(Session session, DynamicEndpoint endpoint, RestService restService, Scheduler ioScheduler, Scheduler uiScheduler) {
+    BaseRepository(Session session, RestServiceFactory restServiceFactory, Scheduler ioScheduler, Scheduler uiScheduler) {
         this.session = session;
-        this.endpoint = endpoint;
-        this.restService = restService;
+        this.restServiceFactory = restServiceFactory;
         this.ioScheduler = ioScheduler;
         this.uiScheduler = uiScheduler;
+    }
+
+    String validateUrl(String url) {
+        if (!url.endsWith("/")) {
+            return url + "/";
+        }
+        return url;
     }
 
     <T> Observable.Transformer<T, T> applySchedulers() {

@@ -17,47 +17,42 @@
 
 package org.piwigo.io.repository;
 
-import com.google.gson.Gson;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.piwigo.io.DynamicEndpoint;
-import org.piwigo.io.MockRestService;
 import org.piwigo.io.RestService;
+import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.model.StatusResponse;
+import org.piwigo.io.model.SuccessResponse;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import retrofit.client.Header;
-import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
+import okhttp3.Headers;
+import retrofit2.Response;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-import static java.net.HttpURLConnection.HTTP_OK;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class UserRepositoryTest {
 
-    private static final String URL = "http://demo.piwigo.org";
+    private static final String URL = "http://demo.piwigo.org/";
     private static final String USERNAME = "test";
     private static final String PASSWORD = "test";
     private static final String BAD_CREDENTIAL = "bad";
     private static final String GUEST_USER = "guest";
     private static final String COOKIE_PWG_ID = "1234567890";
-    private static final String STATUS_OK = "ok";
     private static final String TOKEN = "abcdefghijklmnop";
+    private static final String STATUS_OK = "ok";
+    private static final String STATUS_FAIL = "fail";
 
     @Mock Session session;
-    @Mock DynamicEndpoint dynamicEndpoint;
+    @Mock RestServiceFactory restServiceFactory;
     @Mock RestService restService;
 
     private UserRepository userRepository;
@@ -65,11 +60,12 @@ public class UserRepositoryTest {
     @Before public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        when(restServiceFactory.createForUrl(anyString())).thenReturn(restService);
         when(restService.getStatus()).thenReturn(getStatusResponse(GUEST_USER));
         when(restService.login(USERNAME, PASSWORD)).thenReturn(getLoginSuccessResponse());
         when(restService.login(BAD_CREDENTIAL, BAD_CREDENTIAL)).thenReturn(getLoginFailureResponse());
 
-        userRepository = new UserRepository(session, dynamicEndpoint, restService, Schedulers.immediate(), Schedulers.immediate(), new Gson());
+        userRepository = new UserRepository(session, restServiceFactory, Schedulers.immediate(), Schedulers.immediate());
     }
 
     @Test public void loginSuccess() {
@@ -81,7 +77,7 @@ public class UserRepositoryTest {
 
         subscriber.assertNoErrors();
         LoginResponse loginResponse = subscriber.getOnNextEvents().get(0);
-        verify(dynamicEndpoint).setUrl(URL);
+        verify(restServiceFactory).createForUrl(URL);
         verify(session).setCookie(COOKIE_PWG_ID);
         assertThat(loginResponse.url).isEqualTo(URL);
         assertThat(loginResponse.username).isEqualTo(USERNAME);
@@ -107,9 +103,9 @@ public class UserRepositoryTest {
 
         subscriber.assertNoErrors();
         LoginResponse loginResponse = subscriber.getOnNextEvents().get(0);
-        verify(dynamicEndpoint).setUrl(URL);
+        verify(restServiceFactory).createForUrl(URL);
         assertThat(loginResponse.url).isEqualTo(URL);
-        assertThat(loginResponse.statusResponse.stat).isEqualTo(MockRestService.STATUS_OK);
+        assertThat(loginResponse.statusResponse.stat).isEqualTo(STATUS_OK);
         assertThat(loginResponse.statusResponse.result.username).isEqualTo(GUEST_USER);
     }
 
@@ -122,18 +118,18 @@ public class UserRepositoryTest {
         return Observable.just(statusResponse);
     }
 
-    private Observable<Response> getLoginSuccessResponse() {
-        List<Header> headers = new ArrayList<>();
-        headers.add(new Header("Set-Cookie", "pwg_id=" + COOKIE_PWG_ID));
-        TypedByteArray body = new TypedByteArray("application/json", "{\"stat\":\"ok\",\"result\":true}".getBytes());
-
-        return Observable.just(new Response("http://test.piwigo.org/ws.php?format=json&method=pwg.session.login", HTTP_OK, "OK", headers, body));
+    private Observable<Response<SuccessResponse>> getLoginSuccessResponse() {
+        SuccessResponse successResponse = new SuccessResponse();
+        successResponse.stat = STATUS_OK;
+        successResponse.result = true;
+        Response<SuccessResponse> response = Response.success(successResponse, Headers.of("Set-Cookie", "pwg_id=" + COOKIE_PWG_ID));
+        return Observable.just(response);
     }
 
-    private Observable<Response> getLoginFailureResponse() {
-        List<Header> headers = new ArrayList<>();
-        TypedByteArray body = new TypedByteArray("application/json", "{\"stat\":\"fail\",\"err\":999,\"message\":\"Invalid username\\/password\"}".getBytes());
-
-        return Observable.just(new Response("http://test.piwigo.org/ws.php?format=json&method=pwg.session.login", HTTP_OK, "OK", headers, body));
+    private Observable<Response<SuccessResponse>> getLoginFailureResponse() {
+        SuccessResponse successResponse = new SuccessResponse();
+        successResponse.stat = STATUS_FAIL;
+        Response<SuccessResponse> response = Response.success(successResponse);
+        return Observable.just(response);
     }
 }

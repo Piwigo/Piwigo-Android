@@ -23,19 +23,19 @@ import org.piwigo.io.model.GetImageInfoResponse;
 import org.piwigo.io.model.StatusResponse;
 import org.piwigo.io.model.SuccessResponse;
 
-import retrofit.client.Response;
-import retrofit.http.Field;
-import retrofit.http.FormUrlEncoded;
-import retrofit.http.GET;
-import retrofit.http.POST;
-import retrofit.http.Query;
+import retrofit2.Response;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
 import rx.Observable;
 
 public interface RestService {
 
     @GET("/ws.php?method=pwg.session.getStatus") Observable<StatusResponse> getStatus();
 
-    @POST("/ws.php?method=pwg.session.login") @FormUrlEncoded Observable<Response> login(
+    @POST("/ws.php?method=pwg.session.login") @FormUrlEncoded Observable<Response<SuccessResponse>> login(
             @Field("username") String username,
             @Field("password") String password
     );
@@ -51,8 +51,12 @@ public interface RestService {
             @Field("commentable") Boolean commentable
     );
 
-    @GET("/ws.php?method=pwg.categories.getList") Observable<CategoryListResponse> getCategories(@Query("cat_id") Integer categoryId);
+    @GET("/ws.php?method=pwg.categories.getList") Observable<CategoryListResponse> getCategories(
+            @Query("cat_id") Integer categoryId
+    );
 
-    @GET("/ws.php?method=pwg.images.getInfo") Observable<GetImageInfoResponse> getImageInfo(@Query("image_id") int imageId);
+    @GET("/ws.php?method=pwg.images.getInfo") Observable<GetImageInfoResponse> getImageInfo(
+            @Query("image_id") int imageId
+    );
 
 }

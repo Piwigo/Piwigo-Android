@@ -29,7 +29,7 @@ public class PreferencesRepository {
 
     private final SharedPreferences preferences;
 
-    @Inject public PreferencesRepository(Context context) {
+    @Inject PreferencesRepository(Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 

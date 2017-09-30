@@ -48,5 +48,4 @@ public class ErrorObservableTest {
         observable.clear();
         verify(callback).onPropertyChanged(observable, 0);
     }
-
 }
