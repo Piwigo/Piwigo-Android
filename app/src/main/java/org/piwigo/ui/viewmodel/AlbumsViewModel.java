@@ -52,7 +52,6 @@ public class AlbumsViewModel extends BaseViewModel {
     @Inject public AlbumsViewModel() {}
 
     @Override public void onDestroy() {
-        Log.e(TAG, "onDestroy");
         if (subscription != null) {
             subscription.unsubscribe();
         }

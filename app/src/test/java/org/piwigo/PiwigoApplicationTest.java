@@ -21,21 +21,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.piwigo.internal.di.component.ApplicationComponent;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(PiwigoRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
+@Config(application = TestPiwigoApplication.class, constants = BuildConfig.class)
 public class PiwigoApplicationTest {
 
     private PiwigoApplication application;
 
     @Before public void setUp() {
+
         application = (PiwigoApplication) RuntimeEnvironment.application;
     }
 
     @Test public void shouldInitialiseInjector() {
         assertThat(application.getApplicationComponent()).isInstanceOf(ApplicationComponent.class);
     }
-
 }
