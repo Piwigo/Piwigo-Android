@@ -28,6 +28,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+
 @RunWith(RobolectricTestRunner.class)
 @Config(application = TestPiwigoApplication.class, constants = BuildConfig.class)
 public class BaseActivityTest {
@@ -39,7 +40,7 @@ public class BaseActivityTest {
     }
 
     @Ignore @Test public void shouldInitialiseInjector() {
-        //assertThat(baseActivity.getActivityComponent()).isInstanceOf(ActivityComponent.class);
+//        assertThat(baseActivity.getActivityComponent()).isInstanceOf(ActivityComponent.class);
     }
 
     public static class TestBaseActivity extends BaseActivity {
