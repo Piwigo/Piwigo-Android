@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.piwigo.internal.di.module;
+package org.piwigo.ui.main;
 
-import com.squareup.okhttp.OkHttpClient;
+import android.view.MenuItem;
 
-import javax.inject.Singleton;
+public interface MainView {
 
-import dagger.Module;
-import dagger.Provides;
+    void onItemSelected(MenuItem item);
 
-@Module
-public class NetworkModule {
-
-    @Provides @Singleton OkHttpClient provideOkHttpClient() {
-        return new OkHttpClient();
-    }
 }

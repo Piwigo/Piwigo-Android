@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.fragment;
+package org.piwigo.ui.shared;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import org.piwigo.internal.di.component.ActivityComponent;
-import org.piwigo.ui.activity.BaseActivity;
-import org.piwigo.ui.viewmodel.ViewModel;
-
 public abstract class BaseFragment extends Fragment {
 
-    private ActivityComponent activityComponent;
     private ViewModel viewModel;
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        activityComponent = ((BaseActivity) getActivity()).getActivityComponent();
     }
 
     @Override public void onSaveInstanceState(Bundle outState) {
@@ -54,10 +48,6 @@ public abstract class BaseFragment extends Fragment {
             viewModel = null;
         }
         super.onDestroy();
-    }
-
-    protected ActivityComponent getActivityComponent() {
-        return activityComponent;
     }
 
     protected void bindLifecycleEvents(ViewModel viewModel) {

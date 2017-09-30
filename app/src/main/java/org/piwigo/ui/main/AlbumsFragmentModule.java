@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,10 @@
  * limitations under the License.
  */
 
-package org.piwigo.internal.di.module;
-
-import com.squareup.okhttp.OkHttpClient;
-
-import javax.inject.Singleton;
+package org.piwigo.ui.main;
 
 import dagger.Module;
-import dagger.Provides;
 
 @Module
-public class NetworkModule {
-
-    @Provides @Singleton OkHttpClient provideOkHttpClient() {
-        return new OkHttpClient();
-    }
+public class AlbumsFragmentModule {
 }

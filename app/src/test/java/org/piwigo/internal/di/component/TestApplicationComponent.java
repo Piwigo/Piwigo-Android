@@ -19,9 +19,10 @@ package org.piwigo.internal.di.component;
 
 import com.google.gson.Gson;
 
+import org.piwigo.internal.di.module.InjectionModule;
+import org.piwigo.internal.di.module.NetworkModule;
 import org.piwigo.internal.di.module.TestApiModule;
 import org.piwigo.internal.di.module.TestApplicationModule;
-import org.piwigo.internal.di.module.NetworkModule;
 import org.piwigo.io.DynamicEndpoint;
 import org.piwigo.io.RestService;
 import org.piwigo.io.Session;
@@ -34,7 +35,7 @@ import dagger.Component;
 import rx.Scheduler;
 
 @Singleton
-@Component(modules = {TestApplicationModule.class, NetworkModule.class, TestApiModule.class})
+@Component(modules = {TestApplicationModule.class, NetworkModule.class, TestApiModule.class, InjectionModule.class})
 public interface TestApplicationComponent extends ApplicationComponent {
 
     void inject(UserRepositoryTest test);

@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-package org.piwigo.internal.di.module;
+package org.piwigo.ui.shared;
 
-import com.squareup.okhttp.OkHttpClient;
+import android.os.Bundle;
 
-import javax.inject.Singleton;
+public abstract class BaseViewModel implements ViewModel {
 
-import dagger.Module;
-import dagger.Provides;
+    @Override public void onSaveState(Bundle outState) {}
 
-@Module
-public class NetworkModule {
+    @Override public void onRestoreState(Bundle savedState) {}
 
-    @Provides @Singleton OkHttpClient provideOkHttpClient() {
-        return new OkHttpClient();
-    }
+    @Override public void onDestroy() {}
+
 }

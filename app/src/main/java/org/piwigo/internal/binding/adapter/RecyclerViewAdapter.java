@@ -21,7 +21,7 @@ import android.databinding.BindingAdapter;
 import android.databinding.ObservableList;
 import android.support.v7.widget.RecyclerView;
 
-import org.piwigo.ui.adapter.BindingRecyclerViewAdapter;
+import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 
 public class RecyclerViewAdapter {
 

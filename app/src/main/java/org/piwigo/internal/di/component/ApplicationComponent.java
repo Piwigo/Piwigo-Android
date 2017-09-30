@@ -21,14 +21,14 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import org.piwigo.PiwigoApplication;
 import org.piwigo.internal.di.module.ApiModule;
 import org.piwigo.internal.di.module.ApplicationModule;
+import org.piwigo.internal.di.module.InjectionModule;
 import org.piwigo.internal.di.module.NetworkModule;
 import org.piwigo.io.DynamicEndpoint;
 import org.piwigo.io.RestService;
 import org.piwigo.io.Session;
-import org.piwigo.ui.activity.BaseActivity;
-import org.piwigo.ui.activity.LauncherActivity;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -37,12 +37,10 @@ import dagger.Component;
 import rx.Scheduler;
 
 @Singleton
-@Component(modules = {ApplicationModule.class, NetworkModule.class, ApiModule.class})
+@Component(modules = {ApplicationModule.class, NetworkModule.class, ApiModule.class, InjectionModule.class})
 public interface ApplicationComponent {
 
-    void inject(BaseActivity activity);
-
-    void inject(LauncherActivity activity);
+    void inject(PiwigoApplication application);
 
     Context context();
 
@@ -57,5 +55,4 @@ public interface ApplicationComponent {
     @Named("IoScheduler") Scheduler ioScheduler();
 
     @Named("UiScheduler") Scheduler uiScheduler();
-
 }

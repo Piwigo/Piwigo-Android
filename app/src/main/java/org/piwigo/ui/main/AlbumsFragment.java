@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.fragment;
+package org.piwigo.ui.main;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -28,9 +31,11 @@ import android.view.ViewGroup;
 
 import org.piwigo.R;
 import org.piwigo.databinding.FragmentAlbumsBinding;
-import org.piwigo.ui.viewmodel.AlbumsViewModel;
+import org.piwigo.ui.shared.BaseFragment;
 
 import javax.inject.Inject;
+
+import dagger.android.support.AndroidSupportInjection;
 
 public class AlbumsFragment extends BaseFragment {
 
@@ -41,6 +46,20 @@ public class AlbumsFragment extends BaseFragment {
 
     FragmentAlbumsBinding binding;
 
+    @Override public void onAttach(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            AndroidSupportInjection.inject(this);
+        }
+        super.onAttach(context);
+    }
+
+    @Override public void onAttach(Activity activity) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            AndroidSupportInjection.inject(this);
+        }
+        super.onAttach(activity);
+    }
+
     @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_albums, container, false);
         binding.recycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
@@ -49,7 +68,6 @@ public class AlbumsFragment extends BaseFragment {
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getActivityComponent().inject(this);
         bindLifecycleEvents(viewModel);
         binding.setViewModel(viewModel);
         viewModel.loadAlbums(null);

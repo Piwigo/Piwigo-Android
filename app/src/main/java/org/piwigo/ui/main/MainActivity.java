@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,32 +15,37 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.activity;
+package org.piwigo.ui.main;
 
 import android.accounts.Account;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.MenuItem;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
-import org.piwigo.ui.fragment.AlbumsFragment;
 import org.piwigo.ui.model.User;
-import org.piwigo.ui.view.MainView;
-import org.piwigo.ui.viewmodel.MainViewModel;
+import org.piwigo.ui.shared.BaseActivity;
 
 import javax.inject.Inject;
 
-public class MainActivity extends BaseActivity implements MainView {
+import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 
+public class MainActivity extends BaseActivity implements HasSupportFragmentInjector, MainView {
+
+    @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
     @Inject MainViewModel viewModel;
 
     private Account account;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        getActivityComponent().inject(this);
 
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
@@ -74,6 +79,10 @@ public class MainActivity extends BaseActivity implements MainView {
             case R.id.nav_albums:
                 break;
         }
+    }
+
+    @Override public AndroidInjector<Fragment> supportFragmentInjector() {
+        return fragmentInjector;
     }
 
     private void checkAccount() {

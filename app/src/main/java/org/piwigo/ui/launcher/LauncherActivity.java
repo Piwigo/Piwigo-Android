@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.activity;
+package org.piwigo.ui.launcher;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -24,10 +24,12 @@ import android.os.Handler;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLauncherBinding;
-import org.piwigo.helper.AccountHelper;
-import org.piwigo.ui.Navigator;
+import org.piwigo.ui.shared.Navigator;
+import org.piwigo.ui.shared.BaseActivity;
 
 import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 
 public class LauncherActivity extends BaseActivity {
 
@@ -37,8 +39,8 @@ public class LauncherActivity extends BaseActivity {
     private ActivityLauncherBinding binding;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        getApplicationComponent().inject(this);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_launcher);
 

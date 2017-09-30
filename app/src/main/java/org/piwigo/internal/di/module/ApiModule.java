@@ -89,5 +89,4 @@ public class ApiModule {
     @Provides @Singleton @Named("UiScheduler") Scheduler provideUiScheduler() {
         return AndroidSchedulers.mainThread();
     }
-
 }

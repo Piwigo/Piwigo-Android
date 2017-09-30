@@ -17,43 +17,39 @@
 
 package org.piwigo;
 
+import android.app.Activity;
 import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
 
-import org.piwigo.internal.di.component.ApplicationComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
 import org.piwigo.internal.di.module.ApplicationModule;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
 import io.fabric.sdk.android.Fabric;
 
-public class PiwigoApplication extends Application {
+public class PiwigoApplication extends Application implements HasActivityInjector {
 
-    private ApplicationComponent applicationComponent;
+    @Inject DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
     @Override public void onCreate() {
         super.onCreate();
+        DaggerApplicationComponent.builder()
+                .applicationModule(new ApplicationModule(this))
+                .build()
+                .inject(this);
         initializeCrashlytics();
-        initializeInjector();
+    }
+
+    @Override public AndroidInjector<Activity> activityInjector() {
+        return dispatchingAndroidInjector;
     }
 
     protected void initializeCrashlytics() {
         Fabric.with(this, new Crashlytics());
     }
-
-    private void initializeInjector() {
-        ApplicationComponent applicationComponent = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this))
-                .build();
-        setApplicationComponent(applicationComponent);
-    }
-
-    public void setApplicationComponent(ApplicationComponent applicationComponent) {
-        this.applicationComponent = applicationComponent;
-    }
-
-    public ApplicationComponent getApplicationComponent() {
-        return applicationComponent;
-    }
-
 }

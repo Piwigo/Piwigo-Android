@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.viewmodel;
+package org.piwigo.ui.main;
 
 import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
@@ -27,7 +27,8 @@ import org.piwigo.R;
 import org.piwigo.io.model.Category;
 import org.piwigo.io.model.ImageInfo;
 import org.piwigo.io.repository.CategoriesRepository;
-import org.piwigo.ui.adapter.BindingRecyclerViewAdapter;
+import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
+import org.piwigo.ui.shared.BaseViewModel;
 
 import java.util.List;
 

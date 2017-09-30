@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,25 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.activity;
+package org.piwigo.ui.shared;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import org.piwigo.PiwigoApplication;
 import org.piwigo.helper.AccountHelper;
 import org.piwigo.io.repository.PreferencesRepository;
-import org.piwigo.internal.di.component.ActivityComponent;
-import org.piwigo.internal.di.component.ApplicationComponent;
-import org.piwigo.internal.di.component.DaggerActivityComponent;
-import org.piwigo.internal.di.module.ActivityModule;
-import org.piwigo.ui.viewmodel.ViewModel;
 
 import javax.inject.Inject;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private ActivityComponent activityComponent;
     private ViewModel viewModel;
 
-    @Inject AccountHelper accountHelper;
-    @Inject PreferencesRepository preferencesRepository;
+    @Inject protected AccountHelper accountHelper;
+    @Inject protected PreferencesRepository preferencesRepository;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getApplicationComponent().inject(this);
-        initializeInjector();
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -67,28 +58,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void setActivityComponent(ActivityComponent activityComponent) {
-        this.activityComponent = activityComponent;
-    }
-
-    public ActivityComponent getActivityComponent() {
-        return activityComponent;
-    }
-
-    protected ApplicationComponent getApplicationComponent() {
-        return ((PiwigoApplication) getApplication()).getApplicationComponent();
-    }
-
     protected void bindLifecycleEvents(ViewModel viewModel) {
         this.viewModel = viewModel;
-    }
-
-    private void initializeInjector() {
-        ActivityComponent activityComponent = DaggerActivityComponent.builder()
-                .applicationComponent(getApplicationComponent())
-                .activityModule(new ActivityModule(this))
-                .build();
-        setActivityComponent(activityComponent);
     }
 
     private boolean hasViewModel() {

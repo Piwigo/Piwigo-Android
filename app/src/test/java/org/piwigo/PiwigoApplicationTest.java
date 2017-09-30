@@ -20,7 +20,6 @@ package org.piwigo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.piwigo.internal.di.component.ApplicationComponent;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -38,7 +37,7 @@ public class PiwigoApplicationTest {
         application = (PiwigoApplication) RuntimeEnvironment.application;
     }
 
-    @Test public void shouldInitialiseInjector() {
-        assertThat(application.getApplicationComponent()).isInstanceOf(ApplicationComponent.class);
+    @Test public void shouldHaveInjector() {
+        assertThat(application.dispatchingAndroidInjector).isNotNull();
     }
 }

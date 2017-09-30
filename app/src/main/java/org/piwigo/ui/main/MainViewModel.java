@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.viewmodel;
+package org.piwigo.ui.main;
 
 import android.databinding.ObservableField;
 import android.os.Bundle;
@@ -28,7 +28,7 @@ import org.piwigo.R;
 import org.piwigo.internal.binding.observable.DrawerStateObservable;
 import org.piwigo.internal.binding.observable.NavigationItemObservable;
 import org.piwigo.ui.model.User;
-import org.piwigo.ui.view.MainView;
+import org.piwigo.ui.shared.BaseViewModel;
 
 import javax.inject.Inject;
 

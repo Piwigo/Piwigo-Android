@@ -23,12 +23,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.piwigo.BuildConfig;
 import org.piwigo.TestPiwigoApplication;
-import org.piwigo.internal.di.component.ActivityComponent;
+import org.piwigo.ui.shared.BaseActivity;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(application = TestPiwigoApplication.class, constants = BuildConfig.class)
@@ -41,7 +39,7 @@ public class BaseActivityTest {
     }
 
     @Ignore @Test public void shouldInitialiseInjector() {
-        assertThat(baseActivity.getActivityComponent()).isInstanceOf(ActivityComponent.class);
+        //assertThat(baseActivity.getActivityComponent()).isInstanceOf(ActivityComponent.class);
     }
 
     public static class TestBaseActivity extends BaseActivity {

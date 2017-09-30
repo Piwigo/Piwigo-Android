@@ -7,7 +7,7 @@ import android.widget.EditText;
 
 import org.piwigo.internal.binding.observable.EditTextObservable;
 import org.piwigo.internal.binding.observable.ErrorObservable;
-import org.piwigo.ui.text.SimpleTextWatcher;
+import org.piwigo.ui.shared.SimpleTextWatcher;
 
 public class EditTextAdapter {
 

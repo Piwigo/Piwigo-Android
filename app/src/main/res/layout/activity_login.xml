@@ -1,13 +1,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="org.piwigo.ui.activity.LoginActivity">
+    tools:context="org.piwigo.ui.login.LoginActivity">
 
     <data>
 
         <variable
             name="viewModel"
-            type="org.piwigo.ui.viewmodel.LoginViewModel" />
+            type="org.piwigo.ui.login.LoginViewModel" />
     </data>
 
     <ScrollView

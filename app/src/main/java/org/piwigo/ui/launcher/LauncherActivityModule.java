@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.view;
+package org.piwigo.ui.launcher;
 
-import android.view.MenuItem;
+import dagger.Module;
 
-public interface MainView {
-
-    void onItemSelected(MenuItem item);
-
+@Module
+public abstract class LauncherActivityModule {
 }

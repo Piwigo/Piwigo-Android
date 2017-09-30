@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui;
+package org.piwigo.ui.shared;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -25,8 +25,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.view.View;
 
-import org.piwigo.ui.activity.LoginActivity;
-import org.piwigo.ui.activity.MainActivity;
+import org.piwigo.ui.login.LoginActivity;
+import org.piwigo.ui.main.MainActivity;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

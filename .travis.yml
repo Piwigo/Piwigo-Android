@@ -13,5 +13,5 @@ android:
     - extra-android-m2repository
 
 script:
-  - ./gradlew assemble
-  - ./gradlew test
+  - ./gradlew assembleDebug
+  - ./gradlew testDebug
