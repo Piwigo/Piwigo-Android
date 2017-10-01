@@ -64,16 +64,12 @@ public class UserRepositoryTest {
 
     @Before public void setUp() {
         MockitoAnnotations.initMocks(this);
-        userRepository = new UserRepository();
-        userRepository.session = session;
-        userRepository.endpoint = dynamicEndpoint;
-        userRepository.restService = restService;
-        userRepository.gson = new Gson();
-        userRepository.ioScheduler = Schedulers.immediate();
-        userRepository.uiScheduler = Schedulers.immediate();
+
         when(restService.getStatus()).thenReturn(getStatusResponse(GUEST_USER));
         when(restService.login(USERNAME, PASSWORD)).thenReturn(getLoginSuccessResponse());
         when(restService.login(BAD_CREDENTIAL, BAD_CREDENTIAL)).thenReturn(getLoginFailureResponse());
+
+        userRepository = new UserRepository(session, dynamicEndpoint, restService, Schedulers.immediate(), Schedulers.immediate(), new Gson());
     }
 
     @Test public void loginSuccess() {

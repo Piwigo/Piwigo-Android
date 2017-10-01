@@ -19,18 +19,25 @@ package org.piwigo.io.repository;
 
 import android.util.Pair;
 
+import org.piwigo.io.DynamicEndpoint;
+import org.piwigo.io.RestService;
+import org.piwigo.io.Session;
 import org.piwigo.io.model.Category;
 import org.piwigo.io.model.ImageInfo;
 
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import rx.Observable;
+import rx.Scheduler;
 
 public class CategoriesRepository extends BaseRepository {
 
-    @Inject public CategoriesRepository() {}
+    @Inject public CategoriesRepository(Session session, DynamicEndpoint endpoint, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler) {
+        super(session, endpoint, restService, ioScheduler, uiScheduler);
+    }
 
     public Observable<List<Pair<Category, ImageInfo>>> getCategories(Integer categoryId) {
         return restService
@@ -51,5 +58,4 @@ public class CategoriesRepository extends BaseRepository {
                 })
                 .compose(applySchedulers());
     }
-
 }
