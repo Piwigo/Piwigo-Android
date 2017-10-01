@@ -41,6 +41,15 @@ android {
         enabled = true
     }
     useLibrary 'org.apache.http.legacy'
+
+    productFlavors {
+        googlePlay {
+
+        }
+        floss {
+
+        }
+    }
 }
 
 ext {
@@ -67,7 +76,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'io.reactivex:rxjava:1.3.2'
     compile 'io.reactivex:rxandroid:1.2.1'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
+    googlePlayCompile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
         transitive = true;
     }
     compile 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
