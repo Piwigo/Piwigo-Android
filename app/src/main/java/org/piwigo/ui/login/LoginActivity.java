@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.activity;
+package org.piwigo.ui.login;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -23,6 +23,7 @@ import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -30,10 +31,11 @@ import android.support.design.widget.Snackbar;
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
 import org.piwigo.io.model.LoginResponse;
-import org.piwigo.ui.view.LoginView;
-import org.piwigo.ui.viewmodel.LoginViewModel;
+import org.piwigo.ui.shared.BaseActivity;
 
 import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 
 public class LoginActivity extends BaseActivity implements LoginView {
 
@@ -47,8 +49,8 @@ public class LoginActivity extends BaseActivity implements LoginView {
     private Handler handler = new Handler();
 
     @Override protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        getActivityComponent().inject(this);
 
         // Account authenticator stuff, applicable if user comes from "add account" in settings only
         // as ordinarily this is skipped to enable activity scene transitions
@@ -94,7 +96,9 @@ public class LoginActivity extends BaseActivity implements LoginView {
     }
 
     @Override public void onAnimationFinished() {
-        handler.postDelayed(this::finishAfterTransition, 500);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            handler.postDelayed(this::finishAfterTransition, 500);
+        }
     }
 
     private void setResultIntent(Account account) {

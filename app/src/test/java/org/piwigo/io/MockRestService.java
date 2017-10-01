@@ -91,5 +91,4 @@ public class MockRestService implements RestService {
     @Override public Observable<GetImageInfoResponse> getImageInfo(@Query("image_id") int imageId) {
         return null;
     }
-
 }

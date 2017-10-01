@@ -27,7 +27,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.functions.Func2;
 
 public class CategoriesRepository extends BaseRepository {
 
@@ -41,7 +40,7 @@ public class CategoriesRepository extends BaseRepository {
                 .flatMap(category -> {
                     Observable<ImageInfo> imageInfo = restService.getImageInfo(category.representativePictureId)
                             .map(getImageInfoResponse -> getImageInfoResponse.imageInfo);
-                    return Observable.zip(Observable.just(category), imageInfo, (Func2<Category, ImageInfo, Pair<Category, ImageInfo>>) Pair::new);
+                    return Observable.zip(Observable.just(category), imageInfo, Pair::new);
                 })
                 .toSortedList((firstPair, secondPair) -> {
                     String firstRank = firstPair.first.globalRank;

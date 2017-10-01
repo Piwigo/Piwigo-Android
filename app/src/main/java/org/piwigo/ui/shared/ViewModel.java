@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.text;
+package org.piwigo.ui.shared;
 
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.os.Bundle;
 
-public class SimpleTextWatcher implements TextWatcher {
+public interface ViewModel {
 
-    @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    void onSaveState(Bundle outState);
 
-    @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+    void onRestoreState(Bundle savedInstanceState);
 
-    @Override public void afterTextChanged(Editable s) {}
+    void onDestroy();
 
 }

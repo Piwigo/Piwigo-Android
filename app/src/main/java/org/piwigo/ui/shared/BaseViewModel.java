@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.view;
+package org.piwigo.ui.shared;
 
-import android.view.MenuItem;
+import android.os.Bundle;
 
-public interface MainView {
+public abstract class BaseViewModel implements ViewModel {
 
-    void onItemSelected(MenuItem item);
+    @Override public void onSaveState(Bundle outState) {}
+
+    @Override public void onRestoreState(Bundle savedState) {}
+
+    @Override public void onDestroy() {}
 
 }

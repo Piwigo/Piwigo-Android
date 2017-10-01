@@ -26,7 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.piwigo.ui.activity.LoginActivity;
+import org.piwigo.ui.login.LoginActivity;
 
 public class PiwigoAccountAuthenticator extends AbstractAccountAuthenticator {
 

@@ -17,65 +17,127 @@
 
 package org.piwigo.io.repository;
 
+import com.google.gson.Gson;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.piwigo.PiwigoApplication;
-import org.piwigo.internal.di.component.DaggerTestApplicationComponent;
-import org.piwigo.internal.di.component.TestApplicationComponent;
-import org.piwigo.internal.di.module.TestApplicationModule;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.piwigo.io.DynamicEndpoint;
 import org.piwigo.io.MockRestService;
+import org.piwigo.io.RestService;
+import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.model.StatusResponse;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
+import retrofit.client.Header;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
+import rx.Observable;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
+
+import static java.net.HttpURLConnection.HTTP_OK;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserRepositoryTest {
 
     private static final String URL = "http://demo.piwigo.org";
     private static final String USERNAME = "test";
     private static final String PASSWORD = "test";
+    private static final String BAD_CREDENTIAL = "bad";
+    private static final String GUEST_USER = "guest";
+    private static final String COOKIE_PWG_ID = "1234567890";
+    private static final String STATUS_OK = "ok";
+    private static final String TOKEN = "abcdefghijklmnop";
 
-    @Inject UserRepository userRepository;
+    @Mock Session session;
+    @Mock DynamicEndpoint dynamicEndpoint;
+    @Mock RestService restService;
+
+    private UserRepository userRepository;
 
     @Before public void setUp() {
-        PiwigoApplication application = mock(PiwigoApplication.class);
-        TestApplicationComponent applicationComponent = DaggerTestApplicationComponent.builder()
-                .testApplicationModule(new TestApplicationModule(application))
-                .build();
-        applicationComponent.inject(this);
+        MockitoAnnotations.initMocks(this);
+        userRepository = new UserRepository();
+        userRepository.session = session;
+        userRepository.endpoint = dynamicEndpoint;
+        userRepository.restService = restService;
+        userRepository.gson = new Gson();
+        userRepository.ioScheduler = Schedulers.immediate();
+        userRepository.uiScheduler = Schedulers.immediate();
+        when(restService.getStatus()).thenReturn(getStatusResponse(GUEST_USER));
+        when(restService.login(USERNAME, PASSWORD)).thenReturn(getLoginSuccessResponse());
+        when(restService.login(BAD_CREDENTIAL, BAD_CREDENTIAL)).thenReturn(getLoginFailureResponse());
     }
 
-    @Test public void shouldLogin() {
-        LoginResponse loginResponse = userRepository
-                .login(URL, USERNAME, PASSWORD)
-                .toBlocking()
-                .first();
+    @Test public void loginSuccess() {
+        when(restService.getStatus()).thenReturn(getStatusResponse(USERNAME));
+
+        Observable<LoginResponse> observable = userRepository.login(URL, USERNAME, PASSWORD);
+        TestSubscriber<LoginResponse> subscriber = new TestSubscriber<>();
+        observable.subscribe(subscriber);
+
+        subscriber.assertNoErrors();
+        LoginResponse loginResponse = subscriber.getOnNextEvents().get(0);
+        verify(dynamicEndpoint).setUrl(URL);
+        verify(session).setCookie(COOKIE_PWG_ID);
         assertThat(loginResponse.url).isEqualTo(URL);
         assertThat(loginResponse.username).isEqualTo(USERNAME);
         assertThat(loginResponse.password).isEqualTo(PASSWORD);
-        assertThat(loginResponse.pwgId).isEqualTo(MockRestService.COOKIE_PWG_ID);
-        assertThat(loginResponse.statusResponse.stat).isEqualTo(MockRestService.STATUS_OK);
-        assertThat(loginResponse.statusResponse.result.pwgToken).isEqualTo(MockRestService.TOKEN);
+        assertThat(loginResponse.pwgId).isEqualTo(COOKIE_PWG_ID);
+        assertThat(loginResponse.statusResponse.stat).isEqualTo(STATUS_OK);
+        assertThat(loginResponse.statusResponse.result.pwgToken).isEqualTo(TOKEN);
         assertThat(loginResponse.statusResponse.result.username).isEqualTo(USERNAME);
     }
 
-    @Test(expected = Throwable.class) public void shouldThrowOnFailure() {
-        userRepository
-                .login("http://demo.piwigo.org", "bad", "bad")
-                .toBlocking()
-                .first();
+    @Test public void loginError() {
+        Observable<LoginResponse> observable = userRepository.login(URL, BAD_CREDENTIAL, BAD_CREDENTIAL);
+        TestSubscriber<LoginResponse> subscriber = new TestSubscriber<>();
+        observable.subscribe(subscriber);
+
+        subscriber.assertError(Throwable.class);
     }
 
     @Test public void shouldGetStatus() {
-        LoginResponse loginResponse = userRepository
-                .status(URL)
-                .toBlocking()
-                .first();
+        Observable<LoginResponse> observable = userRepository.status(URL);
+        TestSubscriber<LoginResponse> subscriber = new TestSubscriber<>();
+        observable.subscribe(subscriber);
+
+        subscriber.assertNoErrors();
+        LoginResponse loginResponse = subscriber.getOnNextEvents().get(0);
+        verify(dynamicEndpoint).setUrl(URL);
         assertThat(loginResponse.url).isEqualTo(URL);
         assertThat(loginResponse.statusResponse.stat).isEqualTo(MockRestService.STATUS_OK);
-        assertThat(loginResponse.statusResponse.result.username).isEqualTo(MockRestService.GUEST_USER);
+        assertThat(loginResponse.statusResponse.result.username).isEqualTo(GUEST_USER);
     }
 
+    private Observable<StatusResponse> getStatusResponse(String user) {
+        StatusResponse statusResponse = new StatusResponse();
+        statusResponse.stat = STATUS_OK;
+        statusResponse.result = new StatusResponse.Status();
+        statusResponse.result.username = user;
+        statusResponse.result.pwgToken = TOKEN;
+        return Observable.just(statusResponse);
+    }
+
+    private Observable<Response> getLoginSuccessResponse() {
+        List<Header> headers = new ArrayList<>();
+        headers.add(new Header("Set-Cookie", "pwg_id=" + COOKIE_PWG_ID));
+        TypedByteArray body = new TypedByteArray("application/json", "{\"stat\":\"ok\",\"result\":true}".getBytes());
+
+        return Observable.just(new Response("http://test.piwigo.org/ws.php?format=json&method=pwg.session.login", HTTP_OK, "OK", headers, body));
+    }
+
+    private Observable<Response> getLoginFailureResponse() {
+        List<Header> headers = new ArrayList<>();
+        TypedByteArray body = new TypedByteArray("application/json", "{\"stat\":\"fail\",\"err\":999,\"message\":\"Invalid username\\/password\"}".getBytes());
+
+        return Observable.just(new Response("http://test.piwigo.org/ws.php?format=json&method=pwg.session.login", HTTP_OK, "OK", headers, body));
+    }
 }
