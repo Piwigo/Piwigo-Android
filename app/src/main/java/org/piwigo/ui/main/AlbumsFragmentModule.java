@@ -17,8 +17,15 @@
 
 package org.piwigo.ui.main;
 
+import android.content.res.Resources;
+
 import dagger.Module;
+import dagger.Provides;
 
 @Module
 public class AlbumsFragmentModule {
+
+    @Provides Resources provideResources(AlbumsFragment fragment) {
+        return fragment.getResources();
+    }
 }
