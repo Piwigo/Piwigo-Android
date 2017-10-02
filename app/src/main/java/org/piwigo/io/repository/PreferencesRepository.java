@@ -27,7 +27,7 @@ public class PreferencesRepository {
 
     private static final String KEY_DEFAULT_ACCOUNT = "default_account";
 
-    SharedPreferences preferences;
+    private final SharedPreferences preferences;
 
     @Inject public PreferencesRepository(Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);

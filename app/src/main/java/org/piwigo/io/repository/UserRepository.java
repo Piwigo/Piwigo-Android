@@ -20,19 +20,27 @@ package org.piwigo.io.repository;
 import com.google.gson.Gson;
 
 import org.piwigo.helper.CookieHelper;
+import org.piwigo.io.DynamicEndpoint;
+import org.piwigo.io.RestService;
+import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.model.SuccessResponse;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import retrofit.mime.TypedByteArray;
 import rx.Observable;
+import rx.Scheduler;
 
 public class UserRepository extends BaseRepository {
 
-    @Inject Gson gson;
+    private final Gson gson;
 
-    @Inject public UserRepository() {}
+    @Inject public UserRepository(Session session, DynamicEndpoint endpoint, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
+        super(session, endpoint, restService, ioScheduler, uiScheduler);
+        this.gson = gson;
+    }
 
     public Observable<LoginResponse> login(String url, String username, String password) {
         endpoint.setUrl(url);

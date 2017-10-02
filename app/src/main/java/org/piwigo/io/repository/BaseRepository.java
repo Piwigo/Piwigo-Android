@@ -21,23 +21,27 @@ import org.piwigo.io.DynamicEndpoint;
 import org.piwigo.io.RestService;
 import org.piwigo.io.Session;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import rx.Observable;
 import rx.Scheduler;
 
-public abstract class BaseRepository {
+abstract class BaseRepository {
 
-    @Inject Session session;
-    @Inject DynamicEndpoint endpoint;
-    @Inject RestService restService;
-    @Inject @Named("IoScheduler") Scheduler ioScheduler;
-    @Inject @Named("UiScheduler") Scheduler uiScheduler;
+    final Session session;
+    final DynamicEndpoint endpoint;
+    final RestService restService;
+    final Scheduler ioScheduler;
+    final Scheduler uiScheduler;
 
-    protected <T> Observable.Transformer<T, T> applySchedulers() {
+    BaseRepository(Session session, DynamicEndpoint endpoint, RestService restService, Scheduler ioScheduler, Scheduler uiScheduler) {
+        this.session = session;
+        this.endpoint = endpoint;
+        this.restService = restService;
+        this.ioScheduler = ioScheduler;
+        this.uiScheduler = uiScheduler;
+    }
+
+    <T> Observable.Transformer<T, T> applySchedulers() {
         return observable -> observable.subscribeOn(ioScheduler)
                 .observeOn(uiScheduler);
     }
-
 }

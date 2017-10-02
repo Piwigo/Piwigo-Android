@@ -17,42 +17,19 @@
 
 package org.piwigo.internal.di.component;
 
-import android.content.Context;
-
-import com.google.gson.Gson;
-
 import org.piwigo.PiwigoApplication;
 import org.piwigo.internal.di.module.ApiModule;
 import org.piwigo.internal.di.module.ApplicationModule;
 import org.piwigo.internal.di.module.InjectionModule;
 import org.piwigo.internal.di.module.NetworkModule;
-import org.piwigo.io.DynamicEndpoint;
-import org.piwigo.io.RestService;
-import org.piwigo.io.Session;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import rx.Scheduler;
 
 @Singleton
 @Component(modules = {ApplicationModule.class, NetworkModule.class, ApiModule.class, InjectionModule.class})
 public interface ApplicationComponent {
 
     void inject(PiwigoApplication application);
-
-    Context context();
-
-    Session session();
-
-    DynamicEndpoint endpoint();
-
-    Gson gson();
-
-    RestService restService();
-
-    @Named("IoScheduler") Scheduler ioScheduler();
-
-    @Named("UiScheduler") Scheduler uiScheduler();
 }
