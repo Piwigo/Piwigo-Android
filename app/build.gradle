@@ -74,7 +74,6 @@ dependencies {
     compile 'io.reactivex:rxandroid:0.25.0'
     compile 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.0'
     testCompile 'com.squareup.retrofit:retrofit-mock:1.9.0'
