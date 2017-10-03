@@ -39,8 +39,10 @@ public class MainViewModel extends BaseViewModel {
     @VisibleForTesting static final String STATE_NAVIGATION_ITEM = "navigation_item";
 
     public ObservableField<String> title = new ObservableField<>();
-    public ObservableField<String> username = new ObservableField<>();
+    /* those username and url do not make any sense,... as login data is used from LoginView, right? -> so let's get rid of them  */
+/*    public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
+    */
     public DrawerStateObservable drawerState = new DrawerStateObservable(false);
     public NavigationItemObservable navigationItem = new NavigationItemObservable(R.id.nav_albums);
     public NavigationItemSelectedListener navigationListener = new NavigationItemSelectedListener();
@@ -74,8 +76,8 @@ public class MainViewModel extends BaseViewModel {
     }
 
     public void setUser(User user) {
-        username.set(user.username);
-        url.set(user.url);
+/*    TODO    username.set(user.username); -> as username and url are not used, this method in total doesn't make sense
+        url.set(user.url);*/
     }
 
     public void navigationIconClick(View view) {
@@ -89,7 +91,6 @@ public class MainViewModel extends BaseViewModel {
             drawerState.set(false);
             return true;
         }
-
     }
 
 }

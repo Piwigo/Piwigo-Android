@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Copyright 2017 Raphael Mack http://www.raphael-mack.de
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,10 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.model;
+package org.piwigo.ui.view;
 
-import android.accounts.Account;
+public interface AccountView {
 
-/* instances of this class represent one "piwigo account", I.e. an url-username combination */
-public class User {
+    void close();
 
-    public boolean guest;
-
-    public String url;
-
-    public String username;
-
-    /* the android account for that user */
-    public Account account;
 }

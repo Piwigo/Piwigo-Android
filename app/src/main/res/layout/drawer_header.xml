@@ -27,33 +27,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
             android:layout_margin="@dimen/nav_header_padding">
-
-            <TextView
-                android:id="@+id/username"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{viewModel.username}"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/nav_header_user_text_size"
-                tools:text="guest" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/username"
-                android:text="@{viewModel.url}"
-                android:textColor="@android:color/white"
-                tools:text="piwigo.org" />
-
-            <ImageView
-                android:id="@+id/arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_action_arrow_drop_down"
-                android:tint="@android:color/white" />
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </RelativeLayout>
     </FrameLayout>
 </layout>

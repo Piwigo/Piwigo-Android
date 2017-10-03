@@ -66,13 +66,21 @@ public class AlbumsFragment extends BaseFragment implements SwipeRefreshLayout.O
         return (int) Math.floor(configuration.screenWidthDp / (largeScreen ? TABLET_MIN_WIDTH : PHONE_MIN_WIDTH));
     }
 
+    public void refresh() {
+        /* TODO: implement real refresh and call setRefreshing(false) after finishing the refresh on the swipe (see onRefresh)
+        * maybe the viewModel.loadAlbums(null) already does the job? but is this synchronous and fully refreshed on return?
+        * */
+        viewModel.loadAlbums(null);
+    }
+
     @Override
-    public void onRefresh()
-    {
+    public void onRefresh(){
+
         Toast.makeText(getActivity().getApplicationContext(), "Refreshing is not yet implemented :-(", Toast.LENGTH_LONG).show();
         /* for now just stop the refresh animation after 1 sec. */
-        /* TODO: implement real refresh and call setRefreshing(false) after finishing the refresh */
         final Handler handler = new Handler();
+
+        refresh();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {

@@ -22,7 +22,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.piwigo.R;
@@ -33,13 +39,19 @@ import org.piwigo.ui.model.User;
 import org.piwigo.ui.view.MainView;
 import org.piwigo.ui.viewmodel.MainViewModel;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 public class MainActivity extends BaseActivity implements MainView {
 
     @Inject MainViewModel viewModel;
 
+    /* TODO check what account is used for */
     private Account account;
+
+    Spanned[] userStrings = new Spanned[0];
+    List<User> users;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +59,40 @@ public class MainActivity extends BaseActivity implements MainView {
 
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
+
+        Spinner accountSpinner = (Spinner) headerBinding.spinner;
+
+        users = accountHelper.getUsers();
+        userStrings = new Spanned[users.size()];
+        int i = 0;
+        for(User u:users)
+        {
+            userStrings[i] = Html.fromHtml(u.username + "<br>" + u.url);
+            i++;
+        }
+        ArrayAdapter<Spanned> adapter = new ArrayAdapter<Spanned>(this,
+                android.R.layout.simple_spinner_item, userStrings);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        accountSpinner.setAdapter(adapter);
+
+        accountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                Toast.makeText(getApplicationContext(), userStrings[position] + " was selected (" + position + ")", Toast.LENGTH_LONG).show();
+                accountHelper.setAccount(users.get(position).account);
+                ((AlbumsFragment)(getSupportFragmentManager()
+                    .findFragmentById(R.id.content))).refresh();
+                viewModel.drawerState.set(false);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+
+                Toast.makeText(getApplicationContext(), "<nothing> was selected", Toast.LENGTH_LONG).show();
+            }
+
+        });
 
         viewModel.setView(this);
         bindLifecycleEvents(viewModel);
@@ -75,9 +121,13 @@ public class MainActivity extends BaseActivity implements MainView {
     /* handle menu entries */
     @Override public void onItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.nav_about:
-                Intent intent = new Intent(this, AboutActivity.class);
+            case R.id.nav_manage_accounts:
+                Intent intent = new Intent(this, ManageAccountsActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.nav_about:
+                Intent intentabout = new Intent(this, AboutActivity.class);
+                startActivity(intentabout);
                 break;
             case R.id.nav_albums:
                 /* TODO: implement Albums */

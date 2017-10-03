@@ -21,6 +21,7 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -37,7 +38,7 @@ import org.piwigo.ui.viewmodel.LoginViewModel;
 import javax.inject.Inject;
 
 public class LoginActivity extends BaseActivity implements LoginView {
-
+/* TODO: link this LoginActivity to the Android-wide account settings to create an Piwigo-Account from there */
     @Inject LoginViewModel viewModel;
 
     private AccountAuthenticatorResponse authenticatorResponse;
@@ -86,6 +87,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
             Account account = accountHelper.createAccount(response);
             setResultIntent(account);
             viewModel.onAccountCreated();
+            setResult(Activity.RESULT_OK);
         }
     }
 

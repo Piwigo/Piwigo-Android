@@ -23,6 +23,7 @@
             android:theme="@style/Theme.Piwigo.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -44,10 +45,16 @@
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
+        <activity
+            android:name=".ui.activity.ManageAccountsActivity"
+            android:label="@string/title_activity_manage_accounts"
+            android:theme="@style/Theme.Piwigo"></activity>
     </application>
 
 </manifest>

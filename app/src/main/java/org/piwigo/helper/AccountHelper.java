@@ -30,6 +30,7 @@ import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.model.User;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -74,6 +75,7 @@ public class AccountHelper {
         }
     }
 
+
     public boolean hasAccount() {
         List<Account> accounts = getAccounts();
         return accounts.size() > 0;
@@ -82,21 +84,40 @@ public class AccountHelper {
     public Account getAccount(String name, boolean firstIfInvalid) {
         Account account = getAccountIfAvailable(name, firstIfInvalid);
         if (account != null) {
-            updateSession(account);
-            updateEndpoint(account);
+            setAccount(account);
         }
         return account;
     }
 
+    /* don't forget to refresh the views after changing the account
+     * TODO: therefore we should implement some kind of Observer mechanism to notify whoever is interested in
+      * new selection of the current "User" and also if the "Userlist" changes maybe with ObservableField from the databinding package */
+    public void setAccount(Account account) {
+        updateSession(account);
+        updateEndpoint(account);
+    }
+
+    /* TODO make private? */
     public List<Account> getAccounts() {
         return Arrays.asList(accountManager.getAccountsByType(context.getString(R.string.account_type)));
     }
 
+    public List<User> getUsers(){
+        /* todo make list of users an array and static, update it from the accounts on each call? */
+        LinkedList<User> users = new LinkedList<User>();
+        for (Account a: getAccounts()) {
+            users.addLast(createUser(a));
+        }
+        return users;
+    }
+
+    /* TODO: make private? */
     public User createUser(Account account) {
         User user = new User();
         user.guest = Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
         user.url = accountManager.getUserData(account, KEY_URL);
         user.username = accountManager.getUserData(account, KEY_USERNAME);
+        user.account = account;
         return user;
     }
 

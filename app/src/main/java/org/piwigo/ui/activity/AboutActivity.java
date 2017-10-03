@@ -41,6 +41,5 @@ public class AboutActivity extends BaseActivity  {
         bindLifecycleEvents(viewModel);
         binding.setViewModel(viewModel);
         viewModel.setView(this);
-
     }
 }
