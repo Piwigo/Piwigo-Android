@@ -21,12 +21,13 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
@@ -37,14 +38,15 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 
-public class LoginActivity extends BaseActivity implements LoginView {
+public class LoginActivity extends BaseActivity {
 
-    @Inject LoginViewModel viewModel;
+    @Inject LoginViewModelFactory viewModelFactory;
+
+    private LoginViewModel viewModel;
+    private ActivityLoginBinding binding;
 
     private AccountAuthenticatorResponse authenticatorResponse;
     private Bundle resultBundle;
-
-    private ActivityLoginBinding binding;
 
     private Handler handler = new Handler();
 
@@ -59,9 +61,16 @@ public class LoginActivity extends BaseActivity implements LoginView {
             authenticatorResponse.onRequestContinued();
         }
 
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(LoginViewModel.class);
+        viewModel.getLoginSuccess().observe(this, this::loginSuccess);
+        viewModel.getLoginError().observe(this, this::loginError);
+        viewModel.getAnimationFinished().observe(this, animationFinished -> {
+            if (animationFinished != null && animationFinished) {
+                finishWithDelay();
+            }
+        });
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
-        viewModel.setView(this);
-        bindLifecycleEvents(viewModel);
         binding.setViewModel(viewModel);
     }
 
@@ -78,27 +87,25 @@ public class LoginActivity extends BaseActivity implements LoginView {
         super.finish();
     }
 
-    @Override public void onSuccess(LoginResponse response) {
+    private void loginSuccess(LoginResponse response) {
         if (accountHelper.accountExists(response)) {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
-            viewModel.onAccountExists();
+            viewModel.accountExists();
         } else {
             Account account = accountHelper.createAccount(response);
             setResultIntent(account);
-            viewModel.onAccountCreated();
+            viewModel.accountCreated();
         }
     }
 
-    @Override public void onError() {
+    private void loginError(Throwable throwable) {
         Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG)
                 .show();
     }
 
-    @Override public void onAnimationFinished() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            handler.postDelayed(this::finishAfterTransition, 500);
-        }
+    private void finishWithDelay() {
+        handler.postDelayed(() -> ActivityCompat.finishAfterTransition(LoginActivity.this), 500);
     }
 
     private void setResultIntent(Account account) {
@@ -108,5 +115,4 @@ public class LoginActivity extends BaseActivity implements LoginView {
         resultBundle = intent.getExtras();
         setResult(RESULT_OK, intent);
     }
-
 }

@@ -17,17 +17,11 @@
 
 package org.piwigo.io.repository;
 
-import android.text.TextUtils;
-
-import org.piwigo.io.DynamicRetrofit;
-import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.Session;
 
 import rx.Observable;
 import rx.Scheduler;
-
-import static android.view.View.Z;
 
 abstract class BaseRepository {
 

@@ -30,8 +30,7 @@ public class CookieHelperTest {
 
     private Headers headers;
 
-    @Before
-    public void setUp() {
+    @Before public void setUp() {
         headers = Headers.of("Not-Cookie", "aValue", "Set-Cookie", "pwg_id=asdfghjklqwertyuiop", "Also-Not-Cookie", "anotherValue", "Set-Cookie", "something=else");
     }
 

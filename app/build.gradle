@@ -26,6 +26,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+        googlePlay {
+
+        }
+        floss {
+
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -40,20 +48,14 @@ android {
     dataBinding {
         enabled = true
     }
-    useLibrary 'org.apache.http.legacy'
-
-    productFlavors {
-        googlePlay {
-
-        }
-        floss {
-
-        }
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 }
 
 ext {
     supportVersion = '26.1.0'
+    lifecycleVersion = '1.0.0-beta1'
     daggerVersion = '2.11'
     okhttpVersion = '3.9.0'
     retrofitVersion = '2.3.0'
@@ -71,6 +73,8 @@ dependencies {
     compile "com.google.dagger:dagger-android:${daggerVersion}"
     compile "com.google.dagger:dagger-android-support:${daggerVersion}"
     annotationProcessor "com.google.dagger:dagger-android-processor:${daggerVersion}"
+    compile "android.arch.lifecycle:extensions:${lifecycleVersion}"
+    annotationProcessor "android.arch.lifecycle:compiler:${lifecycleVersion}"
     compile "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     compile "com.squareup.okhttp3:logging-interceptor:${okhttpVersion}"
     compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
@@ -98,7 +102,6 @@ dependencies {
         exclude group: 'com.android.support'
     }
     testAnnotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
-    testCompile "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
-    testCompile "com.squareup.retrofit2:retrofit-mock:${retrofitVersion}"
+    testCompile "android.arch.core:core-testing:${lifecycleVersion}"
     testCompile 'org.mockito:mockito-core:2.10.0'
 }
