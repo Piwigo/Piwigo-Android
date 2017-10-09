@@ -34,6 +34,7 @@ import android.widget.Toast;
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
+import org.piwigo.ui.adapter.AccountSelectionSpinnerAdapter;
 import org.piwigo.ui.fragment.AlbumsFragment;
 import org.piwigo.ui.model.User;
 import org.piwigo.ui.view.MainView;
@@ -60,7 +61,7 @@ public class MainActivity extends BaseActivity implements MainView {
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
 
-        Spinner accountSpinner = (Spinner) headerBinding.spinner;
+        Spinner accountSpinner = (Spinner) headerBinding.accountSpinner;
 
         users = accountHelper.getUsers();
         userStrings = new Spanned[users.size()];
@@ -70,10 +71,10 @@ public class MainActivity extends BaseActivity implements MainView {
             userStrings[i] = Html.fromHtml(u.username + "<br>" + u.url);
             i++;
         }
-        ArrayAdapter<Spanned> adapter = new ArrayAdapter<Spanned>(this,
-                android.R.layout.simple_spinner_item, userStrings);
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        AccountSelectionSpinnerAdapter adapter = new AccountSelectionSpinnerAdapter(this,
+                R.layout.account_selection_spinner_item, R.id.aspin_username, users);
+
         accountSpinner.setAdapter(adapter);
 
         accountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

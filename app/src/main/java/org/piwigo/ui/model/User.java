@@ -30,4 +30,6 @@ public class User {
 
     /* the android account for that user */
     public Account account;
+
+    /* TODO add image for the gallery (from the favicon?) */
 }

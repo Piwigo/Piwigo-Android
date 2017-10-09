@@ -79,7 +79,7 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
             galleryUrlView.setText(user.url);
 
             ImageView imageView = (ImageView) view.findViewById(R.id.account_image);
-/* TODO fill image here */
+/* TODO fill image here (from favicon of gallery / User) */
 
             return view;
         }
