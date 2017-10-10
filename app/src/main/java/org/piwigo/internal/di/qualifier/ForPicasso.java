@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.shared;
+package org.piwigo.internal.di.qualifier;
 
-import android.os.Bundle;
+import java.lang.annotation.Retention;
 
-public abstract class BaseViewModel implements ViewModel {
+import javax.inject.Qualifier;
 
-    @Override public void onSaveState(Bundle outState) {}
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-    @Override public void onRestoreState(Bundle savedState) {}
-
-    @Override public void onDestroy() {}
-
+@Qualifier
+@Retention(RUNTIME)
+public @interface ForPicasso {
 }

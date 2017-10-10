@@ -19,6 +19,9 @@ package org.piwigo.internal.di.module;
 
 import android.content.Context;
 
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Picasso;
+
 import org.piwigo.PiwigoApplication;
 
 import javax.inject.Singleton;
@@ -37,5 +40,11 @@ public class ApplicationModule {
 
     @Provides @Singleton Context provideApplicationContext() {
         return application;
+    }
+
+    @Provides @Singleton Picasso providePicasso(OkHttp3Downloader downloader) {
+        return new Picasso.Builder(application)
+                .downloader(downloader)
+                .build();
     }
 }

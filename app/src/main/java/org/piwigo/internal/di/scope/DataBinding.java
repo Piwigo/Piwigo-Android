@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,30 +15,15 @@
  * limitations under the License.
  */
 
-package org.piwigo.io;
+package org.piwigo.internal.di.scope;
 
-import retrofit.Endpoint;
+import java.lang.annotation.Retention;
 
-public class DynamicEndpoint implements Endpoint {
+import javax.inject.Scope;
 
-    private String url;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-    private String name;
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    @Override public String getUrl() {
-        return url;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override public String getName() {
-        return name;
-    }
-
+@Scope
+@Retention(RUNTIME)
+public @interface DataBinding {
 }

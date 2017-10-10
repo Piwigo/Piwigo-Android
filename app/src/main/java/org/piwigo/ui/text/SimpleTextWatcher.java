@@ -15,36 +15,17 @@
  * limitations under the License.
  */
 
-package org.piwigo.internal.binding.observable;
+package org.piwigo.ui.text;
 
-import android.databinding.BaseObservable;
+import android.text.Editable;
+import android.text.TextWatcher;
 
-public class ErrorObservable extends BaseObservable {
+public class SimpleTextWatcher implements TextWatcher {
 
-    private String error;
+    @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-    public ErrorObservable() {}
+    @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
-    public ErrorObservable(String error) {
-        this.error = error;
-    }
-
-    public void set(String error) {
-        this.error = error;
-        notifyChange();
-    }
-
-    public String get() {
-        return error;
-    }
-
-    public void clear() {
-        this.error = null;
-        notifyChange();
-    }
-
-    public boolean hasError() {
-        return error != null;
-    }
+    @Override public void afterTextChanged(Editable s) {}
 
 }

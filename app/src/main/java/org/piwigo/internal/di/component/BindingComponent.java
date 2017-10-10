@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.main;
+package org.piwigo.internal.di.component;
 
-import android.view.MenuItem;
+import android.databinding.DataBindingComponent;
 
-public interface MainView {
+import org.piwigo.internal.di.module.BindingModule;
+import org.piwigo.internal.di.scope.DataBinding;
 
-    void onItemSelected(MenuItem item);
+import dagger.Component;
 
-}
+@DataBinding
+@Component(dependencies = ApplicationComponent.class, modules = BindingModule.class)
+public interface BindingComponent extends DataBindingComponent {}

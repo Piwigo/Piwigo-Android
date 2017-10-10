@@ -72,5 +72,4 @@ public class LauncherActivity extends BaseActivity {
             navigator.startLogin(this);
         }
     }
-
 }

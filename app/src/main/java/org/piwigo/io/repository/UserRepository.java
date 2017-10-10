@@ -17,49 +17,39 @@
 
 package org.piwigo.io.repository;
 
-import com.google.gson.Gson;
-
 import org.piwigo.helper.CookieHelper;
-import org.piwigo.io.DynamicEndpoint;
 import org.piwigo.io.RestService;
+import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
-import org.piwigo.io.model.SuccessResponse;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import retrofit.mime.TypedByteArray;
 import rx.Observable;
 import rx.Scheduler;
 
 public class UserRepository extends BaseRepository {
 
-    private final Gson gson;
-
-    @Inject public UserRepository(Session session, DynamicEndpoint endpoint, RestService restService, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, Gson gson) {
-        super(session, endpoint, restService, ioScheduler, uiScheduler);
-        this.gson = gson;
+    @Inject public UserRepository(Session session, RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler) {
+        super(session, restServiceFactory, ioScheduler, uiScheduler);
     }
 
     public Observable<LoginResponse> login(String url, String username, String password) {
-        endpoint.setUrl(url);
+        RestService restService = restServiceFactory.createForUrl(validateUrl(url));
 
         final LoginResponse loginResponse = new LoginResponse();
         loginResponse.url = url;
         loginResponse.username = username;
         loginResponse.password = password;
 
-        return restService
-                .login(username, password)
+        return restService.login(username, password)
                 .flatMap(response -> {
-                    String body = new String(((TypedByteArray) response.getBody()).getBytes());
-                    SuccessResponse successResponse = gson.fromJson(body, SuccessResponse.class);
-                    if (successResponse.result) {
-                        String sessionId = CookieHelper.extract("pwg_id", response.getHeaders());
+                    if (response.body().result) {
+                        String sessionId = CookieHelper.extract("pwg_id", response.headers());
                         loginResponse.pwgId = sessionId;
                         session.setCookie(sessionId);
-                        return Observable.just(successResponse);
+                        return Observable.just(response.body());
                     }
                     return Observable.error(new Throwable("Login failed"));
                 })
@@ -72,18 +62,16 @@ public class UserRepository extends BaseRepository {
     }
 
     public Observable<LoginResponse> status(String url) {
-        endpoint.setUrl(url);
+        RestService restService = restServiceFactory.createForUrl(validateUrl(url));
 
         final LoginResponse loginResponse = new LoginResponse();
         loginResponse.url = url;
 
-        return restService
-                .getStatus()
+        return restService.getStatus()
                 .map(statusResponse -> {
                     loginResponse.statusResponse = statusResponse;
                     return loginResponse;
                 })
                 .compose(applySchedulers());
     }
-
 }

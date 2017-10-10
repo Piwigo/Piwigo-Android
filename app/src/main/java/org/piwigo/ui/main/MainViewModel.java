@@ -17,9 +17,10 @@
 
 package org.piwigo.ui.main;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.ViewModel;
 import android.databinding.ObservableField;
-import android.os.Bundle;
-import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.NavigationView;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,15 +29,8 @@ import org.piwigo.R;
 import org.piwigo.internal.binding.observable.DrawerStateObservable;
 import org.piwigo.internal.binding.observable.NavigationItemObservable;
 import org.piwigo.ui.model.User;
-import org.piwigo.ui.shared.BaseViewModel;
 
-import javax.inject.Inject;
-
-public class MainViewModel extends BaseViewModel {
-
-    @VisibleForTesting static final String STATE_TITLE = "title";
-    @VisibleForTesting static final String STATE_DRAWER_OPEN = "drawer_open";
-    @VisibleForTesting static final String STATE_NAVIGATION_ITEM = "navigation_item";
+public class MainViewModel extends ViewModel {
 
     public ObservableField<String> title = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
@@ -45,35 +39,17 @@ public class MainViewModel extends BaseViewModel {
     public NavigationItemObservable navigationItem = new NavigationItemObservable(R.id.nav_albums);
     public NavigationItemSelectedListener navigationListener = new NavigationItemSelectedListener();
 
-    private MainView view;
+    private MutableLiveData<MenuItem> selectedMenuItem = new MutableLiveData<>();
 
-    @Inject public MainViewModel() {}
-
-    public void setView(MainView view) {
-        this.view = view;
+    public LiveData<MenuItem> getSelectedMenuItem() {
+        return selectedMenuItem;
     }
 
-    @Override public void onSaveState(Bundle outState) {
-        outState.putString(STATE_TITLE, title.get());
-        outState.putBoolean(STATE_DRAWER_OPEN, drawerState.get());
-        outState.putInt(STATE_NAVIGATION_ITEM, navigationItem.get());
-    }
-
-    @Override public void onRestoreState(Bundle savedState) {
-        title.set(savedState.getString(STATE_TITLE));
-        drawerState.set(savedState.getBoolean(STATE_DRAWER_OPEN));
-        navigationItem.set(savedState.getInt(STATE_NAVIGATION_ITEM));
-    }
-
-    @Override public void onDestroy() {
-        view = null;
-    }
-
-    public void setTitle(String title) {
+    void setTitle(String title) {
         this.title.set(title);
     }
 
-    public void setUser(User user) {
+    void setUser(User user) {
         username.set(user.username);
         url.set(user.url);
     }
@@ -85,11 +61,9 @@ public class MainViewModel extends BaseViewModel {
     public class NavigationItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener {
 
         @Override public boolean onNavigationItemSelected(MenuItem item) {
-            view.onItemSelected(item);
+            selectedMenuItem.setValue(item);
             drawerState.set(false);
             return true;
         }
-
     }
-
 }

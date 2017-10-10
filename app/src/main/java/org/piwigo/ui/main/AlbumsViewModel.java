@@ -17,6 +17,7 @@
 
 package org.piwigo.ui.main;
 
+import android.arch.lifecycle.ViewModel;
 import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.util.Log;
@@ -28,38 +29,36 @@ import org.piwigo.io.model.Category;
 import org.piwigo.io.model.ImageInfo;
 import org.piwigo.io.repository.CategoriesRepository;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
-import org.piwigo.ui.shared.BaseViewModel;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import rx.Subscriber;
 import rx.Subscription;
 
-public class AlbumsViewModel extends BaseViewModel {
+public class AlbumsViewModel extends ViewModel {
 
     private static final String TAG = AlbumsViewModel.class.getName();
 
     public ObservableArrayList<Pair<Category, ImageInfo>> items = new ObservableArrayList<>();
     public BindingRecyclerViewAdapter.ViewBinder<Pair<Category, ImageInfo>> viewBinder = new CategoryViewBinder();
 
-    @Inject CategoriesRepository categoriesRepository;
-    @Inject Resources resources;
+    private final CategoriesRepository categoriesRepository;
+    private final Resources resources;
 
-    private Integer categoryId;
     private Subscription subscription;
 
-    @Inject public AlbumsViewModel() {}
+    AlbumsViewModel(CategoriesRepository categoriesRepository, Resources resources) {
+        this.categoriesRepository = categoriesRepository;
+        this.resources = resources;
+    }
 
-    @Override public void onDestroy() {
+    @Override protected void onCleared() {
         if (subscription != null) {
             subscription.unsubscribe();
         }
     }
 
-    public void loadAlbums(Integer categoryId) {
-        this.categoryId = categoryId;
+    void loadAlbums(Integer categoryId) {
         subscription = categoriesRepository.getCategories(categoryId)
                 .subscribe(new CategoriesSubscriber());
     }
@@ -76,7 +75,6 @@ public class AlbumsViewModel extends BaseViewModel {
             items.clear();
             items.addAll(pairs);
         }
-
     }
 
     private class CategoryViewBinder implements BindingRecyclerViewAdapter.ViewBinder<Pair<Category, ImageInfo>> {
@@ -98,7 +96,5 @@ public class AlbumsViewModel extends BaseViewModel {
             AlbumItemViewModel viewModel = new AlbumItemViewModel(item.second.derivatives.large.url, item.first.name, photos);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
-
     }
-
 }

@@ -17,83 +17,69 @@
 
 package org.piwigo.ui.login;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.ViewModel;
 import android.content.res.Resources;
-import android.os.Bundle;
+import android.databinding.Observable;
+import android.databinding.ObservableField;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.View;
 
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
 
 import org.piwigo.R;
-import org.piwigo.internal.binding.observable.EditTextObservable;
-import org.piwigo.internal.binding.observable.ErrorObservable;
 import org.piwigo.internal.binding.observable.FABProgressCircleObservable;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
-import org.piwigo.ui.shared.BaseViewModel;
 
 import java.util.regex.Pattern;
-
-import javax.inject.Inject;
 
 import rx.Subscriber;
 import rx.Subscription;
 
-public class LoginViewModel extends BaseViewModel {
+public class LoginViewModel extends ViewModel {
 
     private static final String TAG = LoginViewModel.class.getName();
 
-    @VisibleForTesting static final String STATE_URL = "url";
-    @VisibleForTesting static final String STATE_USERNAME = "username";
-    @VisibleForTesting static final String STATE_PASSWORD = "password";
-
     @VisibleForTesting static Pattern WEB_URL = Patterns.WEB_URL;
 
-    public EditTextObservable url = new EditTextObservable("http://");
-    public ErrorObservable urlError = new ErrorObservable();
-    public EditTextObservable username = new EditTextObservable();
-    public ErrorObservable usernameError = new ErrorObservable();
-    public EditTextObservable password = new EditTextObservable();
-    public ErrorObservable passwordError = new ErrorObservable();
+    public ObservableField<String> url = new ObservableField<>("http://");
+    public ObservableField<String> urlError = new ObservableField<>();
+    public ObservableField<String> username = new ObservableField<>();
+    public ObservableField<String> usernameError = new ObservableField<>();
+    public ObservableField<String> password = new ObservableField<>();
+    public ObservableField<String> passwordError = new ObservableField<>();
     public FABProgressCircleObservable progressCircle = new FABProgressCircleObservable();
     public FABProgressListener progressListener = new LoginFABProgressListener();
 
-    @Inject UserRepository userRepository;
-    @Inject Resources resources;
+    private final UserRepository userRepository;
+    private final Resources resources;
 
-    private LoginView view;
+    private MutableLiveData<LoginResponse> loginSuccess = new MutableLiveData<>();
+    private MutableLiveData<Throwable> loginError = new MutableLiveData<>();
+    private MutableLiveData<Boolean> animationFinished = new MutableLiveData<>();
+
     private Subscription subscription;
 
-    @Inject public LoginViewModel() {}
+    LoginViewModel(UserRepository userRepository, Resources resources) {
+        this.userRepository = userRepository;
+        this.resources = resources;
 
-    public void setView(LoginView view) {
-        this.view = view;
+        clearOnPropertyChange(url, urlError);
+        clearOnPropertyChange(username, usernameError);
+        clearOnPropertyChange(password, passwordError);
     }
 
-    @Override public void onSaveState(Bundle outState) {
-        outState.putString(STATE_URL, url.get());
-        outState.putString(STATE_USERNAME, username.get());
-        outState.putString(STATE_PASSWORD, password.get());
-    }
-
-    @Override public void onRestoreState(Bundle savedState) {
-        if (savedState != null) {
-            url.set(savedState.getString(STATE_URL));
-            username.set(savedState.getString(STATE_USERNAME));
-            password.set(savedState.getString(STATE_PASSWORD));
-        }
-    }
-
-    @Override public void onDestroy() {
-        view = null;
+    @Override
+    protected void onCleared() {
         if (subscription != null) {
             subscription.unsubscribe();
         }
     }
 
-    public void onLoginClick(View view) {
+    public void onLoginClick() {
         boolean siteValid = isSiteValid();
         boolean loginValid = isGuest() || isLoginValid();
 
@@ -112,11 +98,23 @@ public class LoginViewModel extends BaseViewModel {
         }
     }
 
-    public void onAccountCreated() {
+    LiveData<LoginResponse> getLoginSuccess() {
+        return loginSuccess;
+    }
+
+    LiveData<Throwable> getLoginError() {
+        return loginError;
+    }
+
+    LiveData<Boolean> getAnimationFinished() {
+        return animationFinished;
+    }
+
+    void accountCreated() {
         progressCircle.beginFinalAnimation();
     }
 
-    public void onAccountExists() {
+    void accountExists() {
         progressCircle.hide();
     }
 
@@ -132,18 +130,18 @@ public class LoginViewModel extends BaseViewModel {
     }
 
     private boolean isGuest() {
-        return username.isEmpty() && password.isEmpty();
+        return isEmpty(username.get()) && isEmpty(password.get());
     }
 
     private boolean isLoginValid() {
         boolean valid = true;
 
-        if (username.isEmpty()) {
+        if (isEmpty(username.get())) {
             usernameError.set(resources.getString(R.string.login_username_empty));
             valid = false;
         }
 
-        if (password.isEmpty()) {
+        if (isEmpty(password.get())) {
             passwordError.set(resources.getString(R.string.login_password_empty));
             valid = false;
         }
@@ -151,8 +149,17 @@ public class LoginViewModel extends BaseViewModel {
         return valid;
     }
 
-    private boolean hasView() {
-        return view != null;
+    private void clearOnPropertyChange(ObservableField source, ObservableField<String> fieldToClear) {
+        source.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                fieldToClear.set(null);
+            }
+        });
+    }
+
+    private boolean isEmpty(String string) {
+        return string == null || string.isEmpty();
     }
 
     private class LoginSubscriber extends Subscriber<LoginResponse> {
@@ -162,23 +169,19 @@ public class LoginViewModel extends BaseViewModel {
         @Override public void onError(Throwable e) {
             Log.e(TAG, e.getMessage());
             progressCircle.hide();
+            loginError.setValue(e);
         }
 
         @Override public void onNext(LoginResponse loginResponse) {
-            view.onSuccess(loginResponse);
+            loginSuccess.setValue(loginResponse);
         }
-
     }
 
     private class LoginFABProgressListener implements FABProgressListener {
 
         @Override
         public void onFABProgressAnimationEnd() {
-            if (hasView()) {
-                view.onAnimationFinished();
-            }
+            animationFinished.setValue(true);
         }
-
     }
-
 }

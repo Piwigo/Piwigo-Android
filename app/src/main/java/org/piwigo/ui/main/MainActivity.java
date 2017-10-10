@@ -18,6 +18,7 @@
 package org.piwigo.ui.main;
 
 import android.accounts.Account;
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,11 +37,11 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 
-public class MainActivity extends BaseActivity implements HasSupportFragmentInjector, MainView {
+public class MainActivity extends BaseActivity implements HasSupportFragmentInjector {
 
     @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
-    @Inject MainViewModel viewModel;
 
+    private MainViewModel viewModel;
     private Account account;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +51,15 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
 
-        viewModel.setView(this);
-        bindLifecycleEvents(viewModel);
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getSelectedMenuItem().observe(this, this::itemSelected);
+
         binding.setViewModel(viewModel);
         headerBinding.setViewModel(viewModel);
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
+
+        loadAccount();
 
         if (savedInstanceState == null) {
             viewModel.setTitle(getString(R.string.nav_albums));
@@ -74,15 +78,15 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         }
     }
 
-    @Override public void onItemSelected(MenuItem item) {
+    @Override public AndroidInjector<Fragment> supportFragmentInjector() {
+        return fragmentInjector;
+    }
+
+    private void itemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_albums:
                 break;
         }
-    }
-
-    @Override public AndroidInjector<Fragment> supportFragmentInjector() {
-        return fragmentInjector;
     }
 
     private void checkAccount() {
@@ -104,5 +108,4 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         User user = accountHelper.createUser(account);
         viewModel.setUser(user);
     }
-
 }

@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.shared;
+package org.piwigo.internal.di.qualifier;
 
-import android.support.v7.app.AppCompatActivity;
+import java.lang.annotation.Retention;
 
-import org.piwigo.helper.AccountHelper;
-import org.piwigo.io.repository.PreferencesRepository;
+import javax.inject.Qualifier;
 
-import javax.inject.Inject;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-public abstract class BaseActivity extends AppCompatActivity {
-
-    @Inject protected AccountHelper accountHelper;
-    @Inject protected PreferencesRepository preferencesRepository;
+@Qualifier
+@Retention(RUNTIME)
+public @interface ForRetrofit {
 }

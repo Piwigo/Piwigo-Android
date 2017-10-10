@@ -24,7 +24,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import org.piwigo.R;
-import org.piwigo.io.DynamicEndpoint;
 import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.model.User;
@@ -48,7 +47,6 @@ public class AccountHelper {
     private AccountManager accountManager;
 
     @Inject Session session;
-    @Inject DynamicEndpoint endpoint;
 
     @Inject public AccountHelper(Context context) {
         this.context = context;
@@ -83,7 +81,6 @@ public class AccountHelper {
         Account account = getAccountIfAvailable(name, firstIfInvalid);
         if (account != null) {
             updateSession(account);
-            updateEndpoint(account);
         }
         return account;
     }
@@ -98,6 +95,10 @@ public class AccountHelper {
         user.url = accountManager.getUserData(account, KEY_URL);
         user.username = accountManager.getUserData(account, KEY_USERNAME);
         return user;
+    }
+
+    public String getAccountUrl(Account account) {
+        return accountManager.getUserData(account, KEY_URL);
     }
 
     private Account createUserAccount(LoginResponse loginResponse) {
@@ -148,12 +149,8 @@ public class AccountHelper {
 
     private void updateSession(Account account) {
         boolean guest = Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
+        session.setAccount(account);
         session.setCookie(guest ? null : accountManager.getUserData(account, KEY_COOKIE));
         session.setToken(guest ? null : accountManager.getUserData(account, KEY_TOKEN));
     }
-
-    private void updateEndpoint(Account account) {
-        endpoint.setUrl(accountManager.getUserData(account, KEY_URL));
-    }
-
 }

@@ -60,8 +60,7 @@
                             android:inputType="textUri"
                             android:maxLines="1"
                             android:nextFocusDown="@+id/username"
-                            app:error="@{viewModel.urlError}"
-                            app:observable="@{viewModel.url}" />
+                            android:text="@={viewModel.url}" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -80,8 +79,7 @@
                             android:maxLines="1"
                             android:nextFocusDown="@+id/password"
                             android:nextFocusUp="@+id/url"
-                            app:error="@{viewModel.usernameError}"
-                            app:observable="@{viewModel.username}" />
+                            android:text="@={viewModel.username}" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -101,8 +99,7 @@
                             android:maxLines="1"
                             android:nextFocusDown="@+id/login_button"
                             android:nextFocusUp="@+id/username"
-                            app:error="@{viewModel.passwordError}"
-                            app:observable="@{viewModel.password}" />
+                            android:text="@={viewModel.password}" />
                     </android.support.design.widget.TextInputLayout>
 
                     <com.github.jorgecastilloprz.FABProgressCircle
@@ -119,7 +116,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="24dp"
-                            android:onClick="@{viewModel.onLoginClick}"
+                            android:onClick="@{() -> viewModel.onLoginClick()}"
                             android:scaleType="center"
                             android:src="@drawable/ic_chevron_right"
                             app:elevation="8dp"

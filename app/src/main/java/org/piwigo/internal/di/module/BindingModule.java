@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.shared;
+package org.piwigo.internal.di.module;
 
-import android.os.Bundle;
+import com.squareup.picasso.Picasso;
 
-public interface ViewModel {
+import org.piwigo.internal.binding.adapter.ImageBindingAdapter;
+import org.piwigo.internal.di.scope.DataBinding;
 
-    void onSaveState(Bundle outState);
+import dagger.Module;
+import dagger.Provides;
 
-    void onRestoreState(Bundle savedInstanceState);
+@Module
+public class BindingModule {
 
-    void onDestroy();
-
+    @Provides @DataBinding ImageBindingAdapter provideImageBindingAdapter(Picasso picasso) {
+        return new ImageBindingAdapter(picasso);
+    }
 }

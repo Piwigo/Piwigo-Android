@@ -15,17 +15,30 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.shared;
+package org.piwigo.io;
 
-import android.support.v7.app.AppCompatActivity;
+import android.accounts.Account;
 
 import org.piwigo.helper.AccountHelper;
-import org.piwigo.io.repository.PreferencesRepository;
 
-import javax.inject.Inject;
+import retrofit2.Retrofit;
 
-public abstract class BaseActivity extends AppCompatActivity {
+public class RestServiceFactory {
 
-    @Inject protected AccountHelper accountHelper;
-    @Inject protected PreferencesRepository preferencesRepository;
+    private final Retrofit.Builder builder;
+    private final AccountHelper accountHelper;
+
+    public RestServiceFactory(Retrofit.Builder builder, AccountHelper accountHelper) {
+        this.builder = builder;
+        this.accountHelper = accountHelper;
+    }
+
+    public RestService createForUrl(String url) {
+        return builder.baseUrl(url).build().create(RestService.class);
+    }
+
+    public RestService createForAccount(Account account) {
+        String url = accountHelper.getAccountUrl(account);
+        return createForUrl(url);
+    }
 }

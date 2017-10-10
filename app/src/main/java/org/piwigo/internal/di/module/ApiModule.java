@@ -19,11 +19,10 @@ package org.piwigo.internal.di.module;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.okhttp.OkHttpClient;
 
-import org.piwigo.BuildConfig;
-import org.piwigo.io.DynamicEndpoint;
-import org.piwigo.io.RestService;
+import org.piwigo.helper.AccountHelper;
+import org.piwigo.internal.di.qualifier.ForRetrofit;
+import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.Session;
 
 import javax.inject.Named;
@@ -31,16 +30,13 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
-import retrofit.converter.GsonConverter;
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import static retrofit.RestAdapter.LogLevel.FULL;
-import static retrofit.RestAdapter.LogLevel.NONE;
 
 @Module
 public class ApiModule {
@@ -49,37 +45,17 @@ public class ApiModule {
         return new Session();
     }
 
-    @Provides @Singleton DynamicEndpoint provideDynamicEndpoint() {
-        return new DynamicEndpoint();
-    }
-
-    @Provides @Singleton RequestInterceptor provideRequestInterceptor(Session session) {
-        return request -> {
-            request.addQueryParam("format", "json");
-            if (session.getCookie() != null) {
-                request.addHeader("Cookie", "pwg_id=" + session.getCookie());
-            }
-        };
-    }
-
     @Provides @Singleton Gson provideGson() {
         return new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd HH:mm:ss")
                 .create();
     }
 
-    @Provides @Singleton RestAdapter provideRestAdapter(OkHttpClient client, DynamicEndpoint endpoint, RequestInterceptor interceptor, Gson gson) {
-        return new RestAdapter.Builder()
-                .setClient(new OkClient(client))
-                .setLogLevel(BuildConfig.DEBUG ? FULL : NONE)
-                .setEndpoint(endpoint)
-                .setRequestInterceptor(interceptor)
-                .setConverter(new GsonConverter(gson))
-                .build();
-    }
-
-    @Provides @Singleton RestService provideRestService(RestAdapter restAdapter) {
-        return restAdapter.create(RestService.class);
+    @Provides @Singleton Retrofit.Builder provideRetrofitBuilder(@ForRetrofit OkHttpClient client, Gson gson) {
+        return new Retrofit.Builder()
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
     }
 
     @Provides @Singleton @Named("IoScheduler") Scheduler provideIoScheduler() {
@@ -88,5 +64,9 @@ public class ApiModule {
 
     @Provides @Singleton @Named("UiScheduler") Scheduler provideUiScheduler() {
         return AndroidSchedulers.mainThread();
+    }
+
+    @Provides @Singleton RestServiceFactory provideRestServiceFactory(Retrofit.Builder builder, AccountHelper accountHelper) {
+        return new RestServiceFactory(builder, accountHelper);
     }
 }
