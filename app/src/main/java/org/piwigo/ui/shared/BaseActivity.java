@@ -17,7 +17,6 @@
 
 package org.piwigo.ui.shared;
 
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import org.piwigo.helper.AccountHelper;
@@ -27,43 +26,6 @@ import javax.inject.Inject;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private ViewModel viewModel;
-
     @Inject protected AccountHelper accountHelper;
     @Inject protected PreferencesRepository preferencesRepository;
-
-    @Override protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override protected void onSaveInstanceState(Bundle outState) {
-        if (hasViewModel()) {
-            viewModel.onSaveState(outState);
-        }
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (hasViewModel()) {
-            viewModel.onRestoreState(savedInstanceState);
-        }
-    }
-
-    @Override protected void onDestroy() {
-        if (hasViewModel()) {
-            viewModel.onDestroy();
-            viewModel = null;
-        }
-        super.onDestroy();
-    }
-
-    protected void bindLifecycleEvents(ViewModel viewModel) {
-        this.viewModel = viewModel;
-    }
-
-    private boolean hasViewModel() {
-        return viewModel != null;
-    }
-
 }

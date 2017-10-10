@@ -63,7 +63,7 @@ public class LoginViewModel extends ViewModel {
 
     private Subscription subscription;
 
-    public LoginViewModel(UserRepository userRepository, Resources resources) {
+    LoginViewModel(UserRepository userRepository, Resources resources) {
         this.userRepository = userRepository;
         this.resources = resources;
 

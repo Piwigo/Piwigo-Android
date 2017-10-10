@@ -17,45 +17,8 @@
 
 package org.piwigo.ui.shared;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 public abstract class BaseFragment extends Fragment {
-
-    private ViewModel viewModel;
-
-    @Override public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override public void onSaveInstanceState(Bundle outState) {
-        if (hasViewModel()) {
-            viewModel.onSaveState(outState);
-        }
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override public void onViewStateRestored(Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (hasViewModel()) {
-            viewModel.onRestoreState(savedInstanceState);
-        }
-    }
-
-    @Override public void onDestroy() {
-        if (hasViewModel()) {
-            viewModel.onDestroy();
-            viewModel = null;
-        }
-        super.onDestroy();
-    }
-
-    protected void bindLifecycleEvents(ViewModel viewModel) {
-        this.viewModel = viewModel;
-    }
-
-    private boolean hasViewModel() {
-        return viewModel != null;
-    }
 
 }

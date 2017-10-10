@@ -26,12 +26,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    flavorDimensions "default"
     productFlavors {
         googlePlay {
-
+            dimension "default"
         }
         floss {
-
+            dimension "default"
         }
     }
     compileOptions {
@@ -49,7 +50,9 @@ android {
         enabled = true
     }
     testOptions {
-        unitTests.returnDefaultValues = true
+        unitTests {
+            returnDefaultValues = true
+        }
     }
 }
 

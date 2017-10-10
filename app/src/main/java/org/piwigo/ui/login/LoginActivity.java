@@ -52,6 +52,7 @@ public class LoginActivity extends BaseActivity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
+        setTheme(R.style.Theme_Piwigo_Login);
         super.onCreate(savedInstanceState);
 
         // Account authenticator stuff, applicable if user comes from "add account" in settings only

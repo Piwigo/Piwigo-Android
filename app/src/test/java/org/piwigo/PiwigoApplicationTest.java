@@ -33,7 +33,6 @@ public class PiwigoApplicationTest {
     private PiwigoApplication application;
 
     @Before public void setUp() {
-
         application = (PiwigoApplication) RuntimeEnvironment.application;
     }
 

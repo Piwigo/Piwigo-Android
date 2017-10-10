@@ -17,15 +17,15 @@
 
 package org.piwigo.ui.main;
 
-import org.piwigo.ui.shared.BaseViewModel;
+import android.arch.lifecycle.ViewModel;
 
-public class AlbumItemViewModel extends BaseViewModel {
+public class AlbumItemViewModel extends ViewModel {
 
     private final String url;
     private final String title;
     private final String photos;
 
-    public AlbumItemViewModel(String url, String title, String photos) {
+    AlbumItemViewModel(String url, String title, String photos) {
         this.url = url;
         this.title = title;
         this.photos = photos;
@@ -42,5 +42,4 @@ public class AlbumItemViewModel extends BaseViewModel {
     public String getPhotos() {
         return photos;
     }
-
 }
