@@ -25,8 +25,9 @@
     <string name="login_account_error">An account for this site already exists</string>
 
     <!-- Account -->
-    <string name="account_name" translatable="false">%1$s@%2$s</string>
+    <string name="account_name" translatable="false">%1$s@%2$s%3$s</string>
     <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
+    <string name="account_not_selected">Select an account for deletion first</string>
 
     <!-- About -->
     <string name="about_text"><![CDATA[

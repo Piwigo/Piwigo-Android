@@ -16,17 +16,20 @@
   ~ limitations under the License.
   -->
 
-<menu xmlns:tools="http://schemas.android.com/tools"
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_add_account"
-        android:icon="@drawable/ic_action_add"
+        android:icon="@android:drawable/ic_menu_add"
         android:showAsAction="always"
-        android:title="@string/nav_add_account" />
+        android:title="@string/nav_add_account"
+        app:showAsAction="ifRoom" />
     <!-- TODO replace delete account icon by a beautiful one -->
     <item
         android:id="@+id/action_del_account"
-        android:icon="@drawable/ic_action_folder"
+        android:icon="@android:drawable/ic_menu_delete"
         android:showAsAction="always"
-        android:title="@string/nav_delete_account" />
+        android:title="@string/nav_delete_account"
+        app:showAsAction="ifRoom" />
 </menu>

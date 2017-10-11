@@ -1,29 +1,33 @@
 /*
- * Copyright 2017 Raphael Mack http://www.raphael-mack.de
- * Copyright 2017 Piwigo Team http://piwigo.org
+ * Piwigo for Android
+ * Copyright (C) 2017 Raphael Mack http://www.raphael-mack.de
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package org.piwigo.ui.activity;
 
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,9 +40,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.piwigo.BuildConfig;
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.ActivityManageAccountsBinding;
+import org.piwigo.helper.AccountHelper;
 import org.piwigo.ui.model.User;
 import org.piwigo.ui.view.AccountView;
 import org.piwigo.ui.viewmodel.ManageAccountsViewModel;
@@ -50,8 +56,11 @@ import javax.inject.Inject;
 public class ManageAccountsActivity extends BaseActivity implements AccountView {
 
     @Inject ManageAccountsViewModel viewModel;
+    ActivityManageAccountsBinding binding;
 
     private ListView userListView;
+
+    private int currentSelectedPosition = -1;
 
     private UserAdapter mUserAdapter;
 
@@ -92,7 +101,7 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
 
         DataBindingUtil.setContentView(this, R.layout.activity_manage_accounts);
 
-        ActivityManageAccountsBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_manage_accounts);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_manage_accounts);
 
         bindLifecycleEvents(viewModel);
         binding.setViewModel(viewModel);
@@ -105,15 +114,30 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
         userListView = (ListView) findViewById(R.id.user_list);
         this.mUserAdapter = new UserAdapter(viewModel.users);
         userListView.setAdapter(this.mUserAdapter);
+
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            Resources res = ManageAccountsActivity.this.getResources();
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View view,
-                                    int position, long arg3) {
-                Toast.makeText(getApplicationContext(), mUserAdapter.getItem(position).username +
-                                "@" + mUserAdapter.getItem(position).url + " selected"
-                        , Toast.LENGTH_LONG).show();
-                /* TODO remove toast */
+            public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
+                if(currentSelectedPosition == position) {
+                    currentSelectedPosition = -1;
+                    view.setSelected(false);
+                }else {
+                    currentSelectedPosition = position;
+                    view.setSelected(true);
+                }
+            }
+        });
+
+        userListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long arg) {
+                Intent intent = new Intent(getApplicationContext(),
+                        LoginActivity.class);
+                intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUserAdapter.getItem(position).account.name);
+                startActivity(intent);
+                return true;
             }
         });
         registerForContextMenu(userListView);
@@ -133,7 +157,15 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
                         LoginActivity.class));
                 break;
             case R.id.action_del_account:
-                /* TODO add account deletion */
+                if(currentSelectedPosition == -1)
+                {
+                    /* nothing selected */
+                    Snackbar.make(binding.getRoot(), R.string.account_not_selected, Snackbar.LENGTH_LONG)
+                            .show();
+                }else{
+                    /* TODO delete account */
+                    accountHelper.removeAccount(mUserAdapter.getItem(currentSelectedPosition).account);
+                }
                 break;
             default:
                 break;

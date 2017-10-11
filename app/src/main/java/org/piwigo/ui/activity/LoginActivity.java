@@ -31,7 +31,9 @@ import android.support.v4.app.ActivityCompat;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
+import org.piwigo.helper.AccountHelper;
 import org.piwigo.io.model.LoginResponse;
+import org.piwigo.ui.model.User;
 import org.piwigo.ui.view.LoginView;
 import org.piwigo.ui.viewmodel.LoginViewModel;
 
@@ -40,6 +42,7 @@ import javax.inject.Inject;
 public class LoginActivity extends BaseActivity implements LoginView {
 /* TODO: link this LoginActivity to the Android-wide account settings to create an Piwigo-Account from there */
     @Inject LoginViewModel viewModel;
+    private User user = null;
 
     private AccountAuthenticatorResponse authenticatorResponse;
     private Bundle resultBundle;
@@ -49,6 +52,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     private Handler handler = new Handler();
 
     @Override protected void onCreate(Bundle savedInstanceState) {
+        String accountName;
         super.onCreate(savedInstanceState);
         getActivityComponent().inject(this);
 
@@ -59,10 +63,22 @@ public class LoginActivity extends BaseActivity implements LoginView {
             authenticatorResponse.onRequestContinued();
         }
 
+        accountName = getIntent().getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         viewModel.setView(this);
         bindLifecycleEvents(viewModel);
         binding.setViewModel(viewModel);
+
+        if(accountName != null)
+        {
+            /* edit account */
+            user = accountHelper.getUser(accountName, false);
+
+            viewModel.username.set(user.username);
+            viewModel.url.set(user.url);
+            viewModel.password.set(AccountManager.get(this).getPassword(user.account));
+        }
+
     }
 
     @Override public void finish() {
@@ -79,7 +95,15 @@ public class LoginActivity extends BaseActivity implements LoginView {
     }
 
     @Override public void onSuccess(LoginResponse response) {
-        if (accountHelper.accountExists(response)) {
+        if (user != null) {
+            /* we are in edit account mode */
+            accountHelper.updateAccount(user.account, response);
+            setResultIntent(user.account);
+            viewModel.onAccountExists();
+            setResult(Activity.RESULT_OK);
+            finish();
+        }
+        else if (accountHelper.accountExists(response)) {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
             viewModel.onAccountExists();

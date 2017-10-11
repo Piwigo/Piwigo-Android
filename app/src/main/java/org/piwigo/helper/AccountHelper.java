@@ -1,20 +1,23 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Piwigo for Android
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Copyright (C) 2017 Raphael Mack http://www.raphael-mack.de
+ * Copyright (C) 2016 Phil Bayfield https://philio.me
+ * Copyright (C) 2016 Piwigo Team http://piwigo.org
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package org.piwigo.helper;
 
 import android.accounts.Account;
@@ -32,11 +35,12 @@ import org.piwigo.ui.model.User;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
 
 import javax.inject.Inject;
 
-public class AccountHelper {
-
+public class AccountHelper extends Observable {
+/* TODO: observable pattern is not working, as AccountHelper is not a singleton... */
     private static final String GUEST_ACCOUNT_NAME = "guest";
 
     private static final String KEY_IS_GUEST = "is_guest";
@@ -68,10 +72,23 @@ public class AccountHelper {
     }
 
     public Account createAccount(LoginResponse loginResponse) {
+        String accountName = getAccountName(loginResponse);
+        Account account = new Account(accountName, context.getString(R.string.account_type));
+        Bundle userdata = new Bundle();
+
         if (loginResponse.statusResponse.result.username.equals(GUEST_ACCOUNT_NAME)) {
-            return createGuestAccount(loginResponse);
+            return updateGuestAccount(account, userdata, loginResponse);
         } else {
-            return createUserAccount(loginResponse);
+            return updateUserAccount(account, userdata, loginResponse);
+        }
+    }
+
+    public void updateAccount(Account account, LoginResponse loginResponse) {
+        Bundle userdata = new Bundle();
+        if (loginResponse.statusResponse.result.username.equals(GUEST_ACCOUNT_NAME)) {
+            updateGuestAccount(account, userdata, loginResponse);
+        } else {
+            updateUserAccount(account, userdata, loginResponse);
         }
     }
 
@@ -79,6 +96,27 @@ public class AccountHelper {
     public boolean hasAccount() {
         List<Account> accounts = getAccounts();
         return accounts.size() > 0;
+    }
+
+    public User getUser(String name, boolean firstIfInvalid){
+        List<User> users = getUsers();
+        if (users.size() == 0) {
+            return null;
+        }
+        if (name == null){
+            if (firstIfInvalid) {
+                return users.get(0);
+            }else{
+                return null;
+            }
+        }
+        for (User user: users) {
+            if (user.account.name.equals(name)) {
+                return user;
+            }
+        }
+        return firstIfInvalid ? users.get(0) : null;
+
     }
 
     public Account getAccount(String name, boolean firstIfInvalid) {
@@ -112,7 +150,7 @@ public class AccountHelper {
     }
 
     /* TODO: make private? */
-    public User createUser(Account account) {
+    private User createUser(Account account) {
         User user = new User();
         user.guest = Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
         user.url = accountManager.getUserData(account, KEY_URL);
@@ -121,34 +159,42 @@ public class AccountHelper {
         return user;
     }
 
-    private Account createUserAccount(LoginResponse loginResponse) {
-        String accountName = getAccountName(loginResponse);
-        Account account = new Account(accountName, context.getString(R.string.account_type));
-        Bundle userdata = new Bundle();
+    private Account updateUserAccount(Account account, Bundle userdata, LoginResponse loginResponse) {
         userdata.putString(KEY_IS_GUEST, Boolean.toString(false));
         userdata.putString(KEY_URL, loginResponse.url);
         userdata.putString(KEY_USERNAME, loginResponse.statusResponse.result.username);
         userdata.putString(KEY_COOKIE, loginResponse.pwgId);
         userdata.putString(KEY_TOKEN, loginResponse.statusResponse.result.pwgToken);
         accountManager.addAccountExplicitly(account, loginResponse.password, userdata);
+        setChanged();
+        notifyObservers();
         return account;
     }
 
-    private Account createGuestAccount(LoginResponse loginResponse) {
-        String accountName = getAccountName(loginResponse);
-        Account account = new Account(accountName, context.getString(R.string.account_type));
-        Bundle userdata = new Bundle();
+    private Account updateGuestAccount(Account account, Bundle userdata, LoginResponse loginResponse) {
         userdata.putString(KEY_IS_GUEST, Boolean.toString(true));
         userdata.putString(KEY_URL, loginResponse.url);
         userdata.putString(KEY_USERNAME, GUEST_ACCOUNT_NAME);
         accountManager.addAccountExplicitly(account, null, userdata);
+        setChanged();
+        notifyObservers();
+        return account;
+    }
+
+
+    public Account removeAccount(Account account) {
+        accountManager.removeAccount(account, null, null);
+        setChanged();
+        notifyObservers();
         return account;
     }
 
     private String getAccountName(LoginResponse loginResponse) {
+        Uri uri = Uri.parse(loginResponse.url);
         String username = loginResponse.statusResponse.result.username;
-        String hostname = Uri.parse(loginResponse.url).getHost();
-        return context.getString(R.string.account_name, username, hostname);
+        String hostname = uri.getHost();
+        String path = uri.getPath();
+        return context.getString(R.string.account_name, username, hostname, path);
     }
 
     private Account getAccountIfAvailable(String name, boolean firstIfInvalid) {
@@ -176,5 +222,4 @@ public class AccountHelper {
     private void updateEndpoint(Account account) {
         endpoint.setUrl(accountManager.getUserData(account, KEY_URL));
     }
-
 }

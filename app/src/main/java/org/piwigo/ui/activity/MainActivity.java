@@ -34,6 +34,7 @@ import android.widget.Toast;
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
+import org.piwigo.helper.AccountHelper;
 import org.piwigo.ui.adapter.AccountSelectionSpinnerAdapter;
 import org.piwigo.ui.fragment.AlbumsFragment;
 import org.piwigo.ui.model.User;
@@ -41,18 +42,19 @@ import org.piwigo.ui.view.MainView;
 import org.piwigo.ui.viewmodel.MainViewModel;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.inject.Inject;
 
-public class MainActivity extends BaseActivity implements MainView {
+public class MainActivity extends BaseActivity implements MainView,Observer{
 
     @Inject MainViewModel viewModel;
 
     /* TODO check what account is used for */
     private Account account;
 
-    Spanned[] userStrings = new Spanned[0];
-    List<User> users;
+    private Spinner accountSpinner;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,17 +63,8 @@ public class MainActivity extends BaseActivity implements MainView {
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
 
-        Spinner accountSpinner = (Spinner) headerBinding.accountSpinner;
-
-        users = accountHelper.getUsers();
-        userStrings = new Spanned[users.size()];
-        int i = 0;
-        for(User u:users)
-        {
-            userStrings[i] = Html.fromHtml(u.username + "<br>" + u.url);
-            i++;
-        }
-
+        accountSpinner = (Spinner) headerBinding.accountSpinner;
+        List<User> users = accountHelper.getUsers();
         AccountSelectionSpinnerAdapter adapter = new AccountSelectionSpinnerAdapter(this,
                 R.layout.account_selection_spinner_item, R.id.aspin_username, users);
 
@@ -80,7 +73,7 @@ public class MainActivity extends BaseActivity implements MainView {
         accountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                Toast.makeText(getApplicationContext(), userStrings[position] + " was selected (" + position + ")", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), users.get(position).username + "@" + users.get(position).url + " was selected (" + position + ")", Toast.LENGTH_LONG).show();
                 accountHelper.setAccount(users.get(position).account);
                 ((AlbumsFragment)(getSupportFragmentManager()
                     .findFragmentById(R.id.content))).refresh();
@@ -101,6 +94,8 @@ public class MainActivity extends BaseActivity implements MainView {
         headerBinding.setViewModel(viewModel);
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
+
+        accountHelper.addObserver(this);
 
         if (savedInstanceState == null) {
             viewModel.setTitle(getString(R.string.nav_albums));
@@ -154,16 +149,31 @@ public class MainActivity extends BaseActivity implements MainView {
 
     private void loadAccount() {
         String name = preferencesRepository.getAccountName();
-        account = accountHelper.getAccount(name, true);
-        if (account == null) {
+        User user = accountHelper.getUser(name, true);
+        if (user == null) {
             finish();
             return;
         }
+        account = user.account;
         if (!account.name.equals(name)) {
             preferencesRepository.setAccountName(account.name);
         }
-        User user = accountHelper.createUser(account);
+
         viewModel.setUser(user);
     }
 
+    @Override
+    public void update(Observable observable, Object data) {
+        if (observable instanceof AccountHelper) {
+            AccountSelectionSpinnerAdapter adapter = new AccountSelectionSpinnerAdapter(this,
+                    R.layout.account_selection_spinner_item, R.id.aspin_username, accountHelper.getUsers());
+
+            accountSpinner.setAdapter(adapter);
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        accountHelper.deleteObserver(this);
+    }
 }
