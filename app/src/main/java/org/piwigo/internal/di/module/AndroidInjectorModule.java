@@ -33,7 +33,7 @@ import dagger.android.ContributesAndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 
 @Module(includes = AndroidSupportInjectionModule.class)
-public abstract class InjectionModule {
+public abstract class AndroidInjectorModule {
 
     @PerActivity @ContributesAndroidInjector() abstract LauncherActivity launcherActivity();
 
