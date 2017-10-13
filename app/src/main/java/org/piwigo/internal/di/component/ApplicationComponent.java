@@ -23,7 +23,7 @@ import com.squareup.picasso.Picasso;
 import org.piwigo.PiwigoApplication;
 import org.piwigo.internal.di.module.ApiModule;
 import org.piwigo.internal.di.module.ApplicationModule;
-import org.piwigo.internal.di.module.InjectionModule;
+import org.piwigo.internal.di.module.AndroidInjectorModule;
 import org.piwigo.internal.di.module.NetworkModule;
 
 import javax.inject.Singleton;
@@ -31,7 +31,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {ApplicationModule.class, NetworkModule.class, ApiModule.class, InjectionModule.class})
+@Component(modules = {ApplicationModule.class, NetworkModule.class, ApiModule.class, AndroidInjectorModule.class})
 public interface ApplicationComponent {
 
     void inject(PiwigoApplication application);

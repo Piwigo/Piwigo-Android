@@ -24,6 +24,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import org.apache.commons.lang3.StringUtils;
 import org.piwigo.R;
 import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
@@ -33,7 +34,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class AccountHelper {
 
     private static final String GUEST_ACCOUNT_NAME = "guest";
@@ -127,9 +130,13 @@ public class AccountHelper {
     }
 
     private String getAccountName(LoginResponse loginResponse) {
+        Uri uri = Uri.parse(loginResponse.url);
         String username = loginResponse.statusResponse.result.username;
-        String hostname = Uri.parse(loginResponse.url).getHost();
-        return context.getString(R.string.account_name, username, hostname);
+        String sitename = uri.getHost() + uri.getPath();
+        if (sitename.endsWith("/")) {
+            sitename = StringUtils.chop(sitename);
+        }
+        return context.getString(R.string.account_name, username, sitename.toLowerCase());
     }
 
     private Account getAccountIfAvailable(String name, boolean firstIfInvalid) {

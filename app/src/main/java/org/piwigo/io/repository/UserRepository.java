@@ -32,7 +32,7 @@ import rx.Scheduler;
 
 public class UserRepository extends BaseRepository {
 
-    @Inject public UserRepository(Session session, RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler) {
+    @Inject UserRepository(Session session, RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler) {
         super(session, restServiceFactory, ioScheduler, uiScheduler);
     }
 
@@ -63,10 +63,11 @@ public class UserRepository extends BaseRepository {
     }
 
     public Observable<LoginResponse> status(String url) {
-        RestService restService = restServiceFactory.createForUrl(validateUrl(url));
+        String baseUrl = validateUrl(url);
+        RestService restService = restServiceFactory.createForUrl(baseUrl);
 
         final LoginResponse loginResponse = new LoginResponse();
-        loginResponse.url = url;
+        loginResponse.url = baseUrl;
 
         return restService.getStatus()
                 .map(statusResponse -> {

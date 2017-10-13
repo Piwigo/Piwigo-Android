@@ -34,16 +34,16 @@ import rx.Observable;
 
 public interface RestService {
 
-    @GET("/ws.php?method=pwg.session.getStatus") Observable<StatusResponse> getStatus();
+    @GET("ws.php?method=pwg.session.getStatus") Observable<StatusResponse> getStatus();
 
-    @POST("/ws.php?method=pwg.session.login") @FormUrlEncoded Observable<Response<SuccessResponse>> login(
+    @POST("ws.php?method=pwg.session.login") @FormUrlEncoded Observable<Response<SuccessResponse>> login(
             @Field("username") String username,
             @Field("password") String password
     );
 
-    @GET("/ws.php?method=pwg.session.logout") Observable<SuccessResponse> logout();
+    @GET("ws.php?method=pwg.session.logout") Observable<SuccessResponse> logout();
 
-    @POST("/ws.php?method=pwg.categories.add") @FormUrlEncoded Observable<AddCategoryResponse> addCategory(
+    @POST("ws.php?method=pwg.categories.add") @FormUrlEncoded Observable<AddCategoryResponse> addCategory(
             @Field("name") String name,
             @Field("parent") Integer parent,
             @Field("comment") String comment,
@@ -52,11 +52,11 @@ public interface RestService {
             @Field("commentable") Boolean commentable
     );
 
-    @GET("/ws.php?method=pwg.categories.getList") Observable<CategoryListResponse> getCategories(
+    @GET("ws.php?method=pwg.categories.getList") Observable<CategoryListResponse> getCategories(
             @Query("cat_id") Integer categoryId
     );
 
-    @GET("/ws.php?method=pwg.images.getInfo") Observable<GetImageInfoResponse> getImageInfo(
+    @GET("ws.php?method=pwg.images.getInfo") Observable<GetImageInfoResponse> getImageInfo(
             @Query("image_id") int imageId
     );
 
