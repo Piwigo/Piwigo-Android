@@ -25,7 +25,7 @@
         android:showAsAction="always"
         android:title="@string/nav_add_account"
         app:showAsAction="ifRoom" />
-    <!-- TODO replace delete user icon by a beautiful one -->
+    <!-- TODO: can we get rid of the delete entry completely? -->
     <item
         android:id="@+id/action_del_account"
         android:icon="@android:drawable/ic_menu_delete"
