@@ -1,6 +1,5 @@
 /*
  * Piwigo for Android
- *
  * Copyright (C) 2017 Raphael Mack http://www.raphael-mack.de
  * Copyright (C) 2016 Phil Bayfield https://philio.me
  * Copyright (C) 2016 Piwigo Team http://piwigo.org
@@ -18,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.piwigo.helper;
 
 import android.accounts.Account;
@@ -26,8 +26,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import org.apache.commons.lang3.StringUtils;
 import org.piwigo.R;
-import org.piwigo.io.DynamicEndpoint;
 import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.model.User;
@@ -38,9 +38,13 @@ import java.util.List;
 import java.util.Observable;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+/* TODO: cleanup this class. It has strange methcods... also the Userlist could be improved
+* Observer notifications to be documented */
+@Singleton
 public class AccountHelper extends Observable {
-/* TODO: observable pattern is not working, as AccountHelper is not a singleton... */
+
     private static final String GUEST_ACCOUNT_NAME = "guest";
 
     private static final String KEY_IS_GUEST = "is_guest";
@@ -51,9 +55,9 @@ public class AccountHelper extends Observable {
 
     private Context context;
     private AccountManager accountManager;
+    private User user;
 
     @Inject Session session;
-    @Inject DynamicEndpoint endpoint;
 
     @Inject public AccountHelper(Context context) {
         this.context = context;
@@ -120,19 +124,22 @@ public class AccountHelper extends Observable {
     }
 
     public Account getAccount(String name, boolean firstIfInvalid) {
-        Account account = getAccountIfAvailable(name, firstIfInvalid);
-        if (account != null) {
-            setAccount(account);
+        User user = getUser(name, firstIfInvalid);
+        if (user != null) {
+            updateSession(user);
+            return user.account;
+        }else{
+            return null;
         }
-        return account;
     }
 
-    /* don't forget to refresh the views after changing the account
-     * TODO: therefore we should implement some kind of Observer mechanism to notify whoever is interested in
-      * new selection of the current "User" and also if the "Userlist" changes maybe with ObservableField from the databinding package */
+    /* return the currently selected user */
+    public User getUser() {
+        return user;
+    }
+
     public void setAccount(Account account) {
-        updateSession(account);
-        updateEndpoint(account);
+        updateSession(getUser(account.name, false));
     }
 
     /* TODO make private? */
@@ -149,7 +156,6 @@ public class AccountHelper extends Observable {
         return users;
     }
 
-    /* TODO: make private? */
     private User createUser(Account account) {
         User user = new User();
         user.guest = Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
@@ -157,6 +163,10 @@ public class AccountHelper extends Observable {
         user.username = accountManager.getUserData(account, KEY_USERNAME);
         user.account = account;
         return user;
+    }
+
+    public String getAccountUrl(Account account) {
+        return accountManager.getUserData(account, KEY_URL);
     }
 
     private Account updateUserAccount(Account account, Bundle userdata, LoginResponse loginResponse) {
@@ -181,7 +191,6 @@ public class AccountHelper extends Observable {
         return account;
     }
 
-
     public Account removeAccount(Account account) {
         accountManager.removeAccount(account, null, null);
         setChanged();
@@ -192,9 +201,11 @@ public class AccountHelper extends Observable {
     private String getAccountName(LoginResponse loginResponse) {
         Uri uri = Uri.parse(loginResponse.url);
         String username = loginResponse.statusResponse.result.username;
-        String hostname = uri.getHost();
-        String path = uri.getPath();
-        return context.getString(R.string.account_name, username, hostname, path);
+        String sitename = uri.getHost() + uri.getPath();
+        if (sitename.endsWith("/")) {
+            sitename = StringUtils.chop(sitename);
+        }
+        return context.getString(R.string.account_name, username, sitename.toLowerCase());
     }
 
     private Account getAccountIfAvailable(String name, boolean firstIfInvalid) {
@@ -213,13 +224,16 @@ public class AccountHelper extends Observable {
         return firstIfInvalid ? accounts.get(0) : null;
     }
 
-    private void updateSession(Account account) {
-        boolean guest = Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
-        session.setCookie(guest ? null : accountManager.getUserData(account, KEY_COOKIE));
-        session.setToken(guest ? null : accountManager.getUserData(account, KEY_TOKEN));
+
+    private void updateSession(User user) {
+        this.user = user;
+
+        boolean guest = Boolean.parseBoolean(accountManager.getUserData(user.account, KEY_IS_GUEST));
+        session.setAccount(user.account);
+        session.setCookie(guest ? null : accountManager.getUserData(user.account, KEY_COOKIE));
+        session.setToken(guest ? null : accountManager.getUserData(user.account, KEY_TOKEN));
+        setChanged();
+        notifyObservers(user);
     }
 
-    private void updateEndpoint(Account account) {
-        endpoint.setUrl(accountManager.getUserData(account, KEY_URL));
-    }
 }

@@ -1,9 +1,8 @@
 /*
  * Piwigo for Android
- *
  * Copyright (C) 2017 Raphael Mack http://www.raphael-mack.de
  * Copyright (C) 2016 Phil Bayfield https://philio.me
- * Copyright (C) 2016 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -1,20 +1,21 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.fernandocejas.frodo'
+apply plugin: 'io.fabric'
 
 def isCi = "true".equals(System.getenv("CI"))
 def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "org.piwigo"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode 1
-        versionName "0.1-dev"
+        versionName "0.1"
     }
     buildTypes {
         debug {
@@ -23,6 +24,15 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    flavorDimensions "default"
+    productFlavors {
+        googlePlay {
+            dimension "default"
+        }
+        floss {
+            dimension "default"
         }
     }
     compileOptions {
@@ -39,13 +49,20 @@ android {
     dataBinding {
         enabled = true
     }
-    useLibrary 'org.apache.http.legacy'
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+        }
+    }
 }
 
 ext {
-    supportVersion = '23.1.1'
-    okhttpVersion = '2.6.0'
-    assertjVersion = '1.1.1'
+    supportVersion = '26.1.0'
+    lifecycleVersion = '1.0.0-beta1'
+    daggerVersion = '2.11'
+    okhttpVersion = '3.9.0'
+    retrofitVersion = '2.3.0'
+    assertjVersion = '1.2.0'
 }
 
 dependencies {
@@ -54,9 +71,30 @@ dependencies {
     compile "com.android.support:support-annotations:${supportVersion}"
     compile "com.android.support:design:${supportVersion}"
     compile "com.android.support:cardview-v7:${supportVersion}"
-    compile "com.squareup.okhttp:okhttp:${okhttpVersion}"
-    compile "com.squareup.okhttp:okhttp-urlconnection:${okhttpVersion}"
+    compile "com.google.dagger:dagger:${daggerVersion}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
+    compile "com.google.dagger:dagger-android:${daggerVersion}"
+    compile "com.google.dagger:dagger-android-support:${daggerVersion}"
+    annotationProcessor "com.google.dagger:dagger-android-processor:${daggerVersion}"
+    compile "android.arch.lifecycle:extensions:${lifecycleVersion}"
+    annotationProcessor "android.arch.lifecycle:compiler:${lifecycleVersion}"
+    compile "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    compile "com.squareup.okhttp3:logging-interceptor:${okhttpVersion}"
+    compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+    compile "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
+    compile "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}"
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+    compile 'io.reactivex:rxjava:1.3.2'
+    compile 'io.reactivex:rxandroid:1.2.1'
+    googlePlayCompile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
+        transitive = true;
+    }
+    compile 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
+    compile 'org.apache.commons:commons-lang3:3.4'
 
+    testCompile 'junit:junit:4.12'
+    testCompile "org.robolectric:robolectric:3.4.2"
     testCompile("com.squareup.assertj:assertj-android:${assertjVersion}") {
         exclude group: 'com.android.support'
     }
@@ -66,20 +104,7 @@ dependencies {
     testCompile("com.squareup.assertj:assertj-android-appcompat-v7:${assertjVersion}") {
         exclude group: 'com.android.support'
     }
-    testCompile "com.squareup.okhttp:mockwebserver:${okhttpVersion}"
-    compile 'com.google.dagger:dagger:2.0.2'
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'io.reactivex:rxjava:1.0.13'
-    compile 'io.reactivex:rxandroid:0.25.0'
-    compile 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
-    compile 'org.apache.commons:commons-lang3:3.4'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.0'
-    testCompile 'com.squareup.retrofit:retrofit-mock:1.9.0'
-    testCompile 'org.mockito:mockito-core:1.10.19'
-    provided 'com.google.dagger:dagger-compiler:2.0.2'
-    provided 'org.glassfish:javax.annotation:10.0-b28'
-    testProvided 'com.google.dagger:dagger-compiler:2.0.2'
-    testProvided 'org.glassfish:javax.annotation:10.0-b28'
+    testAnnotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
+    testCompile "android.arch.core:core-testing:${lifecycleVersion}"
+    testCompile 'org.mockito:mockito-core:2.10.0'
 }

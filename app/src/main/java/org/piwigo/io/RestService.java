@@ -1,18 +1,19 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Piwigo for Android
+ * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.piwigo.io;
@@ -23,26 +24,26 @@ import org.piwigo.io.model.GetImageInfoResponse;
 import org.piwigo.io.model.StatusResponse;
 import org.piwigo.io.model.SuccessResponse;
 
-import retrofit.client.Response;
-import retrofit.http.Field;
-import retrofit.http.FormUrlEncoded;
-import retrofit.http.GET;
-import retrofit.http.POST;
-import retrofit.http.Query;
+import retrofit2.Response;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
 import rx.Observable;
 
 public interface RestService {
 
-    @GET("/ws.php?method=pwg.session.getStatus") Observable<StatusResponse> getStatus();
+    @GET("ws.php?method=pwg.session.getStatus") Observable<StatusResponse> getStatus();
 
-    @POST("/ws.php?method=pwg.session.login") @FormUrlEncoded Observable<Response> login(
+    @POST("ws.php?method=pwg.session.login") @FormUrlEncoded Observable<Response<SuccessResponse>> login(
             @Field("username") String username,
             @Field("password") String password
     );
 
-    @GET("/ws.php?method=pwg.session.logout") Observable<SuccessResponse> logout();
+    @GET("ws.php?method=pwg.session.logout") Observable<SuccessResponse> logout();
 
-    @POST("/ws.php?method=pwg.categories.add") @FormUrlEncoded Observable<AddCategoryResponse> addCategory(
+    @POST("ws.php?method=pwg.categories.add") @FormUrlEncoded Observable<AddCategoryResponse> addCategory(
             @Field("name") String name,
             @Field("parent") Integer parent,
             @Field("comment") String comment,
@@ -51,8 +52,12 @@ public interface RestService {
             @Field("commentable") Boolean commentable
     );
 
-    @GET("/ws.php?method=pwg.categories.getList") Observable<CategoryListResponse> getCategories(@Query("cat_id") Integer categoryId);
+    @GET("ws.php?method=pwg.categories.getList") Observable<CategoryListResponse> getCategories(
+            @Query("cat_id") Integer categoryId
+    );
 
-    @GET("/ws.php?method=pwg.images.getInfo") Observable<GetImageInfoResponse> getImageInfo(@Query("image_id") int imageId);
+    @GET("ws.php?method=pwg.images.getInfo") Observable<GetImageInfoResponse> getImageInfo(
+            @Query("image_id") int imageId
+    );
 
 }

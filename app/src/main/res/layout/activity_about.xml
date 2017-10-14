@@ -1,13 +1,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="org.piwigo.ui.activity.AboutActivity">
+    tools:context="org.piwigo.ui.about.AboutActivity">
 
     <data>
 
         <variable
             name="viewModel"
-            type="org.piwigo.ui.viewmodel.AboutViewModel" />
+            type="org.piwigo.ui.about.AboutViewModel" />
     </data>
     <ScrollView
         android:layout_width="match_parent"

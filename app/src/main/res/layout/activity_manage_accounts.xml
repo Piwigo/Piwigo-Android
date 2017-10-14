@@ -18,12 +18,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="org.piwigo.ui.activity.ManageAccountsActivity">
+    tools:context="org.piwigo.ui.accounts.ManageAccountsActivity">
 
     <data>
         <variable
             name="viewModel"
-            type="org.piwigo.ui.viewmodel.ManageAccountsViewModel" />
+            type="org.piwigo.ui.accounts.ManageAccountsViewModel" />
     </data>
 
     <android.support.v4.widget.DrawerLayout
@@ -48,7 +48,7 @@
                 app:title="@{viewModel.title}"/>
 
             <FrameLayout
-                android:id="@+id/content"
+                android:id="@+id/user_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="?attr/actionBarSize">
@@ -58,8 +58,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:divider="@color/alpha_grey"
-                    android:dividerHeight="1dp">
-                </ListView>
+                    android:dividerHeight="1dp"></ListView>
             </FrameLayout>
         </RelativeLayout>
 

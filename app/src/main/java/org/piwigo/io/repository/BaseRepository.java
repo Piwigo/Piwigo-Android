@@ -1,43 +1,52 @@
 /*
- * Copyright 2016 Phil Bayfield https://philio.me
- * Copyright 2016 Piwigo Team http://piwigo.org
+ * Piwigo for Android
+ * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.piwigo.io.repository;
 
-import org.piwigo.io.DynamicEndpoint;
-import org.piwigo.io.RestService;
+import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.Session;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 import rx.Observable;
 import rx.Scheduler;
 
-public abstract class BaseRepository {
+abstract class BaseRepository {
 
-    @Inject Session session;
-    @Inject DynamicEndpoint endpoint;
-    @Inject RestService restService;
-    @Inject @Named("IoScheduler") Scheduler ioScheduler;
-    @Inject @Named("UiScheduler") Scheduler uiScheduler;
+    final Session session;
+    final RestServiceFactory restServiceFactory;
+    private final Scheduler ioScheduler;
+    private final Scheduler uiScheduler;
 
-    protected <T> Observable.Transformer<T, T> applySchedulers() {
+    BaseRepository(Session session, RestServiceFactory restServiceFactory, Scheduler ioScheduler, Scheduler uiScheduler) {
+        this.session = session;
+        this.restServiceFactory = restServiceFactory;
+        this.ioScheduler = ioScheduler;
+        this.uiScheduler = uiScheduler;
+    }
+
+    String validateUrl(String url) {
+        if (!url.endsWith("/")) {
+            return url + "/";
+        }
+        return url;
+    }
+
+    <T> Observable.Transformer<T, T> applySchedulers() {
         return observable -> observable.subscribeOn(ioScheduler)
                 .observeOn(uiScheduler);
     }
-
 }

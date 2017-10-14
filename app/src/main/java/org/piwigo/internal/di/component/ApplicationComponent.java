@@ -1,61 +1,45 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Piwigo for Android
+ * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.piwigo.internal.di.component;
 
-import android.content.Context;
+import com.squareup.picasso.Picasso;
 
-import com.google.gson.Gson;
-
+import org.piwigo.PiwigoApplication;
 import org.piwigo.internal.di.module.ApiModule;
 import org.piwigo.internal.di.module.ApplicationModule;
+import org.piwigo.internal.di.module.AndroidInjectorModule;
 import org.piwigo.internal.di.module.NetworkModule;
-import org.piwigo.io.DynamicEndpoint;
-import org.piwigo.io.RestService;
-import org.piwigo.io.Session;
-import org.piwigo.ui.activity.BaseActivity;
-import org.piwigo.ui.activity.LauncherActivity;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import rx.Scheduler;
 
 @Singleton
-@Component(modules = {ApplicationModule.class, NetworkModule.class, ApiModule.class})
+@Component(modules = {
+        ApplicationModule.class,
+        NetworkModule.class,
+        ApiModule.class,
+        AndroidInjectorModule.class
+})
 public interface ApplicationComponent {
 
-    void inject(BaseActivity activity);
+    void inject(PiwigoApplication application);
 
-    void inject(LauncherActivity activity);
-
-    Context context();
-
-    Session session();
-
-    DynamicEndpoint endpoint();
-
-    Gson gson();
-
-    RestService restService();
-
-    @Named("IoScheduler") Scheduler ioScheduler();
-
-    @Named("UiScheduler") Scheduler uiScheduler();
-
+    Picasso picasso();
 }

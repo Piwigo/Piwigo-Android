@@ -21,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Piwigo">
         <activity
-            android:name=".ui.activity.LauncherActivity"
+            android:name=".ui.launcher.LauncherActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.Piwigo.Login">
             <intent-filter>
@@ -31,16 +31,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.Piwigo.Login"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name=".ui.activity.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.Piwigo.NavDrawer" />
         <activity
-            android:name=".ui.activity.AboutActivity"
+            android:name=".ui.about.AboutActivity"
             android:label="@string/title_activity_about"
             android:theme="@style/Theme.Piwigo.Login" />
 
@@ -48,16 +48,17 @@
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
+            <meta-data android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
 
         <activity
-            android:name=".ui.activity.ManageAccountsActivity"
+            android:name=".ui.accounts.ManageAccountsActivity"
             android:label="@string/title_activity_manage_accounts"
             android:theme="@style/Theme.Piwigo"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="c63f07442d898d0d7122b657aeb620be107173c6" />
     </application>
 
 </manifest>

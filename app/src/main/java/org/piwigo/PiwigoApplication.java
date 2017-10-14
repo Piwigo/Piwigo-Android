@@ -1,50 +1,71 @@
 /*
+ * Piwigo for Android
  * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.piwigo;
 
+import android.app.Activity;
 import android.app.Application;
+import android.databinding.DataBindingUtil;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.piwigo.internal.di.component.ApplicationComponent;
+import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
+import org.piwigo.internal.di.component.DaggerBindingComponent;
 import org.piwigo.internal.di.module.ApplicationModule;
 
-public class PiwigoApplication extends Application {
+import javax.inject.Inject;
 
-    private ApplicationComponent applicationComponent;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
+import io.fabric.sdk.android.Fabric;
 
-    @Override public void onCreate() {
-        super.onCreate();
-        initializeInjector();
+    public class PiwigoApplication extends Application implements HasActivityInjector {
+
+        @Inject DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+
+        @Override public void onCreate() {
+            super.onCreate();
+
+            initializeCrashlytics();
+            initializeDependancyInjection();
+        }
+
+        @Override public AndroidInjector<Activity> activityInjector() {
+            return dispatchingAndroidInjector;
+        }
+
+        protected void initializeCrashlytics() {
+            Fabric.with(this, new Crashlytics());
+        }
+
+        private void initializeDependancyInjection() {
+            ApplicationComponent applicationComponent = DaggerApplicationComponent.builder()
+                    .applicationModule(new ApplicationModule(this))
+                    .build();
+            applicationComponent.inject(this);
+
+            BindingComponent bindingComponent = DaggerBindingComponent.builder()
+                    .applicationComponent(applicationComponent)
+                    .build();
+            DataBindingUtil.setDefaultComponent(bindingComponent);
+        }
     }
-
-    private void initializeInjector() {
-        ApplicationComponent applicationComponent = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this))
-                .build();
-        setApplicationComponent(applicationComponent);
-    }
-
-    public void setApplicationComponent(ApplicationComponent applicationComponent) {
-        this.applicationComponent = applicationComponent;
-    }
-
-    public ApplicationComponent getApplicationComponent() {
-        return applicationComponent;
-    }
-
-}

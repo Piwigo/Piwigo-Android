@@ -37,14 +37,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingRight="8dp">
 
         <TextView
             android:id="@+id/aspin_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="viewModel.username"
-            android:textSize="@dimen/nav_header_user_text_size" />
+            android:textSize="@dimen/nav_header_user_text_size"
+            android:ellipsize="end"
+            android:maxLines="1"/>
 
         <TextView
             android:id="@+id/aspin_url"
@@ -52,7 +55,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/username"
             android:text="viewModel.url"
-            android:textSize="@dimen/nav_header_url_text_size" />
+            android:textSize="@dimen/nav_header_url_text_size"
+            android:ellipsize="middle"
+            android:maxLines="1"/>
 
     </LinearLayout>
 

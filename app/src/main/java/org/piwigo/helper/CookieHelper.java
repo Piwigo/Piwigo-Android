@@ -1,18 +1,19 @@
 /*
- * Copyright 2015 Phil Bayfield https://philio.me
- * Copyright 2015 Piwigo Team http://piwigo.org
+ * Piwigo for Android
+ * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.piwigo.helper;
@@ -22,7 +23,7 @@ import android.support.v4.util.ArrayMap;
 import java.net.HttpCookie;
 import java.util.List;
 
-import retrofit.client.Header;
+import okhttp3.Headers;
 
 public class CookieHelper {
 
@@ -35,7 +36,7 @@ public class CookieHelper {
      * @param headers List of headers
      * @return Value of the cookie if present
      */
-    public static String extract(String name, List<Header> headers) {
+    public static String extract(String name, Headers headers) {
         ArrayMap<String, String> cookies = extractAll(headers);
         if (cookies.containsKey(name)) {
             return cookies.get(name);
@@ -49,11 +50,12 @@ public class CookieHelper {
      * @param headers List of headers
      * @return Map of cookies
      */
-    public static ArrayMap<String, String> extractAll(List<Header> headers) {
+    public static ArrayMap<String, String> extractAll(Headers headers) {
         ArrayMap<String, String> cookies = new ArrayMap<>();
-        for (Header header : headers) {
-            if (header.getName().equalsIgnoreCase(COOKIE_HEADER)) {
-                List<HttpCookie> httpCookies = HttpCookie.parse(header.getValue());
+        for (int i = 0; i < headers.size(); i++) {
+            String name = headers.name(i);
+            if (name.equalsIgnoreCase(COOKIE_HEADER)) {
+                List<HttpCookie> httpCookies = HttpCookie.parse(headers.value(i));
                 for (HttpCookie httpCookie : httpCookies) {
                     cookies.put(httpCookie.getName(), httpCookie.getValue());
                 }
