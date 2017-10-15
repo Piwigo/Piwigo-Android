@@ -25,7 +25,7 @@ import org.piwigo.internal.binding.observable.NavigationItemObservable;
 
 public class NavigationAdapter {
 
-    @BindingAdapter({"bind:item", "bind:itemSelectedListener"}) public static void bindItem(NavigationView navigationView, NavigationItemObservable observable, NavigationView.OnNavigationItemSelectedListener listener) {
+    @BindingAdapter({"item", "itemSelectedListener"}) public static void bindItem(NavigationView navigationView, NavigationItemObservable observable, NavigationView.OnNavigationItemSelectedListener listener) {
         boolean bound = navigationView.getTag() != null && (boolean) navigationView.getTag();
         if (!bound) {
             navigationView.setNavigationItemSelectedListener(item -> {

@@ -31,7 +31,12 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {ApplicationModule.class, NetworkModule.class, ApiModule.class, AndroidInjectorModule.class})
+@Component(modules = {
+        ApplicationModule.class,
+        NetworkModule.class,
+        ApiModule.class,
+        AndroidInjectorModule.class
+})
 public interface ApplicationComponent {
 
     void inject(PiwigoApplication application);

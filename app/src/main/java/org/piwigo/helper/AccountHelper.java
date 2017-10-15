@@ -1,6 +1,8 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2017 Raphael Mack http://www.raphael-mack.de
+ * Copyright (C) 2016 Phil Bayfield https://philio.me
+ * Copyright (C) 2016 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,14 +32,20 @@ import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.model.User;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Observable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+/* TODO: cleanup this class. It has strange methcods... also the Userlist could be improved
+* Observer notifications to be documented */
+/* TODO: accounthelper should recognize if an account was deleted in the android system settings
+    and notify the observers accordingly */
 @Singleton
-public class AccountHelper {
+public class AccountHelper extends Observable {
 
     private static final String GUEST_ACCOUNT_NAME = "guest";
 
@@ -49,18 +57,23 @@ public class AccountHelper {
 
     private Context context;
     private AccountManager accountManager;
+    private User user;
+    private ArrayList<User> users = new ArrayList<User>();
 
     @Inject Session session;
 
     @Inject public AccountHelper(Context context) {
         this.context = context;
         accountManager = AccountManager.get(context);
+
+        for (Account a: accountManager.getAccountsByType(context.getString(R.string.account_type))) {
+            users.add(createUser(a));
+        }
     }
 
     public boolean accountExists(LoginResponse loginResponse) {
         String name = getAccountName(loginResponse);
-        List<Account> accounts = getAccounts();
-        for (Account account : accounts) {
+        for (Account account : accountManager.getAccountsByType(context.getString(R.string.account_type))) {
             if (account.name.equals(name)) {
                 return true;
             }
@@ -69,64 +82,131 @@ public class AccountHelper {
     }
 
     public Account createAccount(LoginResponse loginResponse) {
+        String accountName = getAccountName(loginResponse);
+        Account account = new Account(accountName, context.getString(R.string.account_type));
+        Bundle userdata = new Bundle();
+        User user;
         if (loginResponse.statusResponse.result.username.equals(GUEST_ACCOUNT_NAME)) {
-            return createGuestAccount(loginResponse);
+            account = updateGuestAccount(account, userdata, loginResponse);
         } else {
-            return createUserAccount(loginResponse);
+            account = updateUserAccount(account, userdata, loginResponse);
+        }
+        user = createUser(account);
+        users.add(user);
+
+        updateSession(user);
+        return account;
+    }
+
+    public void updateAccount(Account account, LoginResponse loginResponse) {
+        Bundle userdata = new Bundle();
+        if (loginResponse.statusResponse.result.username.equals(GUEST_ACCOUNT_NAME)) {
+            updateGuestAccount(account, userdata, loginResponse);
+        } else {
+            updateUserAccount(account, userdata, loginResponse);
         }
     }
 
     public boolean hasAccount() {
-        List<Account> accounts = getAccounts();
-        return accounts.size() > 0;
+        return accountManager.getAccountsByType(context.getString(R.string.account_type)).length > 0;
+    }
+
+    public User getUser(String name, boolean firstIfInvalid){
+        if (users.size() == 0) {
+            return null;
+        }
+        if (name == null){
+            if (firstIfInvalid) {
+                return users.get(0);
+            }else{
+                return null;
+            }
+        }
+        for (User user: users) {
+            if (user.account.name.equals(name)) {
+                return user;
+            }
+        }
+        return firstIfInvalid ? users.get(0) : null;
+
     }
 
     public Account getAccount(String name, boolean firstIfInvalid) {
-        Account account = getAccountIfAvailable(name, firstIfInvalid);
-        if (account != null) {
-            updateSession(account);
+        User user = getUser(name, firstIfInvalid);
+        if (user != null) {
+            updateSession(user);
+            return user.account;
+        }else{
+            return null;
         }
-        return account;
     }
 
-    public List<Account> getAccounts() {
-        return Arrays.asList(accountManager.getAccountsByType(context.getString(R.string.account_type)));
+    /* return the currently selected user */
+    public User getUser() {
+        return user;
     }
 
-    public User createUser(Account account) {
+    public void setAccount(Account account) {
+        updateSession(getUser(account.name, false));
+    }
+
+    public List<User> getUsers(){
+        return Collections.unmodifiableList(users);
+    }
+
+    private User createUser(Account account) {
+        /* TODO remove this one here */
         User user = new User();
         user.guest = Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
         user.url = accountManager.getUserData(account, KEY_URL);
         user.username = accountManager.getUserData(account, KEY_USERNAME);
+        user.account = account;
         return user;
     }
 
     public String getAccountUrl(Account account) {
+        /* TODO: replace calls to this by getUser().url*/
         return accountManager.getUserData(account, KEY_URL);
     }
 
-    private Account createUserAccount(LoginResponse loginResponse) {
-        String accountName = getAccountName(loginResponse);
-        Account account = new Account(accountName, context.getString(R.string.account_type));
-        Bundle userdata = new Bundle();
+    private Account updateUserAccount(Account account, Bundle userdata, LoginResponse loginResponse) {
         userdata.putString(KEY_IS_GUEST, Boolean.toString(false));
         userdata.putString(KEY_URL, loginResponse.url);
         userdata.putString(KEY_USERNAME, loginResponse.statusResponse.result.username);
         userdata.putString(KEY_COOKIE, loginResponse.pwgId);
         userdata.putString(KEY_TOKEN, loginResponse.statusResponse.result.pwgToken);
         accountManager.addAccountExplicitly(account, loginResponse.password, userdata);
+        setChanged();
+        notifyObservers();
         return account;
     }
 
-    private Account createGuestAccount(LoginResponse loginResponse) {
-        String accountName = getAccountName(loginResponse);
-        Account account = new Account(accountName, context.getString(R.string.account_type));
-        Bundle userdata = new Bundle();
+    private Account updateGuestAccount(Account account, Bundle userdata, LoginResponse loginResponse) {
         userdata.putString(KEY_IS_GUEST, Boolean.toString(true));
         userdata.putString(KEY_URL, loginResponse.url);
         userdata.putString(KEY_USERNAME, GUEST_ACCOUNT_NAME);
         accountManager.addAccountExplicitly(account, null, userdata);
+        setChanged();
+        notifyObservers();
         return account;
+    }
+
+    public void removeAccount(User user) {
+        removeAccount(user.account);
+    }
+
+    public void removeAccount(Account account) {
+        accountManager.removeAccount(account, null, null);
+        User userToRemove = null;
+        for (User user: users) {
+            if (user.account == account) {
+                userToRemove = user;
+                break;
+            }
+        }
+        users.remove(userToRemove);
+        setChanged();
+        notifyObservers();
     }
 
     private String getAccountName(LoginResponse loginResponse) {
@@ -139,26 +219,16 @@ public class AccountHelper {
         return context.getString(R.string.account_name, username, sitename.toLowerCase());
     }
 
-    private Account getAccountIfAvailable(String name, boolean firstIfInvalid) {
-        List<Account> accounts = getAccounts();
-        if (accounts.size() == 0) {
-            return null;
-        }
-        if (name == null) {
-            return accounts.get(0);
-        }
-        for (Account account : accounts) {
-            if (account.name.equals(name)) {
-                return account;
-            }
-        }
-        return firstIfInvalid ? accounts.get(0) : null;
+
+    private void updateSession(User user) {
+        this.user = user;
+
+        boolean guest = Boolean.parseBoolean(accountManager.getUserData(user.account, KEY_IS_GUEST));
+        session.setAccount(user.account);
+        session.setCookie(guest ? null : accountManager.getUserData(user.account, KEY_COOKIE));
+        session.setToken(guest ? null : accountManager.getUserData(user.account, KEY_TOKEN));
+        setChanged();
+        notifyObservers(user);
     }
 
-    private void updateSession(Account account) {
-        boolean guest = Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
-        session.setAccount(account);
-        session.setCookie(guest ? null : accountManager.getUserData(account, KEY_COOKIE));
-        session.setToken(guest ? null : accountManager.getUserData(account, KEY_TOKEN));
-    }
 }

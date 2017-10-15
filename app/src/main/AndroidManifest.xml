@@ -9,6 +9,9 @@
     <uses-permission
         android:name="android.permission.GET_ACCOUNTS"
         android:maxSdkVersion="22" />
+    <uses-permission
+        android:name="android.permission.MANAGE_ACCOUNTS"
+        android:maxSdkVersion="22" />
 
     <application
         android:name=".PiwigoApplication"
@@ -23,6 +26,7 @@
             android:theme="@style/Theme.Piwigo.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -35,16 +39,23 @@
             android:name=".ui.main.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.Piwigo.NavDrawer" />
+        <activity
+            android:name=".ui.about.AboutActivity"
+            android:label="@string/title_activity_about"
+            android:theme="@style/Theme.Piwigo.Login" />
 
         <service android:name=".accounts.AuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
+            <meta-data android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
 
+        <activity
+            android:name=".ui.accounts.ManageAccountsActivity"
+            android:label="@string/title_activity_manage_accounts"
+            android:theme="@style/Theme.Piwigo"></activity>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="c63f07442d898d0d7122b657aeb620be107173c6" />

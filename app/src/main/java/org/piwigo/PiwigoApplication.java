@@ -1,5 +1,6 @@
 /*
  * Piwigo for Android
+ * Copyright 2015 Phil Bayfield https://philio.me
  * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify

@@ -26,7 +26,7 @@ import org.piwigo.internal.binding.observable.FABProgressCircleObservable;
 
 public class FABProgressCircleAdapter {
 
-    @BindingAdapter("bind:observable") public static void bindObservable(FABProgressCircle progressCircle, FABProgressCircleObservable observable) {
+    @BindingAdapter("observable") public static void bindObservable(FABProgressCircle progressCircle, FABProgressCircleObservable observable) {
         boolean bound = progressCircle.getTag() != null && (boolean) progressCircle.getTag();
         if (!bound) {
             progressCircle.setTag(true);

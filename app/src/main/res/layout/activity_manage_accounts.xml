@@ -1,0 +1,67 @@
+<!--
+  ~ Copyright 2017 Raphael Mack http://www.raphael-mack.de
+  ~ Copyright 2017 Piwigo Team http://piwigo.org
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.piwigo.ui.accounts.ManageAccountsActivity">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="org.piwigo.ui.accounts.ManageAccountsViewModel" />
+    </data>
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/account_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:navigationIcon="?android:attr/actionModeCloseDrawable"
+                app:navigationOnClickListener="@{viewModel::closeIconClick}"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:title="@{viewModel.title}"/>
+
+            <FrameLayout
+                android:id="@+id/user_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="?attr/actionBarSize">
+
+                <ListView
+                    android:id="@+id/user_list"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:choiceMode="singleChoice"
+                    android:divider="@color/alpha_grey"
+                    android:dividerHeight="1dp" />
+            </FrameLayout>
+        </RelativeLayout>
+
+    </android.support.v4.widget.DrawerLayout>
+</layout>

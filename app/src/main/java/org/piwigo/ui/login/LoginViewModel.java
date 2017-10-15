@@ -165,9 +165,11 @@ public class LoginViewModel extends ViewModel {
 
     private class LoginSubscriber extends Subscriber<LoginResponse> {
 
-        @Override public void onCompleted() {}
+        @Override public void onCompleted() {
+            progressCircle.hide();
+        }
 
-        @Override public void onError(Throwable e) {
+        @Override public void onError(Throwable e) throws RuntimeException{
             Log.e(TAG, e.getMessage());
             progressCircle.hide();
             loginError.setValue(e);

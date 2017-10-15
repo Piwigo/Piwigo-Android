@@ -1,6 +1,5 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2015 Phil Bayfield https://philio.me
  * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,11 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo;
+package org.piwigo.ui.accounts;
 
-public class TestPiwigoApplication extends PiwigoApplication {
+import android.content.res.Resources;
 
-    @Override protected void initializeCrashlytics() {
-        // Do nothing, we don't want Crashlytics for unit tests
+import dagger.Module;
+import dagger.Provides;
+
+@Module
+public class ManageAccountsActivityModule {
+
+    @Provides
+    Resources provideResources(ManageAccountsActivity activity) {
+        return activity.getResources();
     }
 }

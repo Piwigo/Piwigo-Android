@@ -4,4 +4,6 @@
     <color name="piwigo_grey">#4E4E4E</color>
     <color name="piwigo_grey_secondary">#353535</color>
     <color name="alpha_grey">#994E4E4E</color>
+    <color name="nav_selected_user">@android:color/white</color>
+
 </resources>

@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Piwigo</string>
-    <string name="title_activity_main">@string/app_name</string>
+    <string name="title_activity_main" translatable="false">@string/app_name</string>
     <string name="title_activity_login">Login</string>
+    <string name="title_activity_about">About</string>
 
     <!-- Navigation drawer menu items -->
     <string name="nav_albums">Albums</string>
@@ -9,6 +10,7 @@
     <string name="nav_settings">Settings</string>
     <string name="nav_about">About</string>
     <string name="nav_add_account">Add account</string>
+    <string name="nav_delete_account">Remove account</string>
     <string name="nav_manage_accounts">Manage accounts</string>
 
     <!-- Login -->
@@ -23,7 +25,19 @@
     <string name="login_account_error">An account for this site already exists</string>
 
     <!-- Account -->
-    <string name="account_name">%1$s@%2$s</string>
+    <string name="account_name" translatable="false">%1$s@%2$s</string>
+    <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
+    <string name="account_delete_title">Delete Account</string>
+    <string name="account_delete_confirmation">Really delete the account %1$s?</string>
+
+    <!-- About -->
+    <string name="about_text"><![CDATA[
+        <p><b>%1$s</b>
+        <br />version <b>%2$s</b></p>
+        <p>distributed under <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL v3</a> license</p>
+        <p>For bugs and suggestions use the <a href="https://github.com/Piwigo/Piwigo-Android/issues">issue tacker</a></p>
+        <p>Source Code can be found on <a href="https://github.com/Piwigo/Piwigo-Android">Github</a></p>]]>
+    </string>
 
     <!-- Albumbs -->
     <plurals name="album_photos">
@@ -34,4 +48,5 @@
         <item quantity="one">, 1 photo in sub-albums</item>
         <item quantity="other">, %1$d photos in sub-albums</item>
     </plurals>
+    <string name="title_activity_manage_accounts">ManageAccountsActivity</string>
 </resources>

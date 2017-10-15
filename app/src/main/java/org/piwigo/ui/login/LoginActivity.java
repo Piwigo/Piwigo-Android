@@ -22,6 +22,7 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -33,6 +34,7 @@ import android.support.v4.app.ActivityCompat;
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
 import org.piwigo.io.model.LoginResponse;
+import org.piwigo.ui.model.User;
 import org.piwigo.ui.shared.BaseActivity;
 
 import javax.inject.Inject;
@@ -41,7 +43,10 @@ import dagger.android.AndroidInjection;
 
 public class LoginActivity extends BaseActivity {
 
+    /* TODO: link this LoginActivity to the Android-wide account settings to create an Piwigo-Account from there */
     @Inject LoginViewModelFactory viewModelFactory;
+
+    private User user = null;
 
     private LoginViewModel viewModel;
     private ActivityLoginBinding binding;
@@ -52,6 +57,7 @@ public class LoginActivity extends BaseActivity {
     private Handler handler = new Handler();
 
     @Override protected void onCreate(Bundle savedInstanceState) {
+        String accountName;
         AndroidInjection.inject(this);
         setTheme(R.style.Theme_Piwigo_Login);
         super.onCreate(savedInstanceState);
@@ -74,6 +80,18 @@ public class LoginActivity extends BaseActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setViewModel(viewModel);
+
+        accountName = getIntent().getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+        if(accountName != null)
+        {
+            /* edit account */
+            user = accountHelper.getUser(accountName, false);
+
+            viewModel.username.set(user.username);
+            viewModel.url.set(user.url);
+            viewModel.password.set(AccountManager.get(this).getPassword(user.account));
+        }
+
     }
 
     @Override public void finish() {
@@ -90,7 +108,15 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void loginSuccess(LoginResponse response) {
-        if (accountHelper.accountExists(response)) {
+        if (user != null) {
+            /* we are in edit account mode */
+            accountHelper.updateAccount(user.account, response);
+            setResultIntent(user.account);
+            viewModel.accountExists();
+            setResult(Activity.RESULT_OK);
+            finish();
+        }
+        else if (accountHelper.accountExists(response)) {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
             viewModel.accountExists();
@@ -98,6 +124,7 @@ public class LoginActivity extends BaseActivity {
             Account account = accountHelper.createAccount(response);
             setResultIntent(account);
             viewModel.accountCreated();
+	    setResult(Activity.RESULT_OK);
         }
     }
 

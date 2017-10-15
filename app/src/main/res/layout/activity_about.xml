@@ -1,0 +1,52 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.piwigo.ui.about.AboutActivity">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="org.piwigo.ui.about.AboutViewModel" />
+    </data>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/login_logo_margin_bottom"
+                android:layout_marginTop="@dimen/login_logo_margin_top"
+                android:src="@drawable/piwigo_logo"
+                android:transitionName="@string/logo_transition_name" />
+
+            <android.support.v7.widget.CardView
+                style="@style/Theme.Piwigo.Login.CardView"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="32dp"
+                app:cardUseCompatPadding="true"
+                app:contentPadding="8dp">
+
+                <TextView
+                    android:id="@+id/aboutTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@{viewModel.aboutText}"
+                    android:textAppearance="@android:style/TextAppearance.Medium" />
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+
+    </ScrollView>
+</layout>

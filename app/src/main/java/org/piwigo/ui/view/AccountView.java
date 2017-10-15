@@ -1,7 +1,7 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2015 Phil Bayfield https://philio.me
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ *
+ * Copyright (C) 2017 Raphael Mack http://www.raphael-mack.de
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package org.piwigo.ui.view;
 
-package org.piwigo;
+import org.piwigo.ui.model.User;
 
-public class TestPiwigoApplication extends PiwigoApplication {
+public interface AccountView {
 
-    @Override protected void initializeCrashlytics() {
-        // Do nothing, we don't want Crashlytics for unit tests
-    }
+    void close();
+    void select(User user);
 }

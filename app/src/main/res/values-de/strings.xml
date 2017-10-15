@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2017 Phil Bayfield https://philio.me
+  ~ Copyright 2017 Piwigo Team http://piwigo.org
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name">Piwigo Debug</string>
+    <string name="login_account_error">Für diese Galerie besteht bereits ein Konto</string>
+    <string name="login_error">Anmeldung fehlgeschlagen, bitte erneut versuchen</string>
+    <string name="login_password_empty">Passwort eingeben</string>
+    <string name="login_password_hint">Passwort (optional)</string>
+    <string name="login_url_empty">URL der Galerie eingeben</string>
+    <string name="login_url_hint">Galerie URL</string>
+    <string name="login_url_invalid">Ungültive Galerie URL</string>
+    <string name="login_username_empty">Bitte Benutzernamen eingeben</string>
+    <string name="login_username_hint">Benutzername (optional)</string>
+    <string name="title_activity_login">Anmelden</string>
+    <string name="nav_upload">Hochladen</string>
+    <string name="nav_settings">Einstellungen</string>
+    <string name="nav_manage_accounts">Konten verwalten</string>
+    <string name="nav_albums">Alben</string>
+    <string name="nav_add_account">Konto hinzufügen</string>
+    <string name="nav_about">Über</string>
+
+    <!-- Albumbs -->
+    <plurals name="album_photos">
+        <item quantity="one">1 Foto</item>
+        <item quantity="other">%1$d Fotos</item>
+    </plurals>
+    <plurals name="album_photos_subs">
+        <item quantity="one">, 1 Foto in Unteralben</item>
+        <item quantity="other">, %1$d Foto in Unteralben</item>
+    </plurals>
+    <string name="about_text"><![CDATA[
+        <p><b>%1$s</b>
+        <br />Version <b>%2$s</b></p>
+        <p>Bereitgestellt under der <a href="https://www.gnu.org/licenses/gpl-3.0.de.html">GPL v3</a> Lizenz</p>
+        <p>Fehler und Verbesserungsvorschläge bitte im <a href="https://github.com/Piwigo/Piwigo-Android/issues">issue tacker</a> melden</p>
+        <p>Quellcode steht auf <a href="https://github.com/Piwigo/Piwigo-Android">Github</a> zur Verfügung</p>]]></string>
+    <string name="title_activity_about">Über</string>
+</resources>

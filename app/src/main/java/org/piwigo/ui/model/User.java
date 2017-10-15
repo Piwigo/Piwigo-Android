@@ -1,5 +1,7 @@
 /*
  * Piwigo for Android
+ * Copyright (C) 2017 Raphael Mack http://www.raphael-mack.de
+ * Copyright (C) 2016 Phil Bayfield https://philio.me
  * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,6 +20,9 @@
 
 package org.piwigo.ui.model;
 
+import android.accounts.Account;
+
+/* instances of this class represent one "piwigo account", I.e. an url-username combination */
 public class User {
 
     public boolean guest;
@@ -26,4 +31,8 @@ public class User {
 
     public String username;
 
+    /* the android account for that user */
+    public Account account;
+
+    /* TODO add image for the gallery (from the favicon?) */
 }
