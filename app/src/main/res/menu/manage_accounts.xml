@@ -24,12 +24,5 @@
         android:icon="@drawable/ic_action_add"
         android:showAsAction="always"
         android:title="@string/nav_add_account"
-        app:showAsAction="ifRoom" />
-    <!-- TODO: can we get rid of the delete entry completely? -->
-    <item
-        android:id="@+id/action_del_account"
-        android:icon="@android:drawable/ic_menu_delete"
-        android:showAsAction="always"
-        android:title="@string/nav_delete_account"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 </menu>

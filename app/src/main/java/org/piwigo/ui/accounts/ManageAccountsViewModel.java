@@ -36,6 +36,7 @@ import java.util.Observer;
 
 import javax.inject.Inject;
 
+/* TODO */
 public class ManageAccountsViewModel extends ViewModel implements Observer {
     private final Resources resources;
     private final AccountHelper accountHelper;
@@ -64,9 +65,10 @@ public class ManageAccountsViewModel extends ViewModel implements Observer {
     public void update(Observable observable, Object data) {
         if (observable instanceof AccountHelper) {
             if(data instanceof User) {
-                /* nothing for the cahnge of the active user */
+                view.select((User)data);
             }else{
-                users.set(new LinkedList<>(accountHelper.getUsers()));
+                users.set(accountHelper.getUsers());
+                users.notifyChange();
             }
         }
     }

@@ -113,7 +113,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
     @Override protected void onResume() {
         super.onResume();
-        checkAccount();
+        checkAccount(); /* TODO is seems that "checkAccount" is a quite heavy action */
         if (account == null) {
             loadAccount();
         }
@@ -177,8 +177,17 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             if(data instanceof User) {
                 /* now also update the content */
                 if (account != accountHelper.getUser().account) {
+                    int idx = 0;
                     AlbumsFragment frag = (AlbumsFragment) getSupportFragmentManager().findFragmentById(R.id.content);
                     account = accountHelper.getUser().account;
+                    for(User u : accountHelper.getUsers()) {
+                        if(u.account == account) {
+                            break;
+                        }else {
+                            idx++;
+                        }
+                    }
+                    accountSpinner.setSelection(idx);
                     if(frag != null) {
                         frag.refresh();
                     }

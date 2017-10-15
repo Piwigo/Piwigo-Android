@@ -18,8 +18,10 @@
  */
 package org.piwigo.ui.view;
 
+import org.piwigo.ui.model.User;
+
 public interface AccountView {
 
     void close();
-
+    void select(User user);
 }

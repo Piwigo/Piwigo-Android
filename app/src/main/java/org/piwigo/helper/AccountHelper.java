@@ -32,8 +32,8 @@ import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.model.User;
 
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 
@@ -42,6 +42,8 @@ import javax.inject.Singleton;
 
 /* TODO: cleanup this class. It has strange methcods... also the Userlist could be improved
 * Observer notifications to be documented */
+/* TODO: accounthelper should recognize if an account was deleted in the android system settings
+    and notify the observers accordingly */
 @Singleton
 public class AccountHelper extends Observable {
 
@@ -56,18 +58,22 @@ public class AccountHelper extends Observable {
     private Context context;
     private AccountManager accountManager;
     private User user;
+    private ArrayList<User> users = new ArrayList<User>();
 
     @Inject Session session;
 
     @Inject public AccountHelper(Context context) {
         this.context = context;
         accountManager = AccountManager.get(context);
+
+        for (Account a: accountManager.getAccountsByType(context.getString(R.string.account_type))) {
+            users.add(createUser(a));
+        }
     }
 
     public boolean accountExists(LoginResponse loginResponse) {
         String name = getAccountName(loginResponse);
-        List<Account> accounts = getAccounts();
-        for (Account account : accounts) {
+        for (Account account : accountManager.getAccountsByType(context.getString(R.string.account_type))) {
             if (account.name.equals(name)) {
                 return true;
             }
@@ -79,12 +85,17 @@ public class AccountHelper extends Observable {
         String accountName = getAccountName(loginResponse);
         Account account = new Account(accountName, context.getString(R.string.account_type));
         Bundle userdata = new Bundle();
-
+        User user;
         if (loginResponse.statusResponse.result.username.equals(GUEST_ACCOUNT_NAME)) {
-            return updateGuestAccount(account, userdata, loginResponse);
+            account = updateGuestAccount(account, userdata, loginResponse);
         } else {
-            return updateUserAccount(account, userdata, loginResponse);
+            account = updateUserAccount(account, userdata, loginResponse);
         }
+        user = createUser(account);
+        users.add(user);
+
+        updateSession(user);
+        return account;
     }
 
     public void updateAccount(Account account, LoginResponse loginResponse) {
@@ -96,14 +107,11 @@ public class AccountHelper extends Observable {
         }
     }
 
-
     public boolean hasAccount() {
-        List<Account> accounts = getAccounts();
-        return accounts.size() > 0;
+        return accountManager.getAccountsByType(context.getString(R.string.account_type)).length > 0;
     }
 
     public User getUser(String name, boolean firstIfInvalid){
-        List<User> users = getUsers();
         if (users.size() == 0) {
             return null;
         }
@@ -142,21 +150,12 @@ public class AccountHelper extends Observable {
         updateSession(getUser(account.name, false));
     }
 
-    /* TODO make private? */
-    public List<Account> getAccounts() {
-        return Arrays.asList(accountManager.getAccountsByType(context.getString(R.string.account_type)));
-    }
-
     public List<User> getUsers(){
-        /* todo make list of users an array and static, update it from the accounts on each call? */
-        LinkedList<User> users = new LinkedList<User>();
-        for (Account a: getAccounts()) {
-            users.addLast(createUser(a));
-        }
-        return users;
+        return Collections.unmodifiableList(users);
     }
 
     private User createUser(Account account) {
+        /* TODO remove this one here */
         User user = new User();
         user.guest = Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
         user.url = accountManager.getUserData(account, KEY_URL);
@@ -166,6 +165,7 @@ public class AccountHelper extends Observable {
     }
 
     public String getAccountUrl(Account account) {
+        /* TODO: replace calls to this by getUser().url*/
         return accountManager.getUserData(account, KEY_URL);
     }
 
@@ -191,11 +191,22 @@ public class AccountHelper extends Observable {
         return account;
     }
 
-    public Account removeAccount(Account account) {
+    public void removeAccount(User user) {
+        removeAccount(user.account);
+    }
+
+    public void removeAccount(Account account) {
         accountManager.removeAccount(account, null, null);
+        User userToRemove = null;
+        for (User user: users) {
+            if (user.account == account) {
+                userToRemove = user;
+                break;
+            }
+        }
+        users.remove(userToRemove);
         setChanged();
         notifyObservers();
-        return account;
     }
 
     private String getAccountName(LoginResponse loginResponse) {
@@ -206,22 +217,6 @@ public class AccountHelper extends Observable {
             sitename = StringUtils.chop(sitename);
         }
         return context.getString(R.string.account_name, username, sitename.toLowerCase());
-    }
-
-    private Account getAccountIfAvailable(String name, boolean firstIfInvalid) {
-        List<Account> accounts = getAccounts();
-        if (accounts.size() == 0) {
-            return null;
-        }
-        if (name == null) {
-            return accounts.get(0);
-        }
-        for (Account account : accounts) {
-            if (account.name.equals(name)) {
-                return account;
-            }
-        }
-        return firstIfInvalid ? accounts.get(0) : null;
     }
 
 

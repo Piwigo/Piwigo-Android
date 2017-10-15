@@ -20,7 +20,9 @@ package org.piwigo.ui.accounts;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
@@ -40,6 +42,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityManageAccountsBinding;
@@ -66,8 +69,6 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
     ActivityManageAccountsBinding binding;
 
     private ListView userListView;
-
-    private int currentSelectedPosition = -1;
 
     private UserAdapter mUserAdapter;
 
@@ -111,7 +112,8 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_manage_accounts);
         binding.setViewModel(viewModel);
 
-        viewModel.title.set(getString(R.string.nav_manage_accounts)); /* TODO: isn't it bulls*** to set the title of the viewmodel from the activity ?*/
+        /* TODO: isn't it bulls*** to set the title of the viewmodel from the activity and wouldn't this be better handled in the ViewModel directly? */
+        viewModel.title.set(getString(R.string.nav_manage_accounts));
         viewModel.users.set(accountHelper.getUsers());
         viewModel.setView(this);
 
@@ -125,8 +127,6 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
         viewModel.users.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                ManageAccountsActivity.this.mUserAdapter.clear();
-                ManageAccountsActivity.this.mUserAdapter.addAll(viewModel.users.get());
                 ManageAccountsActivity.this.mUserAdapter.notifyDataSetChanged();
             }
         });
@@ -137,27 +137,43 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
 
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
-                if(currentSelectedPosition == position) {
-                    currentSelectedPosition = -1;
-                    view.setSelected(false);
-                }else {
-                    currentSelectedPosition = position;
-                    view.setSelected(true);
-                }
+                Intent intent = new Intent(getApplicationContext(),
+                        LoginActivity.class);
+                intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUserAdapter.getItem(position).account.name);
+                startActivity(intent);
             }
         });
 
         userListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long arg) {
-                Intent intent = new Intent(getApplicationContext(),
-                        LoginActivity.class);
-                intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUserAdapter.getItem(position).account.name);
-                startActivity(intent);
+                new AlertDialog.Builder(ManageAccountsActivity.this)
+                        .setTitle(ManageAccountsActivity.this.getResources().getString(R.string.account_delete_title))
+                        .setMessage(ManageAccountsActivity.this.getResources().getString(R.string.account_delete_confirmation, mUserAdapter.getItem(position).account.name))
+                        .setIcon(android.R.drawable.ic_delete)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                if(whichButton == DialogInterface.BUTTON_POSITIVE) {
+                                    accountHelper.removeAccount(mUserAdapter.getItem(position));
+                                }
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
+
                 return true;
             }
         });
         registerForContextMenu(userListView);
+
+        int idx = 0;
+        for(User u : accountHelper.getUsers()){
+            if(accountHelper.getUser() == u) {
+                break;
+            }else {
+                idx++;
+            }
+        }
+        userListView.setItemChecked(idx, true);
     }
 
     @Override
@@ -173,17 +189,6 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
                 startActivity(new Intent(getApplicationContext(),
                         LoginActivity.class));
                 break;
-            case R.id.action_del_account:
-                if(currentSelectedPosition == -1)
-                {
-                    /* nothing selected */
-                    Snackbar.make(binding.getRoot(), R.string.account_not_selected, Snackbar.LENGTH_LONG)
-                            .show();
-                }else{
-                    /* TODO delete account shall better be moved into the LoginView */
-                    accountHelper.removeAccount(mUserAdapter.getItem(currentSelectedPosition).account);
-                }
-                break;
             default:
                 break;
         }
@@ -196,6 +201,25 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
         finish();
     }
 
+    @Override
+    public void select(User user){
+        int idx = 0;
+        View selected = userListView.getSelectedView();
+        if(selected != null || userListView.getCheckedItemPosition() > 0) {
+            selected.setSelected(false);
+//            userListView.setItemChecked(idx, false);
+        }
+        for(User u : accountHelper.getUsers()){
+            if(user == u) {
+                break;
+            }else {
+                idx++;
+            }
+        }
+        /* TODO: fix selection - it does not yet work */
+        userListView.setItemChecked(idx, true);
+        userListView.setSelected(true);
+    }
 /* TODO cleanup observer in ViewModel */
 
 }

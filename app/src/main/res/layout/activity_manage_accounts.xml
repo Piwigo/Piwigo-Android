@@ -57,8 +57,9 @@
                     android:id="@+id/user_list"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:choiceMode="singleChoice"
                     android:divider="@color/alpha_grey"
-                    android:dividerHeight="1dp"></ListView>
+                    android:dividerHeight="1dp" />
             </FrameLayout>
         </RelativeLayout>
 
