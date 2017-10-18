@@ -18,12 +18,15 @@
 
 package org.piwigo.internal.di.module;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.PiwigoApplication;
+import org.piwigo.accounts.UserManager;
+import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Singleton;
 
@@ -47,5 +50,13 @@ public class ApplicationModule {
         return new Picasso.Builder(application)
                 .downloader(downloader)
                 .build();
+    }
+
+    @Provides @Singleton AccountManager provideAccountManager() {
+        return AccountManager.get(application);
+    }
+
+    @Provides @Singleton UserManager provideUserManager(AccountManager accountManager, PreferencesRepository preferencesRepository) {
+        return new UserManager(accountManager, application.getResources(), preferencesRepository);
     }
 }

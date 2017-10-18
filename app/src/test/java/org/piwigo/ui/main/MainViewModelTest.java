@@ -18,29 +18,51 @@
 
 package org.piwigo.ui.main;
 
+import android.accounts.Account;
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.arch.lifecycle.Observer;
 import android.view.MenuItem;
+
+import com.google.common.base.Optional;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.piwigo.accounts.UserManager;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MainViewModelTest {
+
+    @Mock UserManager userManager;
+    @Mock Account account;
 
     private MainViewModel viewModel;
 
     @Rule public TestRule rule = new InstantTaskExecutorRule();
 
-    @Before public void setup() {
-        viewModel = new MainViewModel();
+    @Before @SuppressWarnings("Guava") public void setup() {
+        MockitoAnnotations.initMocks(this);
+
+        when(userManager.getActiveAccount()).thenReturn(Optional.of(account));
+        when(userManager.getUsername(account)).thenReturn("username");
+        when(userManager.getSiteUrl(account)).thenReturn("http://piwigo.org/demo");
+
+        viewModel = new MainViewModel(userManager);
     }
 
-    @Test @SuppressWarnings("unchecked") public void observerReceivesSelectedMenuItem() {
+    @Test public void constructor_getAccountInfoFromUserManager() {
+        verify(userManager).getActiveAccount();
+        verify(userManager).getUsername(account);
+        verify(userManager).getSiteUrl(account);
+    }
+
+    @Test @SuppressWarnings("unchecked") public void getSelectedMenuItem_observerReceivesSelectedMenuItem() {
         MenuItem menuItem = mock(MenuItem.class);
         Observer<MenuItem> observer = (Observer<MenuItem>) mock(Observer.class);
         viewModel.getSelectedMenuItem().observeForever(observer);

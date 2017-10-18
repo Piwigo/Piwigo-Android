@@ -29,22 +29,18 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class AlbumsViewModelFactory implements ViewModelProvider.Factory {
+public class MainViewModelFactory implements ViewModelProvider.Factory {
 
-    private final Context context;
     private final UserManager userManager;
-    private final CategoriesRepository categoriesRepository;
 
-    @Inject public AlbumsViewModelFactory(Context context, UserManager userManager, CategoriesRepository categoriesRepository) {
-        this.context = context;
+    @Inject public MainViewModelFactory(UserManager userManager) {
         this.userManager = userManager;
-        this.categoriesRepository = categoriesRepository;
     }
 
     @Override public <T extends ViewModel> T create(Class<T> viewModelClass) {
-        if (viewModelClass.isAssignableFrom(AlbumsViewModel.class)) {
+        if (viewModelClass.isAssignableFrom(MainViewModel.class)) {
             //noinspection unchecked
-            return (T) new AlbumsViewModel(userManager, categoriesRepository, context.getResources());
+            return (T) new MainViewModel(userManager);
         }
         throw new IllegalStateException("Unable to create " + viewModelClass.getName());
     }

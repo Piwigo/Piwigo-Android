@@ -18,7 +18,6 @@
 
 package org.piwigo.ui.main;
 
-import android.accounts.Account;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -28,7 +27,6 @@ import android.view.MenuItem;
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
-import org.piwigo.ui.model.User;
 import org.piwigo.ui.shared.BaseActivity;
 
 import javax.inject.Inject;
@@ -41,9 +39,9 @@ import dagger.android.support.HasSupportFragmentInjector;
 public class MainActivity extends BaseActivity implements HasSupportFragmentInjector {
 
     @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
+    @Inject MainViewModelFactory viewModelFactory;
 
     private MainViewModel viewModel;
-    private Account account;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
@@ -52,7 +50,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
 
-        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.getSelectedMenuItem().observe(this, this::itemSelected);
 
         binding.setViewModel(viewModel);
@@ -60,22 +58,12 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
 
-        loadAccount();
-
         if (savedInstanceState == null) {
             viewModel.setTitle(getString(R.string.nav_albums));
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.content, new AlbumsFragment())
                     .commit();
-        }
-    }
-
-    @Override protected void onResume() {
-        super.onResume();
-        checkAccount();
-        if (account == null) {
-            loadAccount();
         }
     }
 
@@ -88,25 +76,5 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             case R.id.nav_albums:
                 break;
         }
-    }
-
-    private void checkAccount() {
-        if (account != null) {
-            account = accountHelper.getAccount(account.name, false);
-        }
-    }
-
-    private void loadAccount() {
-        String name = preferencesRepository.getAccountName();
-        account = accountHelper.getAccount(name, true);
-        if (account == null) {
-            finish();
-            return;
-        }
-        if (!account.name.equals(name)) {
-            preferencesRepository.setAccountName(account.name);
-        }
-        User user = accountHelper.createUser(account);
-        viewModel.setUser(user);
     }
 }

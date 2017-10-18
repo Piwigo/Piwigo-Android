@@ -20,13 +20,14 @@ package org.piwigo.ui.shared;
 
 import android.support.v7.app.AppCompatActivity;
 
-import org.piwigo.helper.AccountHelper;
+import org.piwigo.accounts.UserManager;
 import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Inject;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    @Inject protected AccountHelper accountHelper;
+    @Inject protected Navigator navigator;
+    @Inject protected UserManager userManager;
     @Inject protected PreferencesRepository preferencesRepository;
 }

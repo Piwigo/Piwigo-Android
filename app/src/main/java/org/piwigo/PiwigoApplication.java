@@ -37,34 +37,34 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
 import io.fabric.sdk.android.Fabric;
 
-    public class PiwigoApplication extends Application implements HasActivityInjector {
+public class PiwigoApplication extends Application implements HasActivityInjector {
 
-        @Inject DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+    @Inject DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
-        @Override public void onCreate() {
-            super.onCreate();
+    @Override public void onCreate() {
+        super.onCreate();
 
-            initializeCrashlytics();
-            initializeDependancyInjection();
-        }
-
-        @Override public AndroidInjector<Activity> activityInjector() {
-            return dispatchingAndroidInjector;
-        }
-
-        protected void initializeCrashlytics() {
-            Fabric.with(this, new Crashlytics());
-        }
-
-        private void initializeDependancyInjection() {
-            ApplicationComponent applicationComponent = DaggerApplicationComponent.builder()
-                    .applicationModule(new ApplicationModule(this))
-                    .build();
-            applicationComponent.inject(this);
-
-            BindingComponent bindingComponent = DaggerBindingComponent.builder()
-                    .applicationComponent(applicationComponent)
-                    .build();
-            DataBindingUtil.setDefaultComponent(bindingComponent);
-        }
+        initializeCrashlytics();
+        initializeDependancyInjection();
     }
+
+    @Override public AndroidInjector<Activity> activityInjector() {
+        return dispatchingAndroidInjector;
+    }
+
+    protected void initializeCrashlytics() {
+        Fabric.with(this, new Crashlytics());
+    }
+
+    private void initializeDependancyInjection() {
+        ApplicationComponent applicationComponent = DaggerApplicationComponent.builder()
+                .applicationModule(new ApplicationModule(this))
+                .build();
+        applicationComponent.inject(this);
+
+        BindingComponent bindingComponent = DaggerBindingComponent.builder()
+                .applicationComponent(applicationComponent)
+                .build();
+        DataBindingUtil.setDefaultComponent(bindingComponent);
+    }
+}

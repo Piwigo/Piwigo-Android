@@ -25,16 +25,12 @@ import android.os.Handler;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLauncherBinding;
-import org.piwigo.ui.shared.Navigator;
 import org.piwigo.ui.shared.BaseActivity;
-
-import javax.inject.Inject;
+import org.piwigo.ui.shared.Navigator;
 
 import dagger.android.AndroidInjection;
 
 public class LauncherActivity extends BaseActivity {
-
-    @Inject Navigator navigator;
 
     private final Handler handler = new Handler();
     private ActivityLauncherBinding binding;
@@ -45,7 +41,7 @@ public class LauncherActivity extends BaseActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_launcher);
 
-        if (accountHelper.hasAccount()) {
+        if (userManager.isLoggedIn()) {
             handler.postDelayed(this::startMain, 1000);
         } else {
             handler.postDelayed(this::startLogin, 1000);

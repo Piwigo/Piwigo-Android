@@ -19,20 +19,17 @@
 package org.piwigo.io.repository;
 
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.io.Session;
 
 import rx.Observable;
 import rx.Scheduler;
 
 abstract class BaseRepository {
 
-    final Session session;
     final RestServiceFactory restServiceFactory;
     private final Scheduler ioScheduler;
     private final Scheduler uiScheduler;
 
-    BaseRepository(Session session, RestServiceFactory restServiceFactory, Scheduler ioScheduler, Scheduler uiScheduler) {
-        this.session = session;
+    BaseRepository(RestServiceFactory restServiceFactory, Scheduler ioScheduler, Scheduler uiScheduler) {
         this.restServiceFactory = restServiceFactory;
         this.ioScheduler = ioScheduler;
         this.uiScheduler = uiScheduler;
