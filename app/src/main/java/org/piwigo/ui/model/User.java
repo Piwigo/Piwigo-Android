@@ -25,5 +25,4 @@ public class User {
     public String url;
 
     public String username;
-
 }

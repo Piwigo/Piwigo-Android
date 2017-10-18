@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.model.StatusResponse;
 import org.piwigo.io.model.SuccessResponse;
@@ -52,7 +51,6 @@ public class UserRepositoryTest {
     private static final String STATUS_OK = "ok";
     private static final String STATUS_FAIL = "fail";
 
-    @Mock Session session;
     @Mock RestServiceFactory restServiceFactory;
     @Mock RestService restService;
 
@@ -66,11 +64,11 @@ public class UserRepositoryTest {
         when(restService.login(USERNAME, PASSWORD)).thenReturn(getLoginSuccessResponse());
         when(restService.login(BAD_CREDENTIAL, BAD_CREDENTIAL)).thenReturn(getLoginFailureResponse());
 
-        userRepository = new UserRepository(session, restServiceFactory, Schedulers.immediate(), Schedulers.immediate());
+        userRepository = new UserRepository(restServiceFactory, Schedulers.immediate(), Schedulers.immediate());
     }
 
-    @Test public void loginSuccess() {
-        when(restService.getStatus()).thenReturn(getStatusResponse(USERNAME));
+    @Test public void login_withValidCredentials_returnsSuccessResponse() {
+        when(restService.getStatus("pwg_id=" + COOKIE_PWG_ID)).thenReturn(getStatusResponse(USERNAME));
 
         Observable<LoginResponse> observable = userRepository.login(URL, USERNAME, PASSWORD);
         TestSubscriber<LoginResponse> subscriber = new TestSubscriber<>();
@@ -79,7 +77,6 @@ public class UserRepositoryTest {
         subscriber.assertNoErrors();
         LoginResponse loginResponse = subscriber.getOnNextEvents().get(0);
         verify(restServiceFactory).createForUrl(URL);
-        verify(session).setCookie(COOKIE_PWG_ID);
         assertThat(loginResponse.url).isEqualTo(URL);
         assertThat(loginResponse.username).isEqualTo(USERNAME);
         assertThat(loginResponse.password).isEqualTo(PASSWORD);
@@ -89,7 +86,7 @@ public class UserRepositoryTest {
         assertThat(loginResponse.statusResponse.result.username).isEqualTo(USERNAME);
     }
 
-    @Test public void loginError() {
+    @Test public void login_withInvalidCredentials_returnsErrorResponse() {
         Observable<LoginResponse> observable = userRepository.login(URL, BAD_CREDENTIAL, BAD_CREDENTIAL);
         TestSubscriber<LoginResponse> subscriber = new TestSubscriber<>();
         observable.subscribe(subscriber);
@@ -97,7 +94,7 @@ public class UserRepositoryTest {
         subscriber.assertError(Throwable.class);
     }
 
-    @Test public void shouldGetStatus() {
+    @Test public void status_returnsStatusResponse() {
         Observable<LoginResponse> observable = userRepository.status(URL);
         TestSubscriber<LoginResponse> subscriber = new TestSubscriber<>();
         observable.subscribe(subscriber);

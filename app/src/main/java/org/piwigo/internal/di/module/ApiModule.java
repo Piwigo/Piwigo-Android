@@ -21,10 +21,8 @@ package org.piwigo.internal.di.module;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.piwigo.helper.AccountHelper;
-import org.piwigo.internal.di.qualifier.ForRetrofit;
+import org.piwigo.internal.di.qualifier.ForLogin;
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.io.Session;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -42,17 +40,13 @@ import rx.schedulers.Schedulers;
 @Module
 public class ApiModule {
 
-    @Provides @Singleton Session provideSession() {
-        return new Session();
-    }
-
     @Provides @Singleton Gson provideGson() {
         return new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd HH:mm:ss")
                 .create();
     }
 
-    @Provides @Singleton Retrofit.Builder provideRetrofitBuilder(@ForRetrofit OkHttpClient client, Gson gson) {
+    @Provides @Singleton @ForLogin Retrofit.Builder provideRetrofitBuilder(@ForLogin OkHttpClient client, Gson gson) {
         return new Retrofit.Builder()
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
@@ -67,7 +61,7 @@ public class ApiModule {
         return AndroidSchedulers.mainThread();
     }
 
-    @Provides @Singleton RestServiceFactory provideRestServiceFactory(Retrofit.Builder builder, AccountHelper accountHelper) {
-        return new RestServiceFactory(builder, accountHelper);
+    @Provides @Singleton RestServiceFactory provideRestServiceFactory(@ForLogin Retrofit.Builder builder) {
+        return new RestServiceFactory(builder);
     }
 }

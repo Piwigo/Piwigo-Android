@@ -43,6 +43,6 @@ public class LoginViewModelFactory implements ViewModelProvider.Factory {
             //noinspection unchecked
             return (T) new LoginViewModel(userRepository, context.getResources());
         }
-        throw new IllegalStateException("Unable to create " + viewModelClass.getName());
+        throw new IllegalStateException("Unable to createUser " + viewModelClass.getName());
     }
 }

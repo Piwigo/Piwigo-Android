@@ -22,7 +22,6 @@ import android.util.Pair;
 
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.io.Session;
 import org.piwigo.io.model.Category;
 import org.piwigo.io.model.ImageInfo;
 
@@ -36,12 +35,12 @@ import rx.Scheduler;
 
 public class CategoriesRepository extends BaseRepository {
 
-    @Inject public CategoriesRepository(Session session, RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler) {
-        super(session, restServiceFactory, ioScheduler, uiScheduler);
+    @Inject public CategoriesRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler) {
+        super(restServiceFactory, ioScheduler, uiScheduler);
     }
 
     public Observable<List<Pair<Category, ImageInfo>>> getCategories(Integer categoryId) {
-        RestService restService = restServiceFactory.createForAccount(session.getAccount());
+        RestService restService = restServiceFactory.createForUrl(null);
 
         return restService.getCategories(categoryId)
                 .flatMapIterable(categoryListResponse -> categoryListResponse.result.categories)

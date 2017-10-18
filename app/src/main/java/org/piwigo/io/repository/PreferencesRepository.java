@@ -26,7 +26,7 @@ import javax.inject.Inject;
 
 public class PreferencesRepository {
 
-    private static final String KEY_DEFAULT_ACCOUNT = "default_account";
+    private static final String KEY_ACTIVE_ACCOUNT = "active_account";
 
     private final SharedPreferences preferences;
 
@@ -34,12 +34,12 @@ public class PreferencesRepository {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public void setAccountName(String name) {
-        set(KEY_DEFAULT_ACCOUNT, name);
+    public void setActiveAccount(String name) {
+        set(KEY_ACTIVE_ACCOUNT, name);
     }
 
-    public String getAccountName() {
-        return preferences.getString(KEY_DEFAULT_ACCOUNT, null);
+    public String getActiveAccount() {
+        return preferences.getString(KEY_ACTIVE_ACCOUNT, null);
     }
 
     private void set(String key, String value) {
@@ -47,5 +47,4 @@ public class PreferencesRepository {
         editor.putString(key, value);
         editor.apply();
     }
-
 }

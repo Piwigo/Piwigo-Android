@@ -18,28 +18,17 @@
 
 package org.piwigo.io;
 
-import android.accounts.Account;
-
-import org.piwigo.helper.AccountHelper;
-
 import retrofit2.Retrofit;
 
 public class RestServiceFactory {
 
     private final Retrofit.Builder builder;
-    private final AccountHelper accountHelper;
 
-    public RestServiceFactory(Retrofit.Builder builder, AccountHelper accountHelper) {
+    public RestServiceFactory(Retrofit.Builder builder) {
         this.builder = builder;
-        this.accountHelper = accountHelper;
     }
 
     public RestService createForUrl(String url) {
         return builder.baseUrl(url).build().create(RestService.class);
-    }
-
-    public RestService createForAccount(Account account) {
-        String url = accountHelper.getAccountUrl(account);
-        return createForUrl(url);
     }
 }

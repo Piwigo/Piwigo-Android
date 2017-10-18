@@ -90,12 +90,12 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void loginSuccess(LoginResponse response) {
-        if (accountHelper.accountExists(response)) {
+        if (userManager.userExists(response.url, response.username)) {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
             viewModel.accountExists();
         } else {
-            Account account = accountHelper.createAccount(response);
+            Account account = userManager.createUser(response.url, response.statusResponse.result.username, response.password, response.pwgId, response.statusResponse.result.pwgToken);
             setResultIntent(account);
             viewModel.accountCreated();
         }

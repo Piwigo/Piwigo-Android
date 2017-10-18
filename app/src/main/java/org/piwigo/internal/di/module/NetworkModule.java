@@ -21,9 +21,9 @@ package org.piwigo.internal.di.module;
 import com.jakewharton.picasso.OkHttp3Downloader;
 
 import org.piwigo.BuildConfig;
+import org.piwigo.accounts.UserManager;
 import org.piwigo.internal.di.qualifier.ForPicasso;
-import org.piwigo.internal.di.qualifier.ForRetrofit;
-import org.piwigo.io.Session;
+import org.piwigo.internal.di.qualifier.ForLogin;
 
 import javax.inject.Singleton;
 
@@ -44,7 +44,7 @@ public class NetworkModule {
         return loggingInterceptor;
     }
 
-    @Provides @Singleton @ForRetrofit OkHttpClient provideRetrofitOkHttpClient(HttpLoggingInterceptor loggingInterceptor, Session session) {
+    @Provides @Singleton @ForLogin OkHttpClient provideRetrofitOkHttpClient(HttpLoggingInterceptor loggingInterceptor, UserManager userManager) {
         return new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(chain -> {
@@ -53,10 +53,6 @@ public class NetworkModule {
                     HttpUrl.Builder urlBuilder = chain.request().url().newBuilder();
                     urlBuilder.addQueryParameter("format", "json");
                     builder.url(urlBuilder.build());
-
-                    if (session.getCookie() != null) {
-                        builder.addHeader("Cookie", "pwg_id=" + session.getCookie());
-                    }
 
                     return chain.proceed(builder.build());
                 })

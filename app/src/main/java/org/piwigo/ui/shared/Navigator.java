@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.view.View;
 
+import org.piwigo.ui.launcher.LauncherActivity;
 import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.main.MainActivity;
 
@@ -37,7 +38,12 @@ public class Navigator {
 
     public static final int REQUEST_CODE_LOGIN = 1;
 
-    @Inject public Navigator() {}
+    @Inject Navigator() {}
+
+    public void startLauncher(Context context) {
+        Intent intent = new Intent(context, LauncherActivity.class);
+        context.startActivity(intent);
+    }
 
     public void startLogin(Activity activity) {
         Intent intent = new Intent(activity, LoginActivity.class);

@@ -16,45 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io;
+package org.piwigo.internal.di.qualifier;
 
-import android.accounts.Account;
+import java.lang.annotation.Retention;
 
-public class Session {
+import javax.inject.Qualifier;
 
-    private Account account;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-    private String cookie;
-
-    private String token;
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setCookie(String cookie) {
-        this.cookie = cookie;
-    }
-
-    public String getCookie() {
-        return cookie;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void purge() {
-        account = null;
-        cookie = null;
-        token = null;
-    }
+@Qualifier
+@Retention(RUNTIME)
+public @interface ForLogin {
 }

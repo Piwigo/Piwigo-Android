@@ -21,7 +21,6 @@ package org.piwigo.io.repository;
 import org.piwigo.helper.CookieHelper;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
 
 import javax.inject.Inject;
@@ -32,8 +31,8 @@ import rx.Scheduler;
 
 public class UserRepository extends BaseRepository {
 
-    @Inject UserRepository(Session session, RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler) {
-        super(session, restServiceFactory, ioScheduler, uiScheduler);
+    @Inject UserRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler) {
+        super(restServiceFactory, ioScheduler, uiScheduler);
     }
 
     public Observable<LoginResponse> login(String url, String username, String password) {
@@ -49,12 +48,11 @@ public class UserRepository extends BaseRepository {
                     if (response.body().result) {
                         String sessionId = CookieHelper.extract("pwg_id", response.headers());
                         loginResponse.pwgId = sessionId;
-                        session.setCookie(sessionId);
                         return Observable.just(response.body());
                     }
                     return Observable.error(new Throwable("Login failed"));
                 })
-                .flatMap(successResponse -> restService.getStatus())
+                .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId))
                 .map(statusResponse -> {
                     loginResponse.statusResponse = statusResponse;
                     return loginResponse;

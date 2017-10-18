@@ -28,18 +28,21 @@ import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 import rx.Observable;
 
 public interface RestService {
 
-    @GET("ws.php?method=pwg.session.getStatus") Observable<StatusResponse> getStatus();
-
     @POST("ws.php?method=pwg.session.login") @FormUrlEncoded Observable<Response<SuccessResponse>> login(
             @Field("username") String username,
             @Field("password") String password
     );
+
+    @GET("ws.php?method=pwg.session.getStatus") Observable<StatusResponse> getStatus();
+
+    @GET("ws.php?method=pwg.session.getStatus") Observable<StatusResponse> getStatus(@Header("Cookie") String pwgIdCookie);
 
     @GET("ws.php?method=pwg.session.logout") Observable<SuccessResponse> logout();
 

@@ -29,7 +29,6 @@ import android.view.View;
 import org.piwigo.R;
 import org.piwigo.internal.binding.observable.DrawerStateObservable;
 import org.piwigo.internal.binding.observable.NavigationItemObservable;
-import org.piwigo.ui.model.User;
 
 public class MainViewModel extends ViewModel {
 
@@ -50,9 +49,12 @@ public class MainViewModel extends ViewModel {
         this.title.set(title);
     }
 
-    void setUser(User user) {
-        username.set(user.username);
-        url.set(user.url);
+    void setUsername(String username) {
+        this.username.set(username);
+    }
+
+    void setUrl(String url) {
+        this.url.set(url);
     }
 
     public void navigationIconClick(View view) {

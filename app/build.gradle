@@ -91,7 +91,10 @@ dependencies {
         transitive = true;
     }
     compile 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
+    compile 'com.google.guava:guava:23.2-android'
+    annotationProcessor 'com.google.guava:guava:23.2-jre'
     compile 'org.apache.commons:commons-lang3:3.4'
+
 
     testCompile 'junit:junit:4.12'
     testCompile "org.robolectric:robolectric:3.4.2"
@@ -107,4 +110,7 @@ dependencies {
     testAnnotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
     testCompile "android.arch.core:core-testing:${lifecycleVersion}"
     testCompile 'org.mockito:mockito-core:2.10.0'
+    testCompile 'com.google.guava:guava:23.2-android'
+    testAnnotationProcessor 'com.google.guava:guava:23.2-jre'
+    testCompile 'com.google.code.findbugs:jsr305:3.0.1'
 }
