@@ -18,6 +18,7 @@
 
 package org.piwigo.ui.main;
 
+import android.accounts.Account;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
@@ -26,7 +27,10 @@ import android.support.design.widget.NavigationView;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.common.base.Optional;
+
 import org.piwigo.R;
+import org.piwigo.accounts.UserManager;
 import org.piwigo.internal.binding.observable.DrawerStateObservable;
 import org.piwigo.internal.binding.observable.NavigationItemObservable;
 
@@ -41,20 +45,20 @@ public class MainViewModel extends ViewModel {
 
     private MutableLiveData<MenuItem> selectedMenuItem = new MutableLiveData<>();
 
-    public LiveData<MenuItem> getSelectedMenuItem() {
+    public MainViewModel(UserManager userManager) {
+        Optional<Account> account = userManager.getActiveAccount();
+        if (account.isPresent()) {
+            username.set(userManager.getUsername(account.get()));
+            url.set(userManager.getSiteUrl(account.get()));
+        }
+    }
+
+    LiveData<MenuItem> getSelectedMenuItem() {
         return selectedMenuItem;
     }
 
     void setTitle(String title) {
         this.title.set(title);
-    }
-
-    void setUsername(String username) {
-        this.username.set(username);
-    }
-
-    void setUrl(String url) {
-        this.url.set(url);
     }
 
     public void navigationIconClick(View view) {

@@ -18,6 +18,8 @@
 
 package org.piwigo.io.repository;
 
+import android.accounts.Account;
+import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import org.piwigo.io.RestService;
@@ -39,8 +41,8 @@ public class CategoriesRepository extends BaseRepository {
         super(restServiceFactory, ioScheduler, uiScheduler);
     }
 
-    public Observable<List<Pair<Category, ImageInfo>>> getCategories(Integer categoryId) {
-        RestService restService = restServiceFactory.createForUrl(null);
+    public Observable<List<Pair<Category, ImageInfo>>> getCategories(Account account, @Nullable Integer categoryId) {
+        RestService restService = restServiceFactory.createForAccount(account);
 
         return restService.getCategories(categoryId)
                 .flatMapIterable(categoryListResponse -> categoryListResponse.result.categories)

@@ -16,32 +16,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.ui.login;
+package org.piwigo.ui.main;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.accounts.UserManager;
+import org.piwigo.io.repository.CategoriesRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class LoginViewModelFactory implements ViewModelProvider.Factory {
+public class MainViewModelFactory implements ViewModelProvider.Factory {
 
-    private final Context context;
-    private final UserRepository userRepository;
+    private final UserManager userManager;
 
-    @Inject public LoginViewModelFactory(Context context, UserRepository userRepository) {
-        this.context = context;
-        this.userRepository = userRepository;
+    @Inject public MainViewModelFactory(UserManager userManager) {
+        this.userManager = userManager;
     }
 
     @Override public <T extends ViewModel> T create(Class<T> viewModelClass) {
-        if (viewModelClass.isAssignableFrom(LoginViewModel.class)) {
+        if (viewModelClass.isAssignableFrom(MainViewModel.class)) {
             //noinspection unchecked
-            return (T) new LoginViewModel(userRepository, context.getResources());
+            return (T) new MainViewModel(userManager);
         }
         throw new IllegalStateException("Unable to create " + viewModelClass.getName());
     }

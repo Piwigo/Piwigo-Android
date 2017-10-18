@@ -21,7 +21,7 @@ package org.piwigo.internal.di.module;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.piwigo.internal.di.qualifier.ForLogin;
+import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestServiceFactory;
 
 import javax.inject.Named;
@@ -29,10 +29,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
+import okhttp3.logging.HttpLoggingInterceptor;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -46,13 +43,6 @@ public class ApiModule {
                 .create();
     }
 
-    @Provides @Singleton @ForLogin Retrofit.Builder provideRetrofitBuilder(@ForLogin OkHttpClient client, Gson gson) {
-        return new Retrofit.Builder()
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
-    }
-
     @Provides @Singleton @Named("IoScheduler") Scheduler provideIoScheduler() {
         return Schedulers.io();
     }
@@ -61,7 +51,7 @@ public class ApiModule {
         return AndroidSchedulers.mainThread();
     }
 
-    @Provides @Singleton RestServiceFactory provideRestServiceFactory(@ForLogin Retrofit.Builder builder) {
-        return new RestServiceFactory(builder);
+    @Provides @Singleton RestServiceFactory provideRestServiceFactory(HttpLoggingInterceptor loggingInterceptor, Gson gson, UserManager userManager) {
+        return new RestServiceFactory(loggingInterceptor, gson, userManager);
     }
 }

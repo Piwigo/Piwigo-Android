@@ -39,6 +39,7 @@ import dagger.android.support.HasSupportFragmentInjector;
 public class MainActivity extends BaseActivity implements HasSupportFragmentInjector {
 
     @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
+    @Inject MainViewModelFactory viewModelFactory;
 
     private MainViewModel viewModel;
 
@@ -49,7 +50,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
 
-        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.getSelectedMenuItem().observe(this, this::itemSelected);
 
         binding.setViewModel(viewModel);

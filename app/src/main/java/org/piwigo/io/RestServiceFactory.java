@@ -18,17 +18,69 @@
 
 package org.piwigo.io;
 
+import android.accounts.Account;
+
+import com.google.gson.Gson;
+
+import org.piwigo.accounts.UserManager;
+
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestServiceFactory {
 
-    private final Retrofit.Builder builder;
+    private final HttpLoggingInterceptor loggingInterceptor;
+    private final Gson gson;
+    private final UserManager userManager;
 
-    public RestServiceFactory(Retrofit.Builder builder) {
-        this.builder = builder;
+    public RestServiceFactory(HttpLoggingInterceptor loggingInterceptor, Gson gson, UserManager userManager) {
+        this.loggingInterceptor = loggingInterceptor;
+        this.gson = gson;
+        this.userManager = userManager;
     }
 
     public RestService createForUrl(String url) {
-        return builder.baseUrl(url).build().create(RestService.class);
+        OkHttpClient client = buildOkHttpClient(null);
+        Retrofit retrofit = buildRetrofit(client, url);
+        return retrofit.create(RestService.class);
+    }
+
+    public RestService createForAccount(Account account) {
+        OkHttpClient client = buildOkHttpClient(userManager.getCookie(account));
+        Retrofit retrofit = buildRetrofit(client, userManager.getSiteUrl(account));
+        return retrofit.create(RestService.class);
+    }
+
+    private OkHttpClient buildOkHttpClient(String cookie) {
+        return new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .addInterceptor(chain -> {
+                    Request.Builder builder = chain.request().newBuilder();
+
+                    HttpUrl.Builder urlBuilder = chain.request().url().newBuilder();
+                    urlBuilder.addQueryParameter("format", "json");
+                    builder.url(urlBuilder.build());
+
+                    if (cookie != null) {
+                        builder.addHeader("Cookie", "pwg_id=" + cookie);
+                    }
+
+                    return chain.proceed(builder.build());
+                })
+                .build();
+    }
+
+    private Retrofit buildRetrofit(OkHttpClient client, String baseUrl) {
+        return new Retrofit.Builder()
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .baseUrl(baseUrl)
+                .build();
     }
 }

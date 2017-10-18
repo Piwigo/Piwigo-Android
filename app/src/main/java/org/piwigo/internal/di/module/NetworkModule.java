@@ -21,22 +21,16 @@ package org.piwigo.internal.di.module;
 import com.jakewharton.picasso.OkHttp3Downloader;
 
 import org.piwigo.BuildConfig;
-import org.piwigo.accounts.UserManager;
-import org.piwigo.internal.di.qualifier.ForPicasso;
-import org.piwigo.internal.di.qualifier.ForLogin;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 @Module
 public class NetworkModule {
-
 
     @Provides @Singleton HttpLoggingInterceptor provideHttpLoggingInterceptor() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -44,28 +38,13 @@ public class NetworkModule {
         return loggingInterceptor;
     }
 
-    @Provides @Singleton @ForLogin OkHttpClient provideRetrofitOkHttpClient(HttpLoggingInterceptor loggingInterceptor, UserManager userManager) {
-        return new OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .addInterceptor(chain -> {
-                    Request.Builder builder = chain.request().newBuilder();
-
-                    HttpUrl.Builder urlBuilder = chain.request().url().newBuilder();
-                    urlBuilder.addQueryParameter("format", "json");
-                    builder.url(urlBuilder.build());
-
-                    return chain.proceed(builder.build());
-                })
-                .build();
-    }
-
-    @Provides @Singleton @ForPicasso OkHttpClient providePicassoOkHttpClient(HttpLoggingInterceptor loggingInterceptor) {
+    @Provides @Singleton OkHttpClient provideOkHttpClient(HttpLoggingInterceptor loggingInterceptor) {
         return new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .build();
     }
 
-    @Provides @Singleton OkHttp3Downloader provideOkHttp3Downloader(@ForPicasso OkHttpClient client) {
+    @Provides @Singleton OkHttp3Downloader provideOkHttp3Downloader(OkHttpClient client) {
         return new OkHttp3Downloader(client);
     }
 }

@@ -111,8 +111,8 @@ public class UserManagerTest {
         assertThat(bundle).hasSize(3);
         assertThat(bundle).hasKey(UserManager.KEY_IS_GUEST);
         assertThat(bundle.getString(UserManager.KEY_IS_GUEST)).isEqualTo(Boolean.toString(true));
-        assertThat(bundle).hasKey(UserManager.KEY_URL);
-        assertThat(bundle.getString(UserManager.KEY_URL)).isEqualTo(SITE_URL);
+        assertThat(bundle).hasKey(UserManager.KEY_SITE_URL);
+        assertThat(bundle.getString(UserManager.KEY_SITE_URL)).isEqualTo(SITE_URL);
         assertThat(bundle).hasKey(UserManager.KEY_USERNAME);
         assertThat(bundle.getString(UserManager.KEY_USERNAME)).isEqualTo(UserManager.GUEST_ACCOUNT_NAME);
     }
@@ -131,8 +131,8 @@ public class UserManagerTest {
         assertThat(bundle).hasSize(5);
         assertThat(bundle).hasKey(UserManager.KEY_IS_GUEST);
         assertThat(bundle.getString(UserManager.KEY_IS_GUEST)).isEqualTo(Boolean.toString(false));
-        assertThat(bundle).hasKey(UserManager.KEY_URL);
-        assertThat(bundle.getString(UserManager.KEY_URL)).isEqualTo(SITE_URL);
+        assertThat(bundle).hasKey(UserManager.KEY_SITE_URL);
+        assertThat(bundle.getString(UserManager.KEY_SITE_URL)).isEqualTo(SITE_URL);
         assertThat(bundle).hasKey(UserManager.KEY_USERNAME);
         assertThat(bundle.getString(UserManager.KEY_USERNAME)).isEqualTo(USERNAME);
         assertThat(bundle).hasKey(UserManager.KEY_COOKIE);
@@ -172,5 +172,37 @@ public class UserManagerTest {
         when(preferencesRepository.getActiveAccount()).thenReturn(ACCOUNT_NAME);
 
         assertThat(userManager.getActiveAccount().get()).isEqualTo(firstAccount);
+    }
+
+    @Test public void getSiteUrl_callsAccountManager() {
+        Account account = mock(Account.class);
+
+        userManager.getSiteUrl(account);
+
+        verify(accountManager).getUserData(account, UserManager.KEY_SITE_URL);
+    }
+
+    @Test public void getUsername_callsAccountManager() {
+        Account account = mock(Account.class);
+
+        userManager.getUsername(account);
+
+        verify(accountManager).getUserData(account, UserManager.KEY_USERNAME);
+    }
+
+    @Test public void getCookie_callsAccountManager() {
+        Account account = mock(Account.class);
+
+        userManager.getCookie(account);
+
+        verify(accountManager).getUserData(account, UserManager.KEY_COOKIE);
+    }
+
+    @Test public void getToken_callsAccountManager() {
+        Account account = mock(Account.class);
+
+        userManager.getToken(account);
+
+        verify(accountManager).getUserData(account, UserManager.KEY_TOKEN);
     }
 }

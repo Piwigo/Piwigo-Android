@@ -18,14 +18,18 @@
 
 package org.piwigo.ui.main;
 
+import android.accounts.Account;
 import android.arch.lifecycle.ViewModel;
 import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.util.Log;
 import android.util.Pair;
 
+import com.google.common.base.Optional;
+
 import org.piwigo.BR;
 import org.piwigo.R;
+import org.piwigo.accounts.UserManager;
 import org.piwigo.io.model.Category;
 import org.piwigo.io.model.ImageInfo;
 import org.piwigo.io.repository.CategoriesRepository;
@@ -43,12 +47,14 @@ public class AlbumsViewModel extends ViewModel {
     public ObservableArrayList<Pair<Category, ImageInfo>> items = new ObservableArrayList<>();
     public BindingRecyclerViewAdapter.ViewBinder<Pair<Category, ImageInfo>> viewBinder = new CategoryViewBinder();
 
+    private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
     private final Resources resources;
 
     private Subscription subscription;
 
-    AlbumsViewModel(CategoriesRepository categoriesRepository, Resources resources) {
+    AlbumsViewModel(UserManager userManager, CategoriesRepository categoriesRepository, Resources resources) {
+        this.userManager = userManager;
         this.categoriesRepository = categoriesRepository;
         this.resources = resources;
     }
@@ -60,8 +66,11 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     void loadAlbums(Integer categoryId) {
-        subscription = categoriesRepository.getCategories(categoryId)
-                .subscribe(new CategoriesSubscriber());
+        Optional<Account> account = userManager.getActiveAccount();
+        if (account.isPresent()) {
+            subscription = categoriesRepository.getCategories(account.get(), categoryId)
+                    .subscribe(new CategoriesSubscriber());
+        }
     }
 
     private class CategoriesSubscriber extends Subscriber<List<Pair<Category, ImageInfo>>> {

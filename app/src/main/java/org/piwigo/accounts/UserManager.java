@@ -35,7 +35,7 @@ import org.piwigo.io.repository.PreferencesRepository;
 public class UserManager {
 
     @VisibleForTesting static final String KEY_IS_GUEST = "is_guest";
-    @VisibleForTesting static final String KEY_URL = "url";
+    @VisibleForTesting static final String KEY_SITE_URL = "url";
     @VisibleForTesting static final String KEY_USERNAME = "username";
     @VisibleForTesting static final String KEY_COOKIE = "cookie";
     @VisibleForTesting static final String KEY_TOKEN  = "token";
@@ -91,6 +91,22 @@ public class UserManager {
         return Optional.of(accounts[0]);
     }
 
+    public String getSiteUrl(Account account) {
+        return accountManager.getUserData(account, KEY_SITE_URL);
+    }
+
+    public String getUsername(Account account) {
+        return accountManager.getUserData(account, KEY_USERNAME);
+    }
+
+    public String getCookie(Account account) {
+        return accountManager.getUserData(account, KEY_COOKIE);
+    }
+
+    public String getToken(Account account) {
+        return accountManager.getUserData(account, KEY_TOKEN);
+    }
+
     private String getAccountName(String siteUrl, String username) {
         Uri uri = Uri.parse(siteUrl);
         String sitename = uri.getHost() + uri.getPath();
@@ -105,7 +121,7 @@ public class UserManager {
         Account account = new Account(accountName, resources.getString(R.string.account_type));
         Bundle userdata = new Bundle();
         userdata.putString(KEY_IS_GUEST, Boolean.toString(false));
-        userdata.putString(KEY_URL, siteUrl);
+        userdata.putString(KEY_SITE_URL, siteUrl);
         userdata.putString(KEY_USERNAME, username);
         userdata.putString(KEY_COOKIE, cookie);
         userdata.putString(KEY_TOKEN, token);
@@ -118,7 +134,7 @@ public class UserManager {
         Account account = new Account(accountName, resources.getString(R.string.account_type));
         Bundle userdata = new Bundle();
         userdata.putString(KEY_IS_GUEST, Boolean.toString(true));
-        userdata.putString(KEY_URL, siteUrl);
+        userdata.putString(KEY_SITE_URL, siteUrl);
         userdata.putString(KEY_USERNAME, GUEST_ACCOUNT_NAME);
         accountManager.addAccountExplicitly(account, null, userdata);
         return account;
