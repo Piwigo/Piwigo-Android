@@ -15,7 +15,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
-        versionName "0.1"
+        versionName "2.0"
     }
     buildTypes {
         debug {
