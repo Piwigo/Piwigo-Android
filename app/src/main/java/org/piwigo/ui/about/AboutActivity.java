@@ -48,6 +48,5 @@ public class AboutActivity extends BaseActivity {
         binding.setViewModel(viewModel);
 
         binding.aboutTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
     }
 }

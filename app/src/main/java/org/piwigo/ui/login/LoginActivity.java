@@ -54,6 +54,7 @@ public class LoginActivity extends BaseActivity {
     private AccountAuthenticatorResponse authenticatorResponse;
     private Bundle resultBundle;
 
+    /* TODO: check could this be a memory leak? */
     private Handler handler = new Handler();
 
     @Override protected void onCreate(Bundle savedInstanceState) {

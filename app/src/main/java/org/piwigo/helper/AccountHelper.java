@@ -22,8 +22,11 @@ package org.piwigo.helper;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +35,7 @@ import org.piwigo.io.Session;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.model.User;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -84,13 +88,9 @@ public class AccountHelper extends Observable {
     public Account createAccount(LoginResponse loginResponse) {
         String accountName = getAccountName(loginResponse);
         Account account = new Account(accountName, context.getString(R.string.account_type));
-        Bundle userdata = new Bundle();
         User user;
-        if (loginResponse.statusResponse.result.username.equals(GUEST_ACCOUNT_NAME)) {
-            account = updateGuestAccount(account, userdata, loginResponse);
-        } else {
-            account = updateUserAccount(account, userdata, loginResponse);
-        }
+        updateAccount(account, loginResponse);
+
         user = createUser(account);
         users.add(user);
 
@@ -99,12 +99,54 @@ public class AccountHelper extends Observable {
     }
 
     public void updateAccount(Account account, LoginResponse loginResponse) {
-        Bundle userdata = new Bundle();
+        String oldAccountName = account.name;
+
+        accountManager.setUserData(account, KEY_USERNAME, loginResponse.statusResponse.result.username);
+        accountManager.setUserData(account, KEY_URL, loginResponse.url);
+
         if (loginResponse.statusResponse.result.username.equals(GUEST_ACCOUNT_NAME)) {
-            updateGuestAccount(account, userdata, loginResponse);
-        } else {
-            updateUserAccount(account, userdata, loginResponse);
+            accountManager.setUserData(account, KEY_IS_GUEST, Boolean.toString(true));
+            accountManager.setUserData(account, KEY_COOKIE, null);
+            accountManager.setUserData(account, KEY_TOKEN, null);
+            accountManager.setPassword(account, null);
+        }else {
+            accountManager.setUserData(account, KEY_IS_GUEST, Boolean.toString(false));
+            accountManager.setUserData(account, KEY_COOKIE, loginResponse.pwgId);
+            accountManager.setUserData(account, KEY_TOKEN, loginResponse.statusResponse.result.pwgToken);
+            accountManager.setPassword(account, loginResponse.password);
         }
+
+        if (!getAccountName(loginResponse).equals(oldAccountName))
+        {
+            /* account need to be renamed */
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                try {
+                    accountManager.renameAccount(account, getAccountName(loginResponse), null, null).getResult(); /* rename and wait until rename is done */
+                } catch (Exception e) {
+                    /* just do nothing for now as I do not see a reasonable reaction... */
+                    /* TODO: properly handle the exceptions during account rename */
+                }
+            }else{
+                removeAccount(account);
+                createAccount(loginResponse);
+                /* now rebuild the User list */
+                String currentUserName = user.account.name;
+                if(user.account == account){
+                    currentUserName = getAccountName(loginResponse);
+                }
+
+                for (Account a: accountManager.getAccountsByType(context.getString(R.string.account_type))) {
+                    User u = createUser(a);
+                    users.add(u);
+                    if(u.account.name.equals(currentUserName)){
+                        user = u;
+                    }
+                }
+            }
+        }
+
+        setChanged();
+        notifyObservers();
     }
 
     public boolean hasAccount() {
@@ -147,6 +189,7 @@ public class AccountHelper extends Observable {
     }
 
     public void setAccount(Account account) {
+        /* TODO set current user */
         updateSession(getUser(account.name, false));
     }
 
@@ -167,28 +210,6 @@ public class AccountHelper extends Observable {
     public String getAccountUrl(Account account) {
         /* TODO: replace calls to this by getUser().url*/
         return accountManager.getUserData(account, KEY_URL);
-    }
-
-    private Account updateUserAccount(Account account, Bundle userdata, LoginResponse loginResponse) {
-        userdata.putString(KEY_IS_GUEST, Boolean.toString(false));
-        userdata.putString(KEY_URL, loginResponse.url);
-        userdata.putString(KEY_USERNAME, loginResponse.statusResponse.result.username);
-        userdata.putString(KEY_COOKIE, loginResponse.pwgId);
-        userdata.putString(KEY_TOKEN, loginResponse.statusResponse.result.pwgToken);
-        accountManager.addAccountExplicitly(account, loginResponse.password, userdata);
-        setChanged();
-        notifyObservers();
-        return account;
-    }
-
-    private Account updateGuestAccount(Account account, Bundle userdata, LoginResponse loginResponse) {
-        userdata.putString(KEY_IS_GUEST, Boolean.toString(true));
-        userdata.putString(KEY_URL, loginResponse.url);
-        userdata.putString(KEY_USERNAME, GUEST_ACCOUNT_NAME);
-        accountManager.addAccountExplicitly(account, null, userdata);
-        setChanged();
-        notifyObservers();
-        return account;
     }
 
     public void removeAccount(User user) {

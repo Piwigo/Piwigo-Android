@@ -22,8 +22,6 @@ import android.arch.lifecycle.ViewModel;
 import android.content.res.Resources;
 import android.text.Html;
 import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.widget.TextView;
 
 import org.piwigo.BuildConfig;
 import org.piwigo.R;
@@ -41,6 +39,5 @@ public class AboutViewModel extends ViewModel {
 
         String mergedAboutText = resources.getString(R.string.about_text, appName, versionName);
         return Html.fromHtml(mergedAboutText);
-
     }
 }

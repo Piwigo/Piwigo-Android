@@ -60,15 +60,8 @@ import dagger.android.AndroidInjection;
 public class ManageAccountsActivity extends BaseActivity implements AccountView {
     @Inject ManageAccountsViewModelFactory viewModelFactory;
 
-    /* TODO: cleanup activity:
-     *   selection by tap is crazy, tap shall directly open the LoginView
-     *   LongClick could delete after confirmation
-     *   currently active account should be highlighted
-     *   */
     ManageAccountsViewModel viewModel;
     ActivityManageAccountsBinding binding;
-
-    private ListView userListView;
 
     private UserAdapter mUserAdapter;
 
@@ -117,12 +110,10 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
         viewModel.users.set(accountHelper.getUsers());
         viewModel.setView(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.account_toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(binding.accountToolbar);
 
-        userListView = (ListView) findViewById(R.id.user_list);
         mUserAdapter = new UserAdapter(viewModel.users.get());
-        userListView.setAdapter(mUserAdapter);
+        binding.userList.setAdapter(mUserAdapter);
 
         viewModel.users.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
@@ -132,7 +123,8 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
         });
         viewModel.users.set(accountHelper.getUsers());
 
-        userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /* TODO: Might be a better way to handle events with data binding. */
+        binding.userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             Resources res = ManageAccountsActivity.this.getResources();
 
             @Override
@@ -144,7 +136,7 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
             }
         });
 
-        userListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        binding.userList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long arg) {
                 new AlertDialog.Builder(ManageAccountsActivity.this)
@@ -163,7 +155,7 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
                 return true;
             }
         });
-        registerForContextMenu(userListView);
+        registerForContextMenu(binding.userList);
 
         int idx = 0;
         for(User u : accountHelper.getUsers()){
@@ -173,7 +165,7 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
                 idx++;
             }
         }
-        userListView.setItemChecked(idx, true);
+        binding.userList.setItemChecked(idx, true);
     }
 
     @Override
@@ -204,10 +196,12 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
     @Override
     public void select(User user){
         int idx = 0;
-        View selected = userListView.getSelectedView();
-        if(selected != null || userListView.getCheckedItemPosition() > 0) {
+        View selected = binding.userList.getSelectedView();
+        if(selected != null) {
             selected.setSelected(false);
-//            userListView.setItemChecked(idx, false);
+        }
+        if(binding.userList.getCheckedItemPosition() > 0){
+            binding.userList.setItemChecked(idx, false);
         }
         for(User u : accountHelper.getUsers()){
             if(user == u) {
@@ -217,8 +211,8 @@ public class ManageAccountsActivity extends BaseActivity implements AccountView 
             }
         }
         /* TODO: fix selection - it does not yet work */
-        userListView.setItemChecked(idx, true);
-        userListView.setSelected(true);
+        binding.userList.setItemChecked(idx, true);
+        binding.userList.setSelected(true);
     }
 /* TODO cleanup observer in ViewModel */
 
