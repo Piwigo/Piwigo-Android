@@ -29,26 +29,17 @@ import org.piwigo.BuildConfig;
 import org.piwigo.R;
 
 public class AboutViewModel extends ViewModel {
-    private AboutActivity aboutActivity;
     private final Resources resources;
 
     public AboutViewModel(Resources resources) {
         this.resources = resources;
     }
 
-    public void setView(AboutActivity act) {
-        /* TODO: check whether this is wanted */
-        this.aboutActivity = act;
-    }
     public Spanned getAboutText() {
-        Resources res = aboutActivity.getResources();
-        /* todo replace by resources */
-        String appName = res.getString(R.string.app_name);
+        String appName = resources.getString(R.string.app_name);
         String versionName = BuildConfig.VERSION_NAME;
 
-        ((TextView)aboutActivity.findViewById(R.id.aboutTextView)).setMovementMethod(LinkMovementMethod.getInstance());
-
-        String mergedAboutText = res.getString(R.string.about_text, appName, versionName);
+        String mergedAboutText = resources.getString(R.string.about_text, appName, versionName);
         return Html.fromHtml(mergedAboutText);
 
     }

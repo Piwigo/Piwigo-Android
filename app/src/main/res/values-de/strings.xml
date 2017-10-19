@@ -47,7 +47,7 @@
     <string name="about_text"><![CDATA[
         <p><b>%1$s</b>
         <br />Version <b>%2$s</b></p>
-        <p>Bereitgestellt under der <a href="https://www.gnu.org/licenses/gpl-3.0.de.html">GPL v3</a> Lizenz</p>
+        <p>Bereitgestellt unter der <a href="https://www.gnu.org/licenses/gpl-3.0.de.html">GPL v3</a> Lizenz durch das Team des <a href="http://piwigo.org/">Piwigo Projektes</a>.</p>
         <p>Fehler und Verbesserungsvorschläge bitte im <a href="https://github.com/Piwigo/Piwigo-Android/issues">issue tacker</a> melden</p>
         <p>Quellcode steht auf <a href="https://github.com/Piwigo/Piwigo-Android">Github</a> zur Verfügung</p>]]></string>
     <string name="title_activity_about">Über</string>

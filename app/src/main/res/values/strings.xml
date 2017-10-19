@@ -34,7 +34,7 @@
     <string name="about_text"><![CDATA[
         <p><b>%1$s</b>
         <br />version <b>%2$s</b></p>
-        <p>distributed under <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL v3</a> license</p>
+        <p>distributed under <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL v3</a> license by the team of the <a href="http://piwigo.org/">Piwigo project</a>.</p>
         <p>For bugs and suggestions use the <a href="https://github.com/Piwigo/Piwigo-Android/issues">issue tacker</a></p>
         <p>Source Code can be found on <a href="https://github.com/Piwigo/Piwigo-Android">Github</a></p>]]>
     </string>

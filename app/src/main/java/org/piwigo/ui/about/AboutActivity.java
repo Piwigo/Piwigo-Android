@@ -1,7 +1,6 @@
 /*
  * Piwigo for Android
  * Copyright (C) 2017-2017 Piwigo Team http://piwigo.org
- * Copyright (C) 2017-2017 Raphael Mack http://www,raphael-mack.de
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +21,7 @@ package org.piwigo.ui.about;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityAboutBinding;
@@ -31,7 +31,6 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 
-/* TODO: use tabs to display the full license text of the gpl and included libraries */
 public class AboutActivity extends BaseActivity {
     @Inject AboutViewModelFactory viewModelFactory;
 
@@ -45,8 +44,10 @@ public class AboutActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(AboutViewModel.class);
-        viewModel.setView(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_about);
         binding.setViewModel(viewModel);
+
+        binding.aboutTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
     }
 }
