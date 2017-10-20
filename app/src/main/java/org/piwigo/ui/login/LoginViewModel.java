@@ -28,8 +28,6 @@ import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.util.Patterns;
 
-import com.github.jorgecastilloprz.listeners.FABProgressListener;
-
 import org.piwigo.R;
 import org.piwigo.internal.binding.observable.FABProgressCircleObservable;
 import org.piwigo.io.model.LoginResponse;
@@ -52,8 +50,7 @@ public class LoginViewModel extends ViewModel {
     public ObservableField<String> usernameError = new ObservableField<>();
     public ObservableField<String> password = new ObservableField<>();
     public ObservableField<String> passwordError = new ObservableField<>();
-    public FABProgressCircleObservable progressCircle = new FABProgressCircleObservable();
-    public FABProgressListener progressListener = new LoginFABProgressListener();
+    public FABProgressCircleObservable progressCircle = new FABProgressCircleObservable(FABProgressCircleObservable.STATE_HIDDEN);
 
     private final UserRepository userRepository;
     private final Resources resources;
@@ -97,6 +94,10 @@ public class LoginViewModel extends ViewModel {
                         .subscribe(new LoginSubscriber());
             }
         }
+    }
+
+    public void onProgressAnimationEnd() {
+        animationFinished.setValue(true);
     }
 
     LiveData<LoginResponse> getLoginSuccess() {
@@ -175,14 +176,6 @@ public class LoginViewModel extends ViewModel {
 
         @Override public void onNext(LoginResponse loginResponse) {
             loginSuccess.setValue(loginResponse);
-        }
-    }
-
-    private class LoginFABProgressListener implements FABProgressListener {
-
-        @Override
-        public void onFABProgressAnimationEnd() {
-            animationFinished.setValue(true);
         }
     }
 }

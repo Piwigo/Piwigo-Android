@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        app:state="@{viewModel.drawerState}">
+        app:state="@={viewModel.drawerState}">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -45,8 +45,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
-            app:item="@{viewModel.navigationItem}"
-            app:itemSelectedListener="@{viewModel.navigationListener}"
+            app:selectedItemId="@={viewModel.navigationItemId}"
             app:menu="@menu/drawer_main" />
     </android.support.v4.widget.DrawerLayout>
 </layout>

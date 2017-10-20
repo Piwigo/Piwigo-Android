@@ -28,6 +28,12 @@ public class FABProgressCircleObservable extends BaseObservable {
 
     private int state = STATE_HIDDEN;
 
+    public FABProgressCircleObservable() {}
+
+    public FABProgressCircleObservable(int initalState) {
+        state = initalState;
+    }
+
     public void show() {
         if (state != STATE_FINAL && state != STATE_VISIBLE) {
             state = STATE_VISIBLE;
@@ -52,5 +58,4 @@ public class FABProgressCircleObservable extends BaseObservable {
     public int getState() {
         return state;
     }
-
 }

@@ -21,18 +21,17 @@ package org.piwigo.internal.binding.adapter;
 import android.databinding.BindingAdapter;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
+import com.github.jorgecastilloprz.listeners.FABProgressListener;
 
 import org.piwigo.internal.binding.observable.FABProgressCircleObservable;
 
 public class FABProgressCircleAdapter {
 
-    @BindingAdapter("bind:observable") public static void bindObservable(FABProgressCircle progressCircle, FABProgressCircleObservable observable) {
-        boolean bound = progressCircle.getTag() != null && (boolean) progressCircle.getTag();
-        if (!bound) {
-            progressCircle.setTag(true);
-            return;
-        }
+    @BindingAdapter("onProgressAnimationEnd") public static void setAnimationEndListener(FABProgressCircle progressCircle, FABProgressListener listener) {
+        progressCircle.attachListener(listener);
+    }
 
+    @BindingAdapter("state") public static void setState(FABProgressCircle progressCircle, FABProgressCircleObservable observable) {
         switch (observable.getState()) {
             case FABProgressCircleObservable.STATE_VISIBLE:
                 progressCircle.show();
@@ -45,5 +44,4 @@ public class FABProgressCircleAdapter {
                 break;
         }
     }
-
 }

@@ -27,6 +27,7 @@ import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.Category;
 import org.piwigo.io.model.ImageInfo;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -45,20 +46,23 @@ public class CategoriesRepository extends BaseRepository {
         RestService restService = restServiceFactory.createForAccount(account);
 
         return restService.getCategories(categoryId)
-                .flatMapIterable(categoryListResponse -> categoryListResponse.result.categories)
+                .map(categoryListResponse -> categoryListResponse.result.categories)
+                .map(categories -> {
+                    Collections.sort(categories, (firstCategory, secondCategory) -> {
+                        double firstRank = Double.parseDouble(firstCategory.globalRank);
+                        double secondRank = Double.parseDouble(secondCategory.globalRank);
+                        return Double.compare(firstRank, secondRank);
+                    });
+                    return categories;
+                })
+                .flatMap(Observable::from)
                 .filter(category -> categoryId == null || category.id != categoryId)
                 .flatMap(category -> {
                     Observable<ImageInfo> imageInfo = restService.getImageInfo(category.representativePictureId)
                             .map(getImageInfoResponse -> getImageInfoResponse.imageInfo);
                     return Observable.zip(Observable.just(category), imageInfo, Pair::new);
                 })
-                .toSortedList((firstPair, secondPair) -> {
-                    String firstRank = firstPair.first.globalRank;
-                    String secondRank = secondPair.first.globalRank;
-                    int firstRankIndex = firstRank.contains(".") ? firstRank.lastIndexOf(".") + 1 : 0;
-                    int secondRankIndex = secondRank.contains(".") ? secondRank.lastIndexOf(".") + 1 : 0;
-                    return Integer.parseInt(firstRank.substring(firstRankIndex)) - Integer.parseInt(secondRank.substring(secondRankIndex));
-                })
+                .toList()
                 .compose(applySchedulers());
     }
 }
