@@ -23,7 +23,6 @@ import android.arch.lifecycle.ViewModel;
 import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.util.Log;
-import android.util.Pair;
 
 import com.google.common.base.Optional;
 
@@ -31,7 +30,6 @@ import org.piwigo.BR;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.model.Category;
-import org.piwigo.io.model.ImageInfo;
 import org.piwigo.io.repository.CategoriesRepository;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 
@@ -44,8 +42,8 @@ public class AlbumsViewModel extends ViewModel {
 
     private static final String TAG = AlbumsViewModel.class.getName();
 
-    public ObservableArrayList<Pair<Category, ImageInfo>> items = new ObservableArrayList<>();
-    public BindingRecyclerViewAdapter.ViewBinder<Pair<Category, ImageInfo>> viewBinder = new CategoryViewBinder();
+    public ObservableArrayList<Category> items = new ObservableArrayList<>();
+    public BindingRecyclerViewAdapter.ViewBinder<Category> viewBinder = new CategoryViewBinder();
 
     private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
@@ -73,7 +71,7 @@ public class AlbumsViewModel extends ViewModel {
         }
     }
 
-    private class CategoriesSubscriber extends Subscriber<List<Pair<Category, ImageInfo>>> {
+    private class CategoriesSubscriber extends Subscriber<List<Category>> {
 
         @Override public void onCompleted() {}
 
@@ -81,15 +79,15 @@ public class AlbumsViewModel extends ViewModel {
             Log.e(TAG, e.getMessage());
         }
 
-        @Override public void onNext(List<Pair<org.piwigo.io.model.Category, ImageInfo>> pairs) {
+        @Override public void onNext(List<Category> categories) {
             items.clear();
-            items.addAll(pairs);
+            items.addAll(categories);
         }
     }
 
-    private class CategoryViewBinder implements BindingRecyclerViewAdapter.ViewBinder<Pair<Category, ImageInfo>> {
+    private class CategoryViewBinder implements BindingRecyclerViewAdapter.ViewBinder<Category> {
 
-        @Override public int getViewType(Pair<Category, ImageInfo> item) {
+        @Override public int getViewType(Category category) {
             return 0;
         }
 
@@ -97,13 +95,13 @@ public class AlbumsViewModel extends ViewModel {
             return R.layout.item_album;
         }
 
-        @Override public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, Pair<Category, ImageInfo> item) {
-            String photos = resources.getQuantityString(R.plurals.album_photos, item.first.nbImages, item.first.nbImages);
-            if (item.first.totalNbImages > item.first.nbImages) {
-                int subPhotos = item.first.totalNbImages - item.first.nbImages;
+        @Override public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, Category category) {
+            String photos = resources.getQuantityString(R.plurals.album_photos, category.nbImages, category.nbImages);
+            if (category.totalNbImages > category.nbImages) {
+                int subPhotos = category.totalNbImages - category.nbImages;
                 photos += resources.getQuantityString(R.plurals.album_photos_subs, subPhotos, subPhotos);
             }
-            AlbumItemViewModel viewModel = new AlbumItemViewModel(item.second.derivatives.large.url, item.first.name, photos);
+            AlbumItemViewModel viewModel = new AlbumItemViewModel(category.thumbnailUrl, category.name, photos);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
     }

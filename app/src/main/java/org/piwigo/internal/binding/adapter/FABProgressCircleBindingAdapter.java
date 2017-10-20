@@ -25,7 +25,7 @@ import com.github.jorgecastilloprz.listeners.FABProgressListener;
 
 import org.piwigo.internal.binding.observable.FABProgressCircleObservable;
 
-public class FABProgressCircleAdapter {
+public class FABProgressCircleBindingAdapter {
 
     @BindingAdapter("onProgressAnimationEnd") public static void setAnimationEndListener(FABProgressCircle progressCircle, FABProgressListener listener) {
         progressCircle.attachListener(listener);
