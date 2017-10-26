@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.fernandocejas.frodo'
 apply plugin: 'io.fabric'
 
@@ -58,7 +57,7 @@ android {
 
 ext {
     supportVersion = '26.1.0'
-    lifecycleVersion = '1.0.0-beta1'
+    lifecycleVersion = '1.0.0-rc1'
     daggerVersion = '2.11'
     okhttpVersion = '3.9.0'
     retrofitVersion = '2.3.0'
