@@ -46,7 +46,6 @@ public class AlbumsFragment extends BaseFragment {
 
     @Inject AlbumsViewModelFactory viewModelFactory;
 
-    private AlbumsViewModel viewModel;
     private FragmentAlbumsBinding binding;
 
     @Override public void onAttach(Context context) {
@@ -56,7 +55,7 @@ public class AlbumsFragment extends BaseFragment {
         super.onAttach(context);
     }
 
-    @Override public void onAttach(Activity activity) {
+    @Override @SuppressWarnings("deprecation") public void onAttach(Activity activity) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             AndroidSupportInjection.inject(this);
         }
@@ -71,7 +70,7 @@ public class AlbumsFragment extends BaseFragment {
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(AlbumsViewModel.class);
+        AlbumsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AlbumsViewModel.class);
         binding.setViewModel(viewModel);
         viewModel.loadAlbums(null);
     }

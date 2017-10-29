@@ -26,7 +26,6 @@ import android.databinding.Observable;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
-import android.view.View;
 
 import com.google.common.base.Optional;
 
@@ -43,7 +42,7 @@ public class MainViewModel extends ViewModel {
 
     private MutableLiveData<Integer> selectedNavigationItemId = new MutableLiveData<>();
 
-    public MainViewModel(UserManager userManager) {
+    MainViewModel(UserManager userManager) {
         Optional<Account> account = userManager.getActiveAccount();
         if (account.isPresent()) {
             username.set(userManager.getUsername(account.get()));
@@ -67,7 +66,7 @@ public class MainViewModel extends ViewModel {
         this.title.set(title);
     }
 
-    public void navigationIconClick(View view) {
+    public void navigationIconClick() {
         drawerState.set(true);
     }
 }

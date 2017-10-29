@@ -21,7 +21,6 @@ package org.piwigo.internal.binding.adapter;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
-import android.databinding.ObservableBoolean;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
@@ -32,7 +31,7 @@ public class DrawerLayoutBindingAdapter {
         return drawerLayout.isDrawerOpen(GravityCompat.START);
     }
 
-    @BindingAdapter(value = {"state", "onDrawerStateChanged"}, requireAll = false) public static void setDrawerListener(DrawerLayout drawerLayout, ObservableBoolean state, final InverseBindingListener inverseBindingListener) {
+    @BindingAdapter(value = {"state", "onDrawerStateChanged"}, requireAll = false) public static void setDrawerListener(DrawerLayout drawerLayout, boolean state, final InverseBindingListener inverseBindingListener) {
         boolean bound = drawerLayout.getTag() != null && (boolean) drawerLayout.getTag();
         if (!bound && inverseBindingListener != null) {
             drawerLayout.setTag(true);
@@ -48,12 +47,10 @@ public class DrawerLayoutBindingAdapter {
             });
         }
 
-        if (state != null) {
-            if (drawerLayout.isDrawerOpen(GravityCompat.START) && !state.get()) {
-                drawerLayout.closeDrawer(GravityCompat.START);
-            } else if (!drawerLayout.isDrawerOpen(GravityCompat.START) && state.get()) {
-                drawerLayout.openDrawer(GravityCompat.START);
-            }
+        if (drawerLayout.isDrawerOpen(GravityCompat.START) && !state) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (!drawerLayout.isDrawerOpen(GravityCompat.START) && state) {
+            drawerLayout.openDrawer(GravityCompat.START);
         }
     }
 }

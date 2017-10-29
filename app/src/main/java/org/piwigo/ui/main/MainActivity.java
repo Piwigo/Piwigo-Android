@@ -40,8 +40,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
     @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
     @Inject MainViewModelFactory viewModelFactory;
 
-    private MainViewModel viewModel;
-
     @Override protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
@@ -49,7 +47,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.getSelectedNavigationItemId().observe(this, this::itemSelected);
 
         binding.setViewModel(viewModel);

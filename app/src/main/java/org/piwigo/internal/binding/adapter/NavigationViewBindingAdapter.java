@@ -21,7 +21,6 @@ package org.piwigo.internal.binding.adapter;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
-import android.databinding.ObservableInt;
 import android.support.design.widget.NavigationView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +31,7 @@ public class NavigationViewBindingAdapter {
         return getSelectedItemId(navigationView);
     }
 
-    @BindingAdapter(value = {"selectedItemId", "onNavigationItemSelected"}, requireAll = false) public static void setNavigationListener(NavigationView navigationView, ObservableInt selectedItemId, final InverseBindingListener inverseBindingListener) {
+    @BindingAdapter(value = {"selectedItemId", "onNavigationItemSelected"}, requireAll = false) public static void setNavigationListener(NavigationView navigationView, int selectedItemId, final InverseBindingListener inverseBindingListener) {
         boolean bound = navigationView.getTag() != null && (boolean) navigationView.getTag();
         if (!bound) {
             navigationView.setTag(true);
@@ -45,11 +44,8 @@ public class NavigationViewBindingAdapter {
             });
         }
 
-        if (selectedItemId != null) {
-            int currentItem = getSelectedItemId(navigationView);
-            if (currentItem != selectedItemId.get()) {
-                navigationView.setCheckedItem(selectedItemId.get());
-            }
+        if (selectedItemId != getSelectedItemId(navigationView)) {
+            navigationView.setCheckedItem(selectedItemId);
         }
     }
 

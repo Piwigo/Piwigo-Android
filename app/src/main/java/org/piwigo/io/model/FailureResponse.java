@@ -20,7 +20,7 @@ package org.piwigo.io.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class FailureResponse {
+class FailureResponse {
 
     @SerializedName("stat") public String stat;
 
