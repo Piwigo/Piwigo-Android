@@ -56,7 +56,8 @@ public interface RestService {
     );
 
     @GET("ws.php?method=pwg.categories.getList") Observable<CategoryListResponse> getCategories(
-            @Query("cat_id") Integer categoryId
+            @Query("cat_id") Integer categoryId,
+            @Query("thumbnail_size") String thumbnailSize
     );
 
     @GET("ws.php?method=pwg.images.getInfo") Observable<GetImageInfoResponse> getImageInfo(

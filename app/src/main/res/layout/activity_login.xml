@@ -108,9 +108,9 @@
                         android:layout_gravity="center_horizontal"
                         app:arcColor="@color/piwigo_grey"
                         app:arcWidth="4dp"
-                        app:attachListener="@{viewModel.progressListener}"
                         app:finalIcon="@drawable/ic_check"
-                        app:observable="@{viewModel.progressCircle}">
+                        app:onProgressAnimationEnd="@{() -> viewModel.onProgressAnimationEnd()}"
+                        app:state="@{viewModel.progressCircle}">
 
                         <android.support.design.widget.FloatingActionButton
                             android:layout_width="wrap_content"

@@ -22,7 +22,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.MenuItem;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
@@ -41,8 +40,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
     @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
     @Inject MainViewModelFactory viewModelFactory;
 
-    private MainViewModel viewModel;
-
     @Override protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
@@ -50,8 +47,8 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
-        viewModel.getSelectedMenuItem().observe(this, this::itemSelected);
+        MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        viewModel.getSelectedNavigationItemId().observe(this, this::itemSelected);
 
         binding.setViewModel(viewModel);
         headerBinding.setViewModel(viewModel);
@@ -71,8 +68,8 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         return fragmentInjector;
     }
 
-    private void itemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+    private void itemSelected(int itemId) {
+        switch (itemId) {
             case R.id.nav_albums:
                 break;
         }

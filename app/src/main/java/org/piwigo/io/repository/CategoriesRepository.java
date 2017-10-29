@@ -20,12 +20,10 @@ package org.piwigo.io.repository;
 
 import android.accounts.Account;
 import android.support.annotation.Nullable;
-import android.util.Pair;
 
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.Category;
-import org.piwigo.io.model.ImageInfo;
 
 import java.util.List;
 
@@ -41,24 +39,13 @@ public class CategoriesRepository extends BaseRepository {
         super(restServiceFactory, ioScheduler, uiScheduler);
     }
 
-    public Observable<List<Pair<Category, ImageInfo>>> getCategories(Account account, @Nullable Integer categoryId) {
+    public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId) {
         RestService restService = restServiceFactory.createForAccount(account);
 
-        return restService.getCategories(categoryId)
-                .flatMapIterable(categoryListResponse -> categoryListResponse.result.categories)
+        return restService.getCategories(categoryId, "large")
+                .flatMap(response -> Observable.from(response.result.categories))
                 .filter(category -> categoryId == null || category.id != categoryId)
-                .flatMap(category -> {
-                    Observable<ImageInfo> imageInfo = restService.getImageInfo(category.representativePictureId)
-                            .map(getImageInfoResponse -> getImageInfoResponse.imageInfo);
-                    return Observable.zip(Observable.just(category), imageInfo, Pair::new);
-                })
-                .toSortedList((firstPair, secondPair) -> {
-                    String firstRank = firstPair.first.globalRank;
-                    String secondRank = secondPair.first.globalRank;
-                    int firstRankIndex = firstRank.contains(".") ? firstRank.lastIndexOf(".") + 1 : 0;
-                    int secondRankIndex = secondRank.contains(".") ? secondRank.lastIndexOf(".") + 1 : 0;
-                    return Integer.parseInt(firstRank.substring(firstRankIndex)) - Integer.parseInt(secondRank.substring(secondRankIndex));
-                })
+                .toSortedList((category1, category2) -> Double.compare(Double.parseDouble(category1.globalRank), Double.parseDouble(category2.globalRank)))
                 .compose(applySchedulers());
     }
 }

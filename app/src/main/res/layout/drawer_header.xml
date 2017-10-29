@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/nav_header_size"
         android:background="@color/piwigo_grey"
-        android:paddingTop="@dimen/nav_header_top_margin">
+        android:fitsSystemWindows="true">
 
         <ImageView
             android:layout_width="wrap_content"

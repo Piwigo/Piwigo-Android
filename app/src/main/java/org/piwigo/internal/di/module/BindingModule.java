@@ -20,7 +20,7 @@ package org.piwigo.internal.di.module;
 
 import com.squareup.picasso.Picasso;
 
-import org.piwigo.internal.binding.adapter.ImageBindingAdapter;
+import org.piwigo.internal.binding.adapter.ImageViewBindingAdapter;
 import org.piwigo.internal.di.scope.DataBinding;
 
 import dagger.Module;
@@ -29,7 +29,7 @@ import dagger.Provides;
 @Module
 public class BindingModule {
 
-    @Provides @DataBinding ImageBindingAdapter provideImageBindingAdapter(Picasso picasso) {
-        return new ImageBindingAdapter(picasso);
+    @Provides @DataBinding ImageViewBindingAdapter provideImageBindingAdapter(Picasso picasso) {
+        return new ImageViewBindingAdapter(picasso);
     }
 }

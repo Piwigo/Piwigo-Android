@@ -182,7 +182,7 @@ public class LoginViewModelTest {
         Observer<Boolean> observer = (Observer<Boolean>) mock(Observer.class);
         viewModel.getAnimationFinished().observeForever(observer);
 
-        viewModel.progressListener.onFABProgressAnimationEnd();
+        viewModel.onProgressAnimationEnd();
 
         verify(observer).onChanged(true);
     }

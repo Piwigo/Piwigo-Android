@@ -21,7 +21,6 @@ package org.piwigo.ui.main;
 import android.accounts.Account;
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.arch.lifecycle.Observer;
-import android.view.MenuItem;
 
 import com.google.common.base.Optional;
 
@@ -63,12 +62,12 @@ public class MainViewModelTest {
     }
 
     @Test @SuppressWarnings("unchecked") public void getSelectedMenuItem_observerReceivesSelectedMenuItem() {
-        MenuItem menuItem = mock(MenuItem.class);
-        Observer<MenuItem> observer = (Observer<MenuItem>) mock(Observer.class);
-        viewModel.getSelectedMenuItem().observeForever(observer);
+        int itemId = 1;
+        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        viewModel.getSelectedNavigationItemId().observeForever(observer);
 
-        viewModel.navigationListener.onNavigationItemSelected(menuItem);
+        viewModel.navigationItemId.set(itemId);
 
-        verify(observer).onChanged(menuItem);
+        verify(observer).onChanged(itemId);
     }
 }

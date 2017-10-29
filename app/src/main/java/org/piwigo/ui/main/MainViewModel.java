@@ -22,55 +22,51 @@ import android.accounts.Account;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.databinding.Observable;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
-import android.support.design.widget.NavigationView;
-import android.view.MenuItem;
-import android.view.View;
+import android.databinding.ObservableInt;
 
 import com.google.common.base.Optional;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.internal.binding.observable.DrawerStateObservable;
-import org.piwigo.internal.binding.observable.NavigationItemObservable;
 
 public class MainViewModel extends ViewModel {
 
     public ObservableField<String> title = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
-    public DrawerStateObservable drawerState = new DrawerStateObservable(false);
-    public NavigationItemObservable navigationItem = new NavigationItemObservable(R.id.nav_albums);
-    public NavigationItemSelectedListener navigationListener = new NavigationItemSelectedListener();
+    public ObservableBoolean drawerState = new ObservableBoolean(false);
+    public ObservableInt navigationItemId = new ObservableInt(R.id.nav_albums);
 
-    private MutableLiveData<MenuItem> selectedMenuItem = new MutableLiveData<>();
+    private MutableLiveData<Integer> selectedNavigationItemId = new MutableLiveData<>();
 
-    public MainViewModel(UserManager userManager) {
+    MainViewModel(UserManager userManager) {
         Optional<Account> account = userManager.getActiveAccount();
         if (account.isPresent()) {
             username.set(userManager.getUsername(account.get()));
             url.set(userManager.getSiteUrl(account.get()));
         }
+
+        navigationItemId.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+
+            @Override public void onPropertyChanged(Observable sender, int propertyId) {
+                selectedNavigationItemId.setValue(navigationItemId.get());
+                drawerState.set(false);
+            }
+        });
     }
 
-    LiveData<MenuItem> getSelectedMenuItem() {
-        return selectedMenuItem;
+    LiveData<Integer> getSelectedNavigationItemId() {
+        return selectedNavigationItemId;
     }
 
     void setTitle(String title) {
         this.title.set(title);
     }
 
-    public void navigationIconClick(View view) {
+    public void navigationIconClick() {
         drawerState.set(true);
-    }
-
-    public class NavigationItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener {
-
-        @Override public boolean onNavigationItemSelected(MenuItem item) {
-            selectedMenuItem.setValue(item);
-            drawerState.set(false);
-            return true;
-        }
     }
 }

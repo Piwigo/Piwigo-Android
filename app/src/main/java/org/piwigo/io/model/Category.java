@@ -37,6 +37,8 @@ public class Category {
 
     @SerializedName("nb_categories") public int nbCategories;
 
+    @SerializedName("tn_url") public String thumbnailUrl;
+
     @Override public boolean equals(Object o) {
         if (o instanceof Category) {
             return id == ((Category) o).id;

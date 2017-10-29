@@ -46,8 +46,7 @@ public class UserRepository extends BaseRepository {
         return restService.login(username, password)
                 .flatMap(response -> {
                     if (response.body().result) {
-                        String sessionId = CookieHelper.extract("pwg_id", response.headers());
-                        loginResponse.pwgId = sessionId;
+                        loginResponse.pwgId = CookieHelper.extract("pwg_id", response.headers());
                         return Observable.just(response.body());
                     }
                     return Observable.error(new Throwable("Login failed"));

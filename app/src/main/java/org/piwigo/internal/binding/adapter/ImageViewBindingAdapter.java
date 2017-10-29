@@ -19,16 +19,17 @@
 package org.piwigo.internal.binding.adapter;
 
 import android.databinding.BindingAdapter;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-public class ImageBindingAdapter {
+public class ImageViewBindingAdapter {
 
     private final Picasso picasso;
 
-    public ImageBindingAdapter(Picasso picasso) {
+    public ImageViewBindingAdapter(Picasso picasso) {
         this.picasso = picasso;
     }
 
