@@ -19,6 +19,7 @@
 package org.piwigo.internal.binding.adapter;
 
 import android.databinding.BindingAdapter;
+import android.os.Build;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
@@ -34,12 +35,24 @@ public class FABProgressCircleBindingAdapter {
     @BindingAdapter("state") public static void setState(FABProgressCircle progressCircle, FABProgressCircleObservable observable) {
         switch (observable.getState()) {
             case FABProgressCircleObservable.STATE_VISIBLE:
+                int a = progressCircle.getWidth();
+                int b = progressCircle.getMeasuredWidth();
                 progressCircle.show();
                 break;
             case FABProgressCircleObservable.STATE_HIDDEN:
-                progressCircle.hide();
+                boolean alreadyLaidOut = false;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    alreadyLaidOut = progressCircle.isLaidOut();
+                }else {
+                    alreadyLaidOut = progressCircle.getWidth() > 0 ? true : false;
+                }
+                if(alreadyLaidOut){
+                    progressCircle.hide();
+                }
                 break;
             case FABProgressCircleObservable.STATE_FINAL:
+                int a2 = progressCircle.getWidth();
+                int b3 = progressCircle.getMeasuredWidth();
                 progressCircle.beginFinalAnimation();
                 break;
         }
