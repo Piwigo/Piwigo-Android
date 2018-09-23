@@ -57,7 +57,7 @@ android {
 
 ext {
     supportVersion = '26.1.0'
-    lifecycleVersion = '1.0.0-rc1'
+    lifecycleVersion = '1.1.1'
     daggerVersion = '2.11'
     okhttpVersion = '3.9.0'
     retrofitVersion = '2.3.0'
