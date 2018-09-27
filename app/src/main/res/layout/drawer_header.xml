@@ -20,7 +20,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_margin="@dimen/nav_header_padding"
-            android:src="@drawable/piwigo_logo" />
+            android:src="@drawable/piwigo_logo"
+            android:contentDescription="@string/nav_icon_description"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -30,23 +31,27 @@
 
             <TextView
                 android:id="@+id/username"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/more"
+                android:layout_toLeftOf="@id/more"
                 android:text="@{viewModel.username}"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/nav_header_user_text_size"
                 tools:text="guest" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/more"
+                android:layout_toLeftOf="@id/more"
                 android:layout_below="@+id/username"
                 android:text="@{viewModel.url}"
                 android:textColor="@android:color/white"
                 tools:text="piwigo.org" />
 
             <ImageView
-                android:id="@+id/arrow"
+                android:id="@+id/more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
