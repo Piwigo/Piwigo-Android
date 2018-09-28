@@ -1,6 +1,6 @@
 /*
- * Copyright 2017 Phil Bayfield https://philio.me
- * Copyright 2017 Piwigo Team http://piwigo.org
+ * Copyright 2018 Jeff Amn
+ * Copyright 2018 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,9 @@ package org.piwigo.ui.main;
  */
 
 
+import android.accounts.Account;
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -87,7 +89,15 @@ public class ImagesFragment extends BaseFragment {
 
         ImagesViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesViewModel.class);
         binding.setViewModel(viewModel);
-        viewModel.loadImages(comvars.getValue());
+
+        final Observer<Account> accountObserver = new Observer<Account>() {
+            @Override
+            public void onChanged(@Nullable final Account newName) {
+                // reload the albums on account changes
+                viewModel.loadImages(comvars.getValue());
+            }
+        };
+        userManager.getActiveAccount().observe(this, accountObserver);
     }
 
     private int calculateColumnCount() {
@@ -101,6 +111,3 @@ public class ImagesFragment extends BaseFragment {
 
 }
 
-
-
-//app:src="@{viewModel.url}"

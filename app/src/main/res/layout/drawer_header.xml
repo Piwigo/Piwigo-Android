@@ -33,8 +33,6 @@
                 android:id="@+id/username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/more"
-                android:layout_toLeftOf="@id/more"
                 android:text="@{viewModel.username}"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/nav_header_user_text_size"
@@ -43,13 +41,11 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/more"
-                android:layout_toLeftOf="@id/more"
                 android:layout_below="@+id/username"
                 android:text="@{viewModel.url}"
                 android:textColor="@android:color/white"
                 tools:text="piwigo.org" />
-
+<!--
             <ImageView
                 android:id="@+id/more"
                 android:layout_width="wrap_content"
@@ -59,6 +55,7 @@
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_action_arrow_drop_down"
                 android:tint="@android:color/white" />
+                -->
         </RelativeLayout>
     </FrameLayout>
 </layout>

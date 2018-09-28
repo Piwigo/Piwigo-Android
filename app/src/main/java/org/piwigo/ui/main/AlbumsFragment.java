@@ -18,8 +18,11 @@
 
 package org.piwigo.ui.main;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.arch.lifecycle.Observer;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
@@ -72,7 +75,15 @@ public class AlbumsFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
         AlbumsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AlbumsViewModel.class);
         binding.setViewModel(viewModel);
-        viewModel.loadAlbums(null);
+
+        final Observer<Account> accountObserver = new Observer<Account>() {
+            @Override
+            public void onChanged(@Nullable final Account account) {
+                // reload the albums on account changes
+                viewModel.loadAlbums(null);
+            }
+        };
+        userManager.getActiveAccount().observe(this, accountObserver);
     }
 
     private int calculateColumnCount() {

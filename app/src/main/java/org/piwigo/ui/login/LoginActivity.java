@@ -86,6 +86,7 @@ public class LoginActivity extends BaseActivity {
             }
             authenticatorResponse = null;
         }
+        navigator.startMain(this);
         super.finish();
     }
 

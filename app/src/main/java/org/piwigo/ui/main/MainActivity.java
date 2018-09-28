@@ -18,10 +18,14 @@
 
 package org.piwigo.ui.main;
 
+import android.accounts.Account;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.widget.Toast;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
@@ -55,6 +59,21 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
 
+        final Observer<Account> accountObserver = new Observer<Account>() {
+            @Override
+            public void onChanged(@Nullable final Account account) {
+                // reload the albums on account changes
+                if(account != null) {
+                    viewModel.username.set(userManager.getUsername(account));
+                    viewModel.url.set(userManager.getSiteUrl(account));
+                }else{
+                    viewModel.username.set("");
+                    viewModel.url.set("");
+                }
+            }
+        };
+        userManager.getActiveAccount().observe(this, accountObserver);
+
         if (savedInstanceState == null) {
             viewModel.setTitle(getString(R.string.nav_albums));
             getSupportFragmentManager()
@@ -69,8 +88,18 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
     }
 
     private void itemSelected(int itemId) {
+
+        // TODO: this one is called often, also if the screen is rotated.
         switch (itemId) {
             case R.id.nav_albums:
+                break;
+            case R.id.nav_add_account:
+                navigator.startLogin(this);
+                break;
+            case R.id.nav_manage_accounts:
+            case R.id.nav_upload:
+            default:
+                Toast.makeText(this,"not yet implemented",Toast.LENGTH_LONG).show();
                 break;
         }
     }

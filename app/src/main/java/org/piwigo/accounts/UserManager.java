@@ -1,6 +1,7 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2018 Piwigo Team http://piwigo.org
+ * Copyright (C) 2018 Raphael Mack
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +21,14 @@ package org.piwigo.accounts;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.piwigo.R;
@@ -46,10 +48,15 @@ public class UserManager {
     private final Resources resources;
     private final PreferencesRepository preferencesRepository;
 
+    private MutableLiveData<Account> mCurrentAccount;
+
     public UserManager(AccountManager accountManager, Resources resources, PreferencesRepository preferencesRepository) {
         this.accountManager = accountManager;
         this.resources = resources;
         this.preferencesRepository = preferencesRepository;
+        this.mCurrentAccount = new MutableLiveData<>();
+
+        setActiveAccount(preferencesRepository.getActiveAccountName());
     }
 
     public boolean isLoggedIn() {
@@ -74,21 +81,9 @@ public class UserManager {
         }
     }
 
-    @SuppressWarnings("Guava")
-    public Optional<Account> getActiveAccount() {
-        Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
-        if (accounts.length == 0) {
-            return Optional.absent();
-        }
-        String activeAccount = preferencesRepository.getActiveAccount();
-        if (!TextUtils.isEmpty(activeAccount)) {
-            for (Account account : accounts) {
-                if (account.name.equals(activeAccount)) {
-                    return Optional.of(account);
-                }
-            }
-        }
-        return Optional.of(accounts[0]);
+    /* observe this LiveData for notifications on account switches */
+    public LiveData<Account> getActiveAccount() {
+        return mCurrentAccount;
     }
 
     public String getSiteUrl(Account account) {
@@ -138,5 +133,26 @@ public class UserManager {
         userdata.putString(KEY_USERNAME, GUEST_ACCOUNT_NAME);
         accountManager.addAccountExplicitly(account, null, userdata);
         return account;
+    }
+
+    public void setActiveAccount(String activeAccount) {
+        Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
+
+        if (!TextUtils.isEmpty(activeAccount)) {
+            for (Account account : accounts) {
+                if (account.name.equals(activeAccount)) {
+                    preferencesRepository.setActiveAccount(activeAccount);
+                    mCurrentAccount.setValue(account);
+                    return;
+                }
+            }
+        }
+
+        /* the selected account is not available select default */
+        if(accounts.length > 0) {
+            mCurrentAccount.setValue(accounts[0]);
+        }else{
+            mCurrentAccount.setValue(null);
+        }
     }
 }

@@ -21,11 +21,13 @@ package org.piwigo.ui.main;
 import android.accounts.Account;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.Observable;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
+import android.support.annotation.Nullable;
 
 import com.google.common.base.Optional;
 
@@ -43,12 +45,6 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<Integer> selectedNavigationItemId = new MutableLiveData<>();
 
     MainViewModel(UserManager userManager) {
-        Optional<Account> account = userManager.getActiveAccount();
-        if (account.isPresent()) {
-            username.set(userManager.getUsername(account.get()));
-            url.set(userManager.getSiteUrl(account.get()));
-        }
-
         navigationItemId.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
 
             @Override public void onPropertyChanged(Observable sender, int propertyId) {

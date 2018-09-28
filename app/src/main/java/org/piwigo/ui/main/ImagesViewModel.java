@@ -75,9 +75,9 @@ public class ImagesViewModel extends ViewModel {
 
     public void loadImages(Integer categoryId) {
         this.categoryId = categoryId;
-        Optional<Account> account = userManager.getActiveAccount();
-        if (account.isPresent()) {
-            subscription = imageRepository.getImages(account.get(), categoryId)
+        Account account = userManager.getActiveAccount().getValue();
+        if (account != null) {
+            subscription = imageRepository.getImages(account, categoryId)
                     .subscribe(new ImagesSubscriber());
         }
     }

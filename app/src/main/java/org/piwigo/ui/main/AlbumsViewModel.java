@@ -64,9 +64,9 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     void loadAlbums(Integer categoryId) {
-        Optional<Account> account = userManager.getActiveAccount();
-        if (account.isPresent()) {
-            subscription = categoriesRepository.getCategories(account.get(), categoryId)
+        Account account = userManager.getActiveAccount().getValue();
+        if (account != null) {
+            subscription = categoriesRepository.getCategories(account, categoryId)
                     .subscribe(new CategoriesSubscriber());
         }
     }

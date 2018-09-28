@@ -151,7 +151,7 @@ public class UserManagerTest {
         Account firstAccount = mock(Account.class);
         Account secondAccount = mock(Account.class);
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {firstAccount, secondAccount});
-        when(preferencesRepository.getActiveAccount()).thenReturn(null);
+        when(preferencesRepository.getActiveAccountName()).thenReturn(null);
 
         assertThat(userManager.getActiveAccount().get()).isEqualTo(firstAccount);
     }
@@ -160,7 +160,7 @@ public class UserManagerTest {
         Account firstAccount = new Account("first_account", ACCOUNT_TYPE);
         Account secondAccount = new Account(ACCOUNT_NAME, ACCOUNT_TYPE);
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {firstAccount, secondAccount});
-        when(preferencesRepository.getActiveAccount()).thenReturn(ACCOUNT_NAME);
+        when(preferencesRepository.getActiveAccountName()).thenReturn(ACCOUNT_NAME);
 
         assertThat(userManager.getActiveAccount().get()).isEqualTo(secondAccount);
     }
@@ -169,7 +169,7 @@ public class UserManagerTest {
         Account firstAccount = new Account("first_account", ACCOUNT_TYPE);
         Account secondAccount = new Account("second_account", ACCOUNT_TYPE);
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {firstAccount, secondAccount});
-        when(preferencesRepository.getActiveAccount()).thenReturn(ACCOUNT_NAME);
+        when(preferencesRepository.getActiveAccountName()).thenReturn(ACCOUNT_NAME);
 
         assertThat(userManager.getActiveAccount().get()).isEqualTo(firstAccount);
     }
