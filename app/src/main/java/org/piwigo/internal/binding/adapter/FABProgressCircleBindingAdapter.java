@@ -40,11 +40,11 @@ public class FABProgressCircleBindingAdapter {
                 progressCircle.show();
                 break;
             case FABProgressCircleObservable.STATE_HIDDEN:
-                boolean alreadyLaidOut = false;
+                boolean alreadyLaidOut;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     alreadyLaidOut = progressCircle.isLaidOut();
                 }else {
-                    alreadyLaidOut = progressCircle.getWidth() > 0 ? true : false;
+                    alreadyLaidOut = progressCircle.getWidth() > 0;
                 }
                 if(alreadyLaidOut){
                     progressCircle.hide();
