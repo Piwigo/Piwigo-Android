@@ -1,5 +1,4 @@
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
         android:id="@+id/nav_group_features"
         android:checkableBehavior="single">
@@ -17,14 +16,9 @@
         android:checkableBehavior="single"
         android:visible="true">
         <item
-            android:id="@+id/nav_add_account"
-            android:checkable="true"
-            android:icon="@drawable/ic_action_add"
-            android:title="@string/nav_add_account" />
-        <item
             android:id="@+id/nav_manage_accounts"
             android:checkable="true"
-            android:icon="@drawable/ic_action_settings"
+            android:icon="@drawable/ic_action_account_manage"
             android:title="@string/nav_manage_accounts"/>
     </group>
     <group

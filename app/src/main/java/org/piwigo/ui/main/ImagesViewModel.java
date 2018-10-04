@@ -26,17 +26,11 @@ import android.arch.lifecycle.ViewModel;
 import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.util.Log;
-import android.util.Pair;
-import android.widget.Toast;
-
-import com.google.common.base.Optional;
 
 import org.piwigo.BR;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.model.Category;
 import org.piwigo.io.model.ImageInfo;
-import org.piwigo.io.repository.CategoriesRepository;
 import org.piwigo.io.repository.ImageRepository;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 

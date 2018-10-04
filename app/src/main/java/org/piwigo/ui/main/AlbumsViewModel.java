@@ -24,8 +24,6 @@ import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.util.Log;
 
-import com.google.common.base.Optional;
-
 import org.piwigo.BR;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;

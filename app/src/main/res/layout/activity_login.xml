@@ -60,6 +60,7 @@
                             android:inputType="textUri"
                             android:maxLines="1"
                             android:nextFocusDown="@+id/username"
+                            android:autofillHints="url"
                             android:text="@={viewModel.url}" />
                     </android.support.design.widget.TextInputLayout>
 
@@ -79,6 +80,7 @@
                             android:maxLines="1"
                             android:nextFocusDown="@+id/password"
                             android:nextFocusUp="@+id/url"
+                            android:autofillHints="username"
                             android:text="@={viewModel.username}" />
                     </android.support.design.widget.TextInputLayout>
 
@@ -99,9 +101,10 @@
                             android:maxLines="1"
                             android:nextFocusDown="@+id/login_button"
                             android:nextFocusUp="@+id/username"
+                            android:autofillHints="password"
                             android:text="@={viewModel.password}" />
                     </android.support.design.widget.TextInputLayout>
-
+<!--
                     <com.github.jorgecastilloprz.FABProgressCircle
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -111,17 +114,18 @@
                         app:finalIcon="@drawable/ic_check"
                         app:onProgressAnimationEnd="@{() -> viewModel.onProgressAnimationEnd()}"
                         app:state="@{viewModel.progressCircle}">
-
+-->
                         <android.support.design.widget.FloatingActionButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
                             android:layout_margin="24dp"
                             android:onClick="@{() -> viewModel.onLoginClick()}"
                             android:scaleType="center"
                             android:src="@drawable/ic_chevron_right"
                             app:elevation="8dp"
                             app:fabSize="normal" />
-                    </com.github.jorgecastilloprz.FABProgressCircle>
+<!--                    </com.github.jorgecastilloprz.FABProgressCircle> -->
                 </LinearLayout>
             </android.support.v7.widget.CardView>
         </LinearLayout>

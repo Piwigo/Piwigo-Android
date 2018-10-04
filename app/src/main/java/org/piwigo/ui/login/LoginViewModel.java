@@ -44,7 +44,7 @@ public class LoginViewModel extends ViewModel {
 
     @VisibleForTesting static Pattern WEB_URL = Patterns.WEB_URL;
 
-    public ObservableField<String> url = new ObservableField<>("http://");
+    public ObservableField<String> url = new ObservableField<>("https://");
     public ObservableField<String> urlError = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> usernameError = new ObservableField<>();

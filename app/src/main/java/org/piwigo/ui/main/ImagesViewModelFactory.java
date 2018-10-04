@@ -23,7 +23,6 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.repository.CategoriesRepository;
 import org.piwigo.io.repository.ImageRepository;
 
 import javax.inject.Inject;

@@ -19,7 +19,6 @@
 package org.piwigo.internal.binding.adapter;
 
 import android.databinding.BindingAdapter;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 

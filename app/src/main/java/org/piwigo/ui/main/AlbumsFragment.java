@@ -76,12 +76,9 @@ public class AlbumsFragment extends BaseFragment {
         AlbumsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AlbumsViewModel.class);
         binding.setViewModel(viewModel);
 
-        final Observer<Account> accountObserver = new Observer<Account>() {
-            @Override
-            public void onChanged(@Nullable final Account account) {
-                // reload the albums on account changes
-                viewModel.loadAlbums(null);
-            }
+        final Observer<Account> accountObserver = account -> {
+            // reload the albums on account changes
+            viewModel.loadAlbums(null);
         };
         userManager.getActiveAccount().observe(this, accountObserver);
     }

@@ -15,23 +15,13 @@
  * limitations under the License.
  */
 
-package org.piwigo.ui.main;;
+package org.piwigo.ui.main;
 
 /**
  * Created by Jeff on 9/26/2017.
  */
 
 import android.arch.lifecycle.ViewModel;
-
-import org.piwigo.io.model.ImageInfo;
-import org.piwigo.io.model.ImageListResponse;
-import org.piwigo.io.repository.ImageRepository;
-
-import java.util.List;
-import java.util.Observable;
-
-import rx.Subscriber;
-import rx.Subscription;
 
 public class ImagesItemViewModel extends ViewModel {
 

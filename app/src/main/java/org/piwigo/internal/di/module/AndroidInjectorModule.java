@@ -20,6 +20,7 @@ package org.piwigo.internal.di.module;
 
 import org.piwigo.internal.di.scope.PerActivity;
 import org.piwigo.internal.di.scope.PerFragment;
+import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.launcher.LauncherActivity;
 import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.login.LoginActivityModule;
@@ -42,6 +43,8 @@ public abstract class AndroidInjectorModule {
     @PerActivity @ContributesAndroidInjector(modules = LoginActivityModule.class) abstract LoginActivity loginActivity();
 
     @PerActivity @ContributesAndroidInjector(modules = MainActivityModule.class) abstract MainActivity mainActivity();
+
+    @PerActivity @ContributesAndroidInjector(modules = MainActivityModule.class) abstract ManageAccountsActivity accountActivity();
 
     @PerFragment @ContributesAndroidInjector(modules = AlbumsFragmentModule.class) abstract AlbumsFragment albumsFragment();
 

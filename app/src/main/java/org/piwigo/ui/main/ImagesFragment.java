@@ -90,12 +90,9 @@ public class ImagesFragment extends BaseFragment {
         ImagesViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesViewModel.class);
         binding.setViewModel(viewModel);
 
-        final Observer<Account> accountObserver = new Observer<Account>() {
-            @Override
-            public void onChanged(@Nullable final Account newName) {
-                // reload the albums on account changes
-                viewModel.loadImages(comvars.getValue());
-            }
+        final Observer<Account> accountObserver = newName -> {
+            // reload the albums on account changes
+            viewModel.loadImages(comvars.getValue());
         };
         userManager.getActiveAccount().observe(this, accountObserver);
     }

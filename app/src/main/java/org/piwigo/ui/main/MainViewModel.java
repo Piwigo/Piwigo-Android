@@ -18,18 +18,13 @@
 
 package org.piwigo.ui.main;
 
-import android.accounts.Account;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.Observable;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
-import android.support.annotation.Nullable;
-
-import com.google.common.base.Optional;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;

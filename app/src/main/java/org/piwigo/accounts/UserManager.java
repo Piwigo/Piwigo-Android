@@ -29,10 +29,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 
 import org.apache.commons.lang3.StringUtils;
 import org.piwigo.R;
 import org.piwigo.io.repository.PreferencesRepository;
+
+import java.util.List;
 
 public class UserManager {
 
@@ -48,15 +51,28 @@ public class UserManager {
     private final Resources resources;
     private final PreferencesRepository preferencesRepository;
 
-    private MutableLiveData<Account> mCurrentAccount;
+    private final MutableLiveData<Account> mCurrentAccount;
+    private final MutableLiveData<List<Account>> mAllAccounts;
 
     public UserManager(AccountManager accountManager, Resources resources, PreferencesRepository preferencesRepository) {
         this.accountManager = accountManager;
         this.resources = resources;
         this.preferencesRepository = preferencesRepository;
         this.mCurrentAccount = new MutableLiveData<>();
+        this.mAllAccounts = new MutableLiveData<>();
 
+        refreshAccounts();
         setActiveAccount(preferencesRepository.getActiveAccountName());
+    }
+
+    /* refresh account list - to be called by activities which are aware
+     * of a change in the accounts */
+    public void refreshAccounts() {
+        Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
+        mAllAccounts.setValue(ImmutableList.copyOf(accounts));
+
+        Account a = mCurrentAccount.getValue();
+        setActiveAccount(a == null ? "" : a.name);
     }
 
     public boolean isLoggedIn() {
@@ -86,6 +102,10 @@ public class UserManager {
         return mCurrentAccount;
     }
 
+    public LiveData<List<Account>> getAccounts(){
+        return mAllAccounts;
+    }
+
     public String getSiteUrl(Account account) {
         return accountManager.getUserData(account, KEY_SITE_URL);
     }
@@ -100,6 +120,14 @@ public class UserManager {
 
     public String getToken(Account account) {
         return accountManager.getUserData(account, KEY_TOKEN);
+    }
+
+    public boolean isGuest(Account account) {
+        return Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
+    }
+
+    public String getAccountName(Account account){
+        return getAccountName(getSiteUrl(account), getUsername(account));
     }
 
     private String getAccountName(String siteUrl, String username) {
@@ -135,6 +163,21 @@ public class UserManager {
         return account;
     }
 
+    public Account getAccountWithName(String accountName){
+        Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
+
+        for (Account account : accounts) {
+            if (account.name.equals(accountName)) {
+                return account;
+            }
+        }
+        return null;
+    }
+
+    public void setActiveAccount(Account activeAccount) {
+        mCurrentAccount.setValue(activeAccount);
+    }
+
     public void setActiveAccount(String activeAccount) {
         Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
 
@@ -155,4 +198,5 @@ public class UserManager {
             mCurrentAccount.setValue(null);
         }
     }
+
 }

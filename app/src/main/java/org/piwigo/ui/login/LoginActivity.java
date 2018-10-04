@@ -28,7 +28,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
@@ -62,22 +61,27 @@ public class LoginActivity extends BaseActivity {
         if (authenticatorResponse != null) {
             authenticatorResponse.onRequestContinued();
         }
-
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(LoginViewModel.class);
+
+        if(getIntent().hasExtra(AccountManager.KEY_ACCOUNT_NAME)) {
+            String accountName = getIntent().getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+            Account account = userManager.getAccountWithName(accountName);
+
+            viewModel.username.set(userManager.getUsername(account));
+            viewModel.url.set(userManager.getSiteUrl(account));
+            if (!userManager.isGuest(account)) {
+                viewModel.password.set("******");
+            }
+        }
         viewModel.getLoginSuccess().observe(this, this::loginSuccess);
         viewModel.getLoginError().observe(this, this::loginError);
-        viewModel.getAnimationFinished().observe(this, animationFinished -> {
-            if (animationFinished != null && animationFinished) {
-                finishWithDelay();
-            }
-        });
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setViewModel(viewModel);
     }
 
+    /** Clean up the account authenticator stuff, see {@link AccountAuthenticatorActivity} */
     @Override public void finish() {
-        /** Clean up the account authenticator stuff, see {@link AccountAuthenticatorActivity} */
         if (authenticatorResponse != null) {
             if (resultBundle != null) {
                 authenticatorResponse.onResult(resultBundle);
@@ -86,7 +90,7 @@ public class LoginActivity extends BaseActivity {
             }
             authenticatorResponse = null;
         }
-        navigator.startMain(this);
+//        navigator.startMain(this);
         super.finish();
     }
 
@@ -99,16 +103,13 @@ public class LoginActivity extends BaseActivity {
             Account account = userManager.createUser(response.url, response.statusResponse.result.username, response.password, response.pwgId, response.statusResponse.result.pwgToken);
             setResultIntent(account);
             viewModel.accountCreated();
+            finish();
         }
     }
 
     private void loginError(Throwable throwable) {
         Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG)
                 .show();
-    }
-
-    private void finishWithDelay() {
-        handler.postDelayed(() -> ActivityCompat.finishAfterTransition(LoginActivity.this), 500);
     }
 
     private void setResultIntent(Account account) {
