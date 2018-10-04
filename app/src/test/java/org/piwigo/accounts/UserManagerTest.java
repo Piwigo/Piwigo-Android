@@ -67,7 +67,7 @@ public class UserManagerTest {
 
         when(resources.getString(R.string.account_type)).thenReturn(ACCOUNT_TYPE);
         when(resources.getString(eq(R.string.account_name), anyString(), anyString())).thenReturn(ACCOUNT_NAME);
-
+        when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {});
         userManager = new UserManager(accountManager, resources, preferencesRepository);
     }
 
@@ -144,7 +144,7 @@ public class UserManagerTest {
     @Test public void getActiveAccount_withNoAccounts_returnsAbsent() {
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[0]);
 
-        assertThat(userManager.getActiveAccount().isPresent()).isFalse();
+        assertThat(userManager.getActiveAccount().getValue() == null);
     }
 
     @Test public void getActiveAccount_withNoActiveAccount_returnsFirstAccount() {
@@ -153,7 +153,9 @@ public class UserManagerTest {
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {firstAccount, secondAccount});
         when(preferencesRepository.getActiveAccountName()).thenReturn(null);
 
-        assertThat(userManager.getActiveAccount().get()).isEqualTo(firstAccount);
+        userManager = new UserManager(accountManager, resources, preferencesRepository);
+
+        assertThat(userManager.getActiveAccount().getValue()).isEqualTo(firstAccount);
     }
 
     @Test public void getActiveAccount_withActiveAccount_returnsActiveAccount() {
@@ -162,7 +164,9 @@ public class UserManagerTest {
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {firstAccount, secondAccount});
         when(preferencesRepository.getActiveAccountName()).thenReturn(ACCOUNT_NAME);
 
-        assertThat(userManager.getActiveAccount().get()).isEqualTo(secondAccount);
+        userManager = new UserManager(accountManager, resources, preferencesRepository);
+
+        assertThat(userManager.getActiveAccount().getValue()).isEqualTo(secondAccount);
     }
 
     @Test public void getActiveAccount_withInvalidActiveAccount_returnsFirstAccount() {
@@ -171,7 +175,9 @@ public class UserManagerTest {
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {firstAccount, secondAccount});
         when(preferencesRepository.getActiveAccountName()).thenReturn(ACCOUNT_NAME);
 
-        assertThat(userManager.getActiveAccount().get()).isEqualTo(firstAccount);
+        userManager = new UserManager(accountManager, resources, preferencesRepository);
+
+        assertThat(userManager.getActiveAccount().getValue()).isEqualTo(firstAccount);
     }
 
     @Test public void getSiteUrl_callsAccountManager() {
