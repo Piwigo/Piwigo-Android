@@ -19,17 +19,26 @@
 package org.piwigo.ui.main;
 
 import android.arch.lifecycle.ViewModel;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+
+import org.piwigo.R;
+import org.piwigo.helper.CommonVars;
 
 public class AlbumItemViewModel extends ViewModel {
 
     private final String url;
     private final String title;
     private final String photos;
+    private final Integer catid;
 
-    AlbumItemViewModel(String url, String title, String photos) {
+    CommonVars comvars = CommonVars.getInstance();
+
+    AlbumItemViewModel(String url, String title, String photos, Integer CategoryId) {
         this.url = url;
         this.title = title;
         this.photos = photos;
+        this.catid = CategoryId;
     }
 
     public String getUrl() {
@@ -42,5 +51,19 @@ public class AlbumItemViewModel extends ViewModel {
 
     public String getPhotos() {
         return photos;
+    }
+
+    public Integer getCatId() { return catid;}
+
+    public void onclickdo(View v){
+        comvars.setValue(catid);
+        if(v.getContext() instanceof AppCompatActivity) {
+            ((AppCompatActivity) v.getContext()).getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content, new ImagesFragment())
+                    .addToBackStack(null)
+                    .commit();
+        }
+
     }
 }

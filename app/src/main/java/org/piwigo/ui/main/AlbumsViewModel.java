@@ -24,8 +24,6 @@ import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.util.Log;
 
-import com.google.common.base.Optional;
-
 import org.piwigo.BR;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
@@ -64,9 +62,9 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     void loadAlbums(Integer categoryId) {
-        Optional<Account> account = userManager.getActiveAccount();
-        if (account.isPresent()) {
-            subscription = categoriesRepository.getCategories(account.get(), categoryId)
+        Account account = userManager.getActiveAccount().getValue();
+        if (account != null) {
+            subscription = categoriesRepository.getCategories(account, categoryId)
                     .subscribe(new CategoriesSubscriber());
         }
     }
@@ -101,8 +99,10 @@ public class AlbumsViewModel extends ViewModel {
                 int subPhotos = category.totalNbImages - category.nbImages;
                 photos += resources.getQuantityString(R.plurals.album_photos_subs, subPhotos, subPhotos);
             }
-            AlbumItemViewModel viewModel = new AlbumItemViewModel(category.thumbnailUrl, category.name, photos);
+            AlbumItemViewModel viewModel = new AlbumItemViewModel(category.thumbnailUrl, category.name, photos, category.id);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
     }
+
+
 }

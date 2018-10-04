@@ -1,2 +1,2 @@
-rootProject.name = 'Piwigo Android'
+rootProject.name = 'Piwigo-Android'
 include ':app'

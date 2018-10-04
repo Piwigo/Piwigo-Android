@@ -16,16 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.ui.login;
+package org.piwigo.ui.main;
 
-import org.piwigo.io.model.LoginResponse;
+import android.content.res.Resources;
 
-public interface LoginView {
+import dagger.Module;
+import dagger.Provides;
 
-    void onSuccess(LoginResponse response);
+@Module
+public class ImagesFragmentModule {
 
-    void onError();
-
-    void onAnimationFinished();
-
+    @Provides Resources provideResources(ImagesFragment fragment) {
+        return fragment.getResources();
+    }
 }

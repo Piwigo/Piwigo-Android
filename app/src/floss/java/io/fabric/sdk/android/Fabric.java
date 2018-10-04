@@ -19,6 +19,7 @@ package io.fabric.sdk.android;
 
 import android.content.Context;
 
+@SuppressWarnings("EmptyMethod")
 public class Fabric {
 
     public static void with(Context context, Object... kits) {

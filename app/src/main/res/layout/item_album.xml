@@ -6,6 +6,10 @@
         <variable
             name="viewModel"
             type="org.piwigo.ui.main.AlbumItemViewModel" />
+
+        <variable
+            name="clickHandler"
+            type="org.piwigo.ui.main.ClickHandler" />
     </data>
 
     <android.support.v7.widget.CardView
@@ -22,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:src="@{viewModel.url}"
+            android:onClick="@{viewModel::onclickdo}"
             app:heightRatio="@{0.66}" />
 
         <LinearLayout

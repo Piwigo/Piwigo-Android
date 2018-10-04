@@ -34,12 +34,14 @@ public class PreferencesRepository {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
+    /* double check whether this is really what you want.
+     * Maybe UserManager.setActiveAccount() is what you want */
     public void setActiveAccount(String name) {
         set(KEY_ACTIVE_ACCOUNT, name);
     }
 
-    public String getActiveAccount() {
-        return preferences.getString(KEY_ACTIVE_ACCOUNT, null);
+    public String getActiveAccountName() {
+        return preferences.getString(KEY_ACTIVE_ACCOUNT,null);
     }
 
     private void set(String key, String value) {

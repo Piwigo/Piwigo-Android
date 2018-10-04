@@ -20,6 +20,11 @@ package org.piwigo.ui.shared;
 
 import android.support.v4.app.Fragment;
 
-public abstract class BaseFragment extends Fragment {
+import org.piwigo.accounts.UserManager;
 
+import javax.inject.Inject;
+
+public abstract class BaseFragment extends Fragment {
+    @Inject
+    protected UserManager userManager;
 }
