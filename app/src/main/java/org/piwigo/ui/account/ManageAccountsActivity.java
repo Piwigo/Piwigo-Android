@@ -36,7 +36,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityManageAccountsBinding;
@@ -102,6 +101,7 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
