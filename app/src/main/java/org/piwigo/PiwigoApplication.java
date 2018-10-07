@@ -22,8 +22,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.databinding.DataBindingUtil;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.piwigo.internal.di.component.ApplicationComponent;
 import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
@@ -35,7 +33,6 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
-import io.fabric.sdk.android.Fabric;
 
 public class PiwigoApplication extends Application implements HasActivityInjector {
 
@@ -44,16 +41,11 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
     @Override public void onCreate() {
         super.onCreate();
 
-        initializeCrashlytics();
         initializeDependancyInjection();
     }
 
     @Override public AndroidInjector<Activity> activityInjector() {
         return dispatchingAndroidInjector;
-    }
-
-    protected void initializeCrashlytics() {
-        Fabric.with(this, new Crashlytics());
     }
 
     private void initializeDependancyInjection() {
