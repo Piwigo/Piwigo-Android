@@ -20,6 +20,7 @@ package org.piwigo.ui.main;
 
 import android.accounts.Account;
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 
 import com.google.common.base.Optional;
@@ -48,17 +49,13 @@ public class MainViewModelTest {
     @Before @SuppressWarnings("Guava") public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        when(userManager.getActiveAccount()).thenReturn(Optional.of(account));
+        MutableLiveData<Account> ml = new MutableLiveData<>();
+        ml.setValue(account);
+        when(userManager.getActiveAccount()).thenReturn(ml);
         when(userManager.getUsername(account)).thenReturn("username");
         when(userManager.getSiteUrl(account)).thenReturn("http://piwigo.org/demo");
 
         viewModel = new MainViewModel(userManager);
-    }
-
-    @Test public void constructor_getAccountInfoFromUserManager() {
-        verify(userManager).getActiveAccount();
-        verify(userManager).getUsername(account);
-        verify(userManager).getSiteUrl(account);
     }
 
     @Test @SuppressWarnings("unchecked") public void getSelectedMenuItem_observerReceivesSelectedMenuItem() {

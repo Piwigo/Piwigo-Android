@@ -20,10 +20,8 @@ package org.piwigo.ui.main;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
-import android.content.Context;
 
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.repository.CategoriesRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

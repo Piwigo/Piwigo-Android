@@ -10,6 +10,10 @@
         android:name="android.permission.GET_ACCOUNTS"
         android:maxSdkVersion="22" />
 
+    <uses-permission
+        android:name="android.permission.MANAGE_ACCOUNTS"
+        android:maxSdkVersion="22" />
+
     <application
         android:name=".PiwigoApplication"
         android:allowBackup="true"
@@ -35,6 +39,11 @@
             android:name=".ui.main.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.Piwigo.NavDrawer" />
+        <activity
+            android:name=".ui.account.ManageAccountsActivity"
+            android:label="@string/title_activity_accounts"
+            android:theme="@style/Theme.Piwigo.NavDrawer"
+            android:parentActivityName=".ui.main.MainActivity" />
 
         <service android:name=".accounts.AuthenticatorService">
             <intent-filter>

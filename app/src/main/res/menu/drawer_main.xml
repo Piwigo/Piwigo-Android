@@ -12,28 +12,27 @@
             android:title="@string/nav_upload" />
     </group>
     <group
+        android:id="@+id/nav_group_accounts"
+        android:checkableBehavior="single"
+        android:visible="true">
+        <item
+            android:id="@+id/nav_manage_accounts"
+            android:checkable="true"
+            android:icon="@drawable/ic_action_account_manage"
+            android:title="@string/nav_manage_accounts"/>
+    </group>
+    <group
         android:id="@+id/nav_group_settings"
-        android:checkableBehavior="none">
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_settings"
+            android:checkable="true"
             android:icon="@drawable/ic_action_settings"
             android:title="@string/nav_settings" />
         <item
+            android:checkable="true"
             android:id="@+id/nav_about"
             android:icon="@drawable/ic_action_help"
             android:title="@string/nav_about" />
-    </group>
-    <group
-        android:id="@+id/nav_group_accounts"
-        android:checkableBehavior="none"
-        android:visible="false">
-        <item
-            android:id="@+id/nav_add_account"
-            android:icon="@drawable/ic_action_add"
-            android:title="@string/nav_add_account" />
-        <item
-            android:id="@+id/nav_manage_accounts"
-            android:icon="@drawable/ic_action_settings"
-            android:title="@string/nav_manage_accounts"/>
     </group>
 </menu>

@@ -1,6 +1,6 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Login CardView width is limited on larger screens -->
-    <dimen name="login_width">400dp</dimen>
+    <dimen name="login_width" tools:ignore="MissingDefaultResource">400dp</dimen>
 
 </resources>

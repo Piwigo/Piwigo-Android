@@ -21,6 +21,7 @@ package org.piwigo.io;
 import org.piwigo.io.model.AddCategoryResponse;
 import org.piwigo.io.model.CategoryListResponse;
 import org.piwigo.io.model.GetImageInfoResponse;
+import org.piwigo.io.model.ImageListResponse;
 import org.piwigo.io.model.StatusResponse;
 import org.piwigo.io.model.SuccessResponse;
 
@@ -29,7 +30,9 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -62,6 +65,26 @@ public interface RestService {
 
     @GET("ws.php?method=pwg.images.getInfo") Observable<GetImageInfoResponse> getImageInfo(
             @Query("image_id") int imageId
+    );
+
+
+    //JCA added
+    @GET("ws.php?method=pwg.categories.getImages")
+    // List<ImageListResponse> getImages(@Query("cat_id") Integer categoryId);
+    Observable<ImageListResponse> getImages(@Query("cat_id") int categoryId);
+
+
+    @Multipart
+    @POST("ws.php?method=pwg.images.upload")
+        // @FormUrlEncoded
+        // Observable<ImageUploadResponse> uploadImage(
+    String uploadImage(
+            @Part("image") String image,
+            @Part("category") String category,
+            @Part("name") String name,
+            @Part("pwg_token") String token
+          //  @Part("file") TypedFile file           <--- TO DO convert to Requestbody
+
     );
 
 }

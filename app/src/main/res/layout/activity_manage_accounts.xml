@@ -1,0 +1,71 @@
+<!--
+  ~ Piwigo for Android
+  ~ Copyright 2017-2018 Raphael Mack http://www.raphael-mack.de
+  ~ Copyright 2017-2018 Piwigo Team http://piwigo.org
+  ~
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.piwigo.ui.account.ManageAccountsActivity">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="org.piwigo.ui.account.ManageAccountsViewModel" />
+    </data>
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/account_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:navigationIcon="?android:attr/actionModeCloseDrawable"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:title="@{viewModel.title}"/>
+
+            <FrameLayout
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="?attr/actionBarSize">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/account_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:items="@{viewModel.items}"
+                    app:viewBinder="@{viewModel.viewBinder}"
+                    >
+
+                </android.support.v7.widget.RecyclerView>
+            </FrameLayout>
+        </RelativeLayout>
+
+    </android.support.v4.widget.DrawerLayout>
+</layout>

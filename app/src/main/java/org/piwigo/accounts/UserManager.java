@@ -1,6 +1,7 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2018 Piwigo Team http://piwigo.org
+ * Copyright (C) 2018 Raphael Mack
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +21,21 @@ package org.piwigo.accounts;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 
 import org.apache.commons.lang3.StringUtils;
 import org.piwigo.R;
 import org.piwigo.io.repository.PreferencesRepository;
+
+import java.util.List;
 
 public class UserManager {
 
@@ -46,10 +51,28 @@ public class UserManager {
     private final Resources resources;
     private final PreferencesRepository preferencesRepository;
 
+    private final MutableLiveData<Account> mCurrentAccount;
+    private final MutableLiveData<List<Account>> mAllAccounts;
+
     public UserManager(AccountManager accountManager, Resources resources, PreferencesRepository preferencesRepository) {
         this.accountManager = accountManager;
         this.resources = resources;
         this.preferencesRepository = preferencesRepository;
+        this.mCurrentAccount = new MutableLiveData<>();
+        this.mAllAccounts = new MutableLiveData<>();
+
+        refreshAccounts();
+        setActiveAccount(preferencesRepository.getActiveAccountName());
+    }
+
+    /* refresh account list - to be called by activities which are aware
+     * of a change in the accounts */
+    public void refreshAccounts() {
+        Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
+        mAllAccounts.setValue(ImmutableList.copyOf(accounts));
+
+        Account a = mCurrentAccount.getValue();
+        setActiveAccount(a == null ? "" : a.name);
     }
 
     public boolean isLoggedIn() {
@@ -74,21 +97,13 @@ public class UserManager {
         }
     }
 
-    @SuppressWarnings("Guava")
-    public Optional<Account> getActiveAccount() {
-        Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
-        if (accounts.length == 0) {
-            return Optional.absent();
-        }
-        String activeAccount = preferencesRepository.getActiveAccount();
-        if (!TextUtils.isEmpty(activeAccount)) {
-            for (Account account : accounts) {
-                if (account.name.equals(activeAccount)) {
-                    return Optional.of(account);
-                }
-            }
-        }
-        return Optional.of(accounts[0]);
+    /* observe this LiveData for notifications on account switches */
+    public LiveData<Account> getActiveAccount() {
+        return mCurrentAccount;
+    }
+
+    public LiveData<List<Account>> getAccounts(){
+        return mAllAccounts;
     }
 
     public String getSiteUrl(Account account) {
@@ -105,6 +120,14 @@ public class UserManager {
 
     public String getToken(Account account) {
         return accountManager.getUserData(account, KEY_TOKEN);
+    }
+
+    public boolean isGuest(Account account) {
+        return Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
+    }
+
+    public String getAccountName(Account account){
+        return getAccountName(getSiteUrl(account), getUsername(account));
     }
 
     private String getAccountName(String siteUrl, String username) {
@@ -139,4 +162,41 @@ public class UserManager {
         accountManager.addAccountExplicitly(account, null, userdata);
         return account;
     }
+
+    public Account getAccountWithName(String accountName){
+        Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
+
+        for (Account account : accounts) {
+            if (account.name.equals(accountName)) {
+                return account;
+            }
+        }
+        return null;
+    }
+
+    public void setActiveAccount(Account activeAccount) {
+        mCurrentAccount.setValue(activeAccount);
+    }
+
+    public void setActiveAccount(String activeAccount) {
+        Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
+
+        if (!TextUtils.isEmpty(activeAccount)) {
+            for (Account account : accounts) {
+                if (account.name.equals(activeAccount)) {
+                    preferencesRepository.setActiveAccount(activeAccount);
+                    mCurrentAccount.setValue(account);
+                    return;
+                }
+            }
+        }
+
+        /* the selected account is not available select default */
+        if(accounts.length > 0) {
+            mCurrentAccount.setValue(accounts[0]);
+        }else{
+            mCurrentAccount.setValue(null);
+        }
+    }
+
 }
