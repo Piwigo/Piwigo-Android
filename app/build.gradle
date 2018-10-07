@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.fernandocejas.frodo'
 
 def isCi = "true" == System.getenv("CI")
 def preDexEnabled = "true" == System.getProperty("pre-dex", "true")
