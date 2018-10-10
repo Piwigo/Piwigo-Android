@@ -1,6 +1,7 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2018 Piwigo Team http://piwigo.org
+ * Copyright (C) 2018-2018 Raphael Mack http://www.raphael-mack.de
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +21,4 @@ package org.piwigo;
 
 public class TestPiwigoApplication extends PiwigoApplication {
 
-    @Override protected void initializeCrashlytics() {
-        // Do nothing, we don't want Crashlytics for unit tests
-    }
 }

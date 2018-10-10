@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.fernandocejas.frodo'
 
 def isCi = "true" == System.getenv("CI")
 def preDexEnabled = "true" == System.getProperty("pre-dex", "true")
@@ -24,14 +23,6 @@ android {
         }
     }
     flavorDimensions "default"
-    productFlavors {
-        googlePlay {
-            dimension "default"
-        }
-        floss {
-            dimension "default"
-        }
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
