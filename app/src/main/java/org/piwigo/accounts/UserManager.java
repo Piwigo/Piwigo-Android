@@ -107,7 +107,12 @@ public class UserManager {
     }
 
     public String getSiteUrl(Account account) {
-        return accountManager.getUserData(account, KEY_SITE_URL);
+        String url = accountManager.getUserData(account, KEY_SITE_URL);
+        if(!url.endsWith("/")){
+            /* Retrofit requires the url to have a trailing / */
+            url += "/";
+        }
+        return url;
     }
 
     public String getUsername(Account account) {
