@@ -28,8 +28,13 @@
         android:title="@string/nav_add_account"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/action_edit_account"
+        android:icon="@drawable/ic_action_edit"
+        android:title="@string/nav_edit_account"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_del_account"
         android:icon="@drawable/ic_action_delete"
         android:title="@string/nav_delete_account"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 </menu>

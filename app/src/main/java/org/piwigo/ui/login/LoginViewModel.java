@@ -18,6 +18,7 @@
 
 package org.piwigo.ui.login;
 
+import android.accounts.Account;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
@@ -29,6 +30,7 @@ import android.util.Log;
 import android.util.Patterns;
 
 import org.piwigo.R;
+import org.piwigo.accounts.UserManager;
 import org.piwigo.internal.binding.observable.FABProgressCircleObservable;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
@@ -41,6 +43,7 @@ import rx.Subscription;
 public class LoginViewModel extends ViewModel {
 
     private static final String TAG = LoginViewModel.class.getName();
+    private static final String HIDDEN_PASSWORD = "*****";
 
     @VisibleForTesting static Pattern WEB_URL = Patterns.WEB_URL;
 
@@ -60,10 +63,13 @@ public class LoginViewModel extends ViewModel {
     private MutableLiveData<Boolean> animationFinished = new MutableLiveData<>();
 
     private Subscription subscription;
+    private final UserManager userManager;
+    private Account account = null;
 
-    LoginViewModel(UserRepository userRepository, Resources resources) {
+    LoginViewModel(UserManager userManager, UserRepository userRepository, Resources resources) {
         this.userRepository = userRepository;
         this.resources = resources;
+        this.userManager = userManager;
 
         clearOnPropertyChange(url, urlError);
         clearOnPropertyChange(username, usernameError);
@@ -120,6 +126,10 @@ public class LoginViewModel extends ViewModel {
         progressCircle.hide();
     }
 
+    public boolean isEditExisting(){
+        return account != null;
+    }
+
     private boolean isSiteValid() {
         if (url.get() == null || url.get().isEmpty()) {
             urlError.set(resources.getString(R.string.login_url_empty));
@@ -164,6 +174,20 @@ public class LoginViewModel extends ViewModel {
         return string == null || string.isEmpty();
     }
 
+    public void loadAccount(Account account) {
+        if(account != null) {
+            url.set(userManager.getSiteUrl(account));
+            if (userManager.isGuest(account)) {
+                username.set("");
+                password.set("");
+            } else {
+                username.set(userManager.getUsername(account));
+                password.set(HIDDEN_PASSWORD);
+            }
+        }
+        this.account = account;
+    }
+
     private class LoginSubscriber extends Subscriber<LoginResponse> {
 
         @Override public void onCompleted() {}
@@ -175,7 +199,17 @@ public class LoginViewModel extends ViewModel {
         }
 
         @Override public void onNext(LoginResponse loginResponse) {
-            loginSuccess.setValue(loginResponse);
+            if(account != null){
+                try {
+                    String siteUrl = url.get();
+                    userManager.updateAccount(account, siteUrl, username.get(), password.get());
+                    loginSuccess.setValue(loginResponse);
+                }catch(IllegalArgumentException e){
+                    loginError.setValue(e);
+                }
+            }else {
+                loginSuccess.setValue(loginResponse);
+            }
         }
     }
 }
