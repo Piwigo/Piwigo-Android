@@ -25,7 +25,9 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -79,22 +81,30 @@ public class UserManager {
         return accountManager.getAccountsByType(resources.getString(R.string.account_type)).length > 0;
     }
 
-    public boolean userExists(String siteUrl, String username) {
+    /* get account for username@siteUrl, null if no such account exists */
+    public Account getAccountForUser(String siteUrl, String username) {
         String accountName = getAccountName(siteUrl, TextUtils.isEmpty(username) ? GUEST_ACCOUNT_NAME : username);
         for (Account account : accountManager.getAccountsByType(resources.getString(R.string.account_type))) {
             if (account.name.equals(accountName)) {
-                return true;
+                return account;
             }
         }
-        return false;
+        return null;
+    }
+
+    public boolean userExists(String siteUrl, String username) {
+        return getAccountForUser(siteUrl, username) != null;
     }
 
     public Account createUser(String siteUrl, String username, String password, String cookie, String token) {
+        Account result;
         if (TextUtils.isEmpty(username) && TextUtils.isEmpty(password)) {
-            return createGuestUser(siteUrl);
+            result = createGuestUser(siteUrl);
         } else {
-            return createNormalUser(siteUrl, username, password, cookie, token);
+            result = createNormalUser(siteUrl, username, password, cookie, token);
         }
+        accountManager.setAuthToken(result, KEY_TOKEN, token);
+        return result;
     }
 
     /* observe this LiveData for notifications on account switches */
@@ -107,7 +117,14 @@ public class UserManager {
     }
 
     public String getSiteUrl(Account account) {
-        return accountManager.getUserData(account, KEY_SITE_URL);
+        String url = accountManager.getUserData(account, KEY_SITE_URL);
+        if(url == null){
+            url = "/";
+        }else if(!url.endsWith("/")){
+            /* Retrofit requires the url to have a trailing / */
+            url += "/";
+        }
+        return url;
     }
 
     public String getUsername(Account account) {
@@ -119,11 +136,13 @@ public class UserManager {
     }
 
     public String getToken(Account account) {
+        /* TODO: should we replace that token storage in the user data by the token handling in the Authenticator
+        * use accountManager.getAuthToken(account, KEY_TOKEN, null, ...); */
         return accountManager.getUserData(account, KEY_TOKEN);
     }
 
     public boolean isGuest(Account account) {
-        return Boolean.parseBoolean(accountManager.getUserData(account, KEY_IS_GUEST));
+        return GUEST_ACCOUNT_NAME.equals(getUsername(account));
     }
 
     public String getAccountName(Account account){
@@ -199,4 +218,26 @@ public class UserManager {
         }
     }
 
+    /* throws IllegalArgumentException if the rename is not allowed because there is already an account with those properties. */
+    public void updateAccount(@NonNull Account account, @NonNull String url, String username, String password) throws IllegalArgumentException{
+        boolean isGuest = GUEST_ACCOUNT_NAME.equals(username);
+        if(username == null || username.length() == 0){
+            isGuest = true;
+            username = GUEST_ACCOUNT_NAME;
+        }
+
+        Account existingAccount = getAccountForUser(url, username);
+        if(    existingAccount != null
+            && account != existingAccount){
+            throw new IllegalArgumentException("different account for " + username + "@" + url + " already exists");
+        }
+        accountManager.setUserData(account, KEY_IS_GUEST, Boolean.toString(isGuest));
+        accountManager.setUserData(account, KEY_SITE_URL, url);
+        accountManager.setUserData(account, KEY_USERNAME, username);
+        accountManager.setPassword(account, isGuest ? "" : password);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            String newname = getAccountName(url, username);
+            accountManager.renameAccount(account, newname, null, null);
+        }
+    }
 }

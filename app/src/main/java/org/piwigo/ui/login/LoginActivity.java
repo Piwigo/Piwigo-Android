@@ -40,6 +40,7 @@ import dagger.android.AndroidInjection;
 
 public class LoginActivity extends BaseActivity {
 
+    public static final String EDIT_ACCOUNT_ACTION = "org.piwigo.action.EDIT_ACCOUNT";
     @Inject LoginViewModelFactory viewModelFactory;
 
     private LoginViewModel viewModel;
@@ -63,21 +64,22 @@ public class LoginActivity extends BaseActivity {
         }
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(LoginViewModel.class);
 
-        if(getIntent().hasExtra(AccountManager.KEY_ACCOUNT_NAME)) {
-            String accountName = getIntent().getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-            Account account = userManager.getAccountWithName(accountName);
-
-            viewModel.username.set(userManager.getUsername(account));
-            viewModel.url.set(userManager.getSiteUrl(account));
-            if (!userManager.isGuest(account)) {
-                viewModel.password.set("******");
-            }
-        }
+        handleIntent(getIntent());
         viewModel.getLoginSuccess().observe(this, this::loginSuccess);
         viewModel.getLoginError().observe(this, this::loginError);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setViewModel(viewModel);
+    }
+
+    private void handleIntent(Intent intent) {
+        Account account = null;
+
+        if(EDIT_ACCOUNT_ACTION.equals(intent.getAction())){
+            account = intent.getParcelableExtra("account");
+        }
+
+        viewModel.loadAccount(account);
     }
 
     /** Clean up the account authenticator stuff, see {@link AccountAuthenticatorActivity} */
@@ -90,12 +92,13 @@ public class LoginActivity extends BaseActivity {
             }
             authenticatorResponse = null;
         }
-//        navigator.startMain(this);
         super.finish();
     }
 
     private void loginSuccess(LoginResponse response) {
-        if (userManager.userExists(response.url, response.username)) {
+        if(viewModel.isEditExisting()){
+            finish();
+        }else if (userManager.userExists(response.url, response.username)) {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
             viewModel.accountExists();
@@ -108,8 +111,13 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void loginError(Throwable throwable) {
-        Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG)
-                .show();
+        if(throwable instanceof IllegalArgumentException) {
+            Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
+                    .show();
+        }else{
+            Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG)
+                    .show();
+        }
     }
 
     private void setResultIntent(Account account) {

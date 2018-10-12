@@ -19,8 +19,11 @@
 package org.piwigo.ui.account;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.content.Intent;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableField;
 import android.view.View;
@@ -28,6 +31,7 @@ import android.view.View;
 import org.piwigo.BR;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
+import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 
 import java.util.List;
@@ -37,6 +41,7 @@ public class ManageAccountsViewModel extends ViewModel {
     public final ObservableField<String> title = new ObservableField<>();
 
     public final LiveData<List<Account>> accounts;
+    Account selectedAccount = null;
 
     private final ObservableArrayList<Account> items = new ObservableArrayList<>();
     public final BindingRecyclerViewAdapter.ViewBinder<Account> viewBinder = new AccountViewBinder();
@@ -47,6 +52,7 @@ public class ManageAccountsViewModel extends ViewModel {
         this.userManager = userManager;
         accounts = userManager.getAccounts();
         items.addAll(accounts.getValue());
+        selectedAccount = userManager.getActiveAccount().getValue();
     }
 
     public void refresh(){
@@ -55,6 +61,10 @@ public class ManageAccountsViewModel extends ViewModel {
         items.clear();
         items.addAll(accounts.getValue());
 
+    }
+
+    public Account getSelectedAccount(){
+        return selectedAccount;
     }
 
     public ObservableArrayList<Account> getItems() {
@@ -77,8 +87,21 @@ public class ManageAccountsViewModel extends ViewModel {
             boolean x = vm.isActive();
             viewHolder.itemView.setSelected(x);
             viewHolder.itemView.setOnClickListener(v -> {
+                selectedAccount = account;
+
                 userManager.setActiveAccount(account);
                 refresh(); // dirty way to redraw the recycler...
+            });
+            viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    Intent intent = new Intent(v.getContext(), LoginActivity.class);
+
+                    intent.setAction(LoginActivity.EDIT_ACCOUNT_ACTION);
+                    intent.putExtra("account", account);
+                    v.getContext().startActivity(intent);
+                    return true;
+                }
             });
         }
     }

@@ -29,6 +29,7 @@ import org.junit.rules.TestRule;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.piwigo.R;
+import org.piwigo.accounts.UserManager;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
 
@@ -56,6 +57,8 @@ public class LoginViewModelTest {
 
     @Mock Resources resources;
 
+    @Mock UserManager userManager;
+
     private LoginViewModel viewModel;
 
     @Rule public TestRule rule = new InstantTaskExecutorRule();
@@ -70,7 +73,7 @@ public class LoginViewModelTest {
         when(resources.getString(R.string.login_username_empty)).thenReturn(ERROR_USERNAME);
         when(resources.getString(R.string.login_password_empty)).thenReturn(ERROR_PASSWORD);
 
-        viewModel = new LoginViewModel(userRepository, resources);
+        viewModel = new LoginViewModel(userManager, userRepository, resources);
         LoginViewModel.WEB_URL = Pattern.compile("http://demo\\.piwigo\\.org");
     }
 

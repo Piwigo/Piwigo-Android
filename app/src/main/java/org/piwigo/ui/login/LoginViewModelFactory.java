@@ -22,6 +22,7 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 
+import org.piwigo.accounts.UserManager;
 import org.piwigo.io.repository.UserRepository;
 
 import javax.inject.Inject;
@@ -32,8 +33,10 @@ public class LoginViewModelFactory implements ViewModelProvider.Factory {
 
     private final Context context;
     private final UserRepository userRepository;
+    private final UserManager userManager;
 
-    @Inject public LoginViewModelFactory(Context context, UserRepository userRepository) {
+    @Inject public LoginViewModelFactory(Context context, UserRepository userRepository, UserManager userManager) {
+        this.userManager = userManager;
         this.context = context;
         this.userRepository = userRepository;
     }
@@ -41,7 +44,7 @@ public class LoginViewModelFactory implements ViewModelProvider.Factory {
     @Override public <T extends ViewModel> T create(Class<T> viewModelClass) {
         if (viewModelClass.isAssignableFrom(LoginViewModel.class)) {
             //noinspection unchecked
-            return (T) new LoginViewModel(userRepository, context.getResources());
+            return (T) new LoginViewModel(userManager, userRepository, context.getResources());
         }
         throw new IllegalStateException("Unable to create " + viewModelClass.getName());
     }

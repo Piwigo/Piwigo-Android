@@ -21,8 +21,6 @@ package org.piwigo.ui.account;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
 import android.accounts.OnAccountsUpdateListener;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -108,6 +106,13 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
             case R.id.action_add_account:
                 startActivity(new Intent(getApplicationContext(),
                         LoginActivity.class));
+                break;
+            case R.id.action_edit_account:
+                Intent editIntent = new Intent(getApplicationContext(),
+                        LoginActivity.class);
+                editIntent.setAction(LoginActivity.EDIT_ACCOUNT_ACTION);
+                editIntent.putExtra("account", viewModel.getSelectedAccount());
+                startActivity(editIntent);
                 break;
             case R.id.action_del_account:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {

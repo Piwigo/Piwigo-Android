@@ -34,7 +34,12 @@
             android:name=".ui.login.LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.Piwigo.Login"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:windowSoftInputMode="stateHidden|adjustResize">
+            <intent-filter>
+                <action android:name="org.piwigo.action.EDIT_ACCOUNT"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.main.MainActivity"
             android:label="@string/title_activity_main"
