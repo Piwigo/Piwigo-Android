@@ -118,7 +118,9 @@ public class UserManager {
 
     public String getSiteUrl(Account account) {
         String url = accountManager.getUserData(account, KEY_SITE_URL);
-        if(!url.endsWith("/")){
+        if(url == null){
+            url = "/";
+        }else if(!url.endsWith("/")){
             /* Retrofit requires the url to have a trailing / */
             url += "/";
         }
