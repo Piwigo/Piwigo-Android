@@ -127,6 +127,7 @@ public class ImagesViewModel extends ViewModel {
         //    viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
             String imageurl ="";
             imageurl = image.elementUrl;
+           //  imageurl = image.derivatives.small.url;   // TO DO: make image size selectable via settings (jca)
 
             String imagename = image.name;
 
