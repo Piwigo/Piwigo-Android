@@ -1,8 +1,32 @@
-.gradle
-/local.properties
-/.idea/.name
-/.idea/workspace.xml
-/.idea/libraries
-.DS_Store
-/build
+/*/build/
 /captures
+
+.gradle
+
+#built application files
+*.apk
+*.ap_
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio
+.idea/caches
+.idea/libraries/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/.name
+.idea/compiler.xml
+.idea/copyright/profiles_settings.xml
+.idea/encodings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/scopes/scope_settings.xml
+.idea/vcs.xml
+*.iml
+
+# Windows thumbnail db
+Thumbs.db
+
+# OSX files
+.DS_Store
