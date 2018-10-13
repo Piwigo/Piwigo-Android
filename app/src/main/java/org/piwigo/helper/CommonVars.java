@@ -17,6 +17,8 @@
 
 package org.piwigo.helper;
 
+import android.accounts.Account;
+
 /**
  * Created by Jeff on 10/1/2017.
  *
@@ -41,6 +43,10 @@ public class CommonVars {
 
     private int cat_selected;
 
+    private Account account;
+
+
+
     private CommonVars() {
 
     }
@@ -55,7 +61,9 @@ public class CommonVars {
         this.cat_selected = catid;
     }
 
+    public Account getAccount() {return account;}
 
+    public void setAccount(Account acnt) {this.account = acnt;}
 
 
 }
