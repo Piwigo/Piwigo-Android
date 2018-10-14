@@ -33,14 +33,39 @@
     <string name="account_not_selected">Select an account for deletion first</string>
 
     <!-- About -->
-    <string name="about_text"><![CDATA[
-        <p><b>%1$s</b>
-        <br />version <b>%2$s</b></p>
-        <p>distributed under <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL v3 (or later)</a> license</p>
-        <p>For bugs and suggestions use the <a href="https://github.com/Piwigo/Piwigo-Android/issues">issue tacker</a></p>
-        <p>Source Code can be found on <a href="https://github.com/Piwigo/Piwigo-Android">Github</a></p>]]>
-    </string>
+    <string name="about_text_version">version <b>%1$s</b></string>
+    <string name="about_text_intro"> - access Piwigo galleries from your Android phone.</string>
+    <string name="about_text_licence_h">License</string>
+    <string name="about_text_licence"><![CDATA[%1$s is free software: you can redistribute it and/or modify it under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License</a>]]></string>
+    <string name="about_text_license_2">This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</string>
+    <string name="about_text_contact_h">Contact</string>
+    <string name="about_text_contact"><![CDATA[For bugs and suggestions use the <a href="https://github.com/Piwigo/Piwigo-Android/issues">issue tacker</a>, preferably in English language.]]></string>
+    <string name="about_text_contact_2"><![CDATA[Source code can be found on <a href="https://github.com/Piwigo/Piwigo-Android">Github</a>.]]></string>
+    <string name="about_text_support_h">Contribution</string>
+    <string name="about_text_support"><![CDATA[In case you want to support the development of %1$s consider discussing <a href="https://github.com/Piwigo/Piwigo-Android/issues">issues on github</a> or submitting <a href="https://github.com/Piwigo/Piwigo-Android/pulls">pull requests</a>.]]></string>
+    <string name="about_text_cont_h">Contributors</string>
+    <string name="about_text_cont_2">We are looking forward to mention your name in this list, too.</string>
+    <string name="about_text_lib_h">Libraries</string>
+    <string name="about_text_lib">The following libraries are used by this application and licensed under the named licenses:</string>
 
+    <string name="contributors" translatable="false"><![CDATA[
+        <p><a href="https://github.com/Philio">Phil Bayfield</a></p>
+        <p><a href="https://www.raphael-mack.de">Raphael Mack</a></p>
+        <p><a href="https://github.com/jeff-amn">Jeff Ayers</a></p>
+        ]]>
+    </string>
+    <string name="libraries" translatable="false"><![CDATA[
+        <p><a href="http://square.github.io/picasso/">Picasso</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+        <p><a href="http://square.github.io/okhttp3/">Okhttp3</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+        <p><a href="http://square.github.io/retrofit2/">Retrofit2</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+        <p><a href="https://github.com/JakeWharton/picasso2-okhttp3-downloader">Picasso 2 OkHttp 3 Downloader</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+        <p><a href="https://github.com/ReactiveX/RxJava/">ReactiveX/RxJava</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+        <p><a href="https://github.com/ReactiveX/RxAndroid/">ReactiveX/RxAndroid</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+        <p><a href="https://commons.apache.org/proper/commons-lang/">Apache Commons Lang</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+        <p>appcompat, support-annotations, cardview, design, constraint-layout, recyclerview, design, preference, exifinterface, guava, dagger license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+        ]]></string>
+<!--    <p><a href="https://github.com/ACRA/acra">ACRA - Application Crash Reports for Android</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+-->
     <!-- Albums -->
     <plurals name="album_photos">
         <item quantity="one">1 photo</item>
@@ -50,5 +75,7 @@
         <item quantity="one">, 1 photo in sub-albums</item>
         <item quantity="other">, %1$d photos in sub-albums</item>
     </plurals>
+
+    <!-- ManageAccounts -->
     <string name="title_activity_manage_accounts">ManageAccountsActivity</string>
 </resources>

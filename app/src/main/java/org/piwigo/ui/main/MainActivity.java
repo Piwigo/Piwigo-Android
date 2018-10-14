@@ -37,6 +37,7 @@ import org.piwigo.databinding.DrawerHeaderBinding;
 import org.piwigo.helper.CommonVars;
 import org.piwigo.io.RestService;
 import org.piwigo.io.model.ImageUploadResponse;
+import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.io.RestServiceFactory;
@@ -130,7 +131,11 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURES);
 				break;
-		
+            case R.id.nav_about:
+                startActivity(new Intent(getApplicationContext(),
+                        AboutActivity.class));
+                break;
+
 			default:
                 Toast.makeText(this,"not yet implemented",Toast.LENGTH_LONG).show();
                 break;
