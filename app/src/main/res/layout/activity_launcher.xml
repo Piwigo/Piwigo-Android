@@ -12,6 +12,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:src="@drawable/piwigo_logo"
+            android:contentDescription="@string/nav_icon_description"
             android:transitionName="@string/logo_transition_name" />
     </RelativeLayout>
 </layout>

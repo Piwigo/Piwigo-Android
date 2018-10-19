@@ -26,6 +26,7 @@ import android.databinding.Observable;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
+import android.view.View;
 
 import com.google.common.base.Optional;
 
@@ -35,6 +36,7 @@ import org.piwigo.helper.CommonVars;
 
 public class MainViewModel extends ViewModel {
 
+    /* TODO do we need those title username and url? */
     public ObservableField<String> title = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();

@@ -56,6 +56,7 @@ public class ManageAccountsViewModel extends ViewModel {
     }
 
     public void refresh(){
+        //todo: remove
         userManager.refreshAccounts();
 // TODO: this is horrible
         items.clear();
@@ -90,18 +91,17 @@ public class ManageAccountsViewModel extends ViewModel {
                 selectedAccount = account;
 
                 userManager.setActiveAccount(account);
-                refresh(); // dirty way to redraw the recycler...
-            });
-            viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    Intent intent = new Intent(v.getContext(), LoginActivity.class);
 
-                    intent.setAction(LoginActivity.EDIT_ACCOUNT_ACTION);
-                    intent.putExtra("account", account);
-                    v.getContext().startActivity(intent);
-                    return true;
-                }
+//                v.setSelected(true);
+                refresh(); // dirty way to redraw the recycler... -> TODO: needs rework
+            });
+            viewHolder.itemView.setOnLongClickListener(v -> {
+                Intent intent = new Intent(v.getContext(), LoginActivity.class);
+
+                intent.setAction(LoginActivity.EDIT_ACCOUNT_ACTION);
+                intent.putExtra("account", account);
+                v.getContext().startActivity(intent);
+                return true;
             });
         }
     }

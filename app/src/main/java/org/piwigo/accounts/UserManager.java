@@ -38,6 +38,7 @@ import org.piwigo.R;
 import org.piwigo.io.repository.PreferencesRepository;
 
 import java.util.List;
+import java.util.Locale;
 
 public class UserManager {
 
@@ -155,7 +156,7 @@ public class UserManager {
         if (sitename.endsWith("/")) {
             sitename = StringUtils.chop(sitename);
         }
-        return resources.getString(R.string.account_name, username, sitename.toLowerCase());
+        return resources.getString(R.string.account_name, username, sitename.toLowerCase(Locale.ROOT));
     }
 
     private Account createNormalUser(String siteUrl, String username, String password, String cookie, String token) {
@@ -226,18 +227,15 @@ public class UserManager {
             username = GUEST_ACCOUNT_NAME;
         }
 
-        Account existingAccount = getAccountForUser(url, username);
-        if(    existingAccount != null
-            && account != existingAccount){
-            throw new IllegalArgumentException("different account for " + username + "@" + url + " already exists");
-        }
         accountManager.setUserData(account, KEY_IS_GUEST, Boolean.toString(isGuest));
         accountManager.setUserData(account, KEY_SITE_URL, url);
         accountManager.setUserData(account, KEY_USERNAME, username);
         accountManager.setPassword(account, isGuest ? "" : password);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             String newname = getAccountName(url, username);
-            accountManager.renameAccount(account, newname, null, null);
+            if(!newname.equals(account.name)) {
+                accountManager.renameAccount(account, newname, null, null);
+            }
         }
     }
 }

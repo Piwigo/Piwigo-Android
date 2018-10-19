@@ -1,6 +1,7 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2018 Piwigo Team http://piwigo.org
+ * Copyright (C) 2018-2018 Raphael Mack http://www.raphael-mack.de
+ * Copyright (C) 2018-2018 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +21,9 @@ package org.piwigo.ui.about;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.TextView;
 
 import org.piwigo.BuildConfig;
@@ -33,14 +33,17 @@ import org.piwigo.ui.shared.BaseActivity;
 public class AboutActivity extends BaseActivity {
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LayoutInflater inflater = LayoutInflater.from(this);
 
-        View contentView = inflater.inflate(R.layout.activity_about, null, false);
+        setContentView(R.layout.activity_about);
 
-        setContentView(contentView);
-        TextView aboutText = (TextView)findViewById(R.id.aboutTextView);
+        setSupportActionBar(findViewById(R.id.toolbar));
+        ActionBar bar = getSupportActionBar();
+        if(bar != null) bar.setDisplayHomeAsUpEnabled(true);
+
+        TextView aboutText = findViewById(R.id.aboutTextView);
 
         String appName = getResources().getString(R.string.app_name);
         String contributors = getResources().getString(R.string.contributors);

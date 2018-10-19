@@ -18,6 +18,7 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,12 +30,25 @@
         android:orientation="vertical"
         >
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="@string/title_activity_about"
+
+            />
+
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="12dp"
             android:background="@android:drawable/screen_background_dark_transparent"
+            android:contentDescription="@string/nav_icon_description"
             android:padding="16dp"
             android:scaleType="centerInside"
             android:src="@drawable/piwigo_logo" />

@@ -26,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:src="@{viewModel.url}"
+            android:contentDescription="@{viewModel.title}"
             android:onClick="@{viewModel::onclickdo}"
             app:heightRatio="@{0.66}" />
 
