@@ -1,6 +1,7 @@
 /*
  * Piwigo for Android
  * Copyright (C) 2016-2018 Piwigo Team http://piwigo.org
+ * Copyright (C) 2018-2018 Raphael Mack http://www.raphael-mack.de
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +20,10 @@
 package org.piwigo.ui.account;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Intent;
-import android.databinding.ObservableArrayList;
 import android.databinding.ObservableField;
-import android.view.View;
 
 import org.piwigo.BR;
 import org.piwigo.R;
@@ -41,9 +38,9 @@ public class ManageAccountsViewModel extends ViewModel {
     public final ObservableField<String> title = new ObservableField<>();
 
     public final LiveData<List<Account>> accounts;
-    Account selectedAccount = null;
+    Account selectedAccount;
 
-    private final ObservableArrayList<Account> items = new ObservableArrayList<>();
+    private List<Account> items;
     public final BindingRecyclerViewAdapter.ViewBinder<Account> viewBinder = new AccountViewBinder();
 
     private final UserManager userManager;
@@ -51,24 +48,15 @@ public class ManageAccountsViewModel extends ViewModel {
     public ManageAccountsViewModel(UserManager userManager) {
         this.userManager = userManager;
         accounts = userManager.getAccounts();
-        items.addAll(accounts.getValue());
+        items = accounts.getValue();
         selectedAccount = userManager.getActiveAccount().getValue();
-    }
-
-    public void refresh(){
-        //todo: remove
-        userManager.refreshAccounts();
-// TODO: this is horrible
-        items.clear();
-        items.addAll(accounts.getValue());
-
     }
 
     public Account getSelectedAccount(){
         return selectedAccount;
     }
 
-    public ObservableArrayList<Account> getItems() {
+    public List<Account> getItems() {
         return items;
     }
 
@@ -91,9 +79,6 @@ public class ManageAccountsViewModel extends ViewModel {
                 selectedAccount = account;
 
                 userManager.setActiveAccount(account);
-
-//                v.setSelected(true);
-                refresh(); // dirty way to redraw the recycler... -> TODO: needs rework
             });
             viewHolder.itemView.setOnLongClickListener(v -> {
                 Intent intent = new Intent(v.getContext(), LoginActivity.class);

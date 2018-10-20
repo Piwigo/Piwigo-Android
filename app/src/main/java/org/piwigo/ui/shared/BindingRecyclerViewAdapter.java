@@ -1,6 +1,7 @@
 /*
  * Piwigo for Android
  * Copyright (C) 2016-2018 Piwigo Team http://piwigo.org
+ * Copyright (C) 2018-2018 Raphael Mack http://www.raphael-mack.de
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,19 +19,19 @@
 
 package org.piwigo.ui.shared;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingRecyclerViewAdapter.ViewHolder> {
 
     private final ViewBinder<T> viewBinder;
-    private List<T> items = new ArrayList<>();
+    private MutableLiveData<List<T>> items = new MutableLiveData<>();
 
     public BindingRecyclerViewAdapter(ViewBinder<T> viewBinder) {
         this.viewBinder = viewBinder;
@@ -42,19 +43,22 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
     }
 
     @Override public void onBindViewHolder(ViewHolder holder, int position) {
-        viewBinder.bind(holder, items.get(position));
+        viewBinder.bind(holder, items.getValue().get(position));
     }
 
     @Override public int getItemCount() {
-        return items.size();
+        return items.getValue().size();
     }
 
     @Override public int getItemViewType(int position) {
-        return viewBinder.getViewType(items.get(position));
+        return viewBinder.getViewType(items.getValue().get(position));
     }
 
     public void update(List<T> items) {
-        this.items = items;
+        this.items.setValue(items);
+        /* TODO: it doesn't seem to make too much sense to have a MutuableLiveData for items
+        * instead maybe it would be better to have List<T> and use in this update method a DiffUtil to update
+        * only what was really changed... */
         notifyDataSetChanged();
     }
 
