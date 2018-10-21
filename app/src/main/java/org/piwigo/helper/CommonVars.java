@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Phil Bayfield https://philio.me
+ * Copyright 2017-2018 Jeff Ayers
  * Copyright 2017 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

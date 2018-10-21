@@ -48,6 +48,7 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:src="@{viewModel.url}"
+            android:contentDescription="@{viewModel.title}"
             app:heightRatio="@{0.66}"
             />
 

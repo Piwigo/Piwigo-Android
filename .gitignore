@@ -1,4 +1,5 @@
 /*/build/
+build/
 /captures
 
 .gradle
@@ -14,6 +15,7 @@ local.properties
 .idea/caches
 .idea/libraries/
 .idea/workspace.xml
+.idea/assetWizardSettings.xml
 .idea/tasks.xml
 .idea/.name
 .idea/compiler.xml
@@ -23,6 +25,8 @@ local.properties
 .idea/modules.xml
 .idea/scopes/scope_settings.xml
 .idea/vcs.xml
+.idea/markdown-navigator/
+.idea/markdown-navigator.xml
 *.iml
 
 # Windows thumbnail db

@@ -23,11 +23,13 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
 import android.arch.lifecycle.ViewModelProviders;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +41,9 @@ import org.piwigo.R;
 import org.piwigo.databinding.ActivityManageAccountsBinding;
 import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.shared.BaseActivity;
+import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -65,7 +70,7 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
      */
     @Override
     public void onAccountsUpdated(Account[] accounts) {
-        viewModel.refresh();
+        userManager.refreshAccounts();
     }
 
     @Override
@@ -81,6 +86,27 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
         Toolbar toolbar = findViewById(R.id.account_toolbar);
         setSupportActionBar(toolbar);
         viewModel.title.set(getString(R.string.title_activity_accounts));
+
+        userManager.getAccounts().observe(this, new Observer<List<Account>>() {
+            @Override
+            public void onChanged(@Nullable List<Account> newItems) {
+                BindingRecyclerViewAdapter<Account> a = (BindingRecyclerViewAdapter<Account>) binding.accountRecycler.getAdapter();
+
+                if (a != null) {
+                    a.update(newItems);
+                }
+            }
+        });
+        userManager.getActiveAccount().observe(this, new Observer<Account>(){
+            @Override
+            public void onChanged(@Nullable Account account) {
+                BindingRecyclerViewAdapter<Account> a = (BindingRecyclerViewAdapter<Account>) binding.accountRecycler.getAdapter();
+
+                if (a != null) {
+                    a.notifyDataSetChanged();
+                }
+            }
+        });
 
         binding.accountRecycler.setLayoutManager(new LinearLayoutManager(this));
 
@@ -116,9 +142,9 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
                 break;
             case R.id.action_del_account:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    accountManager.removeAccount(userManager.getActiveAccount().getValue(), this, future -> viewModel.refresh(), null);
+                    accountManager.removeAccount(userManager.getActiveAccount().getValue(), this, future -> userManager.refreshAccounts(), null);
                 }else {
-                    accountManager.removeAccount(userManager.getActiveAccount().getValue(), future -> viewModel.refresh(), null);
+                    accountManager.removeAccount(userManager.getActiveAccount().getValue(), future -> userManager.refreshAccounts(), null);
                 }
                 break;
             case android.R.id.home:
