@@ -82,6 +82,7 @@ public class ImagesFragment extends BaseFragment {
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        // TODO: clean this code... either activate or remove it
       //  getActivityComponent().inject(this);
       //  bindLifecycleEvents(viewModel);
        // binding.setViewModel(viewModel);

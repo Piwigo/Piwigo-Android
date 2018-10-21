@@ -34,6 +34,8 @@ import org.piwigo.databinding.ActivityLoginBinding;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.shared.BaseActivity;
 
+import java.net.UnknownHostException;
+
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
@@ -115,6 +117,10 @@ public class LoginActivity extends BaseActivity {
         if(throwable instanceof IllegalArgumentException) {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
+        }else if(throwable instanceof UnknownHostException) {
+            Snackbar.make(binding.getRoot(), R.string.login_host_error, Snackbar.LENGTH_LONG)
+                    .show();
+
         }else{
             Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG)
                     .show();

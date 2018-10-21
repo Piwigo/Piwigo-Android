@@ -8,6 +8,7 @@
             android:title="@string/nav_albums" />
         <item
             android:id="@+id/nav_upload"
+            android:checkable="true"
             android:icon="@drawable/ic_action_cloud_upload"
             android:title="@string/nav_upload" />
     </group>
@@ -24,14 +25,15 @@
     <group
         android:id="@+id/nav_group_settings"
         android:checkableBehavior="single">
-        <item
+<!--        <item
             android:id="@+id/nav_settings"
             android:checkable="true"
             android:icon="@drawable/ic_action_settings"
             android:title="@string/nav_settings" />
+            -->
         <item
-            android:checkable="true"
             android:id="@+id/nav_about"
+            android:checkable="true"
             android:icon="@drawable/ic_action_help"
             android:title="@string/nav_about" />
     </group>

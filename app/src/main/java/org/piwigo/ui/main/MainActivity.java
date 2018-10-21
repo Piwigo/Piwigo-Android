@@ -28,7 +28,10 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import org.piwigo.R;
@@ -37,6 +40,7 @@ import org.piwigo.databinding.DrawerHeaderBinding;
 import org.piwigo.helper.CommonVars;
 import org.piwigo.io.RestService;
 import org.piwigo.io.model.ImageUploadResponse;
+import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.io.RestServiceFactory;
@@ -109,13 +113,18 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         }
     }
 
+    @Override protected void onResume() {
+        super.onResume();
+        MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        viewModel.navigationItemId.set(R.id.nav_albums);
+    }
+
     @Override public AndroidInjector<Fragment> supportFragmentInjector() {
         return fragmentInjector;
     }
 
     private void itemSelected(int itemId) {
 
-        // TODO: this one is called often, also if the screen is rotated.
         switch (itemId) {
             case R.id.nav_albums:
                 break;
@@ -126,16 +135,22 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             case R.id.nav_upload:
                 Intent intent = new Intent();
                 intent.setType("image/*");
+                /* TODO: fix API dependency EXTRA_ALLOW_MULTIPLE is not available in API 14 */
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURES);
 				break;
-		
+            case R.id.nav_about:
+                startActivity(new Intent(getApplicationContext(),
+                        AboutActivity.class));
+                break;
+
 			default:
                 Toast.makeText(this,"not yet implemented",Toast.LENGTH_LONG).show();
                 break;
         }
     }
+
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == SELECT_PICTURES) {

@@ -44,12 +44,18 @@
         <activity
             android:name=".ui.main.MainActivity"
             android:label="@string/title_activity_main"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.Piwigo.NavDrawer" />
         <activity
             android:name=".ui.account.ManageAccountsActivity"
             android:label="@string/title_activity_accounts"
             android:theme="@style/Theme.Piwigo.NavDrawer"
             android:parentActivityName=".ui.main.MainActivity" />
+        <activity
+            android:name=".ui.about.AboutActivity"
+            android:label="@string/title_activity_about"
+            android:parentActivityName=".ui.main.MainActivity">
+        </activity>
 
         <service android:name=".accounts.AuthenticatorService">
             <intent-filter>

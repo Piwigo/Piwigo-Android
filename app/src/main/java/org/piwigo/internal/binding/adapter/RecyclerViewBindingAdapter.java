@@ -1,6 +1,7 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2018 Piwigo Team http://piwigo.org
+ * Copyright (C) 2018-2018 Raphael Mack http://www.raphael-mack.de
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +20,16 @@
 package org.piwigo.internal.binding.adapter;
 
 import android.databinding.BindingAdapter;
-import android.databinding.ObservableList;
 import android.support.v7.widget.RecyclerView;
 
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 
+import java.util.List;
+
 public class RecyclerViewBindingAdapter {
 
-    @BindingAdapter(value = {"items", "viewBinder"}, requireAll = false) public static <T> void bindRecyclerView(RecyclerView recyclerView, ObservableList items, BindingRecyclerViewAdapter.ViewBinder<T> viewBinder) {
+    @BindingAdapter(value = {"items", "viewBinder"}, requireAll = false)
+    public static <T> void bindRecyclerView(RecyclerView recyclerView, List<T> items, BindingRecyclerViewAdapter.ViewBinder<T> viewBinder) {
         RecyclerView.Adapter adapter = recyclerView.getAdapter();
 
         if (viewBinder != null) {
@@ -41,4 +44,5 @@ public class RecyclerViewBindingAdapter {
             bindingRecyclerViewAdapter.update(items);
         }
     }
+
 }

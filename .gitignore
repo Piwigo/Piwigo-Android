@@ -1,4 +1,5 @@
 /*/build/
+build/
 /captures
 
 .gradle
@@ -16,6 +17,7 @@ piwigo_android_keystore.jks
 .idea/caches
 .idea/libraries/
 .idea/workspace.xml
+.idea/assetWizardSettings.xml
 .idea/tasks.xml
 .idea/.name
 .idea/compiler.xml
@@ -25,6 +27,8 @@ piwigo_android_keystore.jks
 .idea/modules.xml
 .idea/scopes/scope_settings.xml
 .idea/vcs.xml
+.idea/markdown-navigator/
+.idea/markdown-navigator.xml
 *.iml
 
 # Windows thumbnail db
