@@ -118,6 +118,8 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         // TODO: this one is called often, also if the screen is rotated.
         switch (itemId) {
             case R.id.nav_albums:
+                comvars.setCurrAlbum(0);
+                Toast.makeText(this,"reset to main album",Toast.LENGTH_LONG).show();
                 break;
             case R.id.nav_manage_accounts:
                 startActivity(new Intent(getApplicationContext(),

@@ -21,6 +21,7 @@ package org.piwigo.ui.main;
 import android.arch.lifecycle.ViewModel;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import org.piwigo.R;
 import org.piwigo.helper.CommonVars;
@@ -66,4 +67,23 @@ public class AlbumItemViewModel extends ViewModel {
         }
 
     }
+
+
+    public boolean onlongclickdo(View v){
+        if (photos.contains("sub")){
+            comvars.setCurrAlbum(catid);
+        }
+
+
+
+
+
+        return true;
+    }
+
+
 }
+
+
+//            android:onclick="@{viewModel::onclickdo}"
+ //                   android:onLongClick="@{(view) -> viewModel.onlongclickdo(view)}"
