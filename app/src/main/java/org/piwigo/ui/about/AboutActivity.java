@@ -57,7 +57,7 @@ public class AboutActivity extends BaseActivity {
         mergedAboutText += "<p>" + getResources().getString(R.string.about_text_license_2) + "</p>";
 
         mergedAboutText += "<h1>" + getResources().getString(R.string.about_text_privacy_h) + "</h1>";
-        mergedAboutText += "<p>" + getResources().getString(R.string.about_text_privacy) + "</p>";
+        mergedAboutText += "<p>" + getResources().getString(R.string.about_text_privacy, appName) + "</p>";
 
         mergedAboutText += "<h1>" + getResources().getString(R.string.about_text_contact_h) + "</h1>";
         mergedAboutText += "<p>" + getResources().getString(R.string.about_text_contact) + "</p>";
