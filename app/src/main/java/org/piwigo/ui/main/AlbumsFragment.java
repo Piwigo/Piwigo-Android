@@ -36,6 +36,7 @@ import android.view.ViewGroup;
 
 import org.piwigo.R;
 import org.piwigo.databinding.FragmentAlbumsBinding;
+import org.piwigo.helper.CommonVars;
 import org.piwigo.ui.shared.BaseFragment;
 
 import javax.inject.Inject;
@@ -50,6 +51,9 @@ public class AlbumsFragment extends BaseFragment {
     @Inject AlbumsViewModelFactory viewModelFactory;
 
     private FragmentAlbumsBinding binding;
+    private int CurrCatId = 0;
+
+    CommonVars comvars = CommonVars.getInstance();
 
     @Override public void onAttach(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -77,10 +81,15 @@ public class AlbumsFragment extends BaseFragment {
         binding.setViewModel(viewModel);
 
         final Observer<Account> accountObserver = account -> {
+            CurrCatId = comvars.getCurrAlbum();
             // reload the albums on account changes
-            viewModel.loadAlbums(null);
+            if (CurrCatId == 0)
+                viewModel.loadAlbums(null);
+            else
+                viewModel.loadAlbums(CurrCatId);
         };
         userManager.getActiveAccount().observe(this, accountObserver);
+
     }
 
     private int calculateColumnCount() {

@@ -18,6 +18,7 @@
 package org.piwigo.helper;
 
 import android.accounts.Account;
+import android.arch.lifecycle.LiveData;
 
 /**
  * Created by Jeff on 10/1/2017.
@@ -43,6 +44,7 @@ public class CommonVars {
 
     private int cat_selected;
 
+    private int curr_album = 0;
     private Account account;
 
 
@@ -52,14 +54,17 @@ public class CommonVars {
     }
 
 
+
     public int getValue() {
         return cat_selected ;
     }
 
-
     public void setValue(int catid) {
         this.cat_selected = catid;
     }
+
+    public int getCurrAlbum() {return curr_album;}
+    public void setCurrAlbum(int catid) {this.curr_album = catid;}
 
     public Account getAccount() {return account;}
 
