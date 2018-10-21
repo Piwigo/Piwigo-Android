@@ -18,18 +18,22 @@
 
 package org.piwigo.ui.main;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -69,7 +73,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
     @Inject MainViewModelFactory viewModelFactory;
     @Inject RestServiceFactory restServiceFactory;
 
-
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
 
 
     CommonVars comvars = CommonVars.getInstance();
@@ -135,12 +139,34 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                         ManageAccountsActivity.class));
                 break;
             case R.id.nav_upload:
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                /* TODO: fix API dependency EXTRA_ALLOW_MULTIPLE is not available in API 14 */
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURES);
+                // Here, thisActivity is the current activity
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    // Permission is not granted
+                    // Should we show an explanation?
+             //       if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+             //               Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        // Show an explanation to the user *asynchronously* -- don't block
+                        // this thread waiting for the user's response! After the user
+                        // sees the explanation, try again to request the permission.
+              //      } else {
+                        // No explanation needed; request the permission
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+
+                        // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                        // app-defined int constant. The callback method gets the
+                        // result of the request.
+               //     }
+                } else {
+                    // Permission has already been granted
+                    selectPhoto();
+                }
+
+
 				break;
             case R.id.nav_about:
                 startActivity(new Intent(getApplicationContext(),
@@ -151,6 +177,44 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 Toast.makeText(this,"not yet implemented",Toast.LENGTH_LONG).show();
                 break;
         }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                    selectPhoto();
+
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(this,"File access denied - go to Settings - Applications - Piwigo to manually give Storage permission",Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
+    }
+
+
+
+    private void selectPhoto(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        /* TODO: fix API dependency EXTRA_ALLOW_MULTIPLE is not available in API 14 */
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURES);
     }
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -194,11 +258,17 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                         call.enqueue(new Callback<ImageUploadResponse>() {
                             @Override
                             public void onResponse(Call<ImageUploadResponse> call, Response<ImageUploadResponse> response) {
-                                if (response.body().up_stat.equals("ok")) {
-                                    String uploadresp = "Uploaded: " + response.body().up_result.up_src + " to " + response.body().up_result.up_category.catlabel + "(" + Integer.toString(response.body().up_result.up_category.catid) + ")";
-                                    Toast.makeText(getApplicationContext(), uploadresp, Toast.LENGTH_LONG).show();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Fail Response = " + response.body().up_message, Toast.LENGTH_LONG).show();
+                                if (response.raw().code() == 200) {
+                                    if (response.body().up_stat.equals("ok")) {
+                                        String uploadresp = "Uploaded: " + response.body().up_result.up_src + " to " + response.body().up_result.up_category.catlabel + "(" + Integer.toString(response.body().up_result.up_category.catid) + ")";
+                                        Toast.makeText(getApplicationContext(), uploadresp, Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Fail Response = " + response.body().up_message, Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                                else
+                                {
+                                    Toast.makeText(getApplicationContext(), "Upload Unsuccessful = " + response.raw().message() , Toast.LENGTH_LONG).show();
                                 }
                             }
 
@@ -228,6 +298,8 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             String[] proj = {MediaStore.Images.Media.DATA};
             cursor = getContentResolver().query(contentUri, proj, null, null,
                     null);
+            Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    column, sel, new String[]{ id }, null);
             int column_index = cursor
                     .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
@@ -253,3 +325,4 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
 
 }
+
