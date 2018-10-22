@@ -69,7 +69,8 @@ public class RestServiceFactory {
                     if (cookie != null) {
                         builder.addHeader("Cookie", "pwg_id=" + cookie);
                     }
-
+                    /* TODO: adjust hardcoded string by resource app name and version */
+                    builder.header("User-Agent", "Piwigo-Android");
                     return chain.proceed(builder.build());
                 })
                 .build();
