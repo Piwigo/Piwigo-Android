@@ -206,6 +206,8 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                     Toast.makeText(this,"File access denied - go to Settings - Applications - Piwigo to manually give Storage permission",Toast.LENGTH_LONG).show();
+//TODO
+                    selectPhoto();
                 }
                 return;
             }
@@ -215,8 +217,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         }
     }
 
-
-
     private void selectPhoto(){
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -224,7 +224,8 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURES);
+        startActivityForResult(Intent.createChooser(intent,
+                getResources().getString(R.string.title_select_image)), SELECT_PICTURES);
     }
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {

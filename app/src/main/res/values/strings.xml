@@ -24,6 +24,7 @@
     <string name="title_activity_login">Login</string>
     <string name="title_activity_accounts">Manage Accounts</string>
     <string name="title_activity_about">About</string>
+    <string name="title_select_image">"Select Image</string>
 
     <!-- Navigation drawer menu items -->
     <string name="nav_icon_description">Piwigo logo</string>

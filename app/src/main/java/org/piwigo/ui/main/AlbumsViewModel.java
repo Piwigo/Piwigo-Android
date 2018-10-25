@@ -103,6 +103,4 @@ public class AlbumsViewModel extends ViewModel {
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
     }
-
-
 }
