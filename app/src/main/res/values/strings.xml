@@ -64,10 +64,12 @@
     <string name="about_text_contact_h">Contact</string>
     <string name="about_text_contact"><![CDATA[For bugs and suggestions use the <a href="https://github.com/Piwigo/Piwigo-Android/issues">issue tacker</a>, preferably in English language.]]></string>
     <string name="about_text_contact_2"><![CDATA[Source code can be found on <a href="https://github.com/Piwigo/Piwigo-Android">Github</a>.]]></string>
+    <string name="about_text_contact_3"><![CDATA[Discussions should take place in the <a href="https://piwigo.org/forum/">Piwigo Forum</a>.]]></string>
+    <string name="about_text_contact_4"><![CDATA[For anything you want to tell us privately send an email to<a href="mailto:android@piwigo.org">android@piwigo.org</a>.]]></string>
     <string name="about_text_support_h">Contribution</string>
     <string name="about_text_support"><![CDATA[In case you want to support the development of %1$s consider discussing <a href="https://github.com/Piwigo/Piwigo-Android/issues">issues on github</a> or submitting <a href="https://github.com/Piwigo/Piwigo-Android/pulls">pull requests</a>.]]></string>
-    <string name="about_text_cont_h">Contributors</string>
-    <string name="about_text_cont_2">We are looking forward to mention your name in this list, too.</string>
+    <string name="about_text_ack_h">Acknowledgements</string>
+    <string name="about_text_ack_2">We are looking forward to mention your name in this list, too.</string>
     <string name="about_text_lib_h">Libraries</string>
     <string name="about_text_lib">The following libraries are used by this application and licensed under the named licenses:</string>
 
@@ -75,6 +77,7 @@
         <p><a href="https://github.com/Philio">Phil Bayfield</a></p>
         <p><a href="https://www.raphael-mack.de">Raphael Mack</a></p>
         <p><a href="https://github.com/jeff-amn">Jeff Ayers</a></p>
+        <p><a href="https://github.com/EddyLB">Eddy Lelièvre-Berna</a></p>
         ]]>
     </string>
     <string name="libraries" translatable="false"><![CDATA[
