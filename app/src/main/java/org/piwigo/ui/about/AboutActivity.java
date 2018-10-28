@@ -62,13 +62,15 @@ public class AboutActivity extends BaseActivity {
         mergedAboutText += "<h1>" + getResources().getString(R.string.about_text_contact_h) + "</h1>";
         mergedAboutText += "<p>" + getResources().getString(R.string.about_text_contact) + "</p>";
         mergedAboutText += "<p>" + getResources().getString(R.string.about_text_contact_2) + "</p>";
+        mergedAboutText += "<p>" + getResources().getString(R.string.about_text_contact_3) + "</p>";
+        mergedAboutText += "<p>" + getResources().getString(R.string.about_text_contact_4) + "</p>";
 
         mergedAboutText += "<h1>" + getResources().getString(R.string.about_text_support_h) + "</h1>";
         mergedAboutText += "<p>" + getResources().getString(R.string.about_text_support, appName) + "</p>";
 
-        mergedAboutText += "<h1>" + getResources().getString(R.string.about_text_cont_h) + "</h1>";
+        mergedAboutText += "<h1>" + getResources().getString(R.string.about_text_ack_h) + "</h1>";
         mergedAboutText += "<p>" + contributors + "</p>";
-        mergedAboutText += "<p>" + getResources().getString(R.string.about_text_cont_2) + "</p>";
+        mergedAboutText += "<p>" + getResources().getString(R.string.about_text_ack_2) + "</p>";
 
         mergedAboutText += "<h1>" + getResources().getString(R.string.about_text_lib_h) + "</h1>";
         mergedAboutText += "<p>" + getResources().getString(R.string.about_text_lib) + "</p>";
