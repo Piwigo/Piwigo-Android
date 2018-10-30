@@ -41,6 +41,7 @@ import org.piwigo.helper.CommonVars;
 import org.piwigo.io.RestService;
 import org.piwigo.io.model.ImageUploadResponse;
 import org.piwigo.ui.about.AboutActivity;
+import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.io.RestServiceFactory;
@@ -143,6 +144,10 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             case R.id.nav_about:
                 startActivity(new Intent(getApplicationContext(),
                         AboutActivity.class));
+                break;
+            case R.id.nav_privacy:
+                startActivity(new Intent(getApplicationContext(),
+                        PrivacyPolicyActivity.class));
                 break;
 
 			default:

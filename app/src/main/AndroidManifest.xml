@@ -56,6 +56,16 @@
             android:label="@string/title_activity_about"
             android:parentActivityName=".ui.main.MainActivity">
         </activity>
+        <activity
+            android:name=".ui.about.PrivacyPolicyActivity"
+            android:label="@string/title_activity_privacy_policy"
+            android:parentActivityName=".ui.main.MainActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="org.piwigo.privacy_policy" />
+            </intent-filter>
+        </activity>
 
         <service android:name=".accounts.AuthenticatorService">
             <intent-filter>

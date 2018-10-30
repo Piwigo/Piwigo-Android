@@ -36,5 +36,10 @@
             android:checkable="true"
             android:icon="@drawable/ic_action_help"
             android:title="@string/nav_about" />
+        <item
+            android:id="@+id/nav_privacy"
+            android:checkable="true"
+            android:icon="@drawable/ic_action_privacy"
+            android:title="@string/nav_privacy" />
     </group>
 </menu>
