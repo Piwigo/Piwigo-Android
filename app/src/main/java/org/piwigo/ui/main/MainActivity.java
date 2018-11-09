@@ -18,26 +18,29 @@
 
 package org.piwigo.ui.main;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.design.widget.NavigationView;
+import android.provider.OpenableColumns;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.view.MenuItem;
-import android.view.View;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
-import org.piwigo.helper.CommonVars;
 import org.piwigo.io.RestService;
 import org.piwigo.io.model.ImageUploadResponse;
 import org.piwigo.ui.about.AboutActivity;
@@ -45,13 +48,14 @@ import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.accounts.UserManager;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.net.URI;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
@@ -70,10 +74,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
     @Inject MainViewModelFactory viewModelFactory;
     @Inject RestServiceFactory restServiceFactory;
 
-
-
-
-    CommonVars comvars = CommonVars.getInstance();
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
 
     int SELECT_PICTURES = 1;
 
@@ -83,7 +84,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
-
 
         MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.getSelectedNavigationItemId().observe(this, this::itemSelected);
@@ -98,6 +98,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             if(account != null) {
                 viewModel.username.set(userManager.getUsername(account));
                 viewModel.url.set(userManager.getSiteUrl(account));
+                initStartFragment(viewModel);
             }else{
                 viewModel.username.set("");
                 viewModel.url.set("");
@@ -106,12 +107,25 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         userManager.getActiveAccount().observe(this, accountObserver);
 
         if (savedInstanceState == null) {
-            viewModel.setTitle(getString(R.string.nav_albums));
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.content, new AlbumsFragment())
-                    .commit();
+            initStartFragment(viewModel);
         }
+    }
+
+    private void initStartFragment(MainViewModel viewModel) {
+        viewModel.title.set(getString(R.string.nav_albums));
+        Bundle bndl = new Bundle();
+        // TODO: make configurable which is the root album
+        bndl.putInt("Category", 0);
+        AlbumsFragment frag = new AlbumsFragment();
+        frag.setArguments(bndl);
+
+        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content, frag)
+                // .addToBackStack(null)
+                .commit();
     }
 
     @Override protected void onResume() {
@@ -134,12 +148,34 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                         ManageAccountsActivity.class));
                 break;
             case R.id.nav_upload:
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                /* TODO: fix API dependency EXTRA_ALLOW_MULTIPLE is not available in API 14 */
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURES);
+                // Here, thisActivity is the current activity
+
+                /* TODO: check whether we really need the permission unconditionally
+                * I (ramack) could imagine, that we don't need it depending on the media chooser... */
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    // Permission is not granted
+                    // Should we show an explanation?
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        // Show an explanation to the user *asynchronously* -- don't block
+                        // this thread waiting for the user's response! After the user
+                        // sees the explanation, try again to request the permission.
+                        Toast.makeText(this,R.string.storage_permission_explaination, Toast.LENGTH_LONG).show();
+                    } else {
+                        // No explanation needed; request the permission
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                    }
+                } else {
+                    // Permission has already been granted
+                    selectPhoto();
+                }
+
+
 				break;
             case R.id.nav_about:
                 startActivity(new Intent(getApplicationContext(),
@@ -156,40 +192,107 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         }
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    selectPhoto();
+
+                } else {
+                    // permission denied, we just don't do anything in this case
+                }
+                return;
+            }
+        }
+    }
+
+    private void selectPhoto(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,
+                getResources().getString(R.string.title_select_image)), SELECT_PICTURES);
+    }
+
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == SELECT_PICTURES) {
             if(resultCode == RESULT_OK) {
                 if(data.getData() != null) {
 
-
-                    String imagePath = "";
+                    String imageName = "";
                     Uri targetUri = data.getData();
                     if (data.toString().contains("content:")) {
-                        imagePath = getRealPathFromURI(targetUri);
+                        imageName = getRealPathFromURI(targetUri);
                     } else if (data.toString().contains("file:")) {
-                        imagePath = targetUri.getPath();
+                        imageName = targetUri.getPath();
                     } else {
-                        imagePath = null;
+                        imageName = null;
+                        /* TODO add proper error handling */
                     }
 
-                    File file = new File(imagePath);
-                    MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
-                    //do something with the image (save it to some directory or whatever you need to do with it here)
-                   // String x = imagePath;
-                    Account curAccount = comvars.getAccount();
-                    RestService restService = restServiceFactory.createForAccount(comvars.getAccount());
-                   // String result = restService.uploadImage("image1","14", "name2",filePart);    //Integer.toString(comvars.getValue())
-                    String imageFilename = getFilename(imagePath,true);
-                    String imageName = getFilename(imagePath,false);
+                    byte[] content;
+                    InputStream iStream = null;
+                    try {
+                        iStream = getContentResolver().openInputStream(targetUri);
+                        content = getBytes(iStream);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        /* TODO add proper error handling */
+                        content = new byte[0];
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        /* TODO add proper error handling */
+                        content = new byte[0];
+                    } finally {
+                        if(iStream != null){
+                            try {
+                                iStream.close();
+                            } catch (IOException e) {
+                                /* if this fails, we silently do nothing */
+                            }
+                        }
+                    }
+                    MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", imageName, RequestBody.create(MediaType.parse("image/*"), content));
+
+                    Account curAccount = userManager.getActiveAccount().getValue();
+                    RestService restService = restServiceFactory.createForAccount(curAccount);
+                    String photoName;
+                    if (imageName.indexOf(".") > 0) {
+                        photoName = imageName.substring(0, imageName.lastIndexOf("."));
+                    }else{
+                        photoName = imageName;
+                    }
+
                     AccountManager accountManager = AccountManager.get(this);
                     String token = accountManager.getUserData(curAccount, "token");
-                    RequestBody imagefilenameBody = RequestBody.create(MediaType.parse("text/plain"), imageFilename);
-                    RequestBody imagenameBody = RequestBody.create(MediaType.parse("text/plain"), imageName);
+// TODO: fix usage of token
+                    //                    token = accountManager.getAuthToken()
+                    RequestBody imagefilenameBody = RequestBody.create(MediaType.parse("text/plain"), imageName);
+                    RequestBody imagenameBody = RequestBody.create(MediaType.parse("text/plain"), photoName);
                     RequestBody tokenBody = RequestBody.create(MediaType.parse("text/plain"), token);
-                    int catid = comvars.getValue();
-                    if (catid > 0) {
-                        Toast.makeText(getApplicationContext(), "Uploading Image", Toast.LENGTH_LONG).show();
+
+                    int catid = 0;
+                    Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
+                    if(f instanceof AlbumsFragment){
+                        Integer cat = ((AlbumsFragment)f).getViewModel().getCategory();
+                        if (cat != null){
+                            catid = cat;
+                        }
+                    }
+                    if(catid < 1) {
+                        Toast.makeText(getApplicationContext(), R.string.uploading_not_to_cat_null, Toast.LENGTH_LONG).show();
+                    }else {
+                        // TODO: #40 replace toast by notification with a status bar
+                        Toast.makeText(getApplicationContext(), R.string.uploading_toast, Toast.LENGTH_LONG).show();
                         //creating a call and calling the upload image method
                         Call<ImageUploadResponse> call = restService.uploadImage(imagefilenameBody, catid, imagenameBody, tokenBody, filePart);
 
@@ -197,11 +300,17 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                         call.enqueue(new Callback<ImageUploadResponse>() {
                             @Override
                             public void onResponse(Call<ImageUploadResponse> call, Response<ImageUploadResponse> response) {
-                                if (response.body().up_stat.equals("ok")) {
-                                    String uploadresp = "Uploaded: " + response.body().up_result.up_src + " to " + response.body().up_result.up_category.catlabel + "(" + Integer.toString(response.body().up_result.up_category.catid) + ")";
-                                    Toast.makeText(getApplicationContext(), uploadresp, Toast.LENGTH_LONG).show();
+                                if (response.raw().code() == 200) {
+                                    if (response.body().up_stat.equals("ok")) {
+                                        // TODO: make text localizable
+                                        String uploadresp = "Uploaded: " + response.body().up_result.up_src + " to " + response.body().up_result.up_category.catlabel + "(" + Integer.toString(response.body().up_result.up_category.catid) + ")";
+                                        Toast.makeText(getApplicationContext(), uploadresp, Toast.LENGTH_LONG).show();
+                                        /* TODO: refresh the current album here */
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Fail Response = " + response.body().up_message, Toast.LENGTH_LONG).show();
+                                    }
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "Fail Response = " + response.body().up_message, Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), "Upload Unsuccessful = " + response.raw().message(), Toast.LENGTH_LONG).show();
                                 }
                             }
 
@@ -210,49 +319,48 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                                 Toast.makeText(getApplicationContext(), "Upload Err = " + t.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         });
-
                     }
-                    else
-                    {
-                        Toast.makeText(getApplicationContext(), "Upload - Select Album First!", Toast.LENGTH_LONG).show();
-                    }
-
-
-
+                }
             }
         }
     }
+
+    /* get content of an open InputStream as byte array */
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
     }
 
     //-
     private String getRealPathFromURI(Uri contentUri) {
         Cursor cursor = null;
         try {
-            String[] proj = {MediaStore.Images.Media.DATA};
-            cursor = getContentResolver().query(contentUri, proj, null, null,
+            cursor = getContentResolver().query(contentUri, null, null, null,
                     null);
-            int column_index = cursor
-                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            String alternative = contentUri.getLastPathSegment();
+            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            int mediaDataIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
-            return cursor.getString(column_index);
+            if(nameIndex > -1) {
+                return cursor.getString(nameIndex);
+            }else if(mediaDataIndex > -1){
+                return new File(cursor.getString(mediaDataIndex)).getName();
+            }else{
+                /* no usable column found, return the last Uri segment as name */
+                return alternative;
+            }
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
     }
-
-    private String getFilename(String filePath, Boolean withExt){
-        String filename = filePath.substring(filePath.lastIndexOf("/")+1);
-        String file;
-        if (filename.indexOf(".") > 0) {
-            file = filename.substring(0, filename.lastIndexOf("."));
-        } else {
-            file =  filename;
-        }
-
-        return withExt ? filename : file;
-    }
-
-
 }
+

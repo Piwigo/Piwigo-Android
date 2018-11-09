@@ -30,7 +30,6 @@ import android.databinding.ObservableInt;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.helper.CommonVars;
 
 public class MainViewModel extends ViewModel {
 
@@ -42,11 +41,8 @@ public class MainViewModel extends ViewModel {
 
     private MutableLiveData<Integer> selectedNavigationItemId = new MutableLiveData<>();
 
-    CommonVars comvars = CommonVars.getInstance();
-
     MainViewModel(UserManager userManager) {
         Account account = userManager.getActiveAccount().getValue();
-        comvars.setAccount(account);
         if (account != null) {
             username.set(userManager.getUsername(account));
             url.set(userManager.getSiteUrl(account));
@@ -65,11 +61,8 @@ public class MainViewModel extends ViewModel {
         return selectedNavigationItemId;
     }
 
-    void setTitle(String title) {
-        this.title.set(title);
-    }
-
     public void navigationIconClick() {
+        // TODO: show an "up arrow" and navigate back to the upper album if we are not in root
         drawerState.set(true);
     }
 }
