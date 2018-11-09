@@ -36,7 +36,6 @@ import android.view.ViewGroup;
 
 import org.piwigo.R;
 import org.piwigo.databinding.FragmentAlbumsBinding;
-import org.piwigo.helper.CommonVars;
 import org.piwigo.ui.shared.BaseFragment;
 
 import javax.inject.Inject;
@@ -51,28 +50,53 @@ public class AlbumsFragment extends BaseFragment {
     @Inject AlbumsViewModelFactory viewModelFactory;
 
     private FragmentAlbumsBinding binding;
-    private int CurrCatId = 0;
+    private int categoryID;
 
-    CommonVars comvars = CommonVars.getInstance();
+    public AlbumsFragment(){
+        super();
+        categoryID = 0;
+    }
 
-    @Override public void onAttach(Context context) {
+    private void attach(Context context){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             AndroidSupportInjection.inject(this);
         }
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            categoryID = bundle.getInt("Category", 0);
+        }
+    }
+
+    @Override public void onAttach(Context context) {
+        attach(context);
         super.onAttach(context);
     }
 
     @Override @SuppressWarnings("deprecation") public void onAttach(Activity activity) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            AndroidSupportInjection.inject(this);
-        }
+        attach(activity);
         super.onAttach(activity);
+    }
+
+    @Override public void onResume(){
+        MainViewModel vm = ViewModelProviders.of(this.getActivity(), viewModelFactory).get(MainViewModel.class);
+        vm.title.set("Album " + binding.getViewModel().getCategory());
+        super.onResume();
     }
 
     @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_albums, container, false);
-        binding.recycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
+        binding.albumRecycler.setHasFixedSize(true);
+        binding.albumRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
+        binding.photoRecycler.setHasFixedSize(true);
+        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount() * 3));
+
+
         return binding.getRoot();
+    }
+
+    public AlbumsViewModel getViewModel(){
+        return binding.getViewModel();
     }
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
@@ -80,16 +104,7 @@ public class AlbumsFragment extends BaseFragment {
         AlbumsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AlbumsViewModel.class);
         binding.setViewModel(viewModel);
 
-        final Observer<Account> accountObserver = account -> {
-            CurrCatId = comvars.getCurrAlbum();
-            // reload the albums on account changes
-            if (CurrCatId == 0)
-                viewModel.loadAlbums(null);
-            else
-                viewModel.loadAlbums(CurrCatId);
-        };
-        userManager.getActiveAccount().observe(this, accountObserver);
-
+        binding.getViewModel().loadAlbums(categoryID);
     }
 
     private int calculateColumnCount() {

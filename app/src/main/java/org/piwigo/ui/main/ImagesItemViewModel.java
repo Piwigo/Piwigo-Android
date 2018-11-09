@@ -1,6 +1,6 @@
 /*
- * Copyright 2017 Phil Bayfield https://philio.me
- * Copyright 2017 Piwigo Team http://piwigo.org
+ * Copyright 2017-2018 Jeff Ayers
+ * Copyright 2017-2018 Piwigo Team http://piwigo.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,16 @@
 
 package org.piwigo.ui.main;
 
-/**
- * Created by Jeff on 9/26/2017.
- */
-
 import android.arch.lifecycle.ViewModel;
 
 public class ImagesItemViewModel extends ViewModel {
 
-
     private final String url;
     private final String title;
-
-
 
     public ImagesItemViewModel(String url, String title) {
         this.url = url;
         this.title = title;
-
-
     }
 
     public String getUrl() {
@@ -45,6 +36,5 @@ public class ImagesItemViewModel extends ViewModel {
     public String getTitle() {
         return title;
     }
-
 
 }

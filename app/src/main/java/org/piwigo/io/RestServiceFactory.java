@@ -22,6 +22,7 @@ import android.accounts.Account;
 
 import com.google.gson.Gson;
 
+import org.piwigo.PiwigoApplication;
 import org.piwigo.accounts.UserManager;
 
 import okhttp3.HttpUrl;
@@ -69,6 +70,7 @@ public class RestServiceFactory {
                     if (cookie != null) {
                         builder.addHeader("Cookie", "pwg_id=" + cookie);
                     }
+
                     /* TODO: adjust hardcoded string by resource app name and version */
                     builder.header("User-Agent", "Piwigo-Android");
                     return chain.proceed(builder.build());

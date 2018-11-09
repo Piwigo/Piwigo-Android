@@ -100,4 +100,9 @@
 
     <!-- ManageAccounts -->
     <string name="title_activity_manage_accounts">ManageAccountsActivity</string>
+
+    <!-- upload -->
+    <string name="uploading_toast">Uploading Image</string>
+    <string name="uploading_not_to_cat_null">Uploading is only possible in an album.</string>
+    <string name="storage_permission_explaination">Uploading photos is only possible if you give access to the storage.</string>
 </resources>

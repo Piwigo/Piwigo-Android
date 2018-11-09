@@ -1,6 +1,7 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2018 Piwigo Team http://piwigo.org
+ * Copyright (C) 2018-2018 Raphael Mack http://www.raphael-mack.de
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +29,9 @@ import org.piwigo.BR;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.model.Category;
+import org.piwigo.io.model.ImageInfo;
 import org.piwigo.io.repository.CategoriesRepository;
+import org.piwigo.io.repository.ImageRepository;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 
 import java.util.List;
@@ -40,32 +43,63 @@ public class AlbumsViewModel extends ViewModel {
 
     private static final String TAG = AlbumsViewModel.class.getName();
 
-    public ObservableArrayList<Category> items = new ObservableArrayList<>();
-    public BindingRecyclerViewAdapter.ViewBinder<Category> viewBinder = new CategoryViewBinder();
+    public ObservableArrayList<ImageInfo> images = new ObservableArrayList<>();
+    public ObservableArrayList<Category> albums = new ObservableArrayList<>();
+    public BindingRecyclerViewAdapter.ViewBinder<Category> albumsViewBinder = new CategoryViewBinder();
+    public BindingRecyclerViewAdapter.ViewBinder<ImageInfo> photoViewBinder = new ImagesViewBinder();
 
     private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
+    private final ImageRepository imageRepository;
+
     private final Resources resources;
 
-    private Subscription subscription;
+    private Subscription albumsSubscription;
+    private Subscription photosSubscription;
 
-    AlbumsViewModel(UserManager userManager, CategoriesRepository categoriesRepository, Resources resources) {
+    private Integer category = null;
+
+    AlbumsViewModel(UserManager userManager, CategoriesRepository categoriesRepository,
+                    ImageRepository imageRepository, Resources resources) {
         this.userManager = userManager;
         this.categoriesRepository = categoriesRepository;
+        this.imageRepository = imageRepository;
         this.resources = resources;
     }
 
     @Override protected void onCleared() {
-        if (subscription != null) {
-            subscription.unsubscribe();
+        if (albumsSubscription != null) {
+            albumsSubscription.unsubscribe();
         }
     }
 
+    /* which category is shown by this viewmodel */
+    public Integer getCategory() {
+        return category;
+    }
+
     void loadAlbums(Integer categoryId) {
-        Account account = userManager.getActiveAccount().getValue();
-        if (account != null) {
-            subscription = categoriesRepository.getCategories(account, categoryId)
-                    .subscribe(new CategoriesSubscriber());
+        if(category != categoryId) {
+            category = categoryId;
+
+            Account account = userManager.getActiveAccount().getValue();
+            if (albumsSubscription != null) {
+                // cleanup, just in case
+                albumsSubscription.unsubscribe();
+                albumsSubscription = null;
+            }
+            if (photosSubscription != null) {
+                // cleanup, just in case
+                photosSubscription.unsubscribe();
+                photosSubscription = null;
+            }
+            if (account != null) {
+                albumsSubscription = categoriesRepository.getCategories(account, categoryId)
+                        .subscribe(new CategoriesSubscriber());
+                photosSubscription = imageRepository.getImages(account, categoryId)
+                        .subscribe(new ImagesSubscriber());
+
+            }
         }
     }
 
@@ -78,8 +112,8 @@ public class AlbumsViewModel extends ViewModel {
         }
 
         @Override public void onNext(List<Category> categories) {
-            items.clear();
-            items.addAll(categories);
+            albums.clear();
+            albums.addAll(categories);
         }
     }
 
@@ -103,4 +137,44 @@ public class AlbumsViewModel extends ViewModel {
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
     }
+
+    private class ImagesSubscriber extends Subscriber<List<ImageInfo>> {
+
+        @Override public void onCompleted() {}
+
+        @Override public void onError(Throwable e) {
+            Log.e("error", e.getMessage());
+        }
+
+        @Override public void onNext(List<ImageInfo> imagelist) {
+            images.clear();
+            images.addAll(imagelist);
+        }
+
+    }
+
+    private class ImagesViewBinder implements BindingRecyclerViewAdapter.ViewBinder<ImageInfo> {
+
+        @Override public int getViewType(ImageInfo image) {
+            return 0;
+        }
+
+        @Override public int getLayout(int viewType) {
+            return R.layout.item_images;
+        }
+
+        @Override public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, ImageInfo image) {
+            String imageurl ="";
+            //imageurl = image.elementUrl;
+            imageurl = image.derivatives.small.url;
+            // TODO: make image size selectable via settings (jca)
+
+            String imagename = image.name;
+            // TODO: make configurable to also show the photo name here
+            ImagesItemViewModel viewModel = new ImagesItemViewModel(imageurl, imagename);
+            viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
+        }
+
+    }
+
 }

@@ -1,8 +1,8 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <variable
             name="viewModel"
             type="org.piwigo.ui.main.AlbumsViewModel" />
@@ -12,12 +12,44 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler"
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="8dp"
-            app:items="@{viewModel.items}"
-            app:viewBinder="@{viewModel.viewBinder}" />
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/albumRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="0dp"
+                    android:nestedScrollingEnabled="false"
+                    android:scrollbars="vertical"
+                    android:orientation="vertical"
+                    app:items="@{viewModel.albums}"
+                    app:viewBinder="@{viewModel.albumsViewBinder}"
+                    android:minHeight="8dp"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/photoRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="0dp"
+                    android:nestedScrollingEnabled="false"
+                    android:scrollbars="vertical"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    app:items="@{viewModel.images}"
+                    app:viewBinder="@{viewModel.photoViewBinder}"
+                    android:minHeight="8dp"/>
+
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
     </android.support.v4.widget.SwipeRefreshLayout>
 </layout>

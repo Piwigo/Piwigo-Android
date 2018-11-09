@@ -32,35 +32,29 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
-import org.piwigo.helper.CommonVars;
 import org.piwigo.io.RestService;
 import org.piwigo.io.model.ImageUploadResponse;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.accounts.UserManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
@@ -81,9 +75,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
 
-
-    CommonVars comvars = CommonVars.getInstance();
-
     int SELECT_PICTURES = 1;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +83,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
-
 
         MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.getSelectedNavigationItemId().observe(this, this::itemSelected);
@@ -107,6 +97,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             if(account != null) {
                 viewModel.username.set(userManager.getUsername(account));
                 viewModel.url.set(userManager.getSiteUrl(account));
+                initStartFragment(viewModel);
             }else{
                 viewModel.username.set("");
                 viewModel.url.set("");
@@ -115,12 +106,25 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         userManager.getActiveAccount().observe(this, accountObserver);
 
         if (savedInstanceState == null) {
-            viewModel.setTitle(getString(R.string.nav_albums));
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.content, new AlbumsFragment())
-                    .commit();
+            initStartFragment(viewModel);
         }
+    }
+
+    private void initStartFragment(MainViewModel viewModel) {
+        viewModel.title.set(getString(R.string.nav_albums));
+        Bundle bndl = new Bundle();
+        // TODO: make configurable which is the root album
+        bndl.putInt("Category", 0);
+        AlbumsFragment frag = new AlbumsFragment();
+        frag.setArguments(bndl);
+
+        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content, frag)
+                // .addToBackStack(null)
+                .commit();
     }
 
     @Override protected void onResume() {
@@ -137,8 +141,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
         switch (itemId) {
             case R.id.nav_albums:
-                comvars.setCurrAlbum(0);
-                Toast.makeText(this,"reset to main album",Toast.LENGTH_LONG).show();
                 break;
             case R.id.nav_manage_accounts:
                 startActivity(new Intent(getApplicationContext(),
@@ -155,21 +157,18 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
                     // Permission is not granted
                     // Should we show an explanation?
-             //       if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-             //               Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)) {
                         // Show an explanation to the user *asynchronously* -- don't block
                         // this thread waiting for the user's response! After the user
                         // sees the explanation, try again to request the permission.
-              //      } else {
+                        Toast.makeText(this,R.string.storage_permission_explaination, Toast.LENGTH_LONG).show();
+                    } else {
                         // No explanation needed; request the permission
                         ActivityCompat.requestPermissions(this,
                                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                                 MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-
-                        // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                        // app-defined int constant. The callback method gets the
-                        // result of the request.
-               //     }
+                    }
                 } else {
                     // Permission has already been granted
                     selectPhoto();
@@ -197,23 +196,13 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
                     selectPhoto();
 
                 } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Toast.makeText(this,"File access denied - go to Settings - Applications - Piwigo to manually give Storage permission",Toast.LENGTH_LONG).show();
-//TODO
-                    selectPhoto();
+                    // permission denied, we just don't do anything in this case
                 }
                 return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
     }
 
@@ -268,10 +257,9 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                         }
                     }
                     MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", imageName, RequestBody.create(MediaType.parse("image/*"), content));
-                    //do something with the image (save it to some directory or whatever you need to do with it here)
-// TODO: change currentAccount
-                    Account curAccount = comvars.getAccount();
-                    RestService restService = restServiceFactory.createForAccount(comvars.getAccount());
+
+                    Account curAccount = userManager.getActiveAccount().getValue();
+                    RestService restService = restServiceFactory.createForAccount(curAccount);
                     String photoName;
                     if (imageName.indexOf(".") > 0) {
                         photoName = imageName.substring(0, imageName.lastIndexOf("."));
@@ -281,12 +269,25 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
                     AccountManager accountManager = AccountManager.get(this);
                     String token = accountManager.getUserData(curAccount, "token");
+// TODO: fix usage of token
+                    //                    token = accountManager.getAuthToken()
                     RequestBody imagefilenameBody = RequestBody.create(MediaType.parse("text/plain"), imageName);
                     RequestBody imagenameBody = RequestBody.create(MediaType.parse("text/plain"), photoName);
                     RequestBody tokenBody = RequestBody.create(MediaType.parse("text/plain"), token);
-                    int catid = comvars.getValue();
-                    if (catid > 0) {
-                        Toast.makeText(getApplicationContext(), "Uploading Image", Toast.LENGTH_LONG).show();
+
+                    int catid = 0;
+                    Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
+                    if(f instanceof AlbumsFragment){
+                        Integer cat = ((AlbumsFragment)f).getViewModel().getCategory();
+                        if (cat != null){
+                            catid = cat;
+                        }
+                    }
+                    if(catid < 1) {
+                        Toast.makeText(getApplicationContext(), R.string.uploading_not_to_cat_null, Toast.LENGTH_LONG).show();
+                    }else {
+                        // TODO: #40 replace toast by notification with a status bar
+                        Toast.makeText(getApplicationContext(), R.string.uploading_toast, Toast.LENGTH_LONG).show();
                         //creating a call and calling the upload image method
                         Call<ImageUploadResponse> call = restService.uploadImage(imagefilenameBody, catid, imagenameBody, tokenBody, filePart);
 
@@ -296,16 +297,15 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                             public void onResponse(Call<ImageUploadResponse> call, Response<ImageUploadResponse> response) {
                                 if (response.raw().code() == 200) {
                                     if (response.body().up_stat.equals("ok")) {
+                                        // TODO: make text localizable
                                         String uploadresp = "Uploaded: " + response.body().up_result.up_src + " to " + response.body().up_result.up_category.catlabel + "(" + Integer.toString(response.body().up_result.up_category.catid) + ")";
                                         Toast.makeText(getApplicationContext(), uploadresp, Toast.LENGTH_LONG).show();
                                         /* TODO: refresh the current album here */
                                     } else {
                                         Toast.makeText(getApplicationContext(), "Fail Response = " + response.body().up_message, Toast.LENGTH_LONG).show();
                                     }
-                                }
-                                else
-                                {
-                                    Toast.makeText(getApplicationContext(), "Upload Unsuccessful = " + response.raw().message() , Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Upload Unsuccessful = " + response.raw().message(), Toast.LENGTH_LONG).show();
                                 }
                             }
 
@@ -314,18 +314,10 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                                 Toast.makeText(getApplicationContext(), "Upload Err = " + t.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         });
-
                     }
-                    else
-                    {
-                        Toast.makeText(getApplicationContext(), "Upload - Select Album First!", Toast.LENGTH_LONG).show();
-                    }
-
-
-
+                }
             }
         }
-    }
     }
 
     /* get content of an open InputStream as byte array */
@@ -340,6 +332,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         }
         return byteBuffer.toByteArray();
     }
+
     //-
     private String getRealPathFromURI(Uri contentUri) {
         Cursor cursor = null;
