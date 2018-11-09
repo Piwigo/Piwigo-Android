@@ -3,6 +3,49 @@ apply plugin: 'com.android.application'
 def isCi = "true" == System.getenv("CI")
 def preDexEnabled = "true" == System.getProperty("pre-dex", "true")
 
+if (project.file('../PiwigoSigning.properties').exists()) {
+// not yet    apply plugin: 'com.github.triplet.play'
+
+    Properties props = new Properties()
+    props.load(new FileInputStream(file('../PiwigoSigning.properties')))
+
+    android {
+        signingConfigs {
+            gplayRelease {
+                storeFile file("../piwigo_android_keystore")
+                storePassword props['keystore.password']
+                keyAlias 'key0'
+                keyPassword props['key.password']
+            }
+            release {
+                storeFile file("${System.properties['user.home']}${File.separator}/.android_keystore_default")
+                storePassword props['keystore_default.password']
+                keyAlias 'defaultRelease'
+                keyPassword props['key_default.password']
+            }
+        }
+/*        playAccountConfigs {
+            defaultAccountConfig {
+                serviceAccountEmail = 'gplay-ramack@api-5226730847504381805-103625.iam.gserviceaccount.com'
+                pk12File = file('../gplay-developer-9607db552238.p12')
+            }
+        }
+*/
+        buildTypes {
+            release {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+/* not yet
+    play {
+        uploadImages = true
+        untrackOld = true
+        track = 'beta'
+    }
+*/
+}
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -15,6 +58,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
         }
         release {
             minifyEnabled false

@@ -106,6 +106,7 @@ public class LoginActivity extends BaseActivity {
             viewModel.accountExists();
         } else {
             Account account = userManager.createUser(response.url, response.statusResponse.result.username, response.password, response.pwgId, response.statusResponse.result.pwgToken);
+            userManager.setActiveAccount(account);
             setResultIntent(account);
             viewModel.accountCreated();
             finish();
