@@ -80,7 +80,8 @@ public class AlbumsFragment extends BaseFragment {
 
     @Override public void onResume(){
         MainViewModel vm = ViewModelProviders.of(this.getActivity(), viewModelFactory).get(MainViewModel.class);
-        vm.title.set("Album " + binding.getViewModel().getCategory());
+// as we don't work on #69 for release 0.9 let's remove this here...
+//        vm.title.set("Album " + binding.getViewModel().getCategory());
         super.onResume();
     }
 

@@ -41,7 +41,7 @@ public class CategoriesRepository extends BaseRepository {
 
     public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId) {
         RestService restService = restServiceFactory.createForAccount(account);
-
+        /* TODO: make thumbnail Size configurable */
         return restService.getCategories(categoryId, "large")
                 .flatMap(response -> Observable.from(response.result.categories))
                 .filter(category -> categoryId == null || category.id != categoryId)
