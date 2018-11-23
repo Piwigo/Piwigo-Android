@@ -20,8 +20,10 @@ package org.piwigo;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.Service;
 import android.databinding.DataBindingUtil;
 
+import org.piwigo.accounts.PiwigoAccountAuthenticator;
 import org.piwigo.internal.di.component.ApplicationComponent;
 import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
@@ -33,10 +35,14 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
+import dagger.android.HasServiceInjector;
 
-public class PiwigoApplication extends Application implements HasActivityInjector {
+public class PiwigoApplication extends Application implements HasActivityInjector, HasServiceInjector {
 
     @Inject DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+    @Inject DispatchingAndroidInjector<Service> dispatchingAndroidServiceInjector;
+
+    private ApplicationComponent applicationComponent;
 
     @Override public void onCreate() {
         super.onCreate();
@@ -49,7 +55,7 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
     }
 
     private void initializeDependancyInjection() {
-        ApplicationComponent applicationComponent = DaggerApplicationComponent.builder()
+        applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
         applicationComponent.inject(this);
@@ -58,5 +64,17 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
                 .applicationComponent(applicationComponent)
                 .build();
         DataBindingUtil.setDefaultComponent(bindingComponent);
+    }
+
+    /**
+     * Returns an {@link AndroidInjector} of {@link Service}s.
+     */
+    @Override
+    public AndroidInjector<Service> serviceInjector() {
+        return dispatchingAndroidServiceInjector;
+    }
+
+    public void inject(PiwigoAccountAuthenticator piwigoAccountAuthenticator) {
+        applicationComponent.inject(piwigoAccountAuthenticator);
     }
 }

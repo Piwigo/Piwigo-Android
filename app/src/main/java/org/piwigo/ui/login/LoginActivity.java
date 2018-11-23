@@ -43,6 +43,7 @@ import dagger.android.AndroidInjection;
 public class LoginActivity extends BaseActivity {
 
     public static final String EDIT_ACCOUNT_ACTION = "org.piwigo.action.EDIT_ACCOUNT";
+    public static final String PARAM_ACCOUNT = "account";
     @Inject LoginViewModelFactory viewModelFactory;
 
     private LoginViewModel viewModel;
@@ -78,7 +79,7 @@ public class LoginActivity extends BaseActivity {
         Account account = null;
 
         if(EDIT_ACCOUNT_ACTION.equals(intent.getAction())){
-            account = intent.getParcelableExtra("account");
+            account = intent.getParcelableExtra(PARAM_ACCOUNT);
         }
 
         viewModel.loadAccount(account);

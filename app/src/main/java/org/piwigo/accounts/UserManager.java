@@ -140,6 +140,7 @@ public class UserManager {
         /* TODO: should we replace that token storage in the user data by the token handling in the Authenticator
         * use accountManager.getAuthToken(account, KEY_TOKEN, null, ...); */
         return accountManager.getUserData(account, KEY_TOKEN);
+        // TODO: replace name by resource
     }
 
     public boolean isGuest(Account account) {
