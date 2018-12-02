@@ -9,5 +9,7 @@
     <dimen name="nav_header_padding">16dp</dimen>
     <!-- Username text size in nav header -->
     <dimen name="nav_header_user_text_size">18sp</dimen>
+    <!-- details text size in nav header -->
+    <dimen name="nav_header_details_text_size">12sp</dimen>
 
 </resources>

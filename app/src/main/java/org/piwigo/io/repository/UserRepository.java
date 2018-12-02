@@ -18,6 +18,10 @@
 
 package org.piwigo.io.repository;
 
+import android.accounts.Account;
+import android.util.Log;
+
+import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.CookieHelper;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
@@ -31,8 +35,16 @@ import rx.Scheduler;
 
 public class UserRepository extends BaseRepository {
 
-    @Inject UserRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler) {
-        super(restServiceFactory, ioScheduler, uiScheduler);
+    @Inject UserRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
+        super(restServiceFactory, ioScheduler, uiScheduler, userManager);
+    }
+
+    public Observable<LoginResponse> login(Account account) {
+        String url = userManager.getSiteUrl(account);
+        String username = userManager.getUsername(account);
+        String password = userManager.getPassword(account);
+        Observable<LoginResponse> result = login(url, username, password);
+        return result;
     }
 
     public Observable<LoginResponse> login(String url, String username, String password) {
@@ -46,6 +58,7 @@ public class UserRepository extends BaseRepository {
         return restService.login(username, password)
                 .flatMap(response -> {
                     if (response.body().result) {
+// TODO: check: should we set the cookie in the Usermanager here?
                         loginResponse.pwgId = CookieHelper.extract("pwg_id", response.headers());
                         return Observable.just(response.body());
                     }
@@ -59,12 +72,21 @@ public class UserRepository extends BaseRepository {
                 .compose(applySchedulers());
     }
 
-    public Observable<LoginResponse> status(String url) {
-        String baseUrl = validateUrl(url);
-        RestService restService = restServiceFactory.createForUrl(baseUrl);
+    /* intended only for Login view, otherwise consider status(Account account) */
+    public Observable<LoginResponse> status(String siteUrl) {
+        RestService restService = restServiceFactory.createForUrl(siteUrl);
+        return status(restService, siteUrl);
+    }
 
+    public Observable<LoginResponse> status(Account account) {
+        String siteUrl = validateUrl(userManager.getSiteUrl(account));
+        RestService restService = restServiceFactory.createForAccount(account);
+        return status(restService, siteUrl);
+    }
+
+    private Observable<LoginResponse> status(RestService restService, String url) {
         final LoginResponse loginResponse = new LoginResponse();
-        loginResponse.url = baseUrl;
+        loginResponse.url = url;
 
         return restService.getStatus()
                 .map(statusResponse -> {

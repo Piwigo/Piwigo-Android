@@ -29,13 +29,15 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.piwigo.R;
+import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.ImageUploadResponse;
+import org.piwigo.io.repository.UserRepository;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -61,6 +63,12 @@ public class UploadService extends IntentService {
 
     @Inject
     RestServiceFactory restServiceFactory;
+
+    @Inject
+    UserRepository userRepository;
+
+    @Inject
+    UserManager userManager;
 
     public UploadService() {
         super("UploadService");
@@ -131,35 +139,9 @@ public class UploadService extends IntentService {
         }
 
         AccountManager accountManager = AccountManager.get(this);
-        String token = accountManager.getUserData(curAccount, "token");
-// TODO: fix usage of token
 
-//    public AccountManagerFuture<Bundle> getAuthToken(
-//            final Account account, final String authTokenType, final Bundle options,
-//            final Activity activity, AccountManagerCallback<Bundle> callback, Handler handler) {
+        String token = userManager.getToken(curAccount);
 
-//                    token = accountManager.peekAuthToken(curAccount,getResources().getString(R.string.account_type));
-                    AccountManagerFuture<Bundle> a = accountManager.getAuthToken(curAccount,
-                            getResources().getString(R.string.account_type),
-                            null,
-                            true, null, null
-                    );
-                    try {
-                        token = a.getResult().getString(AccountManager.KEY_AUTHTOKEN);
-                    } catch (AuthenticatorException e) {
-                        e.printStackTrace(); // TODO: add proper error handling
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (OperationCanceledException e) {
-                        e.printStackTrace();
-                    }
-
-/*                    token = accountManager.getAuthToken(curAccount,
-                            getResources().getString(R.string.account_type),
-                    null,
-                    true, null, null
-                    );
-                    */
         RequestBody imagefilenameBody = RequestBody.create(MediaType.parse("text/plain"), imageName);
         RequestBody imagenameBody = RequestBody.create(MediaType.parse("text/plain"), photoName);
         RequestBody tokenBody = RequestBody.create(MediaType.parse("text/plain"), token);

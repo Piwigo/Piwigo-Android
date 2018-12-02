@@ -18,6 +18,7 @@
 
 package org.piwigo.io.repository;
 
+import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestServiceFactory;
 
 import rx.Observable;
@@ -28,11 +29,13 @@ abstract class BaseRepository {
     final RestServiceFactory restServiceFactory;
     private final Scheduler ioScheduler;
     private final Scheduler uiScheduler;
+    final UserManager userManager;
 
-    BaseRepository(RestServiceFactory restServiceFactory, Scheduler ioScheduler, Scheduler uiScheduler) {
+    BaseRepository(RestServiceFactory restServiceFactory, Scheduler ioScheduler, Scheduler uiScheduler, UserManager userManager) {
         this.restServiceFactory = restServiceFactory;
         this.ioScheduler = ioScheduler;
         this.uiScheduler = uiScheduler;
+        this.userManager = userManager;
     }
 
     String validateUrl(String url) {

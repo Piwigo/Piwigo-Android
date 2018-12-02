@@ -73,8 +73,9 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
     public AndroidInjector<Service> serviceInjector() {
         return dispatchingAndroidServiceInjector;
     }
-
+/*
     public void inject(PiwigoAccountAuthenticator piwigoAccountAuthenticator) {
         applicationComponent.inject(piwigoAccountAuthenticator);
     }
+    */
 }

@@ -21,6 +21,7 @@ package org.piwigo.io.repository;
 import android.accounts.Account;
 import android.support.annotation.Nullable;
 
+import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.Category;
@@ -35,8 +36,8 @@ import rx.Scheduler;
 
 public class CategoriesRepository extends BaseRepository {
 
-    @Inject public CategoriesRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler) {
-        super(restServiceFactory, ioScheduler, uiScheduler);
+    @Inject public CategoriesRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
+        super(restServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
     public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId) {

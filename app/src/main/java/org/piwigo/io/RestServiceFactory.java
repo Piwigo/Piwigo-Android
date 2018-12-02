@@ -45,6 +45,7 @@ public class RestServiceFactory {
         this.userManager = userManager;
     }
 
+    /* only intended for login, for most use cases consider createForAccount */
     public RestService createForUrl(String url) {
         OkHttpClient client = buildOkHttpClient(null);
         Retrofit retrofit = buildRetrofit(client, url);
@@ -52,7 +53,8 @@ public class RestServiceFactory {
     }
 
     public RestService createForAccount(Account account) {
-        OkHttpClient client = buildOkHttpClient(userManager.getCookie(account));
+        String cookie = userManager.getCookie(account);
+        OkHttpClient client = buildOkHttpClient(cookie);
         Retrofit retrofit = buildRetrofit(client, userManager.getSiteUrl(account));
         return retrofit.create(RestService.class);
     }

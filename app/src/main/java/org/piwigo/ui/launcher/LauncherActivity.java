@@ -18,22 +18,34 @@
 
 package org.piwigo.ui.launcher;
 
+import android.accounts.Account;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLauncherBinding;
+import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.ui.shared.Navigator;
 
+import javax.inject.Inject;
+
 import dagger.android.AndroidInjection;
+import rx.Observable;
+import rx.Subscriber;
 
 public class LauncherActivity extends BaseActivity {
 
+    private static final String TAG = LauncherActivity.class.getName();
     private final Handler handler = new Handler();
     private ActivityLauncherBinding binding;
+
+    @Inject
+    UserRepository userRepository;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
@@ -41,10 +53,29 @@ public class LauncherActivity extends BaseActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_launcher);
 
-        if (userManager.isLoggedIn()) {
+        if (userManager.hasAccounts()) {
+
+            // TODO: check: should we move this login into the MainViewModel and create this already here?
+            Account a = userManager.getActiveAccount().getValue();
+            userRepository.login(a)
+                    .subscribe(new Subscriber<LoginResponse>() {
+                        @Override public void onCompleted() {
+                        }
+
+                        @Override public void onError(Throwable e) {
+                            Log.e(TAG, "Login failed: " + e.getMessage());
+                        }
+
+                        @Override public void onNext(LoginResponse loginResponse) {
+                            Log.i(TAG, "Login succeeded: " + loginResponse.pwgId);
+                            userManager.setCookie(a, loginResponse.pwgId);
+                            userManager.setToken(a, loginResponse.statusResponse.result.pwgToken);
+                        }
+                    });
+
             handler.postDelayed(this::startMain, 1000);
         } else {
-            handler.postDelayed(this::startLogin, 1000);
+            handler.postDelayed(this::startLogin, 500);
         }
     }
 

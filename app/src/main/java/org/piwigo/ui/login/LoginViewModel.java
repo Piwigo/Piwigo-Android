@@ -88,6 +88,7 @@ public class LoginViewModel extends ViewModel {
         boolean loginValid = isGuest() || isLoginValid();
 
         if (siteValid) {
+
             if (isGuest()) {
                 progressCircle.show();
                 subscription = userRepository

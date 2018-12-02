@@ -40,6 +40,11 @@ import org.piwigo.io.repository.PreferencesRepository;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Note: a token in Android is replacing username/password for different logins,
+ * while the token in piwigo is only valid during one session.
+ * That's why the token is not stored in AccountManagers token handling but in the user data
+ */
 public class UserManager {
 
     @VisibleForTesting static final String KEY_IS_GUEST = "is_guest";
@@ -78,7 +83,7 @@ public class UserManager {
         setActiveAccount(a == null ? "" : a.name);
     }
 
-    public boolean isLoggedIn() {
+    public boolean hasAccounts() {
         return accountManager.getAccountsByType(resources.getString(R.string.account_type)).length > 0;
     }
 
@@ -104,7 +109,8 @@ public class UserManager {
         } else {
             result = createNormalUser(siteUrl, username, password, cookie, token);
         }
-        accountManager.setAuthToken(result, KEY_TOKEN, token);
+        accountManager.setUserData(result, KEY_TOKEN, token);
+
         return result;
     }
 
@@ -132,15 +138,26 @@ public class UserManager {
         return accountManager.getUserData(account, KEY_USERNAME);
     }
 
+    public String getPassword(Account account) {
+        return isGuest(account) ? "" : accountManager.getPassword(account);
+    }
+
     public String getCookie(Account account) {
         return accountManager.getUserData(account, KEY_COOKIE);
     }
 
+    public void setCookie(Account account, String cookie) {
+        accountManager.setUserData(account, KEY_COOKIE, cookie);
+    }
+
+    public void setToken(Account account, String token) {
+        accountManager.setUserData(account, KEY_TOKEN, token);
+    }
+
+    // TODO: rmk, 2018-11-24: not sure whether it is a good idea to store the token in the account at all
+    // maybe it would be better to just keep it in the UserRepository
     public String getToken(Account account) {
-        /* TODO: should we replace that token storage in the user data by the token handling in the Authenticator
-        * use accountManager.getAuthToken(account, KEY_TOKEN, null, ...); */
         return accountManager.getUserData(account, KEY_TOKEN);
-        // TODO: replace name by resource
     }
 
     public boolean isGuest(Account account) {

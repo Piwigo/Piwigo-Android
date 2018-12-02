@@ -18,18 +18,14 @@
 
 package org.piwigo.internal.di.component;
 
-import android.app.Service;
-
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.PiwigoApplication;
-import org.piwigo.accounts.PiwigoAccountAuthenticator;
 import org.piwigo.bg.UploadService;
 import org.piwigo.internal.di.module.ApiModule;
 import org.piwigo.internal.di.module.ApplicationModule;
 import org.piwigo.internal.di.module.AndroidInjectorModule;
 import org.piwigo.internal.di.module.NetworkModule;
-import org.piwigo.internal.di.scope.PerService;
 
 import javax.inject.Singleton;
 
@@ -43,8 +39,5 @@ public interface ApplicationComponent {
 
     void inject(UploadService service);
 
-    void inject(PiwigoAccountAuthenticator piwigoAccountAuthenticator);
-
-    // TODO: check: do we need this
     Picasso picasso();
 }

@@ -35,25 +35,22 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.piwigo.R;
 import org.piwigo.bg.UploadService;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
-import org.piwigo.io.RestService;
-import org.piwigo.io.model.ImageUploadResponse;
+import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.io.RestServiceFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 
 import javax.inject.Inject;
 
@@ -61,18 +58,17 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Observable;
 
 public class MainActivity extends BaseActivity implements HasSupportFragmentInjector {
+    private static final String TAG = MainActivity.class.getName();
 
     @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
     @Inject MainViewModelFactory viewModelFactory;
     @Inject RestServiceFactory restServiceFactory;
+    @Inject UserRepository userRepository;
+
+    private Account currentAccount = null;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
 
@@ -93,13 +89,36 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
 
+        currentAccount = userManager.getActiveAccount().getValue();
+
         final Observer<Account> accountObserver = account -> {
             // reload the albums on account changes
-            if(account != null) {
+            if(account != null && !account.equals(currentAccount)) {
+                currentAccount = account;
                 viewModel.username.set(userManager.getUsername(account));
                 viewModel.url.set(userManager.getSiteUrl(account));
+                /* Login to the new site after account changes.
+                 * It seems quite unclean to do that here -> TODO: FIXME*/
+                Observable<LoginResponse> a = userRepository.login(account);
+                a.subscribe(new rx.Observer<LoginResponse>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override public void onError(Throwable e) {
+                        Log.e(TAG, "Login failed: " + e.getMessage());
+                    }
+
+                    @Override public void onNext(LoginResponse loginResponse) {
+                        Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
+// TODO: it is crazy to have this code here AND in LauncherActivity
+                        userManager.setCookie(account, loginResponse.pwgId);
+                        userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
+                    }
+                });
                 initStartFragment(viewModel);
-            }else{
+            }
+            if(account == null){
                 viewModel.username.set("");
                 viewModel.url.set("");
             }
@@ -124,7 +143,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content, frag)
-                // .addToBackStack(null)
                 .commit();
     }
 

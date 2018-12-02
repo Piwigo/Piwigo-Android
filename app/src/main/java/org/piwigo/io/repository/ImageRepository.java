@@ -8,6 +8,7 @@ package org.piwigo.io.repository;
 import android.accounts.Account;
 import android.support.annotation.Nullable;
 
+import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.ImageInfo;
@@ -23,8 +24,8 @@ import rx.Scheduler;
 
 public class ImageRepository extends BaseRepository {
 
-    @Inject public ImageRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler) {
-        super(restServiceFactory, ioScheduler, uiScheduler);
+    @Inject public ImageRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
+        super(restServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
     public Observable<List<ImageInfo>> getImages(Account account, @Nullable Integer categoryId) {
