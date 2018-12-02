@@ -74,13 +74,13 @@ public class UserManagerTest {
     @Test public void isLoggedIn_accountsExist_returnsTrue() {
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[1]);
 
-        assertThat(userManager.isLoggedIn()).isTrue();
+        assertThat(userManager.hasAccounts()).isTrue();
     }
 
     @Test public void isLoggedIn_noAccountsExist_returnsFalse() {
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[0]);
 
-        assertThat(userManager.isLoggedIn()).isFalse();
+        assertThat(userManager.hasAccounts()).isFalse();
     }
 
     @Test public void userExists_usernameAndUrlMatchAnAccount_returnsTrue() {

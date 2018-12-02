@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.LoginResponse;
@@ -53,6 +54,7 @@ public class UserRepositoryTest {
 
     @Mock RestServiceFactory restServiceFactory;
     @Mock RestService restService;
+    @Mock UserManager userManager;
 
     private UserRepository userRepository;
 
@@ -64,7 +66,7 @@ public class UserRepositoryTest {
         when(restService.login(USERNAME, PASSWORD)).thenReturn(getLoginSuccessResponse());
         when(restService.login(BAD_CREDENTIAL, BAD_CREDENTIAL)).thenReturn(getLoginFailureResponse());
 
-        userRepository = new UserRepository(restServiceFactory, Schedulers.immediate(), Schedulers.immediate());
+        userRepository = new UserRepository(restServiceFactory, Schedulers.immediate(), Schedulers.immediate(), userManager);
     }
 
     @Test public void login_withValidCredentials_returnsSuccessResponse() {

@@ -71,11 +71,8 @@ public interface RestService {
             @Query("image_id") int imageId
     );
 
-
-    //JCA added
     @GET("ws.php?method=pwg.categories.getImages")
     Observable<ImageListResponse> getImages(@Query("cat_id") int categoryId);
-
 
     @Multipart
     @POST("ws.php?method=pwg.images.upload")

@@ -29,6 +29,7 @@
 
     <!-- Navigation drawer menu items -->
     <string name="nav_icon_description">Piwigo logo</string>
+    <string name="nav_server_version">Server Version: %1$s</string>
     <string name="nav_albums">Albums</string>
     <string name="nav_upload">Upload</string>
     <string name="nav_settings">Settings</string>

@@ -21,6 +21,7 @@ package org.piwigo.internal.di.component;
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.PiwigoApplication;
+import org.piwigo.bg.UploadService;
 import org.piwigo.internal.di.module.ApiModule;
 import org.piwigo.internal.di.module.ApplicationModule;
 import org.piwigo.internal.di.module.AndroidInjectorModule;
@@ -35,6 +36,8 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     void inject(PiwigoApplication application);
+
+    void inject(UploadService service);
 
     Picasso picasso();
 }

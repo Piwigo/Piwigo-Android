@@ -32,6 +32,7 @@ import org.junit.rules.TestRule;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.piwigo.accounts.UserManager;
+import org.piwigo.io.repository.UserRepository;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -41,6 +42,7 @@ public class MainViewModelTest {
 
     @Mock UserManager userManager;
     @Mock Account account;
+    @Mock UserRepository userRepository;
 
     private MainViewModel viewModel;
 
@@ -55,7 +57,7 @@ public class MainViewModelTest {
         when(userManager.getUsername(account)).thenReturn("username");
         when(userManager.getSiteUrl(account)).thenReturn("http://piwigo.org/demo");
 
-        viewModel = new MainViewModel(userManager);
+        viewModel = new MainViewModel(userManager, userRepository);
     }
 
     @Test @SuppressWarnings("unchecked") public void getSelectedMenuItem_observerReceivesSelectedMenuItem() {

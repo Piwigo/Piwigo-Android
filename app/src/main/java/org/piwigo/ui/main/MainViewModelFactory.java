@@ -22,6 +22,7 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
 import org.piwigo.accounts.UserManager;
+import org.piwigo.io.repository.UserRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -30,15 +31,17 @@ import javax.inject.Singleton;
 public class MainViewModelFactory implements ViewModelProvider.Factory {
 
     private final UserManager userManager;
+    private final UserRepository userRepository;
 
-    @Inject public MainViewModelFactory(UserManager userManager) {
+    @Inject public MainViewModelFactory(UserManager userManager, UserRepository userRepository) {
         this.userManager = userManager;
+        this.userRepository = userRepository;
     }
 
     @Override public <T extends ViewModel> T create(Class<T> viewModelClass) {
         if (viewModelClass.isAssignableFrom(MainViewModel.class)) {
             //noinspection unchecked
-            return (T) new MainViewModel(userManager);
+            return (T) new MainViewModel(userManager, userRepository);
         }
         throw new IllegalStateException("Unable to create " + viewModelClass.getName());
     }

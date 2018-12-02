@@ -20,7 +20,6 @@ package org.piwigo.ui.main;
 
 import android.Manifest;
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -36,24 +35,22 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.piwigo.R;
+import org.piwigo.bg.UploadService;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
-import org.piwigo.io.RestService;
-import org.piwigo.io.model.ImageUploadResponse;
+import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.io.RestServiceFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 
 import javax.inject.Inject;
 
@@ -61,18 +58,17 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Observable;
 
 public class MainActivity extends BaseActivity implements HasSupportFragmentInjector {
+    private static final String TAG = MainActivity.class.getName();
 
     @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
     @Inject MainViewModelFactory viewModelFactory;
     @Inject RestServiceFactory restServiceFactory;
+    @Inject UserRepository userRepository;
+
+    private Account currentAccount = null;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
 
@@ -93,13 +89,36 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
 
+        currentAccount = userManager.getActiveAccount().getValue();
+
         final Observer<Account> accountObserver = account -> {
             // reload the albums on account changes
-            if(account != null) {
+            if(account != null && !account.equals(currentAccount)) {
+                currentAccount = account;
                 viewModel.username.set(userManager.getUsername(account));
                 viewModel.url.set(userManager.getSiteUrl(account));
+                /* Login to the new site after account changes.
+                 * It seems quite unclean to do that here -> TODO: FIXME*/
+                Observable<LoginResponse> a = userRepository.login(account);
+                a.subscribe(new rx.Observer<LoginResponse>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override public void onError(Throwable e) {
+                        Log.e(TAG, "Login failed: " + e.getMessage());
+                    }
+
+                    @Override public void onNext(LoginResponse loginResponse) {
+                        Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
+// TODO: it is crazy to have this code here AND in LauncherActivity
+                        userManager.setCookie(account, loginResponse.pwgId);
+                        userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
+                    }
+                });
                 initStartFragment(viewModel);
-            }else{
+            }
+            if(account == null){
                 viewModel.username.set("");
                 viewModel.url.set("");
             }
@@ -124,7 +143,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content, frag)
-                // .addToBackStack(null)
                 .commit();
     }
 
@@ -239,46 +257,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                         /* TODO add proper error handling */
                     }
 
-                    byte[] content;
-                    InputStream iStream = null;
-                    try {
-                        iStream = getContentResolver().openInputStream(targetUri);
-                        content = getBytes(iStream);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                        /* TODO add proper error handling */
-                        content = new byte[0];
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        /* TODO add proper error handling */
-                        content = new byte[0];
-                    } finally {
-                        if(iStream != null){
-                            try {
-                                iStream.close();
-                            } catch (IOException e) {
-                                /* if this fails, we silently do nothing */
-                            }
-                        }
-                    }
-                    MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", imageName, RequestBody.create(MediaType.parse("image/*"), content));
-
-                    Account curAccount = userManager.getActiveAccount().getValue();
-                    RestService restService = restServiceFactory.createForAccount(curAccount);
-                    String photoName;
-                    if (imageName.indexOf(".") > 0) {
-                        photoName = imageName.substring(0, imageName.lastIndexOf("."));
-                    }else{
-                        photoName = imageName;
-                    }
-
-                    AccountManager accountManager = AccountManager.get(this);
-                    String token = accountManager.getUserData(curAccount, "token");
-// TODO: fix usage of token
-                    //                    token = accountManager.getAuthToken()
-                    RequestBody imagefilenameBody = RequestBody.create(MediaType.parse("text/plain"), imageName);
-                    RequestBody imagenameBody = RequestBody.create(MediaType.parse("text/plain"), photoName);
-                    RequestBody tokenBody = RequestBody.create(MediaType.parse("text/plain"), token);
 
                     int catid = 0;
                     Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
@@ -288,54 +266,17 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                             catid = cat;
                         }
                     }
-                    if(catid < 1) {
-                        Toast.makeText(getApplicationContext(), R.string.uploading_not_to_cat_null, Toast.LENGTH_LONG).show();
-                    }else {
-                        // TODO: #40 replace toast by notification with a status bar
-                        Toast.makeText(getApplicationContext(), R.string.uploading_toast, Toast.LENGTH_LONG).show();
-                        //creating a call and calling the upload image method
-                        Call<ImageUploadResponse> call = restService.uploadImage(imagefilenameBody, catid, imagenameBody, tokenBody, filePart);
 
-                        //finally performing the call
-                        call.enqueue(new Callback<ImageUploadResponse>() {
-                            @Override
-                            public void onResponse(Call<ImageUploadResponse> call, Response<ImageUploadResponse> response) {
-                                if (response.raw().code() == 200) {
-                                    if (response.body().up_stat.equals("ok")) {
-                                        // TODO: make text localizable
-                                        String uploadresp = "Uploaded: " + response.body().up_result.up_src + " to " + response.body().up_result.up_category.catlabel + "(" + Integer.toString(response.body().up_result.up_category.catid) + ")";
-                                        Toast.makeText(getApplicationContext(), uploadresp, Toast.LENGTH_LONG).show();
-                                        /* TODO: refresh the current album here */
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "Fail Response = " + response.body().up_message, Toast.LENGTH_LONG).show();
-                                    }
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Upload Unsuccessful = " + response.raw().message(), Toast.LENGTH_LONG).show();
-                                }
-                            }
+                    Intent intent = new Intent(this, UploadService.class);
+                    intent.putExtra(UploadService.KEY_IMAGE_NAME, imageName);
+                    intent.putExtra(UploadService.KEY_IMAGE_URI, targetUri);
+                    intent.putExtra(UploadService.KEY_ACCOUNT, userManager.getActiveAccount().getValue());
+                    intent.putExtra(UploadService.KEY_CATEGORY_ID, catid);
 
-                            @Override
-                            public void onFailure(Call<ImageUploadResponse> call, Throwable t) {
-                                Toast.makeText(getApplicationContext(), "Upload Err = " + t.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
+                    startService(intent);
                 }
             }
         }
-    }
-
-    /* get content of an open InputStream as byte array */
-    public byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        return byteBuffer.toByteArray();
     }
 
     //-

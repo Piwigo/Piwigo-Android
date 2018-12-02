@@ -1,6 +1,7 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2018 Piwigo Team http://piwigo.org
+ * Copyright (C) 2018-2018 Raphael Mack http://www.raphael-mack.de
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +39,12 @@ public class PiwigoAccountAuthenticator extends AbstractAccountAuthenticator {
         this.context = context;
     }
 
-    @Override public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
+    @Override public Bundle addAccount(AccountAuthenticatorResponse response,
+                                       String accountType,
+                                       String authTokenType,
+                                       String[] requiredFeatures,
+                                       Bundle options) throws NetworkErrorException {
+
         Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
@@ -47,7 +53,9 @@ public class PiwigoAccountAuthenticator extends AbstractAccountAuthenticator {
         return bundle;
     }
 
-    @Override public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account, Bundle options) throws NetworkErrorException {
+    @Override public Bundle confirmCredentials(AccountAuthenticatorResponse response,
+                                               Account account, Bundle options) throws NetworkErrorException {
+        /* Piwigo doesn't support to login via token instead of username/password, so we cannot to much here */
         return null;
     }
 
@@ -55,7 +63,11 @@ public class PiwigoAccountAuthenticator extends AbstractAccountAuthenticator {
         return null;
     }
 
-    @Override public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
+    @Override public Bundle getAuthToken(AccountAuthenticatorResponse response,
+                                         Account account,
+                                         String authTokenType,
+                                         Bundle options) throws NetworkErrorException {
+        /* Piwigo doesn't support to login via token instead of username/password, so we cannot to much here */
         return null;
     }
 
