@@ -74,6 +74,9 @@ public class UserRepository extends BaseRepository {
 
     /* intended only for Login view, otherwise consider status(Account account) */
     public Observable<LoginResponse> status(String siteUrl) {
+        if(!siteUrl.endsWith("/")){
+            siteUrl = siteUrl + "/";
+        }
         RestService restService = restServiceFactory.createForUrl(siteUrl);
         return status(restService, siteUrl);
     }
