@@ -49,11 +49,11 @@ if (project.file('../PiwigoSigning.properties').exists()) {
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "org.piwigo"
+        applicationId "org.piwigo.android"
         minSdkVersion 14
         targetSdkVersion 28
         versionCode 1
-        versionName "0.4-dev"
+        versionName "0.9-beta"
     }
     buildTypes {
         debug {
