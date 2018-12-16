@@ -23,7 +23,7 @@
     <string name="title_activity_login">Anmeldung</string>
     <string name="title_activity_accounts">Konten verwalten</string>
     <string name="title_activity_about">Über</string>
-    <string name="title_select_image">\"Select Image</string>
+    <string name="title_select_image">Select Image</string>
     <!-- Navigation drawer menu items -->
     <string name="nav_icon_description">Piwigo Logo</string>
     <string name="nav_server_version">Server Version: %1$s</string>
@@ -108,7 +108,6 @@
     <string name="privacy_contact_title">Contact us</string>
     <string name="privacy_contact_text">Bei Fragen oder Anmerkungen zu dieser Datenschutzerklärung kontaktieren Sie uns bitte über:</string>
     <string name="privacy_contact_address">Piwigo, 42 rue des Vignes, 21800 Quetigny (Frankreich)</string>
-    <string name="privacy_contact_email">android@piwigo.org</string>
     <!-- upload -->
     <string name="uploading_toast">Bild wird hochgeladen</string>
     <string name="uploading_not_to_cat_null">Uploading is only possible in an album.</string>
