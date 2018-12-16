@@ -1,6 +1,7 @@
 /*
  * Piwigo for Android
  * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2018      Raphael Mack http://www.raphael-mack.de
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +22,15 @@ package org.piwigo;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Service;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 
-import org.piwigo.accounts.PiwigoAccountAuthenticator;
+import org.acra.ACRA;
+import org.acra.ReportField;
+import org.acra.annotation.AcraCore;
+import org.acra.annotation.AcraDialog;
+import org.acra.annotation.AcraMailSender;
+import org.acra.data.StringFormat;
 import org.piwigo.internal.di.component.ApplicationComponent;
 import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
@@ -37,6 +44,25 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
 import dagger.android.HasServiceInjector;
 
+@AcraCore(reportContent = { ReportField.APP_VERSION_CODE,
+        ReportField.APP_VERSION_NAME,
+        ReportField.USER_COMMENT,
+        ReportField.SHARED_PREFERENCES,
+        ReportField.ANDROID_VERSION,
+        ReportField.CUSTOM_DATA,
+        ReportField.STACK_TRACE,
+        ReportField.BUILD,
+        ReportField.BUILD_CONFIG,
+        ReportField.CRASH_CONFIGURATION,
+        ReportField.DISPLAY
+    },
+    buildConfigClass = BuildConfig.class,
+    alsoReportToAndroidFramework = true,
+    reportFormat = StringFormat.KEY_VALUE_LIST
+)
+@AcraMailSender(mailTo = "android@piwigo.org")
+@AcraDialog(resCommentPrompt = R.string.crash_dialog_comment_prompt,
+        resText = R.string.crash_dialog_text)
 public class PiwigoApplication extends Application implements HasActivityInjector, HasServiceInjector {
 
     @Inject DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
@@ -48,6 +74,13 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
         super.onCreate();
 
         initializeDependancyInjection();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        ACRA.init(this);
     }
 
     @Override public AndroidInjector<Activity> activityInjector() {
@@ -73,9 +106,4 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
     public AndroidInjector<Service> serviceInjector() {
         return dispatchingAndroidServiceInjector;
     }
-/*
-    public void inject(PiwigoAccountAuthenticator piwigoAccountAuthenticator) {
-        applicationComponent.inject(piwigoAccountAuthenticator);
-    }
-    */
 }

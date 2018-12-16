@@ -85,6 +85,7 @@
         ]]>
     </string>
     <string name="libraries" translatable="false"><![CDATA[
+        <p><a href="https://github.com/ACRA/acra">ACRA</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p><a href="http://square.github.io/picasso/">Picasso</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p><a href="http://square.github.io/okhttp3/">Okhttp3</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p><a href="http://square.github.io/retrofit2/">Retrofit2</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
@@ -144,4 +145,8 @@
     <string name="uploading_toast">Uploading Image</string>
     <string name="uploading_not_to_cat_null">Uploading is only possible in an album.</string>
     <string name="storage_permission_explaination">Uploading photos is only possible if you give access to the storage.</string>
+
+    <!-- ACRA crash reporting -->
+    <string name="crash_dialog_text">An unexpected error occurred forcing the application to stop. Please help us fix this by sending us error data, all you have to do is click OK and send the email that we prepared.</string>
+    <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
 </resources>

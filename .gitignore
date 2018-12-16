@@ -11,6 +11,7 @@ build/
 # Local configuration file (sdk path, etc)
 local.properties
 PiwigoSigning.properties
+piwigo_android_publish_keystore.jks
 piwigo_android_keystore.jks
 
 # Android Studio
