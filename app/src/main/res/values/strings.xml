@@ -25,7 +25,7 @@
     <string name="title_activity_accounts">Manage Accounts</string>
     <string name="title_activity_about">About</string>
     <string name="title_activity_privacy_policy" translatable="false">@string/about_text_privacy_h</string>
-    <string name="title_select_image">"Select Image</string>
+    <string name="title_select_image">Select Image</string>
 
     <!-- Navigation drawer menu items -->
     <string name="nav_icon_description">Piwigo logo</string>
@@ -139,7 +139,7 @@
     <string name="privacy_contact_title">Contact us</string>
     <string name="privacy_contact_text">If you have questions or comments about this Privacy Policy, please contact us at:</string>
     <string name="privacy_contact_address">Piwigo, 42 rue des Vignes, 21800 Quetigny (France)</string>
-    <string name="privacy_contact_email">android@piwigo.org</string>
+    <string name="privacy_contact_email" translatable="false">android@piwigo.org</string>
 
     <!-- upload -->
     <string name="uploading_toast">Uploading Image</string>
