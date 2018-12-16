@@ -35,4 +35,4 @@ The project is delivered under the GNU General Public License (GPL) in version 3
 Copyright notices in this project are mostly given with a reference to the year in form of xxxx-yyyy as a short cut with the meaning, that every year in the given range is a copyrightable year.
 
 ## Privacy
-Piwigo-Android and its authors have a deep interest to respect your privacy. Therefore this app is designed to not track your behaviour and keep your data in your hands. It is recommended to host your Piwigo gallery by yourself and use only encrypted connections via HTTPS. The full <a href="https://github.com/Piwigo/Piwigo-Android/blob/master/Privacy-Policy.md">privacy policy is available in the git repository</a>.
+Piwigo-Android and its authors have a deep interest to respect your privacy. Therefore this app is designed to not track your behaviour and keep your data in your hands. It is recommended to host your Piwigo gallery by yourself and use only encrypted connections via HTTPS. The full <a href="https://piwigo.org/mobile-apps-privacy-policy">privacy policy is available on the website</a> of Piwigo and within he app itself.
