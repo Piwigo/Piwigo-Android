@@ -28,7 +28,7 @@ import org.robolectric.annotation.Config;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(application = TestPiwigoApplication.class, constants = BuildConfig.class)
+@Config(application = TestPiwigoApplication.class)
 public class PiwigoApplicationTest {
 
     private PiwigoApplication application;

@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(application = TestPiwigoApplication.class, constants = BuildConfig.class)
+@Config(application = TestPiwigoApplication.class)
 public class UserManagerTest {
 
     private static final String ACCOUNT_TYPE = "account_type";

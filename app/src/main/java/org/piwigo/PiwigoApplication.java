@@ -20,6 +20,7 @@
 package org.piwigo;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Service;
 import android.content.Context;
@@ -56,7 +57,6 @@ import dagger.android.HasServiceInjector;
         ReportField.CRASH_CONFIGURATION,
         ReportField.DISPLAY
     },
-    buildConfigClass = BuildConfig.class,
     alsoReportToAndroidFramework = true,
     reportFormat = StringFormat.KEY_VALUE_LIST
 )
@@ -79,7 +79,6 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-
         ACRA.init(this);
     }
 
