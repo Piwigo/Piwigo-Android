@@ -16,7 +16,8 @@ A clear and concise description of what you expected to happen.
 **What did you do already**
 - Search whether a similar issue is already reported?
 - Check for known workarounds in the issue tracker?
-- Check with guest login?
+- Did you check with guest login?
+- Did you try to reproduce it with https://www.piwigo.org/demo/ ?
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
