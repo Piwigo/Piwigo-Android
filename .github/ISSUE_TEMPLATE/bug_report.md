@@ -26,5 +26,6 @@ If applicable, add screenshots to help explain your problem.
  - OS: [e.g. Android 8.1 Oreo]
 
 **Additional context**
-Can you give the Site URL for the Piwigo Gallery that you tried to connect to?
-Add any other context about the problem here.
+- Can you give the Site URL for the Piwigo Gallery that you tried to connect to?
+- Which Piwigo extensions do you have installed? (If you think there might be a relationship / this is not always needed.)
+- Add any other context about the problem here.
