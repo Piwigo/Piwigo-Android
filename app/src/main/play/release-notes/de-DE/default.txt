@@ -1,6 +1,6 @@
-This is a beta version, not intended for production use. Please be careful and ensure you have proper backups of your gallery data.
+Dies ist eine Testversion welche nicht für Produktionszwecke vorgesehen ist. Seien Sie vorsichtig und stellen Sie sicher, dass Sie ein vollständiges Backup Ihrer Galleriedaten gemacht haben.
 
-In this version we
-- added crash reporting via ACRA
+In dieser Version haben wir
+- Absturzberichte (via ACRA) hinzugefügt
 - increase compatibility with older Android versions
 - some minor improvements
