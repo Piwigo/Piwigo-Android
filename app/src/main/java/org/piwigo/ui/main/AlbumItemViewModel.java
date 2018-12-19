@@ -19,6 +19,8 @@
 package org.piwigo.ui.main;
 
 import android.arch.lifecycle.ViewModel;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -54,13 +56,18 @@ public class AlbumItemViewModel extends ViewModel {
     public Integer getCatId() { return catid;}
 
     public void onclickdo(View v){
+        Context ctx = v.getContext();
+        while (ctx instanceof ContextWrapper
+                && !(ctx instanceof AppCompatActivity)) {
+            ctx = ((ContextWrapper)ctx).getBaseContext();
+        }
 
-        if(v.getContext() instanceof AppCompatActivity) {
+        if(ctx instanceof AppCompatActivity) {
             Bundle bndl = new Bundle();
             bndl.putInt("Category", catid);
             AlbumsFragment frag = new AlbumsFragment();
             frag.setArguments(bndl);
-            ((AppCompatActivity) v.getContext()).getSupportFragmentManager()
+            ((AppCompatActivity) ctx).getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.content, frag)
                     .addToBackStack(null)
