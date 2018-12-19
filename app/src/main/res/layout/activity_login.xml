@@ -113,6 +113,7 @@
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/login_button"
                         android:contentDescription="@string/login_button_description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
