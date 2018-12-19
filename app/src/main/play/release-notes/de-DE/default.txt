@@ -1,0 +1,6 @@
+Dies ist eine Testversion welche nicht für Produktionszwecke vorgesehen ist. Seien Sie vorsichtig und stellen Sie sicher, dass Sie ein vollständiges Backup Ihrer Galleriedaten gemacht haben.
+
+In dieser Version haben wir
+- Absturzberichte (via ACRA) hinzugefügt
+- increase compatibility with older Android versions
+- some minor improvements
