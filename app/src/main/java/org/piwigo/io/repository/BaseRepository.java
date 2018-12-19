@@ -39,10 +39,14 @@ abstract class BaseRepository {
     }
 
     String validateUrl(String url) {
-        if (!url.endsWith("/")) {
-            return url + "/";
+        String result = url;
+        if (!result.endsWith("/")) {
+            result = result + "/";
         }
-        return url;
+        if (!result.startsWith("http://") || !result.startsWith("https://")) {
+            result = "https://" + result;
+        }
+        return result;
     }
 
     <T> Observable.Transformer<T, T> applySchedulers() {
