@@ -66,8 +66,6 @@
     <string name="about_text_ack_2">Es würde uns freuen auch deinen Namen bald hier auflisten zu können.</string>
     <string name="about_text_lib_h">Bibliotheken</string>
     <string name="about_text_lib">Folgende Bibliotheken werden von diesem Programm verwendet welche unter den angegebenen Lizenzen veröffentlicht wurden:</string>
-    <!--    <p><a href="https://github.com/ACRA/acra">ACRA - Application Crash Reports for Android</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
--->
     <!-- Albums -->
     <plurals name="album_photos">
         <item quantity="one">1 photo</item>
