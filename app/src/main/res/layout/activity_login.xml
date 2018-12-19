@@ -56,12 +56,14 @@
                             android:id="@+id/url"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:autofillHints="url"
+                            android:contentDescription="@string/login_url_description"
                             android:hint="@string/login_url_hint"
                             android:imeOptions="actionNext"
                             android:inputType="textUri"
                             android:maxLines="1"
+                            android:minHeight="48dp"
                             android:nextFocusDown="@+id/username"
-                            android:autofillHints="url"
                             android:text="@={viewModel.url}" />
                     </android.support.design.widget.TextInputLayout>
 
@@ -75,9 +77,11 @@
                             android:id="@+id/username"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:contentDescription="@string/login_username_description"
                             android:hint="@string/login_username_hint"
                             android:imeOptions="actionNext"
                             android:inputType="text"
+                            android:minHeight="48dp"
                             android:maxLines="1"
                             android:nextFocusDown="@+id/password"
                             android:nextFocusUp="@+id/url"
@@ -96,9 +100,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
+                            android:contentDescription="@string/login_password_description"
                             android:hint="@string/login_password_hint"
                             android:imeOptions="actionDone"
                             android:inputType="textPassword"
+                            android:minHeight="48dp"
                             android:maxLines="1"
                             android:nextFocusDown="@+id/login_button"
                             android:nextFocusUp="@+id/username"
@@ -107,6 +113,7 @@
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.FloatingActionButton
+                        android:contentDescription="@string/login_button_description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="24dp"
