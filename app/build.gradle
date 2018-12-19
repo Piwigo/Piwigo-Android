@@ -13,13 +13,13 @@ if (project.file('../PiwigoSigning.properties').exists()) {
 
     android {
         signingConfigs {
-            gplayRelease {
+            release {
                 storeFile file("../piwigo_android_keystore")
                 storePassword props['keystore.password']
                 keyAlias 'key0'
                 keyPassword props['key.password']
             }
-            release {
+            localRelease {
                 storeFile file("${System.properties['user.home']}${File.separator}/.android_keystore_default")
                 storePassword props['keystore_default.password']
                 keyAlias 'defaultRelease'
@@ -27,15 +27,13 @@ if (project.file('../PiwigoSigning.properties').exists()) {
             }
 
         }
-        play {
-            serviceAccountCredentials = file("../upload_key.json")
-        }
 
         buildTypes {
             release {
-/* uncomment to create a signed release build with your local key
                 signingConfig signingConfigs.release
- */
+            }
+            localRelease {
+                signingConfig signingConfigs.localRelease
             }
         }
     }
@@ -85,6 +83,10 @@ android {
             returnDefaultValues = true
             includeAndroidResources = true
         }
+    }
+    /* Triple-T GPP is applied as plugin in all cases, so we need to configure it always */
+    play {
+        serviceAccountCredentials = file("../upload_key.json")
     }
 }
 
