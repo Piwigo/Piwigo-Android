@@ -1,11 +1,13 @@
-apply plugin: 'com.android.application'
+plugins {
+    id("com.android.application")
+    id("com.github.triplet.play") version "2.0.0"
+}
 
 def isCi = "true" == System.getenv("CI")
 def preDexEnabled = "true" == System.getProperty("pre-dex", "true")
 
-if (project.file('../PiwigoSigning.properties').exists()) {
-    apply plugin: 'com.github.triplet.play'
 
+if (project.file('../PiwigoSigning.properties').exists()) {
     Properties props = new Properties()
     props.load(new FileInputStream(file('../PiwigoSigning.properties')))
 
