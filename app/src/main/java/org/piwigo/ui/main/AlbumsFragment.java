@@ -18,10 +18,8 @@
 
 package org.piwigo.ui.main;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
-import android.arch.lifecycle.Observer;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -58,9 +56,7 @@ public class AlbumsFragment extends BaseFragment {
     }
 
     private void attach(Context context){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            AndroidSupportInjection.inject(this);
-        }
+        AndroidSupportInjection.inject(this);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
