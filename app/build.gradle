@@ -14,9 +14,9 @@ if (project.file('../PiwigoSigning.properties').exists()) {
     android {
         signingConfigs {
             release {
-                storeFile file("../piwigo_android_keystore")
+                storeFile file("../piwigo_android_keystore.jks")
                 storePassword props['keystore.password']
-                keyAlias 'key0'
+                keyAlias 'publishing'
                 keyPassword props['key.password']
             }
             localRelease {
@@ -39,7 +39,7 @@ if (project.file('../PiwigoSigning.properties').exists()) {
     }
     play {
         defaultToAppBundles = true
-        track = 'alpha'
+        track = 'beta'
     }
 }
 
@@ -49,8 +49,8 @@ android {
         applicationId "org.piwigo.android"
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 91
-        versionName "0.9.1"
+        versionCode 92
+        versionName "0.9.2-beta"
     }
     buildTypes {
         debug {
