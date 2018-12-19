@@ -4,7 +4,7 @@ def isCi = "true" == System.getenv("CI")
 def preDexEnabled = "true" == System.getProperty("pre-dex", "true")
 
 if (project.file('../PiwigoSigning.properties').exists()) {
-// not yet    apply plugin: 'com.github.triplet.play'
+    apply plugin: 'com.github.triplet.play'
 
     Properties props = new Properties()
     props.load(new FileInputStream(file('../PiwigoSigning.properties')))
@@ -24,26 +24,20 @@ if (project.file('../PiwigoSigning.properties').exists()) {
                 keyPassword props['key_default.password']
             }
         }
-/*        playAccountConfigs {
-            defaultAccountConfig {
-                serviceAccountEmail = 'gplay-ramack@api-5226730847504381805-103625.iam.gserviceaccount.com'
-                pk12File = file('../gplay-developer-9607db552238.p12')
-            }
+        play {
+            serviceAccountCredentials = file("../upload_key.json")
         }
-*/
+
         buildTypes {
             release {
                 signingConfig signingConfigs.release
             }
         }
     }
-/* not yet
     play {
-        uploadImages = true
-        untrackOld = true
-        track = 'beta'
+        defaultToAppBundles = true
+        track = 'alpha'
     }
-*/
 }
 
 android {
@@ -53,7 +47,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 28
         versionCode 91
-        versionName "0.9.1-dev"
+        versionName "0.9.1"
     }
     buildTypes {
         debug {

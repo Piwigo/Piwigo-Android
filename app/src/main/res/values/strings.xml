@@ -85,7 +85,7 @@
         ]]>
     </string>
     <string name="libraries" translatable="false"><![CDATA[
-        <p><a href="https://github.com/ACRA/acra">ACRA</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+        <p><a href="https://github.com/ACRA/acra">ACRA - Application Crash Reports for Android</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p><a href="http://square.github.io/picasso/">Picasso</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p><a href="http://square.github.io/okhttp3/">Okhttp3</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p><a href="http://square.github.io/retrofit2/">Retrofit2</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
@@ -95,8 +95,6 @@
         <p><a href="https://commons.apache.org/proper/commons-lang/">Apache Commons Lang</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p>appcompat, support-annotations, cardview, design, constraint-layout, recyclerview, design, preference, exifinterface, guava, dagger license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         ]]></string>
-<!--    <p><a href="https://github.com/ACRA/acra">ACRA - Application Crash Reports for Android</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
--->
     <!-- Albums -->
     <plurals name="album_photos">
         <item quantity="one">1 photo</item>
