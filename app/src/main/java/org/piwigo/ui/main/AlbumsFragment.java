@@ -55,23 +55,14 @@ public class AlbumsFragment extends BaseFragment {
         categoryID = 0;
     }
 
-    private void attach(Context context){
+    @Override public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             categoryID = bundle.getInt("Category", 0);
         }
-    }
-
-    @Override public void onAttach(Context context) {
-        attach(context);
         super.onAttach(context);
-    }
-
-    @Override @SuppressWarnings("deprecation") public void onAttach(Activity activity) {
-        attach(activity);
-        super.onAttach(activity);
     }
 
     @Override public void onResume(){
