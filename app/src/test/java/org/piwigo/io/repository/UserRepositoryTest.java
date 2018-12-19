@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public class UserRepositoryTest {
 
-    private static final String URL = "http://demo.piwigo.org/";
+    private static final String URL = "https://piwigo.org/demo";
     private static final String USERNAME = "test";
     private static final String PASSWORD = "test";
     private static final String BAD_CREDENTIAL = "bad";

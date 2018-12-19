@@ -43,7 +43,7 @@ abstract class BaseRepository {
         if (!result.endsWith("/")) {
             result = result + "/";
         }
-        if (!result.startsWith("http://") || !result.startsWith("https://")) {
+        if (!result.startsWith("http://") && !result.startsWith("https://")) {
             result = "https://" + result;
         }
         return result;
