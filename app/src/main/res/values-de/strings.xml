@@ -48,7 +48,7 @@
     <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
     <string name="account_not_selected">Select an account for deletion first</string>
     <!-- About -->
-    <string name="about_text_version">version <b>%1$s</b></string>
+    <string name="about_text_version">Version <b>%1$s</b></string>
     <string name="about_text_intro"> - access Piwigo galleries from your Android phone.</string>
     <string name="about_text_licence_h">Lizenz</string>
     <string name="about_text_licence"><![CDATA[%1$s is free software: you can redistribute it and/or modify it under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License</a>]]></string>
@@ -68,25 +68,25 @@
     <string name="about_text_lib">Folgende Bibliotheken werden von diesem Programm verwendet welche unter den angegebenen Lizenzen veröffentlicht wurden:</string>
     <!-- Albums -->
     <plurals name="album_photos">
-        <item quantity="one">1 photo</item>
-        <item quantity="other">%1$d photos</item>
+        <item quantity="one">1 Foto</item>
+        <item quantity="other">%1$d Fotos</item>
     </plurals>
     <plurals name="album_photos_subs">
-        <item quantity="one">, 1 photo in sub-albums</item>
-        <item quantity="other">, %1$d photos in sub-albums</item>
+        <item quantity="one">, 1 Foto in Unteralben</item>
+        <item quantity="other">, %1$d Fotos in Unteralben</item>
     </plurals>
     <!-- ManageAccounts -->
     <string name="title_activity_manage_accounts">ManageAccountsActivity</string>
     <!-- Privacy Policy -->
-    <string name="privacy_text">Piwigo-Android and Piwigo-Mobile are free, libre and open source client applications for Piwigo galleries. This privacy policy applies to these native Android and iOS applications, connecting to Piwigo sites which are out of the control of the authors. Check the privacy policy of the corresponding sites before configuring an account in Piwigo-Android or Piwigo-Mobile to connect to a gallery.</string>
-    <string name="privacy_last_update">Last updated October 25, 2018</string>
-    <string name="privacy_intro_title">Introduction</string>
+    <string name="privacy_text">Piwigo-Android und Piwigo-Mobile sind kostenlose, freie, Open Source Programme (Apps) um auf eine Piwigo-Gallerie zuzugreifen. Diese Datenschutzerklärung gilt für diese nativen Android- und iOS-Anwendungen, welche eine Verbindung zu Piwigo-Gallerie-Seiten aufbauen, die außerhalb der Kontrolle der Autoren sind. Konsultieren Sie die Datenschutzerklärung der entsprechenden Webseiten, bevor Sie ein Konto in Piwigo-Android oder Piwigo-Mobile konfigurieren um die App mit einer Gallerie zu verbinden.</string>
+    <string name="privacy_last_update">Letzte Aktualisierung: 25. Oktober 2018</string>
+    <string name="privacy_intro_title">Allgemeines</string>
     <string name="privacy_intro_text1">Die Entwickler von Piwigo-Android und Piwigo-Mobile (\"wir\", \"uns\") respektieren die Privatsphäre unserer Nutzer (\"Nutzer\", \"Sie\"). Diese Datenschutzerklärung erläutert wie wir Ihre Daten erheben, verarbeiten, übertragen und schützen wenn Sie unsere mobilen Anwendungen (\"Apps\") verwenden. Unsere Namen können aus den Metadaten in den Git-Repositories und in den Abschnitten über Mitwirkende in den Apps entnommen werden.</string>
-    <string name="privacy_intro_text2">Please read this Privacy Policy carefully. If you do not agree with the terms of this Privacy Policy, please do not access the Applications.</string>
-    <string name="privacy_intro_text3">We reserve the right to make changes to this Privacy Policy at any time and for any reason. We will alert you about any changes by updating the “Last updated” date of this Privacy Policy.</string>
-    <string name="privacy_intro_text4">You are encouraged to periodically review this Privacy Policy to stay informed of updates. You will be deemed to have been made aware of, will be subject to, and will be deemed to have accepted the changes in any revised Privacy Policy by your continued use of the Applications after the date such revised Privacy Policy is posted.</string>
-    <string name="privacy_intro_text5">This Privacy Policy does not apply to the third-party online/mobile store from which you install the Applications or make payments, including any in-app virtual items, which may also collect and use data about you. We are not responsible for any of the data collected by any such third party.</string>
-    <string name="privacy_what_title">What data is processed and stored?</string>
+    <string name="privacy_intro_text2">Bitte lesen Sie diese Datenschutzrichtlinie sorgfältig. Wenn Sie mit den Bedingungen dieser Datenschutzerklärung nicht einverstanden sind, verwenden Sie die Anwendungen nicht.</string>
+    <string name="privacy_intro_text3">Wir behalten uns vor, diese Datenschutzerklärung jederzeit und aus beliebigem Grund zu ändern. Wir benachrichtigt Sie über Änderungen in dieser Datenschutzerklärung indem wir das letzte Aktualisierungsdatum ändern.</string>
+    <string name="privacy_intro_text4">Wir empfehlen Ihnen diese Datenschutzerklärung regelmäßig zu überprüfen um über Neuerungen informiert zu bleiben. Indem Sie die Apps nach der Veröffentlichung einer Überarbeitung weiterhin nutzen bestätigen Sie die Aktualisierung zur Kenntnis genommen zu haben und akzeptieren die überarbeitete Datenschutzerklärung.</string>
+    <string name="privacy_intro_text5">Diese Datenschutzrichtlinie gilt nicht für den Online- / mobilen Store eines Drittanbieters, von dem aus Sie die Anwendungen installieren oder Zahlungen ausführen, einschließlich virtueller In-App-Elemente, die möglicherweise auch Daten über Sie erfassen und verwenden. Wir sind nicht verantwortlich für irgendwelche Daten, die von solchen Dritten gesammelt werden.</string>
+    <string name="privacy_what_title">Welche Daten werden verarbeitet und gespeichert?</string>
     <string name="privacy_what_subTitle1">Piwigo Galleriedaten</string>
     <string name="privacy_what_subText1a">Kontoanmeldeinformationen werden von den Anwendungen gespeichert und an die konfigurierten Websites zur Anmeldung bei einer oder mehreren Piwigo Galerien übertragen. Darüber hinaus werden alle Fotos, Videos und sonstige Dateien, die zum Download/Upload ausgewählt werden und die eingegebenen Inhalte gespeichert, verarbeitet und an die konfigurierten Galerie-Websites übertragen.</string>
     <string name="privacy_what_subTitle2">Standortinformationen</string>
@@ -101,9 +101,9 @@
     <string name="privacy_how_title">Wie sind Ihre Daten geschützt?</string>
     <string name="privacy_how_text1">Die Anwendungen speichern Daten lokal auf dem Gerät auf dem sie ausgeführt werden. Sie sind dafür verantwortlich die gespeicherten Daten vor unbefugtem Zugriff zu schützen. Wir empfehlen dringend HTTPS zu verwenden um die Daten während der Übertragung vor unberechtigtem Zugriff zu schützen. Die Anwendungen versuchen eine verschlüsselte Verbindung über HTTPS zu verwenden, wenn der Benutzer zum ersten Mal eine Verbindung zu einer Piwigo-Gallerie herstellt. Für die Aktualisierung von Zertifikaten und Bibliotheken für den HTTPS-Zugriff ist der Betreiber des Piwigo Servers verantwortlich. Falls die Anwendungen HTTPS nicht verwenden können schalten sie auf HTTP um und die Daten sind bei der Übertragung nicht verschlüsselt.</string>
     <string name="privacy_how_text2">Beim Hochladen von Bildern auf eine Piwigo Gallerie können private Daten wie GPS-Koordinaten oder Kommentare enthalten sein. Im den Einstellungen bieten die Anwendungen eine Option zum Entfernen dieser Daten aus Bilddateien vor dem Upload. Es liegt in der Verantwortung des Benutzers zu entscheiden, ob diese privaten Daten übertragen werden.</string>
-    <string name="privacy_security_title">Security of your information</string>
+    <string name="privacy_security_title">Sicherheit Ihrer Daten</string>
     <string name="privacy_security_text">Wir verwenden technische Sicherheitsmaßnahmen um Ihre persönlichen Daten zu schützen. Obwohl wir Maßnahmen um die persönlichen Daten zu schützen getroffen haben, weisen wir darauf hin, dass trotz unserer Bemühungen, keine Sicherheitsmaßnahme perfekt oder unüberwindbar ist und keine Methode der Datenübertragung absolute Sicherheit gegen Abhören oder sonstigen Missbrauch garantieren kann. Jegliche Information im Internet kann potentiell abfangen oder von Unbefugten missbraucht werden. Daher können wir keine absolute Sicherheit für Ihre persönlichen Daten garantieren.</string>
-    <string name="privacy_contact_title">Contact us</string>
+    <string name="privacy_contact_title">Kontakt</string>
     <string name="privacy_contact_text">Bei Fragen oder Anmerkungen zu dieser Datenschutzerklärung kontaktieren Sie uns bitte über:</string>
     <string name="privacy_contact_address">Piwigo, 42 rue des Vignes, 21800 Quetigny (Frankreich)</string>
     <!-- upload -->
