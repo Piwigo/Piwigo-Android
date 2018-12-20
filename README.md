@@ -15,7 +15,7 @@ If you're considering contributing, a working knowledge of the following would b
 ### Login
 
 <img src="./app/src/main/play/listings/en-US/graphics/phone-screenshots/01_Login.jpg" width="238" />
-<img src="./app/src/main/play/listings/en-US/graphics/tablet-screenshots/01_Login.jpg" width="600" />
+<img src="./app/src/main/play/listings/en-US/graphics/tablet-screenshots/01_Login.png" width="600" />
 
 #### Done
 
