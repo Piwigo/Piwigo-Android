@@ -14,8 +14,8 @@ If you're considering contributing, a working knowledge of the following would b
 
 ### Login
 
-<img src="https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/login-phone.png" width="238" />
-<img src="https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/login-tablet.png" width="600" />
+<img src="./app/src/main/play/listings/en-US/graphics/phone-screenshots/01_Login.jpg" width="238" />
+<img src="./app/src/main/play/listings/en-US/graphics/tablet-screenshots/01_Login.jpg" width="600" />
 
 #### Done
 
@@ -23,12 +23,12 @@ If you're considering contributing, a working knowledge of the following would b
 - User login (see Settings -> Accounts after successful login)
 - Should scale well on all phone and table screens
 - Animations on most devices
-- Better animations on L+ devices
 
 ### Main screen
 
-<img src="https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/albums-phone.png" width="238" />
-<img src="https://raw.githubusercontent.com/Piwigo/Piwigo-Android/master/assets/screenshots/albums-tablet.png" width="600" />
+<img src="./app/src/main/play/listings/en-US/graphics/phone-screenshots/02_Albums.jpg" width="238" />
+<img src="./app/src/main/play/listings/en-US/graphics/phone-screenshots/04_Albums_horizontal.jpg" height="238" />
+<img src="./app/src/main/play/listings/en-US/graphics/phone-screenshots/03_Photos.jpg" width="238" />
 
 ## Licensing
 The project is delivered under the GNU General Public License (GPL) in version 3, or (at your option) any later version of that license. By submitting code or artwork to the project by patches, pull request or any other form the authors guarantee that it is either their own work and they accept to distribute their content under this license or the contribution is (re-)distributable under the terms of this license. If not specifically marked with a dedicated copyright notice, the copyright of the source code is transfered to to Piwigo project as far as permitted by applicable law. If necessary for legal reasons the source code author(s) shall be extracted from the meta data of the version control system.
