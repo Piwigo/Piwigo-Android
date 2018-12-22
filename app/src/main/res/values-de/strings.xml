@@ -64,7 +64,7 @@
     <string name="about_text_contact_2"><![CDATA[Der Quellcode ist auf <a href="https://github.com/Piwigo/Piwigo-Android">Github</a> zu finden.]]></string>
     <string name="about_text_contact_3"><![CDATA[Discussions should take place in the <a href="https://piwigo.org/forum/">Piwigo Forum</a>.]]></string>
     <string name="about_text_contact_4"><![CDATA[For anything you want to tell us privately send an email to <a href="mailto:android@piwigo.org">android@piwigo.org</a>.]]></string>
-    <string name="about_text_support_h">Contribution</string>
+    <string name="about_text_support_h">Mithilfe</string>
     <string name="about_text_support"><![CDATA[In case you want to support the development of %1$s consider discussing <a href="https://github.com/Piwigo/Piwigo-Android/issues">issues on github</a> or submitting <a href="https://github.com/Piwigo/Piwigo-Android/pulls">pull requests</a>.]]></string>
     <string name="about_text_ack_h">Danksagungen</string>
     <string name="about_text_ack_2">Es würde uns freuen auch deinen Namen bald hier auflisten zu können.</string>
