@@ -20,7 +20,7 @@
   -->
 <resources>
     <string name="app_name">Piwigo</string>
-    <string name="title_activity_login">Login</string>
+    <string name="title_activity_login">Connexion</string>
     <string name="title_activity_accounts">Gestion des comptes</string>
     <string name="title_activity_about">À propos</string>
     <string name="title_select_image">Sélectionner une image</string>
@@ -80,17 +80,17 @@
         <item quantity="other">, %1$d photos dans les sous-albums</item>
     </plurals>
     <!-- Privacy Policy -->
-    <string name="privacy_text">Piwigo-Android and Piwigo-Mobile are free, libre and open source client applications for Piwigo galleries. This privacy policy applies to these native Android and iOS applications, connecting to Piwigo sites which are out of the control of the authors. Check the privacy policy of the corresponding sites before configuring an account in Piwigo-Android or Piwigo-Mobile to connect to a gallery.</string>
-    <string name="privacy_last_update">Last updated October 25, 2018</string>
+    <string name="privacy_text">Piwigo-Android et Piwigo-Mobile sont des applications clientes gratuites, libres et open source pour les galeries Piwigo. Cette politique de confidentialité s\'applique à ces applications natives Android et iOS, qui se connectent aux sites Piwigo eux-mêmes hors du contrôle des auteurs. Vérifiez la politique de confidentialité des sites correspondants avant de configurer un compte dans Piwigo-Android ou Piwigo-Mobile pour vous connecter à une galerie.</string>
+    <string name="privacy_last_update">Dernière mise à jour le 25 octobre 2018</string>
     <string name="privacy_intro_title">Introduction</string>
-    <string name="privacy_intro_text1">Developers of Piwigo-Android and Piwigo-Mobile, we (or “us” or “our”) respect the privacy of our users (“user” or “you”). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile applications (the “Applications”). Our names can be extracted from the meta data in the git repositories and within the Applications.</string>
-    <string name="privacy_intro_text2">Please read this Privacy Policy carefully. If you do not agree with the terms of this Privacy Policy, please do not access the Applications.</string>
-    <string name="privacy_intro_text3">We reserve the right to make changes to this Privacy Policy at any time and for any reason. We will alert you about any changes by updating the “Last updated” date of this Privacy Policy.</string>
-    <string name="privacy_intro_text4">You are encouraged to periodically review this Privacy Policy to stay informed of updates. You will be deemed to have been made aware of, will be subject to, and will be deemed to have accepted the changes in any revised Privacy Policy by your continued use of the Applications after the date such revised Privacy Policy is posted.</string>
-    <string name="privacy_intro_text5">This Privacy Policy does not apply to the third-party online/mobile store from which you install the Applications or make payments, including any in-app virtual items, which may also collect and use data about you. We are not responsible for any of the data collected by any such third party.</string>
-    <string name="privacy_what_title">What data is processed and stored?</string>
-    <string name="privacy_what_subTitle1">Piwigo Gallery Data</string>
-    <string name="privacy_what_subText1a">Account credentials are stored by the Applications and submitted to the configured sites to connect to one or several Piwigo galleries. Beside that, all the photos, videos and other files that are selected for download/upload and the entered content is stored, processed and transmitted to the configured gallery site.</string>
+    <string name="privacy_intro_text1">Développeurs de Piwigo-Android et Piwigo-Mobile, nous (ou \"nos\") respectons la vie privée de nos utilisateurs (\"utilisateur\" ou \"vous\"). Cette politique de confidentialité explique comment nous recueillons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez nos applications mobiles (les \"Applications\"). Nos noms peuvent être extraits des métadonnées des référentiels git et de la section Remerciements dans les Applications.</string>
+    <string name="privacy_intro_text2">Veuillez lire attentivement cette Politique de Confidentialité. Si vous n\'êtes pas d\'accord avec les termes de cette politique de confidentialité, veuillez ne pas accéder aux applications.</string>
+    <string name="privacy_intro_text3">Nous nous réservons le droit d\'apporter des modifications à cette Politique de Confidentialité à tout moment et pour quelque raison que ce soit. Nous vous avertirons de tout changement en mettant à jour la date de \"dernière mise à jour\" de la présente politique de confidentialité.</string>
+    <string name="privacy_intro_text4">Nous vous encourageons à consulter régulièrement cette politique de confidentialité pour rester informé des mises à jour. Vous serez considéré avoir été mis au courant de, vous serez soumis et serez considéré comme ayant accepté les modifications de toute politique de confidentialité révisée en continuant à utiliser les applications après que la date d\'affichage de cette politique de confidentialité ait été révisée.</string>
+    <string name="privacy_intro_text5">Cette politique de confidentialité ne s\'applique pas au magasin tiers en ligne pour mobile à partir duquel vous installez les applications ou effectuez des paiements, y compris les éléments virtuels intégrés à l\'application, qui peuvent également collecter et utiliser des données vous concernant. Nous ne sommes pas responsables des données collectées par ces tiers.</string>
+    <string name="privacy_what_title">Quelles données sont traitées et stockées?</string>
+    <string name="privacy_what_subTitle1">Données de Galerie Piwigo</string>
+    <string name="privacy_what_subText1a">Les informations d\'identification du compte sont stockées par les Applications et soumises aux sites configurés pour se connecter à une ou plusieurs galeries Piwigo. De plus, toutes les photos, vidéos et autres fichiers sélectionnés pour téléchargement/téléversement ainsi que les données saisies sont stockés, traités et transmis au site de la galerie configurée.</string>
     <string name="privacy_what_subTitle2">Geo-Location Information</string>
     <string name="privacy_what_subText2a">We may request access or permission to and track location-based information from your mobile device, either continuously or while you are using the Applications, to provide location-based services. If you wish to change our access or permissions, you may do so in your device’s settings.</string>
     <string name="privacy_what_subTitle3">Mobile Device Access</string>
