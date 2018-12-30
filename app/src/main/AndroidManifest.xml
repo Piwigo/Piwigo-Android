@@ -25,7 +25,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Piwigo">
+        android:theme="@style/Theme.Piwigo"
+        android:largeHeap="true">
         <activity
             android:name=".ui.launcher.LauncherActivity"
             android:label="@string/app_name"
