@@ -70,10 +70,10 @@ public class PrivacyPolicyActivity extends BaseActivity {
         mergedPolicyText += "<p>" + getResources().getString(R.string.privacy_what_subText4a) + "</p>";
         mergedPolicyText += "<h2>" + getResources().getString(R.string.privacy_why_title) + "</h2>";
         mergedPolicyText += "<p>" + getResources().getString(R.string.privacy_why_text1) + "</p>";
-        mergedPolicyText += "<p>" + getResources().getString(R.string.privacy_why_text1) + "</p>";
+        mergedPolicyText += "<p>" + getResources().getString(R.string.privacy_why_text2) + "</p>";
         mergedPolicyText += "<h2>" + getResources().getString(R.string.privacy_how_title) + "</h2>";
         mergedPolicyText += "<p>" + getResources().getString(R.string.privacy_how_text1) + "</p>";
-        mergedPolicyText += "<p>" + getResources().getString(R.string.privacy_how_text1) + "</p>";
+        mergedPolicyText += "<p>" + getResources().getString(R.string.privacy_how_text2) + "</p>";
         mergedPolicyText += "<h2>" + getResources().getString(R.string.privacy_security_title) + "</h2>";
         mergedPolicyText += "<p>" + getResources().getString(R.string.privacy_security_text) + "</p>";
         mergedPolicyText += "<h2>" + getResources().getString(R.string.privacy_contact_title) + "</h2>";
