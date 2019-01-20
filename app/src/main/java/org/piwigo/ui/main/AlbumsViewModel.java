@@ -34,6 +34,7 @@ import org.piwigo.io.repository.CategoriesRepository;
 import org.piwigo.io.repository.ImageRepository;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 
+import java.io.IOException;
 import java.util.List;
 
 import rx.Subscriber;
@@ -107,8 +108,14 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override public void onCompleted() {}
 
-        @Override public void onError(Throwable e) {
-            Log.e(TAG, e.getMessage());
+        @Override public void onError(Throwable e)
+        {
+            if(e instanceof IOException) {
+                Log.e(TAG, "CategoriesSubscriber: " + e.getMessage());
+// TODO: #91 tell the user about the network problem
+            }else {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override public void onNext(List<Category> categories) {
@@ -143,7 +150,12 @@ public class AlbumsViewModel extends ViewModel {
         @Override public void onCompleted() {}
 
         @Override public void onError(Throwable e) {
-            Log.e("error", e.getMessage());
+            if(e instanceof IOException) {
+                Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
+// TODO: #91 tell the user about the network problem
+            }else {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override public void onNext(List<ImageInfo> imagelist) {

@@ -42,11 +42,13 @@ public class CategoriesRepository extends BaseRepository {
 
     public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId) {
         RestService restService = restServiceFactory.createForAccount(account);
-        /* TODO: make thumbnail Size configurable */
+        /* TODO: make thumbnail Size configurable, also check for ImageRepository, whether it can reduce the amount of REST/JSON traffic */
         return restService.getCategories(categoryId, "large")
                 .flatMap(response -> Observable.from(response.result.categories))
                 .filter(category -> categoryId == null || category.id != categoryId)
-                .toSortedList((category1, category2) -> Double.compare(Double.parseDouble(category1.globalRank), Double.parseDouble(category2.globalRank)))
+// TODO: #90 generalize sorting
+// TODO: see #87 about the proper sorting for now
+                .toSortedList((category1, category2) -> category1.globalRank.compareTo(category2.globalRank))
                 .compose(applySchedulers());
     }
 }
