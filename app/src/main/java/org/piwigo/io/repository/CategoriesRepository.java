@@ -22,10 +22,14 @@ import android.accounts.Account;
 import android.support.annotation.Nullable;
 
 import org.piwigo.accounts.UserManager;
+import org.piwigo.helper.NaturalOrderComparator;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.Category;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -47,8 +51,8 @@ public class CategoriesRepository extends BaseRepository {
                 .flatMap(response -> Observable.from(response.result.categories))
                 .filter(category -> categoryId == null || category.id != categoryId)
 // TODO: #90 generalize sorting
-// TODO: see #87 about the proper sorting for now
-                .toSortedList((category1, category2) -> category1.globalRank.compareTo(category2.globalRank))
+                .toSortedList((category1, category2) -> NaturalOrderComparator.compare(category1.globalRank, category2.globalRank))
                 .compose(applySchedulers());
+
     }
 }
