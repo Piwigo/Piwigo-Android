@@ -44,7 +44,7 @@
     <string name="login_url_hint">Server address</string>
     <string name="login_url_description">URL of the Piwigo gallery to login</string>
     <string name="login_url_empty">Enter your server address</string>
-    <string name="login_url_invalid">Not a valid server address</string>
+    <string name="login_url_invalid">Please try adding "http://" or "https://" before the address.</string>
     <string name="login_username_description">Username to login to the Piwigo gallery</string>
     <string name="login_username_empty">Enter your username</string>
     <string name="login_username_hint">Username (empty for guest)</string>

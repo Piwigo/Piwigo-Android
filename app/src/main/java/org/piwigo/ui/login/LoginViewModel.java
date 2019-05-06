@@ -135,7 +135,7 @@ public class LoginViewModel extends ViewModel {
         if (url.get() == null || url.get().isEmpty()) {
             urlError.set(resources.getString(R.string.login_url_empty));
             return false;
-        } else if (!WEB_URL.matcher(url.get()).matches()) {
+        } else if (!isValidAddress(url.get())) {
             urlError.set(resources.getString(R.string.login_url_invalid));
             return false;
         }
@@ -170,6 +170,8 @@ public class LoginViewModel extends ViewModel {
             }
         });
     }
+
+    private boolean isValidAddress(String string) { return string.startsWith("https://") || string.startsWith("http://"); }
 
     private boolean isEmpty(String string) {
         return string == null || string.isEmpty();
