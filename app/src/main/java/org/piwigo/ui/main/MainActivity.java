@@ -22,6 +22,7 @@ import android.Manifest;
 import android.accounts.Account;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -35,10 +36,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatEditText;
+import android.text.InputType;
 import android.util.Log;
 import android.widget.Toast;
 
 import org.piwigo.R;
+import org.piwigo.bg.AlbumService;
 import org.piwigo.bg.UploadService;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
@@ -165,6 +170,17 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 startActivity(new Intent(getApplicationContext(),
                         ManageAccountsActivity.class));
                 break;
+            case R.id.nav_create_album:
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_Piwigo_AlertDialog);
+                builder.setTitle("Create album");
+
+                final AppCompatEditText input = new AppCompatEditText(MainActivity.this);
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(input);
+                builder.setPositiveButton("OK", (dialog, which) -> createAlbum(input.getText().toString()));
+                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+                builder.show();
+                break;
             case R.id.nav_upload:
                 // Here, thisActivity is the current activity
 
@@ -229,15 +245,34 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         }
     }
 
-    private void selectPhoto(){
+    private void selectPhoto()
+    {
         Intent intent = new Intent();
         intent.setType("image/*");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        }
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent,
                 getResources().getString(R.string.title_select_image)), SELECT_PICTURES);
+    }
+
+    private void createAlbum(String catName)
+    {
+        int catId = 0;
+
+        Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
+        if (f instanceof AlbumsFragment) {
+            Integer cat = ((AlbumsFragment)f).getViewModel().getCategory();
+            if (cat != null)
+                catId = cat;
+        }
+
+        Intent intent = new Intent(this, AlbumService.class);
+        intent.putExtra(AlbumService.KEY_CATEGORY_NAME, catName);
+        intent.putExtra(AlbumService.KEY_ACCOUNT, userManager.getActiveAccount().getValue());
+        intent.putExtra(AlbumService.KEY_PARENT_CATEGORY_ID, catId);
+
+        startService(intent);
     }
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
