@@ -83,6 +83,9 @@
         <service
             android:name=".bg.UploadService"
             android:exported="false" />
+        <service
+            android:name=".bg.AlbumService"
+            android:exported="false" />
     </application>
 
 </manifest>

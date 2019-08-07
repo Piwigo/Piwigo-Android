@@ -19,6 +19,7 @@
 package org.piwigo.internal.di.module;
 
 import org.piwigo.accounts.PiwigoAccountAuthenticator;
+import org.piwigo.bg.AlbumService;
 import org.piwigo.bg.UploadService;
 import org.piwigo.internal.di.scope.PerActivity;
 import org.piwigo.internal.di.scope.PerFragment;
@@ -50,5 +51,7 @@ public abstract class AndroidInjectorModule {
     @PerFragment @ContributesAndroidInjector(modules = AlbumsFragmentModule.class) abstract AlbumsFragment albumsFragment();
 
     @PerService @ContributesAndroidInjector() abstract UploadService uploadService();
+
+    @PerService @ContributesAndroidInjector() abstract AlbumService albumService();
 
 }
