@@ -93,7 +93,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:error="@{viewModel.passwordError}"
-                        app:errorEnabled="true">
+                        app:errorEnabled="true"
+                        app:passwordToggleEnabled="true" >
 
                         <EditText
                             android:id="@+id/password"
