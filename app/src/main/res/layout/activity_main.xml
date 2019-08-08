@@ -34,6 +34,7 @@
 
             <FrameLayout
                 android:id="@+id/content"
+                android:background="@color/piwigo_background_color"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="?attr/actionBarSize" />
