@@ -8,54 +8,54 @@
             type="org.piwigo.ui.main.MainViewModel" />
     </data>
 
-    <FrameLayout
-        android:id="@+id/drawer_header"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/nav_header_size"
-        android:background="@color/piwigo_grey"
-        android:fitsSystemWindows="true">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_margin="@dimen/nav_header_padding"
-            android:src="@drawable/piwigo_logo"
-            android:contentDescription="@string/nav_icon_description"/>
-
-        <RelativeLayout
+        <FrameLayout
+            android:id="@+id/drawer_header"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
-            android:layout_margin="@dimen/nav_header_padding">
+            android:layout_height="@dimen/nav_header_size"
+            android:background="@color/android_color_light_gray"
+            android:fitsSystemWindows="true">
 
-            <TextView
-                android:id="@+id/username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{viewModel.username}"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/nav_header_user_text_size"
-                tools:text="guest" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/username"
-                android:text="@{viewModel.url}"
-                android:textColor="@android:color/white"
-                tools:text="piwigo.org" />
-<!--
             <ImageView
-                android:id="@+id/more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_action_arrow_drop_down"
-                android:tint="@android:color/white" />
-                -->
-        </RelativeLayout>
-    </FrameLayout>
+                android:layout_gravity="start"
+                android:layout_margin="@dimen/nav_header_padding"
+                android:contentDescription="@string/nav_icon_description"
+                android:src="@drawable/piwigo_logo" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="@dimen/nav_header_padding">
+
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.username}"
+                    android:textColor="@color/piwigo_dark_text_color"
+                    android:textSize="@dimen/nav_header_user_text_size"
+                    tools:text="guest" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/username"
+                    android:text="@{viewModel.url}"
+                    android:textColor="@color/piwigo_dark_text_color"
+                    tools:text="piwigo.org" />
+                <!--
+                <ImageView
+                    android:id="@+id/more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_action_arrow_drop_down"
+                    android:tint="@android:color/white" />
+                    -->
+            </RelativeLayout>
+        </FrameLayout>
 </layout>

@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@color/alpha_grey"
+            android:background="@color/white_semi_transparent"
             android:orientation="vertical"
             android:padding="16dp">
 
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.photos}"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@android:color/white" />
+                android:textColor="@color/piwigo_dark_text_color" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </layout>
