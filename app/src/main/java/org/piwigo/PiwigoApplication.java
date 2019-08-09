@@ -32,6 +32,7 @@ import org.acra.annotation.AcraCore;
 import org.acra.annotation.AcraDialog;
 import org.acra.annotation.AcraMailSender;
 import org.acra.data.StringFormat;
+import org.piwigo.helper.NetworkHelper;
 import org.piwigo.internal.di.component.ApplicationComponent;
 import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
@@ -73,6 +74,7 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
     @Override public void onCreate() {
         super.onCreate();
 
+        new NetworkHelper();
         initializeDependancyInjection();
     }
 
