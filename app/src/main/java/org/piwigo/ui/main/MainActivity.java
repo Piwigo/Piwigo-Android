@@ -172,13 +172,13 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 break;
             case R.id.nav_create_album:
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_Piwigo_AlertDialog);
-                builder.setTitle("Create album");
+                builder.setTitle(R.string.create_album_title);
 
                 final AppCompatEditText input = new AppCompatEditText(MainActivity.this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 builder.setView(input);
-                builder.setPositiveButton("OK", (dialog, which) -> createAlbum(input.getText().toString()));
-                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+                builder.setPositiveButton(R.string.button_ok, (dialog, which) -> createAlbum(input.getText().toString()));
+                builder.setNegativeButton(R.string.button_cancel, (dialog, which) -> dialog.cancel());
                 builder.show();
                 break;
             case R.id.nav_upload:
