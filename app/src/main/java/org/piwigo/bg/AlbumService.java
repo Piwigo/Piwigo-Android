@@ -5,6 +5,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.widget.Toast;
 
+import org.piwigo.R;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.AddCategoryResponse;
@@ -49,20 +50,18 @@ public class AlbumService extends IntentService {
             @Override
             public void onResponse(Call<AddCategoryResponse> call, Response<AddCategoryResponse> response) {
                 if (response.raw().code() == 200) {
-                    if (response.body().stat.equals("ok")) {
-                        // TODO: make text localizable
-                        Toast.makeText(getApplicationContext(), "Created album: " + catName + " !", Toast.LENGTH_LONG).show();
-                    }
+                    if (response.body().stat.equals("ok"))
+                        Toast.makeText(getApplicationContext(), R.string.create_album_success, Toast.LENGTH_LONG).show();
                     else
-                        Toast.makeText(getApplicationContext(), "Unable to create a new album..", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), R.string.create_album_error, Toast.LENGTH_LONG).show();
                 }
                 else
-                    Toast.makeText(getApplicationContext(), "Error while creating album..", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.create_album_error, Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onFailure(Call<AddCategoryResponse> call, Throwable t) {
-                // TODO: do something
+                t.printStackTrace();
             }
         });
     }
