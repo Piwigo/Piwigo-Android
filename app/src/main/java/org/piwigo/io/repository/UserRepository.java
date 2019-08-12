@@ -23,9 +23,12 @@ import android.util.Log;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.CookieHelper;
+import org.piwigo.helper.URLHelper;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.LoginResponse;
+
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -43,11 +46,19 @@ public class UserRepository extends BaseRepository {
         String url = userManager.getSiteUrl(account);
         String username = userManager.getUsername(account);
         String password = userManager.getPassword(account);
-        Observable<LoginResponse> result = login(url, username, password);
+        Observable<LoginResponse> result = null;
+        try {
+            result = login(url, username, password);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
-    public Observable<LoginResponse> login(String url, String username, String password) {
+    public Observable<LoginResponse> login(String url, String username, String password) throws ExecutionException, InterruptedException {
+        url = new URLHelper().execute(url).get();
         RestService restService = restServiceFactory.createForUrl(validateUrl(url));
 
         final LoginResponse loginResponse = new LoginResponse();
@@ -73,10 +84,11 @@ public class UserRepository extends BaseRepository {
     }
 
     /* intended only for Login view, otherwise consider status(Account account) */
-    public Observable<LoginResponse> status(String siteUrl) {
+    public Observable<LoginResponse> status(String siteUrl) throws ExecutionException, InterruptedException {
         if(!siteUrl.endsWith("/")){
             siteUrl = siteUrl + "/";
         }
+        siteUrl = new URLHelper().execute(siteUrl).get();
         RestService restService = restServiceFactory.createForUrl(siteUrl);
         return status(restService, siteUrl);
     }

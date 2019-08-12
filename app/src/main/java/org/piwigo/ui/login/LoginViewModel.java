@@ -35,6 +35,7 @@ import org.piwigo.internal.binding.observable.FABProgressCircleObservable;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
 
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import rx.Subscriber;
@@ -47,7 +48,7 @@ public class LoginViewModel extends ViewModel {
 
     @VisibleForTesting static Pattern WEB_URL = Patterns.WEB_URL;
 
-    public ObservableField<String> url = new ObservableField<>("https://");
+    public ObservableField<String> url = new ObservableField<>();
     public ObservableField<String> urlError = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> usernameError = new ObservableField<>();
@@ -91,14 +92,26 @@ public class LoginViewModel extends ViewModel {
 
             if (isGuest()) {
                 progressCircle.show();
-                subscription = userRepository
-                        .status(url.get())
-                        .subscribe(new LoginSubscriber());
+                try {
+                    subscription = userRepository
+                            .status(url.get())
+                            .subscribe(new LoginSubscriber());
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } else if (loginValid) {
                 progressCircle.show();
-                subscription = userRepository
-                        .login(url.get(), username.get(), password.get())
-                        .subscribe(new LoginSubscriber());
+                try {
+                    subscription = userRepository
+                            .login(url.get(), username.get(), password.get())
+                            .subscribe(new LoginSubscriber());
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
