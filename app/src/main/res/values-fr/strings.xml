@@ -112,6 +112,13 @@
     <string name="uploading_toast">Transfert d\'image en cours</string>
     <string name="uploading_not_to_cat_null">Le téléchargement n\'est possible que dans un album.</string>
     <string name="storage_permission_explaination">Le téléchargement de photos n’est possible que si vous donnez accès au stockage.</string>
+    <!-- Album created -->
+    <string name="create_album_title">Create an album</string>
+    <string name="create_album_success">Album created !</string>
+    <string name="create_album_error">Unable to create album..</string>
+    <!-- Buttons -->
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancel</string>
     <!-- ACRA crash reporting -->
     <string name="crash_dialog_text">Une erreur inattendue s\'est produite obligeant l\'application à s\'arrêter. S\'il vous plaît, aidez-nous à résoudre ce problème en nous envoyant des données d\'erreur, tout ce que vous avez à faire est de cliquer sur OK et d\'envoyer l\'email que nous avons préparé.</string>
     <string name="crash_dialog_comment_prompt">Vous pouvez ajouter vos commentaires sur le problème ci-dessous:</string>
