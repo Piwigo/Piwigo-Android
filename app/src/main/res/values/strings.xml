@@ -145,6 +145,15 @@
     <string name="uploading_not_to_cat_null">Uploading is only possible in an album.</string>
     <string name="storage_permission_explaination">Uploading photos is only possible if you give access to the storage.</string>
 
+    <!-- Album created -->
+    <string name="create_album_title">Create an album</string>
+    <string name="create_album_success">Album created !</string>
+    <string name="create_album_error">Unable to create album..</string>
+
+    <!-- Buttons -->
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancel</string>
+
     <!-- ACRA crash reporting -->
     <string name="crash_dialog_text">An unexpected error occurred forcing the application to stop. Please help us fix this by sending us error data, all you have to do is click OK and send the email that we prepared.</string>
     <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
