@@ -50,16 +50,11 @@ public class AlbumService extends IntentService {
         call.enqueue(new Callback<AddCategoryResponse>() {
             @Override
             public void onResponse(Call<AddCategoryResponse> call, Response<AddCategoryResponse> response) {
-                if (response.raw().code() == 200) {
-                    if (response.body().stat.equals("ok"))
-                        Toast.makeText(getApplicationContext(), R.string.create_album_success, Toast.LENGTH_LONG).show();
-                    else
-                        Toast.makeText(getApplicationContext(), R.string.create_album_error, Toast.LENGTH_LONG).show();
-                }
+                if (response.raw().code() == 200 && response.body().stat.equals("ok"))
+                    Toast.makeText(getApplicationContext(), R.string.create_album_success, Toast.LENGTH_LONG).show();
                 else
                     Toast.makeText(getApplicationContext(), R.string.create_album_error, Toast.LENGTH_LONG).show();
             }
-
             @Override
             public void onFailure(Call<AddCategoryResponse> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), R.string.create_album_error, Toast.LENGTH_LONG).show();
