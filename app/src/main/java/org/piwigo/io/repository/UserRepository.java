@@ -29,6 +29,8 @@ import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.LoginResponse;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -58,11 +60,12 @@ public class UserRepository extends BaseRepository {
     }
 
     public Observable<LoginResponse> login(String url, String username, String password) throws ExecutionException, InterruptedException {
-        url = new URLHelper().execute(url).get();
-        RestService restService = restServiceFactory.createForUrl(validateUrl(url));
+        String newUrl = url;
+        newUrl = new URLHelper().execute(url).get();
+        RestService restService = restServiceFactory.createForUrl(validateUrl(newUrl));
 
         final LoginResponse loginResponse = new LoginResponse();
-        loginResponse.url = url;
+        loginResponse.url = newUrl;
         loginResponse.username = username;
         loginResponse.password = password;
 
@@ -85,12 +88,12 @@ public class UserRepository extends BaseRepository {
 
     /* intended only for Login view, otherwise consider status(Account account) */
     public Observable<LoginResponse> status(String siteUrl) throws ExecutionException, InterruptedException {
+        String newUrl = new URLHelper().execute(siteUrl).get();
         if(!siteUrl.endsWith("/")){
-            siteUrl = siteUrl + "/";
+            newUrl = newUrl + "/";
         }
-        siteUrl = new URLHelper().execute(siteUrl).get();
-        RestService restService = restServiceFactory.createForUrl(siteUrl);
-        return status(restService, siteUrl);
+        RestService restService = restServiceFactory.createForUrl(newUrl);
+        return status(restService, newUrl);
     }
 
     public Observable<LoginResponse> status(Account account) {
