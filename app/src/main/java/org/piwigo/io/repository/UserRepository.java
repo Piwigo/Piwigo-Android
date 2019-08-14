@@ -49,19 +49,21 @@ public class UserRepository extends BaseRepository {
         String username = userManager.getUsername(account);
         String password = userManager.getPassword(account);
         Observable<LoginResponse> result = null;
-        try {
-            result = login(url, username, password);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        result = login(url, username, password);
         return result;
     }
 
-    public Observable<LoginResponse> login(String url, String username, String password) throws ExecutionException, InterruptedException {
-        String newUrl = url;
-        newUrl = new URLHelper().execute(url).get();
+    public Observable<LoginResponse> login(String url, String username, String password) {
+        String newUrl = null;
+        try {
+            newUrl = new URLHelper().execute(url).get();
+        } catch (ExecutionException e) {
+            Log.e("UserRepository", "ExecutionException", e.getCause());
+        } catch (InterruptedException e) {
+            Log.e("UserRepository", "InterruptedException", e.getCause());
+        }
+        if (newUrl == null)
+            newUrl = url;
         RestService restService = restServiceFactory.createForUrl(validateUrl(newUrl));
 
         final LoginResponse loginResponse = new LoginResponse();
@@ -87,8 +89,17 @@ public class UserRepository extends BaseRepository {
     }
 
     /* intended only for Login view, otherwise consider status(Account account) */
-    public Observable<LoginResponse> status(String siteUrl) throws ExecutionException, InterruptedException {
-        String newUrl = new URLHelper().execute(siteUrl).get();
+    public Observable<LoginResponse> status(String siteUrl) {
+        String newUrl = null;
+        try {
+            newUrl = new URLHelper().execute(siteUrl).get();
+        } catch (ExecutionException e) {
+            Log.e("UserRepository", "ExecutionException", e.getCause());
+        } catch (InterruptedException e) {
+            Log.e("UserRepository", "InterruptedException", e.getCause());
+        }
+        if (newUrl == null)
+            newUrl  = siteUrl;
         if(!siteUrl.endsWith("/")){
             newUrl = newUrl + "/";
         }
