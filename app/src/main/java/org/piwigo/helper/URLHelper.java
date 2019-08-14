@@ -3,6 +3,7 @@ package org.piwigo.helper;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.main.MainActivity;
@@ -21,19 +22,19 @@ public class URLHelper extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... url) {
-        url[0] = url[0].replaceAll("https://", "").replaceAll("http://", "");
+        String newUrl = url[0].replaceAll("https://", "").replaceAll("http://", "");
         try {
-            if (isHttpsWebsite(url[0]))
-                return ("https://" + url[0]);
-            else if (isHttpWebsite(url[0]))
-                return ("http://" + url[0]);
+            if (isHttpsWebsite(newUrl))
+                return ("https://" + newUrl);
+            else if (isHttpWebsite(newUrl))
+                return ("http://" + newUrl);
             else
-                return (null);
+                return ("https://" + newUrl);
         }
         catch (IOException e)
         {
             e.printStackTrace();
-            return (null);
+            return ("https://" + newUrl);
         }
     }
 
@@ -48,7 +49,11 @@ public class URLHelper extends AsyncTask<String, Void, String> {
         try {
             responseCode = httpsCon.getResponseCode();
         } catch (SSLException e) {
-            e.printStackTrace();
+            Log.e("URLHelper", "SSLException", e.getCause());
+            return (false);
+        }
+        catch (UnknownHostException e1) {
+            Log.e("URLHelper", "UnknownHostException", e1.getCause());
             return (false);
         }
         httpsCon.disconnect();
@@ -68,7 +73,7 @@ public class URLHelper extends AsyncTask<String, Void, String> {
         try {
             responseCode = httpCon.getResponseCode();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            Log.e("URLHelper", "UnknownHostException", e.getCause());
             return (false);
         }
         httpCon.disconnect();
