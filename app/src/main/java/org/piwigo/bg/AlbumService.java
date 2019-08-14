@@ -3,6 +3,7 @@ package org.piwigo.bg;
 import android.accounts.Account;
 import android.app.IntentService;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.piwigo.R;
@@ -61,7 +62,8 @@ public class AlbumService extends IntentService {
 
             @Override
             public void onFailure(Call<AddCategoryResponse> call, Throwable t) {
-                t.printStackTrace();
+                Toast.makeText(getApplicationContext(), R.string.create_album_error, Toast.LENGTH_LONG).show();
+                Log.e("AlbumService", "Unable to create a new album:", t);
             }
         });
     }
