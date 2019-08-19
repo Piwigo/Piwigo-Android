@@ -92,26 +92,14 @@ public class LoginViewModel extends ViewModel {
 
             if (isGuest()) {
                 progressCircle.show();
-                try {
-                    subscription = userRepository
-                            .status(url.get())
-                            .subscribe(new LoginSubscriber());
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                subscription = userRepository
+                        .status(url.get())
+                        .subscribe(new LoginSubscriber());
             } else if (loginValid) {
                 progressCircle.show();
-                try {
-                    subscription = userRepository
-                            .login(url.get(), username.get(), password.get())
-                            .subscribe(new LoginSubscriber());
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                subscription = userRepository
+                        .login(url.get(), username.get(), password.get())
+                        .subscribe(new LoginSubscriber());
             }
         }
     }
