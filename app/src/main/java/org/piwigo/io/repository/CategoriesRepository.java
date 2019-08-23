@@ -19,7 +19,7 @@
 package org.piwigo.io.repository;
 
 import android.accounts.Account;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.NaturalOrderComparator;
@@ -27,9 +27,6 @@ import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.Category;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;

@@ -18,15 +18,13 @@
 
 package org.piwigo.ui.about;
 
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
+import androidx.appcompat.app.ActionBar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
-import org.piwigo.BuildConfig;
 import org.piwigo.R;
 import org.piwigo.ui.shared.BaseActivity;
 

@@ -20,7 +20,7 @@ package org.piwigo.io.repository;
 
 
 import android.accounts.Account;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestService;

@@ -20,9 +20,9 @@
 package org.piwigo.ui.main;
 
 import android.accounts.Account;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModel;
 import android.content.res.Resources;
-import android.databinding.ObservableArrayList;
+import androidx.databinding.ObservableArrayList;
 import android.util.Log;
 
 import org.piwigo.BR;

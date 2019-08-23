@@ -18,7 +18,7 @@
 
 package org.piwigo.internal.di.component;
 
-import android.databinding.DataBindingComponent;
+import androidx.databinding.DataBindingComponent;
 
 import org.piwigo.internal.di.module.BindingModule;
 import org.piwigo.internal.di.scope.DataBinding;
