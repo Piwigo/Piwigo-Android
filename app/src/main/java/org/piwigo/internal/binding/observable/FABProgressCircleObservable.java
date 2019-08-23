@@ -18,7 +18,7 @@
 
 package org.piwigo.internal.binding.observable;
 
-import android.databinding.BaseObservable;
+import androidx.databinding.BaseObservable;
 
 public class FABProgressCircleObservable extends BaseObservable {
 

@@ -18,8 +18,8 @@
 
 package org.piwigo.ui.login;
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule;
-import android.arch.lifecycle.Observer;
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.lifecycle.Observer;
 import android.content.res.Resources;
 
 import org.junit.Before;

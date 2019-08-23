@@ -19,13 +19,13 @@
 package org.piwigo.ui.login;
 
 import android.accounts.Account;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import android.content.res.Resources;
-import android.databinding.Observable;
-import android.databinding.ObservableField;
-import android.support.annotation.VisibleForTesting;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableField;
+import androidx.annotation.VisibleForTesting;
 import android.util.Log;
 import android.util.Patterns;
 

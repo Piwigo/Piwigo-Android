@@ -29,7 +29,7 @@
             type="org.piwigo.ui.account.ManageAccountsViewModel" />
     </data>
 
-    <android.support.v4.widget.DrawerLayout
+    <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:background="@color/piwigo_background_color"
         android:layout_width="match_parent"
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/account_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -57,7 +57,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="?attr/actionBarSize">
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/account_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -65,9 +65,9 @@
                     app:viewBinder="@{viewModel.viewBinder}"
                     >
 
-                </android.support.v7.widget.RecyclerView>
+                </androidx.recyclerview.widget.RecyclerView>
             </FrameLayout>
         </RelativeLayout>
 
-    </android.support.v4.widget.DrawerLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

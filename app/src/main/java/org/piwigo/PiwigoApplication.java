@@ -20,11 +20,10 @@
 package org.piwigo;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Service;
 import android.content.Context;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 
 import org.acra.ACRA;
 import org.acra.ReportField;

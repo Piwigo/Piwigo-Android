@@ -20,22 +20,17 @@
 package org.piwigo.ui.main;
 
 import android.accounts.Account;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
-import android.databinding.Observable;
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
-import android.databinding.ObservableInt;
-import android.util.Log;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+import androidx.databinding.ObservableInt;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
-import org.piwigo.ui.login.LoginViewModel;
-
-import rx.Subscriber;
 
 public class MainViewModel extends ViewModel {
 // TODO: cleanup here...
