@@ -20,27 +20,37 @@ package org.piwigo.ui.main;
 
 import android.Manifest;
 import android.accounts.Account;
+
+import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+
 import androidx.databinding.DataBindingUtil;
+
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
+
 import android.text.InputType;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.leinardi.android.speeddial.SpeedDialActionItem;
+import com.leinardi.android.speeddial.SpeedDialView;
 
 import org.piwigo.R;
 import org.piwigo.bg.AlbumService;
@@ -68,18 +78,25 @@ import rx.Observable;
 public class MainActivity extends BaseActivity implements HasSupportFragmentInjector {
     private static final String TAG = MainActivity.class.getName();
 
-    @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
-    @Inject MainViewModelFactory viewModelFactory;
-    @Inject RestServiceFactory restServiceFactory;
-    @Inject UserRepository userRepository;
+    @Inject
+    DispatchingAndroidInjector<Fragment> fragmentInjector;
+    @Inject
+    MainViewModelFactory viewModelFactory;
+    @Inject
+    RestServiceFactory restServiceFactory;
+    @Inject
+    UserRepository userRepository;
 
     private Account currentAccount = null;
+
+    private SpeedDialView speedDialView;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
 
     int SELECT_PICTURES = 1;
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
 
@@ -94,11 +111,15 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
 
+        speedDialView = findViewById(R.id.speedDial);
+        setFABListener();
+        refreshFAB(0);
+
         currentAccount = userManager.getActiveAccount().getValue();
 
         final Observer<Account> accountObserver = account -> {
             // reload the albums on account changes
-            if(account != null && !account.equals(currentAccount)) {
+            if (account != null && !account.equals(currentAccount)) {
                 currentAccount = account;
                 viewModel.username.set(userManager.getUsername(account));
                 viewModel.url.set(userManager.getSiteUrl(account));
@@ -110,11 +131,13 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                     public void onCompleted() {
                     }
 
-                    @Override public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
                         Log.e(TAG, "Login failed: " + e.getMessage());
                     }
 
-                    @Override public void onNext(LoginResponse loginResponse) {
+                    @Override
+                    public void onNext(LoginResponse loginResponse) {
                         Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
 // TODO: it is crazy to have this code here AND in LauncherActivity
                         userManager.setCookie(account, loginResponse.pwgId);
@@ -123,7 +146,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 });
                 initStartFragment(viewModel);
             }
-            if(account == null){
+            if (account == null) {
                 viewModel.username.set("");
                 viewModel.url.set("");
             }
@@ -151,18 +174,53 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 .commit();
     }
 
-    @Override protected void onResume() {
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        refreshFAB(getCurrentCategoryId());
+    }
+
+    protected void refreshFAB(int categoryId) {
+        speedDialView.close(true);
+        speedDialView.clearActionItems();
+        if (categoryId != 0) {
+            speedDialView.addActionItem(new SpeedDialActionItem.Builder(R.id.fab_create_subalbum, R.drawable.ic_action_folder)
+                    .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setFabImageTintColor(ResourcesCompat.getColor(getResources(), R.color.piwigo_orange, getTheme()))
+                    .setLabelColor(Color.BLACK)
+                    .setLabelBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setLabelClickable(true)
+                    .setLabel(R.string.fab_create_subalbum).create());
+            speedDialView.addActionItem(new SpeedDialActionItem.Builder(R.id.fab_upload_photos, R.drawable.ic_action_cloud_upload)
+                    .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setFabImageTintColor(ResourcesCompat.getColor(getResources(), R.color.piwigo_orange, getTheme()))
+                    .setLabelColor(Color.BLACK)
+                    .setLabelBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setLabelClickable(true)
+                    .setLabel(R.string.fab_upload_photos).create());
+        } else
+            speedDialView.addActionItem(new SpeedDialActionItem.Builder(R.id.fab_create_album, R.drawable.ic_action_folder)
+                    .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setFabImageTintColor(ResourcesCompat.getColor(getResources(), R.color.piwigo_orange, getTheme()))
+                    .setLabelColor(Color.BLACK)
+                    .setLabelBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setLabelClickable(true)
+                    .setLabel(R.string.fab_create_album).create());
+    }
+
+    @Override
+    protected void onResume() {
         super.onResume();
         MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.navigationItemId.set(R.id.nav_albums);
     }
 
-    @Override public AndroidInjector<Fragment> supportFragmentInjector() {
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
         return fragmentInjector;
     }
 
     private void itemSelected(int itemId) {
-
         switch (itemId) {
             case R.id.nav_albums:
                 break;
@@ -170,47 +228,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 startActivity(new Intent(getApplicationContext(),
                         ManageAccountsActivity.class));
                 break;
-            case R.id.nav_create_album:
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_Piwigo_AlertDialog);
-                builder.setTitle(R.string.create_album_title);
-
-                final AppCompatEditText input = new AppCompatEditText(MainActivity.this);
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                builder.setView(input);
-                builder.setPositiveButton(R.string.button_ok, (dialog, which) -> createAlbum(input.getText().toString()));
-                builder.setNegativeButton(R.string.button_cancel, (dialog, which) -> dialog.cancel());
-                builder.show();
-                break;
-            case R.id.nav_upload:
-                // Here, thisActivity is the current activity
-
-                /* TODO: check whether we really need the permission unconditionally
-                * I (ramack) could imagine, that we don't need it depending on the media chooser... */
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-
-                    // Permission is not granted
-                    // Should we show an explanation?
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        // Show an explanation to the user *asynchronously* -- don't block
-                        // this thread waiting for the user's response! After the user
-                        // sees the explanation, try again to request the permission.
-                        Toast.makeText(this,R.string.storage_permission_explaination, Toast.LENGTH_LONG).show();
-                    } else {
-                        // No explanation needed; request the permission
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-                    }
-                } else {
-                    // Permission has already been granted
-                    selectPhoto();
-                }
-
-
-				break;
             case R.id.nav_about:
                 startActivity(new Intent(getApplicationContext(),
                         AboutActivity.class));
@@ -220,12 +237,57 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                         PrivacyPolicyActivity.class));
                 break;
 
-			default:
-                Toast.makeText(this,"not yet implemented",Toast.LENGTH_LONG).show();
+            default:
+                Toast.makeText(this, "not yet implemented", Toast.LENGTH_LONG).show();
                 break;
         }
     }
 
+    public void setFABListener()
+    {
+        speedDialView.setOnActionSelectedListener(speedDialActionItem -> {
+            switch (speedDialActionItem.getId()) {
+                case R.id.fab_create_album:
+                case R.id.fab_create_subalbum:
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_Piwigo_AlertDialog);
+                    builder.setTitle(R.string.create_album_title);
+
+                    final AppCompatEditText input = new AppCompatEditText(MainActivity.this);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    builder.setView(input);
+                    builder.setPositiveButton(R.string.button_ok, (dialog, which) -> createAlbum(input.getText().toString()));
+                    builder.setNegativeButton(R.string.button_cancel, (dialog, which) -> dialog.cancel());
+                    builder.show();
+                    return false;
+                case R.id.fab_upload_photos:
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+
+                        // Permission is not granted
+                        // Should we show an explanation?
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            // Show an explanation to the user *asynchronously* -- don't block
+                            // this thread waiting for the user's response! After the user
+                            // sees the explanation, try again to request the permission.
+                            Toast.makeText(this, R.string.storage_permission_explaination, Toast.LENGTH_LONG).show();
+                        } else {
+                            // No explanation needed; request the permission
+                            ActivityCompat.requestPermissions(this,
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                        }
+                    } else {
+                        // Permission has already been granted
+                        selectPhoto();
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        });
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -244,8 +306,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         }
     }
 
-    private void selectPhoto()
-    {
+    private void selectPhoto() {
         Intent intent = new Intent();
         intent.setType("image/*");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -255,16 +316,19 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 getResources().getString(R.string.title_select_image)), SELECT_PICTURES);
     }
 
-    private void createAlbum(String catName)
-    {
+    private int getCurrentCategoryId() {
         int catId = 0;
-
         Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
         if (f instanceof AlbumsFragment) {
-            Integer cat = ((AlbumsFragment)f).getViewModel().getCategory();
+            Integer cat = ((AlbumsFragment) f).getViewModel().getCategory();
             if (cat != null)
                 catId = cat;
         }
+        return (catId);
+    }
+
+    private void createAlbum(String catName) {
+        int catId = getCurrentCategoryId();
 
         Intent intent = new Intent(this, AlbumService.class);
         intent.putExtra(AlbumService.KEY_CATEGORY_NAME, catName);
@@ -274,11 +338,12 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         startService(intent);
     }
 
-    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == SELECT_PICTURES) {
-            if(resultCode == RESULT_OK) {
-                if(data.getData() != null) {
+        if (requestCode == SELECT_PICTURES) {
+            if (resultCode == RESULT_OK) {
+                if (data.getData() != null) {
 
                     String imageName = "";
                     Uri targetUri = data.getData();
@@ -291,21 +356,11 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                         /* TODO add proper error handling */
                     }
 
-
-                    int catid = 0;
-                    Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
-                    if(f instanceof AlbumsFragment){
-                        Integer cat = ((AlbumsFragment)f).getViewModel().getCategory();
-                        if (cat != null){
-                            catid = cat;
-                        }
-                    }
-
                     Intent intent = new Intent(this, UploadService.class);
                     intent.putExtra(UploadService.KEY_IMAGE_NAME, imageName);
                     intent.putExtra(UploadService.KEY_IMAGE_URI, targetUri);
                     intent.putExtra(UploadService.KEY_ACCOUNT, userManager.getActiveAccount().getValue());
-                    intent.putExtra(UploadService.KEY_CATEGORY_ID, catid);
+                    intent.putExtra(UploadService.KEY_CATEGORY_ID, getCurrentCategoryId());
 
                     startService(intent);
                 }
@@ -323,11 +378,11 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
             int mediaDataIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
-            if(nameIndex > -1) {
+            if (nameIndex > -1) {
                 return cursor.getString(nameIndex);
-            }else if(mediaDataIndex > -1){
+            } else if (mediaDataIndex > -1) {
                 return new File(cursor.getString(mediaDataIndex)).getName();
-            }else{
+            } else {
                 /* no usable column found, return the last Uri segment as name */
                 return alternative;
             }

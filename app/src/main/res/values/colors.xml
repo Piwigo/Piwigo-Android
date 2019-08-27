@@ -8,5 +8,6 @@
     <color name="piwigo_light_gray">#efeff4</color>
     <color name="piwigo_dark_gray">#2a2a2d</color>
     <color name="white_semi_transparent">#ccffffff</color>
-    <color name="android_color_light_gray">#fafafa</color>b
+    <color name="android_color_light_gray">#fafafa</color>
+    <color name="material_white">#ffffff</color>
 </resources>

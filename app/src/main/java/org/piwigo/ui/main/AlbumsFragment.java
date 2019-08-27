@@ -31,6 +31,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.leinardi.android.speeddial.SpeedDialActionItem;
+import com.leinardi.android.speeddial.SpeedDialView;
+
 import org.piwigo.R;
 import org.piwigo.databinding.FragmentAlbumsBinding;
 import org.piwigo.ui.shared.BaseFragment;

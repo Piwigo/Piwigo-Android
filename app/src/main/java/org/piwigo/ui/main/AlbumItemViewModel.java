@@ -57,21 +57,18 @@ public class AlbumItemViewModel extends ViewModel {
 
     public void onclickdo(View v){
         Context ctx = v.getContext();
-        while (ctx instanceof ContextWrapper
-                && !(ctx instanceof AppCompatActivity)) {
-            ctx = ((ContextWrapper)ctx).getBaseContext();
-        }
+        MainActivity mainActivity = (MainActivity)ctx;
 
-        if(ctx instanceof AppCompatActivity) {
-            Bundle bndl = new Bundle();
-            bndl.putInt("Category", catid);
-            AlbumsFragment frag = new AlbumsFragment();
-            frag.setArguments(bndl);
-            ((AppCompatActivity) ctx).getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.content, frag)
-                    .addToBackStack(null)
-                    .commit();
-        }
+        mainActivity.refreshFAB(catid);
+
+        Bundle bndl = new Bundle();
+        bndl.putInt("Category", catid);
+        AlbumsFragment frag = new AlbumsFragment();
+        frag.setArguments(bndl);
+        ((AppCompatActivity) ctx).getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content, frag)
+                .addToBackStack(null)
+                .commit();
     }
 }
