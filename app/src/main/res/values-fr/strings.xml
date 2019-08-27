@@ -119,6 +119,10 @@
     <!-- Buttons -->
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
+    <!-- FAB -->
+    <string name="fab_create_album">Create an album</string>
+    <string name="fab_create_subalbum">Create a sub-album</string>
+    <string name="fab_upload_photos">Upload photos</string>
     <!-- ACRA crash reporting -->
     <string name="crash_dialog_text">Une erreur inattendue s\'est produite obligeant l\'application à s\'arrêter. S\'il vous plaît, aidez-nous à résoudre ce problème en nous envoyant des données d\'erreur, tout ce que vous avez à faire est de cliquer sur OK et d\'envoyer l\'email que nous avons préparé.</string>
     <string name="crash_dialog_comment_prompt">Vous pouvez ajouter vos commentaires sur le problème ci-dessous:</string>
