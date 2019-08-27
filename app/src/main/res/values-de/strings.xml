@@ -119,6 +119,10 @@
     <!-- Buttons -->
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
+    <!-- FAB -->
+    <string name="fab_create_album">Create an album</string>
+    <string name="fab_create_subalbum">Create a sub-album</string>
+    <string name="fab_upload_photos">Upload photos</string>
     <!-- ACRA crash reporting -->
     <string name="crash_dialog_text">An unexpected error occurred forcing the application to stop. Please help us fix this by sending us error data, all you have to do is click OK and send the email that we prepared.</string>
     <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
