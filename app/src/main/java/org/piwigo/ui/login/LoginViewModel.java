@@ -33,6 +33,8 @@ import androidx.annotation.VisibleForTesting;
 import android.util.Log;
 import android.util.Patterns;
 
+import com.github.jorgecastilloprz.FABProgressCircle;
+
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.URLHelper;
@@ -89,12 +91,13 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    void onLoginClick() {
+    void onLoginClick(FABProgressCircle fabCircle) {
         boolean siteValid = isSiteValid();
         boolean loginValid = isGuest() || isLoginValid();
 
         if (!siteValid)
             return;
+        fabCircle.show();
         try {
             new URLHelper(newUrl -> testConnection(loginValid, newUrl)).execute(url.get());
         } catch (Exception e) {

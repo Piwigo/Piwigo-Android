@@ -100,8 +100,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     public void onClick(View v) {
-        fabProgressCircle.show();
-        viewModel.onLoginClick();
+        viewModel.onLoginClick(fabProgressCircle);
     }
 
     /**
