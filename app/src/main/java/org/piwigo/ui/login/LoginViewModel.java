@@ -135,11 +135,9 @@ public class LoginViewModel extends ViewModel {
     private boolean isSiteValid() {
         if (url.get() == null || url.get().isEmpty()) {
             urlError.set(resources.getString(R.string.login_url_empty));
-            loginError.setValue(null);
             return false;
         } else if (!Patterns.WEB_URL.matcher(url.get()).matches()) {
             urlError.set(resources.getString(R.string.login_url_invalid));
-            loginError.setValue(null);
             return false;
         }
         return true;

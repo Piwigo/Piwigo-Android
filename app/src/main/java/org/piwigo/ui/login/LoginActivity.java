@@ -136,11 +136,6 @@ public class LoginActivity extends BaseActivity {
 
     private void loginError(Throwable throwable) {
         fabProgressCircle.hide();
-        if (throwable == null) {
-            Log.i("THROWABLE", "NULL");
-            fabProgressCircle.beginFinalAnimation();
-            return;
-        }
         if (throwable instanceof IllegalArgumentException)
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
