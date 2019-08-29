@@ -128,6 +128,7 @@ dependencies {
     implementation "ch.acra:acra-mail:$acraVersion"
     implementation "ch.acra:acra-dialog:$acraVersion"
 
+    implementation 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     implementation "com.leinardi.android:speed-dial:3.0.0"
 
     /* Don't forget to add to string libraries if you add a library here. */

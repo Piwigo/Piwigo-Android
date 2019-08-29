@@ -22,11 +22,19 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+
 import androidx.lifecycle.ViewModelProviders;
+
 import android.content.Intent;
+
 import androidx.databinding.DataBindingUtil;
+
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+
+import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.piwigo.R;
@@ -44,17 +52,21 @@ public class LoginActivity extends BaseActivity {
 
     public static final String EDIT_ACCOUNT_ACTION = "org.piwigo.action.EDIT_ACCOUNT";
     public static final String PARAM_ACCOUNT = "account";
-    @Inject LoginViewModelFactory viewModelFactory;
+    @Inject
+    LoginViewModelFactory viewModelFactory;
 
     private LoginViewModel viewModel;
     private ActivityLoginBinding binding;
+
+    private FABProgressCircle fabProgressCircle;
 
     private AccountAuthenticatorResponse authenticatorResponse;
     private Bundle resultBundle;
 
     private Handler handler = new Handler();
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         setTheme(R.style.Theme_Piwigo_Login);
         super.onCreate(savedInstanceState);
@@ -73,20 +85,30 @@ public class LoginActivity extends BaseActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setViewModel(viewModel);
+
+        fabProgressCircle = findViewById(R.id.fabLoginCircle);
     }
 
     private void handleIntent(Intent intent) {
         Account account = null;
 
-        if(EDIT_ACCOUNT_ACTION.equals(intent.getAction())){
+        if (EDIT_ACCOUNT_ACTION.equals(intent.getAction())) {
             account = intent.getParcelableExtra(PARAM_ACCOUNT);
         }
 
         viewModel.loadAccount(account);
     }
 
-    /** Clean up the account authenticator stuff, see {@link AccountAuthenticatorActivity} */
-    @Override public void finish() {
+    public void onClick(View v) {
+        fabProgressCircle.show();
+        viewModel.onLoginClick();
+    }
+
+    /**
+     * Clean up the account authenticator stuff, see {@link AccountAuthenticatorActivity}
+     */
+    @Override
+    public void finish() {
         if (authenticatorResponse != null) {
             if (resultBundle != null) {
                 authenticatorResponse.onResult(resultBundle);
@@ -99,33 +121,36 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void loginSuccess(LoginResponse response) {
-        if(viewModel.isEditExisting()){
+        fabProgressCircle.hide();
+        if (viewModel.isEditExisting()) {
             finish();
-        }else if (userManager.userExists(response.url, response.username)) {
+        } else if (userManager.userExists(response.url, response.username)) {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
-            viewModel.accountExists();
         } else {
             Account account = userManager.createUser(response.url, response.statusResponse.result.username, response.password, response.pwgId, response.statusResponse.result.pwgToken);
             userManager.setActiveAccount(account);
             setResultIntent(account);
-            viewModel.accountCreated();
             finish();
         }
     }
 
     private void loginError(Throwable throwable) {
-        if(throwable instanceof IllegalArgumentException) {
+        fabProgressCircle.hide();
+        if (throwable == null) {
+            Log.i("THROWABLE", "NULL");
+            fabProgressCircle.beginFinalAnimation();
+            return;
+        }
+        if (throwable instanceof IllegalArgumentException)
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
-        }else if(throwable instanceof UnknownHostException) {
+        else if (throwable instanceof UnknownHostException)
             Snackbar.make(binding.getRoot(), R.string.login_host_error, Snackbar.LENGTH_LONG)
                     .show();
-
-        }else{
+        else
             Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG)
                     .show();
-        }
     }
 
     private void setResultIntent(Account account) {

@@ -114,19 +114,25 @@
                             android:text="@={viewModel.password}" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/login_button"
-                        android:contentDescription="@string/login_button_description"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="24dp"
+                    <com.github.jorgecastilloprz.FABProgressCircle
+                        android:id="@+id/fabLoginCircle"
                         android:layout_gravity="center_horizontal"
-                        android:onClick="@{() -> viewModel.onLoginClick()}"
-                        android:scaleType="center"
-                        android:src="@drawable/ic_chevron_right"
-                        app:elevation="8dp"
-                        app:fabSize="normal" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
 
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:id="@+id/login_button"
+                            android:contentDescription="@string/login_button_description"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="24dp"
+                            android:layout_gravity="center_horizontal"
+                            android:onClick="onClick"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_chevron_right"
+                            app:elevation="8dp"
+                            app:fabSize="normal" />
+                    </com.github.jorgecastilloprz.FABProgressCircle>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>
