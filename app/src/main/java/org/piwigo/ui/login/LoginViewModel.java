@@ -19,19 +19,25 @@
 package org.piwigo.ui.login;
 
 import android.accounts.Account;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
 import android.content.res.Resources;
+
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
 import androidx.annotation.VisibleForTesting;
+
 import android.util.Log;
 import android.util.Patterns;
 
+import com.github.jorgecastilloprz.FABProgressCircle;
+
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.internal.binding.observable.FABProgressCircleObservable;
+import org.piwigo.helper.URLHelper;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
 
@@ -45,15 +51,15 @@ public class LoginViewModel extends ViewModel {
     private static final String TAG = LoginViewModel.class.getName();
     private static final String HIDDEN_PASSWORD = "*****";
 
-    @VisibleForTesting static Pattern WEB_URL = Patterns.WEB_URL;
+    @VisibleForTesting
+    static Pattern WEB_URL = Patterns.WEB_URL;
 
-    public ObservableField<String> url = new ObservableField<>("https://");
+    public ObservableField<String> url = new ObservableField<>();
     public ObservableField<String> urlError = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> usernameError = new ObservableField<>();
     public ObservableField<String> password = new ObservableField<>();
     public ObservableField<String> passwordError = new ObservableField<>();
-    public FABProgressCircleObservable progressCircle = new FABProgressCircleObservable(FABProgressCircleObservable.STATE_HIDDEN);
 
     private final UserRepository userRepository;
     private final Resources resources;
@@ -65,6 +71,8 @@ public class LoginViewModel extends ViewModel {
     private Subscription subscription;
     private final UserManager userManager;
     private Account account = null;
+
+    private String serverUrl = "chips";
 
     LoginViewModel(UserManager userManager, UserRepository userRepository, Resources resources) {
         this.userRepository = userRepository;
@@ -83,27 +91,28 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    public void onLoginClick() {
+    void onLoginClick(FABProgressCircle fabCircle) {
         boolean siteValid = isSiteValid();
         boolean loginValid = isGuest() || isLoginValid();
 
-        if (siteValid) {
-
-            if (isGuest()) {
-                progressCircle.show();
-                subscription = userRepository
-                        .status(url.get())
-                        .subscribe(new LoginSubscriber());
-            } else if (loginValid) {
-                progressCircle.show();
-                subscription = userRepository
-                        .login(url.get(), username.get(), password.get())
-                        .subscribe(new LoginSubscriber());
-            }
+        if (!siteValid)
+            return;
+        fabCircle.show();
+        try {
+            new URLHelper(newUrl -> testConnection(loginValid, newUrl)).execute(url.get());
+        } catch (Exception e) {
+            testConnection(loginValid, url.get());
         }
     }
 
-    public void onProgressAnimationEnd() {
+    private void testConnection(boolean loginValid, String url) {
+        if (isGuest())
+            subscription = userRepository.status(url).subscribe(new LoginSubscriber());
+        else if (loginValid)
+            subscription = userRepository.login(url, username.get(), password.get()).subscribe(new LoginSubscriber());
+    }
+
+    void onProgressAnimationEnd() {
         animationFinished.setValue(true);
     }
 
@@ -119,15 +128,7 @@ public class LoginViewModel extends ViewModel {
         return animationFinished;
     }
 
-    void accountCreated() {
-        progressCircle.beginFinalAnimation();
-    }
-
-    void accountExists() {
-        progressCircle.hide();
-    }
-
-    public boolean isEditExisting(){
+    boolean isEditExisting() {
         return account != null;
     }
 
@@ -135,7 +136,7 @@ public class LoginViewModel extends ViewModel {
         if (url.get() == null || url.get().isEmpty()) {
             urlError.set(resources.getString(R.string.login_url_empty));
             return false;
-        } else if (!WEB_URL.matcher(url.get()).matches()) {
+        } else if (!Patterns.WEB_URL.matcher(url.get()).matches()) {
             urlError.set(resources.getString(R.string.login_url_invalid));
             return false;
         }
@@ -175,8 +176,8 @@ public class LoginViewModel extends ViewModel {
         return string == null || string.isEmpty();
     }
 
-    public void loadAccount(Account account) {
-        if(account != null) {
+    void loadAccount(Account account) {
+        if (account != null) {
             url.set(userManager.getSiteUrl(account));
             if (userManager.isGuest(account)) {
                 username.set("");
@@ -191,24 +192,27 @@ public class LoginViewModel extends ViewModel {
 
     private class LoginSubscriber extends Subscriber<LoginResponse> {
 
-        @Override public void onCompleted() {}
+        @Override
+        public void onCompleted() {
+        }
 
-        @Override public void onError(Throwable e) {
+        @Override
+        public void onError(Throwable e) {
             Log.e(TAG, e.getMessage());
-            progressCircle.hide();
             loginError.setValue(e);
         }
 
-        @Override public void onNext(LoginResponse loginResponse) {
-            if(account != null){
+        @Override
+        public void onNext(LoginResponse loginResponse) {
+            if (account != null) {
                 try {
                     String siteUrl = url.get();
                     userManager.updateAccount(account, siteUrl, username.get(), password.get());
                     loginSuccess.setValue(loginResponse);
-                }catch(IllegalArgumentException e){
+                } catch (IllegalArgumentException e) {
                     loginError.setValue(e);
                 }
-            }else {
+            } else {
                 loginSuccess.setValue(loginResponse);
             }
         }
