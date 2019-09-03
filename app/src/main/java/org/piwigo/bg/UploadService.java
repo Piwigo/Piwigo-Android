@@ -159,13 +159,17 @@ public class UploadService extends IntentService {
                 @Override
                 public void onResponse(Call<ImageUploadResponse> call, Response<ImageUploadResponse> response) {
                     if (response.raw().code() == 200) {
-                        if (response.body().up_stat.equals("ok")) {
+                        if ("ok".equals(response.body().up_stat)) {
                             // TODO: make text localizable
                             String uploadresp = "Uploaded: " + response.body().up_result.up_src + " to " + response.body().up_result.up_category.catlabel + "(" + Integer.toString(response.body().up_result.up_category.catid) + ")";
                             Toast.makeText(getApplicationContext(), uploadresp, Toast.LENGTH_LONG).show();
                             /* TODO: refresh the current album here */
                         } else {
-                            Toast.makeText(getApplicationContext(), "Fail Response = " + response.body().up_message, Toast.LENGTH_LONG).show();
+                            String msg = response.body().up_message;
+                            if(msg == null) {
+                                msg = "<empty>";
+                            }
+                            Toast.makeText(getApplicationContext(), "Fail Response = " + msg, Toast.LENGTH_LONG).show();
                         }
                     } else {
                         Toast.makeText(getApplicationContext(), "Upload Unsuccessful = " + response.raw().message(), Toast.LENGTH_LONG).show();
