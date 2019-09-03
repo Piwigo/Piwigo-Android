@@ -24,6 +24,7 @@ import android.content.Context;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
+import org.piwigo.BuildConfig;
 import org.piwigo.PiwigoApplication;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.repository.PreferencesRepository;
@@ -49,6 +50,7 @@ public class ApplicationModule {
     @Provides @Singleton Picasso providePicasso(OkHttp3Downloader downloader) {
         return new Picasso.Builder(application)
                 .downloader(downloader)
+                .indicatorsEnabled(BuildConfig.DEBUG)
                 .build();
     }
 
