@@ -149,9 +149,9 @@
     <string name="storage_permission_explaination">Uploading photos is only possible if you give access to the storage.</string>
 
     <!-- Album created -->
-    <string name="create_album_title">Create an album</string>
-    <string name="create_album_success">Album created !</string>
-    <string name="create_album_error">Unable to create album..</string>
+    <string name="create_album_title">Create album</string>
+    <string name="create_album_success">Album created.</string>
+    <string name="create_album_error">Unable to create album.</string>
 
     <!-- Buttons -->
     <string name="button_ok">OK</string>
