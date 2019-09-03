@@ -72,8 +72,6 @@ public class LoginViewModel extends ViewModel {
     private final UserManager userManager;
     private Account account = null;
 
-    private String serverUrl = "chips";
-
     LoginViewModel(UserManager userManager, UserRepository userRepository, Resources resources) {
         this.userRepository = userRepository;
         this.resources = resources;
