@@ -95,7 +95,8 @@ public class LoginViewModel extends ViewModel {
 
         if (!siteValid)
             return;
-        fabCircle.show();
+        if (fabCircle != null)
+            fabCircle.show();
         try {
             new URLHelper(newUrl -> testConnection(loginValid, newUrl)).execute(url.get());
         } catch (Exception e) {
@@ -103,7 +104,7 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    private void testConnection(boolean loginValid, String url) {
+    void testConnection(boolean loginValid, String url) {
         if (isGuest())
             subscription = userRepository.status(url).subscribe(new LoginSubscriber());
         else if (loginValid)
@@ -134,7 +135,7 @@ public class LoginViewModel extends ViewModel {
         if (url.get() == null || url.get().isEmpty()) {
             urlError.set(resources.getString(R.string.login_url_empty));
             return false;
-        } else if (!Patterns.WEB_URL.matcher(url.get()).matches()) {
+        } else if (!WEB_URL.matcher(url.get()).matches()) {
             urlError.set(resources.getString(R.string.login_url_invalid));
             return false;
         }

@@ -44,13 +44,14 @@ if (project.file('../PiwigoSigning.properties').exists()) {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "org.piwigo.android"
-        minSdkVersion 14
-        targetSdkVersion 28
+        minSdkVersion 16
+        targetSdkVersion 29
         versionCode 93
-        versionName "0.9.3-beta-dev"
+        versionName "0.9.5-beta-dev"
+        multiDexEnabled true
     }
     buildTypes {
         debug {
@@ -73,7 +74,7 @@ android {
     }
     dexOptions {
         preDexLibraries = preDexEnabled && !isCi
-       
+
     }
     dataBinding {
         enabled = true
@@ -90,8 +91,6 @@ android {
     }
 }
 
-def supportVersion = '28.0.0'
-def lifecycleVersion = '1.1.1'
 def daggerVersion = '2.19'
 def okhttpVersion = '3.11.0'
 def retrofitVersion = '2.4.0'
@@ -100,13 +99,14 @@ def acraVersion = '5.1.3'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.android.support:multidex:1.0.3'
     implementation "com.google.dagger:dagger:${daggerVersion}"
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
-    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.0.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.1.0'
 
     annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
     implementation "com.google.dagger:dagger-android:${daggerVersion}"
@@ -130,24 +130,19 @@ dependencies {
 
     implementation 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     implementation "com.leinardi.android:speed-dial:3.0.0"
-
+    implementation 'org.greenrobot:eventbus:3.1.1'
     /* Don't forget to add to string libraries if you add a library here. */
 
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.robolectric:robolectric:4.1'
+    testImplementation 'org.robolectric:robolectric:4.3'
     testImplementation("com.squareup.assertj:assertj-android:${assertjVersion}") {
         exclude group: 'com.android.support'
     }
-    testImplementation("com.squareup.assertj:assertj-android-support-v4:${assertjVersion}") {
-        exclude group: 'com.android.support'
-    }
-    testImplementation("com.squareup.assertj:assertj-android-appcompat-v7:${assertjVersion}") {
-        exclude group: 'com.android.support'
-    }
     testAnnotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
-    testImplementation 'androidx.arch.core:core-testing:2.0.0'
-    testImplementation 'org.mockito:mockito-core:2.13.0'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
+    testImplementation 'org.mockito:mockito-core:2.19.0'
     testImplementation 'com.google.guava:guava:24.1-jre'
+    testImplementation 'androidx.appcompat:appcompat:1.1.0'
     testAnnotationProcessor 'com.google.guava:guava:24.1-jre'
-    testImplementation 'com.google.code.findbugs:jsr305:3.0.1'
+    testImplementation 'com.google.code.findbugs:jsr305:3.0.2'
 }

@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 public class LoginViewModelTest {
 
-    private static final String URL = "http://demo.piwigo.org";
+    private static final String URL = "https://piwigo.org/demo";
     private static final String USERNAME = "demo";
     private static final String PASSWORD = "demo";
 
@@ -74,7 +74,7 @@ public class LoginViewModelTest {
         when(resources.getString(R.string.login_password_empty)).thenReturn(ERROR_PASSWORD);
 
         viewModel = new LoginViewModel(userManager, userRepository, resources);
-        LoginViewModel.WEB_URL = Pattern.compile("http://demo\\.piwigo\\.org");
+        LoginViewModel.WEB_URL = Pattern.compile("https://piwigo\\.org/demo");
     }
 
     @Test public void clearUrlErrorOnTextChange() {
@@ -104,7 +104,7 @@ public class LoginViewModelTest {
     @Test public void shouldSetEmptyUrlError() {
         viewModel.url.set(null);
 
-        viewModel.onLoginClick();
+        viewModel.onLoginClick(null);
 
         assertThat(viewModel.urlError.get()).isEqualTo(ERROR_URL_EMPTY);
     }
@@ -112,7 +112,7 @@ public class LoginViewModelTest {
     @Test public void setUrlErrorIfInvalid() {
         viewModel.url.set("Junk");
 
-        viewModel.onLoginClick();
+        viewModel.onLoginClick(null);
 
         assertThat(viewModel.urlError.get()).isEqualTo(ERROR_URL_INVALID);
     }
@@ -121,7 +121,7 @@ public class LoginViewModelTest {
         viewModel.username.set(null);
         viewModel.password.set(PASSWORD);
 
-        viewModel.onLoginClick();
+        viewModel.onLoginClick(null);
 
         assertThat(viewModel.usernameError.get()).isEqualTo(ERROR_USERNAME);
     }
@@ -130,7 +130,7 @@ public class LoginViewModelTest {
         viewModel.username.set(USERNAME);
         viewModel.password.set(null);
 
-        viewModel.onLoginClick();
+        viewModel.onLoginClick(null);
 
         assertThat(viewModel.passwordError.get()).isEqualTo(ERROR_PASSWORD);
     }
@@ -140,7 +140,7 @@ public class LoginViewModelTest {
         viewModel.username.set(USERNAME);
         viewModel.password.set(PASSWORD);
 
-        viewModel.onLoginClick();
+        viewModel.testConnection(true, URL);
 
         verify(userRepository).login(URL, USERNAME, PASSWORD);
     }
@@ -148,7 +148,7 @@ public class LoginViewModelTest {
     @Test public void callGetStatusIfUrlValid() {
         viewModel.url.set(URL);
 
-        viewModel.onLoginClick();
+        viewModel.testConnection(true, URL);
 
         verify(userRepository).status(URL);
     }
@@ -162,7 +162,7 @@ public class LoginViewModelTest {
         viewModel.username.set(USERNAME);
         viewModel.password.set(PASSWORD);
 
-        viewModel.onLoginClick();
+        viewModel.testConnection(true, URL);
 
         verify(observer).onChanged(loginResponse);
     }
@@ -176,7 +176,7 @@ public class LoginViewModelTest {
         viewModel.username.set(USERNAME);
         viewModel.password.set(PASSWORD);
 
-        viewModel.onLoginClick();
+        viewModel.testConnection(true, URL);
 
         verify(observer).onChanged(throwable);
     }
