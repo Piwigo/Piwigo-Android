@@ -44,7 +44,7 @@ public class CategoriesRepository extends BaseRepository {
     public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId) {
         RestService restService = restServiceFactory.createForAccount(account);
         /* TODO: make thumbnail Size configurable, also check for ImageRepository, whether it can reduce the amount of REST/JSON traffic */
-        return restService.getCategories(categoryId, "large")
+        return restService.getCategories(categoryId, "medium")
                 .flatMap(response -> Observable.from(response.result.categories))
                 .filter(category -> categoryId == null || category.id != categoryId)
 // TODO: #90 generalize sorting
