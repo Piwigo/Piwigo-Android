@@ -10,4 +10,6 @@
     <color name="white_semi_transparent">#ccffffff</color>
     <color name="android_color_light_gray">#fafafa</color>
     <color name="material_white">#ffffff</color>
+    <color name="error_red">#f55f5a</color>
+    <color name="colorAccent">#ff7700</color>
 </resources>

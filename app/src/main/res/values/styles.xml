@@ -17,6 +17,11 @@
         <item name="colorPrimary">@color/piwigo_orange</item>
     </style>
 
+    <style name="Theme.Piwigo.ErrorDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/error_red</item>
+        <item name="colorPrimary">@color/error_red</item>
+    </style>
+
     <style name="Theme.Piwigo.NavDrawer" />
 
     <style name="Theme.Piwigo.Login.CardView" parent="CardView">
