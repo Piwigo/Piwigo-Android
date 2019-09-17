@@ -6,9 +6,14 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+
+import org.greenrobot.eventbus.EventBus;
 import org.piwigo.R;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.event.RefreshRequestEvent;
+import org.piwigo.io.event.SnackbarShowEvent;
 import org.piwigo.io.model.AddCategoryResponse;
 
 import javax.inject.Inject;
@@ -50,8 +55,10 @@ public class AlbumService extends IntentService {
         call.enqueue(new Callback<AddCategoryResponse>() {
             @Override
             public void onResponse(Call<AddCategoryResponse> call, Response<AddCategoryResponse> response) {
-                if (response.raw().code() == 200 && "ok".equals(response.body().stat))
-                    Toast.makeText(getApplicationContext(), R.string.create_album_success, Toast.LENGTH_LONG).show();
+                if (response.raw().code() == 200 && response.body().stat.equals("ok")) {
+                    EventBus.getDefault().post(new SnackbarShowEvent(String.format(getResources().getString(R.string.create_album_success), catName), Snackbar.LENGTH_LONG));
+                    EventBus.getDefault().post(new RefreshRequestEvent(parentId));
+                }
                 else
                     Toast.makeText(getApplicationContext(), R.string.create_album_error, Toast.LENGTH_LONG).show();
             }

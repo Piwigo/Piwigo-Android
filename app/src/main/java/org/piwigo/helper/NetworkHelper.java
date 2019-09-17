@@ -4,24 +4,20 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-public class NetworkHelper
-{
+public class NetworkHelper {
 
     public static NetworkHelper INSTANCE;
 
-    public NetworkHelper()
-    {
+    public NetworkHelper() {
         INSTANCE = this;
     }
 
-    public boolean hasInternet(Context context)
-    {
-        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public boolean hasInternet(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo currentNetwork = cm.getActiveNetworkInfo();
 
         if (currentNetwork != null) {
-            if (currentNetwork.isConnected())
-                return (true);
+            return (currentNetwork.isConnected());
         }
         return (false);
     }

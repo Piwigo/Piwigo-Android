@@ -24,6 +24,7 @@ import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import androidx.databinding.DataBindingUtil;
+import androidx.multidex.MultiDex;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -31,7 +32,9 @@ import org.acra.annotation.AcraCore;
 import org.acra.annotation.AcraDialog;
 import org.acra.annotation.AcraMailSender;
 import org.acra.data.StringFormat;
+import org.piwigo.helper.DialogHelper;
 import org.piwigo.helper.NetworkHelper;
+import org.piwigo.helper.NotificationHelper;
 import org.piwigo.internal.di.component.ApplicationComponent;
 import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
@@ -74,12 +77,15 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
         super.onCreate();
 
         new NetworkHelper();
-        initializeDependancyInjection();
+        new NotificationHelper(getApplicationContext());
+        new DialogHelper()
+;        initializeDependencyInjection();
     }
 
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        MultiDex.install(base);
         ACRA.init(this);
     }
 
@@ -87,7 +93,7 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
         return dispatchingAndroidInjector;
     }
 
-    private void initializeDependancyInjection() {
+    private void initializeDependencyInjection() {
         applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();

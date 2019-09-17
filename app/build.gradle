@@ -130,6 +130,7 @@ dependencies {
 
     implementation 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     implementation "com.leinardi.android:speed-dial:3.0.0"
+    implementation 'com.github.tingyik90:snackprogressbar:6.1.1'
     implementation 'org.greenrobot:eventbus:3.1.1'
     /* Don't forget to add to string libraries if you add a library here. */
 

@@ -20,22 +20,25 @@
 package org.piwigo.bg;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.app.IntentService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.tingyik90.snackprogressbar.SnackProgressBar;
+
+import org.greenrobot.eventbus.EventBus;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
+import org.piwigo.bg.action.UploadAction;
+import org.piwigo.helper.NotificationHelper;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.event.RefreshRequestEvent;
+import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.model.ImageUploadResponse;
 import org.piwigo.io.repository.UserRepository;
 
@@ -43,6 +46,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -56,10 +61,10 @@ import retrofit2.Response;
 
 public class UploadService extends IntentService {
 
-    public static final String KEY_IMAGE_NAME = "image_name";
-    public static final String KEY_IMAGE_URI = "image_uri";
-    public static final String KEY_ACCOUNT = "account";
-    public static final String KEY_CATEGORY_ID = "category_id";
+    public static final String KEY_UPLOAD_QUEUE = "image_upload_queue";
+    private int totalImagesCount = 0;
+    private int uploadedImages = 1;
+    private int snackbarId;
 
     @Inject
     RestServiceFactory restServiceFactory;
@@ -97,93 +102,113 @@ public class UploadService extends IntentService {
      *               for details.
      */
     @Override
-    protected void onHandleIntent(Intent intent) {
-
-        Uri fileUri = intent.getParcelableExtra(KEY_IMAGE_URI);
-        String imageName = intent.getStringExtra(KEY_IMAGE_NAME);
-        Account curAccount = intent.getParcelableExtra(KEY_ACCOUNT);
-        int catid = intent.getIntExtra(KEY_CATEGORY_ID, 0);
-
-        Toast.makeText(this, "Uploading " + imageName, Toast.LENGTH_LONG).show();
-
-        byte[] content;
-        InputStream iStream = null;
-        try {
-            iStream = getContentResolver().openInputStream(fileUri);
-            content = getBytes(iStream);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            /* TODO add proper error handling */
-            content = new byte[0];
-        } catch (IOException e) {
-            e.printStackTrace();
-            /* TODO add proper error handling */
-            content = new byte[0];
-        } finally {
-            if(iStream != null){
-                try {
-                    iStream.close();
-                } catch (IOException e) {
-                    /* if this fails, we silently do nothing */
-                }
-            }
-        }
-        MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", imageName, RequestBody.create(MediaType.parse("image/*"), content));
-
-        RestService restService = restServiceFactory.createForAccount(curAccount);
-        String photoName;
-        if (imageName.indexOf(".") > 0) {
-            photoName = imageName.substring(0, imageName.lastIndexOf("."));
-        }else{
-            photoName = imageName;
-        }
-
-        AccountManager accountManager = AccountManager.get(this);
-
-        String token = userManager.getToken(curAccount);
-
-        RequestBody imagefilenameBody = RequestBody.create(MediaType.parse("text/plain"), imageName);
-        RequestBody imagenameBody = RequestBody.create(MediaType.parse("text/plain"), photoName);
-        RequestBody tokenBody = RequestBody.create(MediaType.parse("text/plain"), token);
-
-        if(catid < 1) {
-            Toast.makeText(getApplicationContext(), R.string.uploading_not_to_cat_null, Toast.LENGTH_LONG).show();
-        }else {
-            // TODO: #40 replace toast by notification with a status bar
-            Toast.makeText(getApplicationContext(), R.string.uploading_toast, Toast.LENGTH_LONG).show();
-            //creating a call and calling the upload image method
-            Call<ImageUploadResponse> call = restService.uploadImage(imagefilenameBody, catid, imagenameBody, tokenBody, filePart);
-
-            //finally performing the call
-            call.enqueue(new Callback<ImageUploadResponse>() {
-                @Override
-                public void onResponse(Call<ImageUploadResponse> call, Response<ImageUploadResponse> response) {
-                    if (response.raw().code() == 200) {
-                        if ("ok".equals(response.body().up_stat)) {
-                            // TODO: make text localizable
-                            String uploadresp = "Uploaded: " + response.body().up_result.up_src + " to " + response.body().up_result.up_category.catlabel + "(" + Integer.toString(response.body().up_result.up_category.catid) + ")";
-                            Toast.makeText(getApplicationContext(), uploadresp, Toast.LENGTH_LONG).show();
-                            /* TODO: refresh the current album here */
-                        } else {
-                            String msg = response.body().up_message;
-                            if(msg == null) {
-                                msg = "<empty>";
-                            }
-                            Toast.makeText(getApplicationContext(), "Fail Response = " + msg, Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Upload Unsuccessful = " + response.raw().message(), Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ImageUploadResponse> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Upload Err = " + t.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            });
-        }
+    protected void onHandleIntent(Intent intent)
+    {
+        ImageUploadQueue<UploadAction> imageUploadQueue = (ImageUploadQueue<UploadAction>)intent.getSerializableExtra(KEY_UPLOAD_QUEUE);
+        if (imageUploadQueue == null)
+            return;
+        totalImagesCount = imageUploadQueue.size();
+        snackbarId = new Random().nextInt(100);
+        onUploadStarted(imageUploadQueue);
     }
 
+    protected void onUploadStarted(ImageUploadQueue<UploadAction> imageUploadQueue)
+    {
+        final UploadAction uploadAction;
+        if ((uploadAction = imageUploadQueue.poll()) == null)
+            return;
+        //Instances
+        MultipartBody.Part filePart;
+        RestService restService;
+        //Local variables
+        ArrayList<RequestBody> requestBodies;
+        byte[] content;
+
+        try (InputStream iStream = getContentResolver().openInputStream(uploadAction.getUploadData().getTargetUri())) {
+            assert iStream != null;
+            content = getBytes(iStream);
+        } catch (FileNotFoundException e) {
+            Log.e("UploadService", "FileNotFoundException", e.getCause());
+            content = new byte[0];
+        } catch (IOException e) {
+            Log.e("UploadService", "IOException", e.getCause());
+            content = new byte[0];
+        }
+        filePart = MultipartBody.Part.createFormData("file", uploadAction.getFileName(), RequestBody.create(MediaType.parse("image/*"), content));
+        restService = restServiceFactory.createForAccount(userManager.getActiveAccount().getValue());
+        requestBodies = createUploadRequest(uploadAction.getFileName(), getPhotoName(uploadAction.getFileName()), userManager.getActiveAccount().getValue());
+
+        if (uploadAction.getUploadData().getCategoryId() > 0)
+            callUploadResponse(imageUploadQueue, restService, requestBodies, uploadAction.getUploadData().getCategoryId(), filePart);
+    }
+
+    /**
+     * Return the name of the photo (basically the name of the file without the extension)
+     * Used for display purpose
+     *
+     * @param imageName filename (IMG_001.jpg for instance)
+     * @return the photo name as a string
+     */
+    private String getPhotoName(String imageName) {
+        String photoName;
+
+        if (imageName == null)
+            return (null);
+        if (imageName.indexOf(".") > 0)
+            photoName = imageName.substring(0, imageName.lastIndexOf("."));
+        else
+            photoName = imageName;
+        return (photoName);
+    }
+    /**
+     * Create the request bodies for the upload form
+     *
+     * @param imageName  (filename with the extension)
+     * @param photoName  (filename without the extension - used for display)
+     * @param curAccount (current account used to upload - used to get the token account, needed in API call)
+     * @return an array of RequestBody with the same "get" order than the parameters
+     */
+    private ArrayList<RequestBody> createUploadRequest(String imageName, String photoName,
+                                                       Account curAccount) {
+        ArrayList<RequestBody> requestBodies = new ArrayList<RequestBody>();
+
+        requestBodies.add(0, RequestBody.create(MediaType.parse("text/plain"), imageName));
+        requestBodies.add(1, RequestBody.create(MediaType.parse("text/plain"), photoName));
+        requestBodies.add(2, RequestBody.create(MediaType.parse("text/plain"), userManager.getToken(curAccount)));
+        return (requestBodies);
+    }
+
+    private void callUploadResponse(ImageUploadQueue<UploadAction> imageUploadQueue, RestService restService, ArrayList<RequestBody> requestBodies,
+                                    int catId, MultipartBody.Part filePart) {
+        Call<ImageUploadResponse> call = restService.uploadImage(requestBodies.get(0), catId, requestBodies.get(1), requestBodies.get(2), filePart);
+
+        call.enqueue(new Callback<ImageUploadResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ImageUploadResponse> call, @NonNull Response<ImageUploadResponse> response) {
+                if (response.raw().code() == 200 && ("ok".equals(response.body().up_stat))) {
+                    EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, String.format("Uploaded image %d / %d", uploadedImages, totalImagesCount), snackbarId, SnackProgressEvent.SnackbarUpdateAction.REFRESH));
+                    uploadedImages++;
+                    if (imageUploadQueue.size() == 0) {
+                        NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_success), String.format(getResources().getString(R.string.upload_success_body), totalImagesCount, response.body().up_result.up_category.catlabel), getApplicationContext());
+                        EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, getResources().getString(R.string.upload_success), snackbarId, SnackProgressEvent.SnackbarUpdateAction.KILL));
+                        EventBus.getDefault().post(new RefreshRequestEvent(response.body().up_result.up_category.catid));
+                    }
+                    onUploadStarted(imageUploadQueue);
+                } else {
+                    NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_failed), getResources().getString(R.string.upload_error), getApplicationContext());
+                    EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, getResources().getString(R.string.upload_failed), snackbarId, SnackProgressEvent.SnackbarUpdateAction.KILL));
+                    EventBus.getDefault().post(new RefreshRequestEvent(catId));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ImageUploadResponse> call, @NonNull Throwable t) {
+                NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_failed), getResources().getString(R.string.upload_error), getApplicationContext());
+                EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, getResources().getString(R.string.upload_failed), snackbarId, SnackProgressEvent.SnackbarUpdateAction.KILL));
+                EventBus.getDefault().post(new RefreshRequestEvent(catId));
+            }
+        });
+    }
 
     /* get content of an open InputStream as byte array */
     public byte[] getBytes(InputStream inputStream) throws IOException {
