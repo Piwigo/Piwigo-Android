@@ -129,10 +129,8 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
 
         currentAccount = userManager.getActiveAccount().getValue();
+        speedDialView = binding.fab;
 
-        speedDialView = findViewById(R.id.fab);
-        if (userManager.isGuest(currentAccount))
-            speedDialView.setVisibility(View.INVISIBLE);
         setFABListener();
         refreshFAB(0);
 
@@ -142,6 +140,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 currentAccount = account;
                 viewModel.username.set(userManager.getUsername(account));
                 viewModel.url.set(userManager.getSiteUrl(account));
+                viewModel.displayFab.set(!userManager.isGuest(currentAccount));
                 /* Login to the new site after account changes.
                  * It seems quite unclean to do that here -> TODO: FIXME*/
                 Observable<LoginResponse> a = userRepository.login(account);
@@ -232,6 +231,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         super.onResume();
         MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.navigationItemId.set(R.id.nav_albums);
+        speedDialView.setVisibility(viewModel.displayFab.get() ? View.VISIBLE : View.INVISIBLE);
         EventBus.getDefault().register(this);
     }
 
