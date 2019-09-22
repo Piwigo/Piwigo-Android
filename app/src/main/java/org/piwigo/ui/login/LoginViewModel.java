@@ -20,6 +20,7 @@ package org.piwigo.ui.login;
 
 import android.accounts.Account;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -89,7 +90,13 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    void onLoginClick(FABProgressCircle fabCircle) {
+    /**
+     * Handles the click event on the login button
+     * Check if the URL is valid and get what protocol to use using URLHelper
+     * @param fabCircle - FAB on login view (nullable for unit testing purpose..)
+     * //TODO Find a better way to interact with the FAB to avoid Nullable arg
+     */
+    void onLoginClick(@Nullable FABProgressCircle fabCircle) {
         boolean siteValid = isSiteValid();
         boolean loginValid = isGuest() || isLoginValid();
 
