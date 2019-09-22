@@ -179,7 +179,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
     private void initStartFragment(MainViewModel viewModel) {
         viewModel.title.set(getString(R.string.nav_albums));
         Bundle bndl = new Bundle();
-        // TODO: make configurable which is the root album
+        // TODO: make configurable which is the root album (See #44 option to select Default Album)
         bndl.putInt("Category", 0);
         AlbumsFragment frag = new AlbumsFragment();
         frag.setArguments(bndl);
