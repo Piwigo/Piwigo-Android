@@ -9,8 +9,11 @@
     </data>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:refreshing="@{viewModel.isLoading}"
+        app:onRefreshListener="@{() -> viewModel.onRefresh()}">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"

@@ -19,6 +19,7 @@
 package org.piwigo.ui.main;
 
 import androidx.lifecycle.ViewModel;
+
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Bundle;
@@ -32,13 +33,13 @@ public class AlbumItemViewModel extends ViewModel {
     private final String url;
     private final String title;
     private final String photos;
-    private final Integer catid;
+    private final Integer catId;
 
-    AlbumItemViewModel(String url, String title, String photos, Integer CategoryId) {
+    AlbumItemViewModel(String url, String title, String photos, Integer categoryId) {
         this.url = url;
         this.title = title;
         this.photos = photos;
-        this.catid = CategoryId;
+        this.catId = categoryId;
     }
 
     public String getUrl() {
@@ -53,22 +54,31 @@ public class AlbumItemViewModel extends ViewModel {
         return photos;
     }
 
-    public Integer getCatId() { return catid;}
+    public Integer getCatId() { return catId;}
 
-    public void onclickdo(View v){
+    public void onClickDo(View v){
         Context ctx = v.getContext();
+        while (ctx instanceof ContextWrapper
+                && !(ctx instanceof AppCompatActivity)) {
+            ctx = ((ContextWrapper)ctx).getBaseContext();
+        }
+
         MainActivity mainActivity = (MainActivity)ctx;
 
-        mainActivity.refreshFAB(catid);
+        if (mainActivity != null)
+            mainActivity.refreshFAB(catId);
 
-        Bundle bndl = new Bundle();
-        bndl.putInt("Category", catid);
-        AlbumsFragment frag = new AlbumsFragment();
-        frag.setArguments(bndl);
-        ((AppCompatActivity) ctx).getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content, frag)
-                .addToBackStack(null)
-                .commit();
+        if(ctx instanceof AppCompatActivity) {
+            Bundle bndl = new Bundle();
+            bndl.putInt("Category", getCatId());
+            bndl.putString("Title", getTitle());
+            AlbumsFragment frag = new AlbumsFragment();
+            frag.setArguments(bndl);
+            ((AppCompatActivity) ctx).getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content, frag)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 }

@@ -20,6 +20,8 @@
 package org.piwigo.ui.main;
 
 import android.accounts.Account;
+import android.view.View;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -43,6 +45,7 @@ public class MainViewModel extends ViewModel {
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
     public ObservableBoolean drawerState = new ObservableBoolean(false);
+    public ObservableBoolean displayFab = new ObservableBoolean(false);
     public ObservableInt navigationItemId = new ObservableInt(R.id.nav_albums);
     // TODO: finish loginstatus
     public ObservableInt loginStatus = new ObservableInt(STAT_OFFLINE);
@@ -55,6 +58,7 @@ public class MainViewModel extends ViewModel {
         if (account != null) {
             username.set(userManager.getUsername(account));
             url.set(userManager.getSiteUrl(account));
+            displayFab.set(!userManager.isGuest(account));
         }
         mUserRepository = userRepository;
 

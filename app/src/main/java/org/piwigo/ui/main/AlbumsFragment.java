@@ -18,24 +18,28 @@
 
 package org.piwigo.ui.main;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
 import android.content.res.Configuration;
+
 import androidx.databinding.DataBindingUtil;
 
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.leinardi.android.speeddial.SpeedDialActionItem;
-import com.leinardi.android.speeddial.SpeedDialView;
-
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.piwigo.R;
 import org.piwigo.databinding.FragmentAlbumsBinding;
+import org.piwigo.io.event.RefreshRequestEvent;
 import org.piwigo.ui.shared.BaseFragment;
 
 import javax.inject.Inject;
@@ -47,53 +51,72 @@ public class AlbumsFragment extends BaseFragment {
     private static final int PHONE_MIN_WIDTH = 320;
     private static final int TABLET_MIN_WIDTH = 360;
 
-    @Inject AlbumsViewModelFactory viewModelFactory;
+    @Inject
+    AlbumsViewModelFactory viewModelFactory;
 
     private FragmentAlbumsBinding binding;
     private int categoryID;
+    private String categoryName;
 
-    public AlbumsFragment(){
+    public AlbumsFragment() {
         super();
         categoryID = 0;
+        categoryName = "";
     }
 
-    @Override public void onAttach(Context context) {
+    @Override
+    public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             categoryID = bundle.getInt("Category", 0);
+            categoryName = bundle.getString("Title", "Albums");
         }
         super.onAttach(context);
     }
 
-    @Override public void onResume(){
+    @Override
+    public void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
+
+    @Subscribe
+    public void onEvent(RefreshRequestEvent event)
+    {
+        binding.getViewModel().loadAlbums(event.getCategoryId());
+    }
+
+    @Override
+    public void onResume() {
         MainViewModel vm = ViewModelProviders.of(this.getActivity(), viewModelFactory).get(MainViewModel.class);
-// as we don't work on #69 for release 0.9 let's remove this here...
-//        vm.title.set("Album " + binding.getViewModel().getCategory());
+        vm.title.set(categoryName);
+        EventBus.getDefault().register(this);
         super.onResume();
     }
 
-    @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_albums, container, false);
         binding.albumRecycler.setHasFixedSize(true);
         binding.albumRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
         binding.photoRecycler.setHasFixedSize(true);
         binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount() * 3));
 
-
         return binding.getRoot();
     }
 
-    public AlbumsViewModel getViewModel(){
+    public AlbumsViewModel getViewModel() {
         return binding.getViewModel();
     }
 
-    @Override public void onActivityCreated(Bundle savedInstanceState) {
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         AlbumsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AlbumsViewModel.class);
         binding.setViewModel(viewModel);
-
         binding.getViewModel().loadAlbums(categoryID);
     }
 

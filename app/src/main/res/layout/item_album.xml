@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:src="@{viewModel.url}"
             android:contentDescription="@{viewModel.title}"
-            android:onClick="@{viewModel::onclickdo}"
+            android:onClick="@{viewModel::onClickDo}"
             app:heightRatio="@{0.66}" />
 
         <LinearLayout

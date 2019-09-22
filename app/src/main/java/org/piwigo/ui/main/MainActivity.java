@@ -20,50 +20,60 @@ package org.piwigo.ui.main;
 
 import android.Manifest;
 import android.accounts.Account;
-
-import androidx.core.content.res.ResourcesCompat;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-
-import androidx.databinding.DataBindingUtil;
-
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatEditText;
-
 import android.text.InputType;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
+import com.tingyik90.snackprogressbar.SnackProgressBar;
+import com.tingyik90.snackprogressbar.SnackProgressBarManager;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.piwigo.R;
 import org.piwigo.bg.AlbumService;
+import org.piwigo.bg.ImageUploadQueue;
 import org.piwigo.bg.UploadService;
+import org.piwigo.bg.action.UploadAction;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
+import org.piwigo.helper.DialogHelper;
+import org.piwigo.helper.NetworkHelper;
+import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.event.SimpleEvent;
+import org.piwigo.io.event.SnackProgressEvent;
+import org.piwigo.io.event.SnackbarShowEvent;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.shared.BaseActivity;
-import org.piwigo.io.RestServiceFactory;
 
 import java.io.File;
 
@@ -91,6 +101,8 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
     private SpeedDialView speedDialView;
 
+    private SnackProgressBarManager snackProgressBarManager;
+
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
 
     int SELECT_PICTURES = 1;
@@ -111,11 +123,16 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
 
-        speedDialView = findViewById(R.id.speedDial);
-        setFABListener();
-        refreshFAB(0);
+        snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
+
+        if (!NetworkHelper.INSTANCE.hasInternet(this))
+            EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
 
         currentAccount = userManager.getActiveAccount().getValue();
+        speedDialView = binding.fab;
+
+        setFABListener();
+        refreshFAB(0);
 
         final Observer<Account> accountObserver = account -> {
             // reload the albums on account changes
@@ -123,6 +140,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 currentAccount = account;
                 viewModel.username.set(userManager.getUsername(account));
                 viewModel.url.set(userManager.getSiteUrl(account));
+                viewModel.displayFab.set(!userManager.isGuest(currentAccount));
                 /* Login to the new site after account changes.
                  * It seems quite unclean to do that here -> TODO: FIXME*/
                 Observable<LoginResponse> a = userRepository.login(account);
@@ -139,7 +157,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                     @Override
                     public void onNext(LoginResponse loginResponse) {
                         Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
-// TODO: it is crazy to have this code here AND in LauncherActivity
+                        // TODO: it is crazy to have this code here AND in LauncherActivity
                         userManager.setCookie(account, loginResponse.pwgId);
                         userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
                     }
@@ -213,6 +231,39 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         super.onResume();
         MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.navigationItemId.set(R.id.nav_albums);
+        speedDialView.setVisibility(viewModel.displayFab.get() ? View.VISIBLE : View.INVISIBLE);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        snackProgressBarManager.disable();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(SimpleEvent event) {
+        if (event instanceof SnackbarShowEvent)
+            Snackbar.make(findViewById(android.R.id.content), event.getMessage(), ((SnackbarShowEvent) event).getDuration()).show();
+        if (event instanceof SnackProgressEvent) {
+            SnackProgressBar bar = snackProgressBarManager.getSnackProgressBar(((SnackProgressEvent) event).getSnackbarId());
+            if (bar != null && ((SnackProgressEvent) event).getAction().equals(SnackProgressEvent.SnackbarUpdateAction.REFRESH)) {
+                bar.setMessage(((SnackProgressEvent) event).getSnackbarDesc());
+                snackProgressBarManager.updateTo(((SnackProgressEvent) event).getSnackbarId());
+            } else if (bar != null && ((SnackProgressEvent) event).getAction().equals(SnackProgressEvent.SnackbarUpdateAction.KILL))
+                snackProgressBarManager.dismissAll();
+            else {
+                bar = new SnackProgressBar(((SnackProgressEvent) event).getSnackbarType(), ((SnackProgressEvent) event).getSnackbarDesc()).setIsIndeterminate(true);
+                snackProgressBarManager.put(bar, ((SnackProgressEvent) event).getSnackbarId());
+                snackProgressBarManager.show(bar, SnackProgressBarManager.LENGTH_INDEFINITE);
+            }
+        }
     }
 
     @Override
@@ -229,80 +280,78 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                         ManageAccountsActivity.class));
                 break;
             case R.id.nav_about:
-                startActivity(new Intent(getApplicationContext(),
-                        AboutActivity.class));
+                startActivity(new Intent(getApplicationContext(), AboutActivity.class));
                 break;
             case R.id.nav_privacy:
-                startActivity(new Intent(getApplicationContext(),
-                        PrivacyPolicyActivity.class));
+                startActivity(new Intent(getApplicationContext(), PrivacyPolicyActivity.class));
                 break;
 
             default:
-                Toast.makeText(this, "not yet implemented", Toast.LENGTH_LONG).show();
+                DialogHelper.INSTANCE.showErrorDialog(R.string.not_implemented_title, R.string.not_implemented_msg, this);
                 break;
         }
     }
 
-    public void setFABListener()
-    {
+    public void setFABListener() {
         speedDialView.setOnActionSelectedListener(speedDialActionItem -> {
             switch (speedDialActionItem.getId()) {
                 case R.id.fab_create_album:
                 case R.id.fab_create_subalbum:
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_Piwigo_AlertDialog);
-                    builder.setTitle(R.string.create_album_title);
-
-                    final AppCompatEditText input = new AppCompatEditText(MainActivity.this);
-                    input.setInputType(InputType.TYPE_CLASS_TEXT);
-                    builder.setView(input);
-                    builder.setPositiveButton(R.string.button_ok, (dialog, which) -> createAlbum(input.getText().toString()));
-                    builder.setNegativeButton(R.string.button_cancel, (dialog, which) -> dialog.cancel());
-                    builder.show();
-                    return false;
+                    if (!hasAdminRights()) {
+                        DialogHelper.INSTANCE.showErrorDialog(R.string.not_admin, R.string.not_admin_explanation, this);
+                        return (false);
+                    }
+                    promptAlbumCreation();
+                    return (false);
                 case R.id.fab_upload_photos:
+                    if (!hasAdminRights()) {
+                        DialogHelper.INSTANCE.showErrorDialog(R.string.not_admin, R.string.not_admin_explanation, this);
+                        return (false);
+                    }
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.READ_EXTERNAL_STORAGE)
                             != PackageManager.PERMISSION_GRANTED) {
-
-                        // Permission is not granted
-                        // Should we show an explanation?
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                                Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                            // Show an explanation to the user *asynchronously* -- don't block
-                            // this thread waiting for the user's response! After the user
-                            // sees the explanation, try again to request the permission.
-                            Toast.makeText(this, R.string.storage_permission_explaination, Toast.LENGTH_LONG).show();
-                        } else {
-                            // No explanation needed; request the permission
-                            ActivityCompat.requestPermissions(this,
-                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-                        }
-                    } else {
-                        // Permission has already been granted
-                        selectPhoto();
-                    }
-                    return false;
+                        checkExternalStoragePermissions();
+                    } else
+                        selectPhoto(); // Permission has already been granted
+                    return (false);
                 default:
-                    return false;
+                    return (false);
             }
         });
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    selectPhoto();
-                }
+    private void checkExternalStoragePermissions() {
+        // Permission is not granted
+        // Should we show an explanation?
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            // Show an explanation to the user *asynchronously* -- don't block
+            // this thread waiting for the user's response! After the user
+            // sees the explanation, try again to request the permission.
+            DialogHelper.INSTANCE.showErrorDialog(R.string.storage_permission_title, R.string.storage_permission_explanation, this);
+        } else {
+            // No explanation needed; request the permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
             }
-            break;
-            default:
-                break;
+        }
+    }
+
+    private boolean hasAdminRights() {
+        return (!userManager.isGuest(currentAccount));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                selectPhoto();
+            }
         }
     }
 
@@ -318,6 +367,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
     private int getCurrentCategoryId() {
         int catId = 0;
+
         Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
         if (f instanceof AlbumsFragment) {
             Integer cat = ((AlbumsFragment) f).getViewModel().getCategory();
@@ -327,10 +377,26 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         return (catId);
     }
 
-    private void createAlbum(String catName) {
-        int catId = getCurrentCategoryId();
+    private void promptAlbumCreation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_Piwigo_AlertDialog);
+        final AppCompatEditText input = new AppCompatEditText(this);
 
-        Intent intent = new Intent(this, AlbumService.class);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setTitle(R.string.create_album_title);
+        builder.setView(input);
+        builder.setPositiveButton(R.string.button_ok, (dialog, which) -> createAlbum(input.getText().toString()));
+        builder.setNegativeButton(R.string.button_cancel, (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void createAlbum(String catName) {
+        int catId;
+        Intent intent;
+
+        if (catName == null)
+            return;
+        catId = getCurrentCategoryId();
+        intent = new Intent(this, AlbumService.class);
         intent.putExtra(AlbumService.KEY_CATEGORY_NAME, catName);
         intent.putExtra(AlbumService.KEY_ACCOUNT, userManager.getActiveAccount().getValue());
         intent.putExtra(AlbumService.KEY_PARENT_CATEGORY_ID, catId);
@@ -343,29 +409,35 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SELECT_PICTURES) {
             if (resultCode == RESULT_OK) {
-                if (data.getData() != null) {
-
-                    String imageName = "";
-                    Uri targetUri = data.getData();
-                    if (data.toString().contains("content:")) {
-                        imageName = getRealPathFromURI(targetUri);
-                    } else if (data.toString().contains("file:")) {
-                        imageName = targetUri.getPath();
-                    } else {
-                        imageName = null;
-                        /* TODO add proper error handling */
-                    }
-
+                if (data.getClipData() != null) {
                     Intent intent = new Intent(this, UploadService.class);
-                    intent.putExtra(UploadService.KEY_IMAGE_NAME, imageName);
-                    intent.putExtra(UploadService.KEY_IMAGE_URI, targetUri);
-                    intent.putExtra(UploadService.KEY_ACCOUNT, userManager.getActiveAccount().getValue());
-                    intent.putExtra(UploadService.KEY_CATEGORY_ID, getCurrentCategoryId());
+                    ImageUploadQueue<UploadAction> imageUploadQueue = new ImageUploadQueue<>();
+                    for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                        Uri targetUri = data.getClipData().getItemAt(i).getUri();
+                        String imageName = getNameFromURI(data.getClipData().getItemAt(i), targetUri);
+                        UploadAction uploadAction = new UploadAction(imageName);
 
+                        uploadAction.getUploadData().setTargetUri(targetUri);
+                        uploadAction.getUploadData().setCategoryId(getCurrentCategoryId());
+                        if (!imageUploadQueue.offer(uploadAction))
+                            Log.e("ImageUploadQueue", "Unable to offer UploadAction..");
+                    }
+                    intent.putExtra(UploadService.KEY_UPLOAD_QUEUE, imageUploadQueue);
+                    EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, String.format("Uploading your photos.."), 100, SnackProgressEvent.SnackbarUpdateAction.REFRESH));
                     startService(intent);
                 }
             }
         }
+    }
+
+    private String getNameFromURI(ClipData.Item item, Uri contentUri) {
+        if (item.toString().contains("content:"))
+            return (getRealPathFromURI(contentUri));
+        else if (item.toString().contains("file:"))
+            return (contentUri.getPath());
+        else
+            return (null);
+        /* TODO add proper error handling */
     }
 
     //-

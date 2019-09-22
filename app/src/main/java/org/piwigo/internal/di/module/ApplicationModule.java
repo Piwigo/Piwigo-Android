@@ -22,11 +22,13 @@ import android.accounts.AccountManager;
 import android.content.Context;
 
 import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.BuildConfig;
 import org.piwigo.PiwigoApplication;
 import org.piwigo.accounts.UserManager;
+import org.piwigo.internal.cache.PiwigoImageCache;
 import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Singleton;
@@ -50,7 +52,8 @@ public class ApplicationModule {
     @Provides @Singleton Picasso providePicasso(OkHttp3Downloader downloader) {
         return new Picasso.Builder(application)
                 .downloader(downloader)
-                .indicatorsEnabled(BuildConfig.DEBUG)
+                .indicatorsEnabled(BuildConfig.DEBUG) //We may not want this for production build..
+                .memoryCache(new PiwigoImageCache(application)) //What about this ?
                 .build();
     }
 
