@@ -108,13 +108,16 @@
     <string name="privacy_contact_title">Contactez-nous</string>
     <string name="privacy_contact_text">Si vous avez des questions ou des commentaires concernant cette politique de confidentialité, veuillez nous contacter à l\'adresse suivante:</string>
     <string name="privacy_contact_address">Piwigo, 42 rue des Vignes, 21800 Quetigny (France)</string>
-    <!-- upload -->
-    <string name="uploading_toast">Transfert d\'image en cours</string>
-    <string name="uploading_not_to_cat_null">Le téléchargement n\'est possible que dans un album.</string>
-    <string name="storage_permission_explaination">Le téléchargement de photos n’est possible que si vous donnez accès au stockage.</string>
+    <!-- Upload -->
+    <string name="upload_success">Upload successful</string>
+    <string name="upload_failed">Upload failed</string>
+    <string name="upload_error">An error occurred while upload your photo(s).. Please try again.</string>
+    <string name="upload_success_body">Uploaded %1$s photo(s) to %2$s</string>
+    <string name="storage_permission_title">Missing permissions..</string>
+    <string name="storage_permission_explanation">Uploading photos is only possible if you give access to the storage.</string>
     <!-- Album created -->
     <string name="create_album_title">Create album</string>
-    <string name="create_album_success">Album created.</string>
+    <string name="create_album_success">Album %1$s created.</string>
     <string name="create_album_error">Unable to create album.</string>
     <!-- Buttons -->
     <string name="button_ok">OK</string>
@@ -126,4 +129,11 @@
     <!-- ACRA crash reporting -->
     <string name="crash_dialog_text">Une erreur inattendue s\'est produite obligeant l\'application à s\'arrêter. S\'il vous plaît, aidez-nous à résoudre ce problème en nous envoyant des données d\'erreur, tout ce que vous avez à faire est de cliquer sur OK et d\'envoyer l\'email que nous avons préparé.</string>
     <string name="crash_dialog_comment_prompt">Vous pouvez ajouter vos commentaires sur le problème ci-dessous:</string>
+    <!-- Not implemented -->
+    <string name="not_implemented_title">Not implemented yet..</string>
+    <string name="not_implemented_msg">This feature has not been implemented yet !</string>
+    <!-- Guest error messages-->
+    <string name="not_admin">Not logged in</string>
+    <string name="not_admin_explanation">You need to be logged to do this.</string>
+    <string name="no_internet">Oops ! It seems like you have no internet connection.. Please connect and try again.</string>
 </resources>
