@@ -29,7 +29,7 @@
     <string name="nav_server_version">Server Version: %1$s</string>
     <string name="nav_albums">Albums</string>
     <string name="nav_upload">Upload</string>
-    <string name="nav_settings">Settings</string>
+    <string name="nav_settings">ಸಂಯೋಜನೆಗಳು</string>
     <string name="nav_add_account">Add account</string>
     <string name="nav_delete_account">Remove account</string>
     <string name="nav_edit_account">Edit account</string>
@@ -40,11 +40,11 @@
     <string name="login_url_invalid">Not a valid server address</string>
     <string name="login_username_description">Username to login to the Piwigo gallery</string>
     <string name="login_username_empty">Enter your username</string>
-    <string name="login_username_hint">Username (empty for guest)</string>
-    <string name="login_password_description">Password to login to the Piwigo gallery</string>
-    <string name="login_button_description">Login</string>
-    <string name="login_password_empty">Enter your password</string>
-    <string name="login_password_hint">Password (empty for guest)</string>
+    <string name="login_username_hint">ಬಳಕೆದಾರ ಹೆಸರು (ಅತಿಥಿಗಾಗಿ ಖಾಲಿ)</string>
+    <string name="login_password_description">Piwigo ಚಿತ್ರಶಾಲೆಗಾಗಿ ಲಾಗಿನ್ನಾಗುವುದಕ್ಕೆ ಗುಪ್ತಪದ</string>
+    <string name="login_button_description">ಲಾಗಿನ್</string>
+    <string name="login_password_empty">ನಿನ್ನ ಗುಪ್ತಪದವನ್ನು ನಮೂದಿಸು</string>
+    <string name="login_password_hint">ಗುಪ್ತಪದ (ಅತಿಥಿಗಾಗಿ ಖಾಲಿ)</string>
     <string name="login_error">Login failed, please try again</string>
     <string name="login_account_error">An account for this server already exists</string>
     <string name="login_host_error">Host could not be reached, please check site address</string>
