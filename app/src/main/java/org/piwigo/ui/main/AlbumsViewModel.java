@@ -184,6 +184,8 @@ public class AlbumsViewModel extends ViewModel {
 
     private class ImagesViewBinder implements BindingRecyclerViewAdapter.ViewBinder<ImageInfo> {
 
+        int imageId = 0;
+
         @Override
         public int getViewType(ImageInfo image) {
             return 0;
@@ -196,15 +198,11 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override
         public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, ImageInfo image) {
-            String imageurl = "";
-            //imageurl = image.elementUrl;
-            imageurl = image.derivatives.xsmall.url;
             // TODO: make image size selectable via settings (jca)
-
-            String imagename = image.name;
             // TODO: make configurable to also show the photo name here
-            ImagesItemViewModel viewModel = new ImagesItemViewModel(imageurl, imagename);
+            ImagesItemViewModel viewModel = new ImagesItemViewModel(image.derivatives.xsmall.url, imageId, image.name, images);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
+            imageId++;
         }
 
     }

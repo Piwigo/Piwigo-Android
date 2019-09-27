@@ -22,7 +22,6 @@ import android.accounts.AccountManager;
 import android.content.Context;
 
 import com.jakewharton.picasso.OkHttp3Downloader;
-import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.BuildConfig;
