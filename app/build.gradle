@@ -91,11 +91,11 @@ android {
     }
 }
 
-def daggerVersion = '2.19'
+def daggerVersion = '2.23.2'
 def okhttpVersion = '3.11.0'
-def retrofitVersion = '2.4.0'
+def retrofitVersion = '2.6.1'
 def assertjVersion = '1.2.0'
-def acraVersion = '5.1.3'
+def acraVersion = '5.4.0'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
