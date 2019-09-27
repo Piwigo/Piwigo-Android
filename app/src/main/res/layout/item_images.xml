@@ -45,6 +45,7 @@
             android:adjustViewBounds="true"
             android:src="@{viewModel.url}"
             android:contentDescription="@{viewModel.title}"
+            android:onClick="@{viewModel::onClickDo}"
             app:heightRatio="@{1}"
             />
 
