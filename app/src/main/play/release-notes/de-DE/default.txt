@@ -1,11 +1,11 @@
-This is a beta version, with major improvement since the first public beta but still not intended for production use. Seien Sie vorsichtig und stellen Sie sicher, dass Sie ein vollständiges Backup Ihrer Galleriedaten gemacht haben.
+Dies ist eine Beta-Version, mit großen Verbesserungen seit der ersten öffentlichen Beta, aber noch nicht für den produktiven Einsatz vorgesehen. Seien Sie vorsichtig und stellen Sie sicher, dass Sie ein vollständiges Backup Ihrer Galleriedaten gemacht haben.
 
 In dieser Version haben wir
-- dropped support for Android 4.0 "Ice Cream Sandwich" and 4.1 "Jelly Bean"
-- adjusted the UI to new Piwigo style
-- added German, French and initial Kannada translation
-- improved upload functionality
-- support creation of albums
+- die Unterstützung für Android 4.0 "Ice Cream Sandwich" und 4.1 "Jelly Bean" entfernt
+- das Design auf den neuen Piwigo Stil angepasst
+- die Sprachen Deutsch, Französisch und eine erste Version der indischen Sprache Kannada hinzugefügt
+- verbesserte Upload-Funktionalität
+- Unterstützung der Erstellung von Alben
 - added auto detection correction of the gallery site (automatically choosing HTTPS if possible)
 - minor improvements and
 - a lot of bug fixes
