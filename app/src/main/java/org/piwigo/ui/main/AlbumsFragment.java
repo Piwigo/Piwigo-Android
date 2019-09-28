@@ -71,7 +71,7 @@ public class AlbumsFragment extends BaseFragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             categoryID = bundle.getInt("Category", 0);
-            categoryName = bundle.getString("Title", "Albums");
+            categoryName = bundle.getString("Title", getString(R.string.nav_albums));
         }
         super.onAttach(context);
     }
