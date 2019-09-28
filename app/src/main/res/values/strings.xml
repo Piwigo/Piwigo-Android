@@ -1,6 +1,7 @@
 <!--
   ~ Piwigo for Android
-  ~ Copyright (C) 2018-2018 Raphael Mack http://www.raphael-mack.de
+  ~ Copyright (C) 2019-2019 Valentin Baizeau https://voriondev.fr
+  ~ Copyright (C) 2018-2019 Raphael Mack http://www.raphael-mack.de
   ~ Copyright (C) 2016-2018 Piwigo Team http://piwigo.org
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -148,9 +149,9 @@
     <!-- Upload -->
     <string name="upload_success">Upload successful</string>
     <string name="upload_failed">Upload failed</string>
-    <string name="upload_error">An error occurred while upload your photo(s).. Please try again.</string>
+    <string name="upload_error">An error occurred while upload your photo(s). Please try again.</string>
     <string name="upload_success_body">Uploaded %1$s photo(s) to %2$s</string>
-    <string name="storage_permission_title">Missing permissions..</string>
+    <string name="storage_permission_title">Missing permissions.</string>
     <string name="storage_permission_explanation">Uploading photos is only possible if you give access to the storage.</string>
 
     <!-- Album created -->
@@ -172,12 +173,12 @@
     <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
 
     <!-- Not implemented -->
-    <string name="not_implemented_title">Not implemented yet..</string>
-    <string name="not_implemented_msg">This feature has not been implemented yet !</string>
+    <string name="not_implemented_title">Not implemented yet.</string>
+    <string name="not_implemented_msg">This feature has not been implemented yet!</string>
 
     <!-- Guest error messages-->
     <string name="not_admin">Not logged in</string>
     <string name="not_admin_explanation">You need to be logged to do this.</string>
 
-    <string name="no_internet">Oops ! It seems like you have no internet connection.. Please connect and try again.</string>
+    <string name="no_internet">Oops! It seems like you have no internet connection. Please connect and try again.</string>
 </resources>
