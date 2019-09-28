@@ -32,9 +32,11 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.InputType;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.app.ActivityCompat;
@@ -87,6 +89,8 @@ import rx.Observable;
 
 public class MainActivity extends BaseActivity implements HasSupportFragmentInjector {
     private static final String TAG = MainActivity.class.getName();
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
+    int SELECT_PICTURES = 1;
 
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentInjector;
@@ -103,9 +107,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
     private SnackProgressBarManager snackProgressBarManager;
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
-
-    int SELECT_PICTURES = 1;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +124,30 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         headerBinding.setViewModel(viewModel);
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
+
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                binding.drawerLayout,
+                R.string.nav_drawer_open,
+                R.string.nav_drawer_close
+        );
+        binding.drawerLayout.addDrawerListener(mDrawerToggle);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(false);
+
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+//        mDrawerToggle.setDrawerIndicatorEnabled(false);// TODO: do this whenever we are displaying album > 0
+        mDrawerToggle.setDrawerIndicatorEnabled(true);// TODO: do this whenever we are displaying abum 0
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
 
         snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
 
@@ -290,6 +316,19 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 DialogHelper.INSTANCE.showErrorDialog(R.string.not_implemented_title, R.string.not_implemented_msg, this);
                 break;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }else if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void setFABListener() {

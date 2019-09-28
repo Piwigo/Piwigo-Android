@@ -77,7 +77,10 @@ public class MainViewModel extends ViewModel {
 
     public void navigationIconClick() {
         // TODO: show an "up arrow" and navigate back to the upper album if we are not in root
+//        mDrawerToggle.setDrawerIndicatorEnabled(false);// TODO: do this whenever we are displaying album > 0
+        mDrawerToggle.setDrawerIndicatorEnabled(true);// TODO: do this whenever we are displaying abum 0
 
         drawerState.set(true);
     }
+
 }
