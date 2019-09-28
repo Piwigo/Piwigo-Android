@@ -6,6 +6,6 @@ In dieser Version haben wir
 - die Sprachen Deutsch, Französisch und eine erste Version der indischen Sprache Kannada hinzugefügt
 - verbesserte Upload-Funktionalität
 - Unterstützung der Erstellung von Alben
-- added auto detection correction of the gallery site (automatically choosing HTTPS if possible)
-- minor improvements and
-- a lot of bug fixes
+- automatische Korrektur der Galerie-Seite hinzugefügt (falls möglich wird automatisch HTTPS verwendet)
+- kleinere Verbesserungen und
+- eine Menge Fehlerbehebungen
