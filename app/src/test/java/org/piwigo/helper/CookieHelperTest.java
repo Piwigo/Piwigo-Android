@@ -18,7 +18,7 @@
 
 package org.piwigo.helper;
 
-import android.support.v4.util.ArrayMap;
+import androidx.collection.ArrayMap;
 
 import org.junit.Before;
 import org.junit.Test;

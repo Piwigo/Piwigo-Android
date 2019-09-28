@@ -19,9 +19,10 @@
 package org.piwigo.io.repository;
 
 import android.accounts.Account;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.piwigo.accounts.UserManager;
+import org.piwigo.helper.NaturalOrderComparator;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.Category;
@@ -42,11 +43,13 @@ public class CategoriesRepository extends BaseRepository {
 
     public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId) {
         RestService restService = restServiceFactory.createForAccount(account);
-        /* TODO: make thumbnail Size configurable */
-        return restService.getCategories(categoryId, "large")
+        /* TODO: make thumbnail Size configurable, also check for ImageRepository, whether it can reduce the amount of REST/JSON traffic */
+        return restService.getCategories(categoryId, "medium")
                 .flatMap(response -> Observable.from(response.result.categories))
                 .filter(category -> categoryId == null || category.id != categoryId)
-                .toSortedList((category1, category2) -> Double.compare(Double.parseDouble(category1.globalRank), Double.parseDouble(category2.globalRank)))
+// TODO: #90 generalize sorting
+                .toSortedList((category1, category2) -> NaturalOrderComparator.compare(category1.globalRank, category2.globalRank))
                 .compose(applySchedulers());
+
     }
 }

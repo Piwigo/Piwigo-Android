@@ -3,9 +3,9 @@
     tools:context=".ui.launcher.LauncherActivity">
 
     <RelativeLayout
+        android:background="@color/piwigo_background_color"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <ImageView
             android:id="@+id/logo"
             android:layout_width="wrap_content"

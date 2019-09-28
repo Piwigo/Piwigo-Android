@@ -24,6 +24,10 @@ public class Derivatives {
 
     @SerializedName("thumb") public Derivative thumb;
 
+    @SerializedName("square") public Derivative square;
+
+    @SerializedName("xsmall") public Derivative xsmall;
+
     @SerializedName("small") public Derivative small;
 
     @SerializedName("medium") public Derivative medium;

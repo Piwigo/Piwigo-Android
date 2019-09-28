@@ -1,0 +1,6 @@
+This is a beta version, not intended for production use. Please be careful and ensure you have proper backups of your gallery data.
+
+In this version we
+- added crash reporting via ACRA
+- increase compatibility with older Android versions
+- some minor improvements

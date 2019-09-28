@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.leinardi.android.speeddial.sample.MainActivity">
+    <item
+        android:id="@+id/fab_create_album"
+        android:orderInCategory="100"
+        android:title="@string/fab_create_album"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/fab_upload_photos"
+        android:orderInCategory="100"
+        android:title="@string/fab_upload_photos"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/fab_create_subalbum"
+        android:orderInCategory="100"
+        android:title="@string/fab_create_subalbum"
+        app:showAsAction="never" />
+</menu>

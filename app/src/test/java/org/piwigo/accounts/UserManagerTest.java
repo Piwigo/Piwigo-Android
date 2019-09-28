@@ -21,6 +21,7 @@ package org.piwigo.accounts;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 
 import org.junit.Before;
@@ -45,7 +46,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(application = TestPiwigoApplication.class, constants = BuildConfig.class)
+@Config(application = TestPiwigoApplication.class, sdk = Build.VERSION_CODES.P)
 public class UserManagerTest {
 
     private static final String ACCOUNT_TYPE = "account_type";

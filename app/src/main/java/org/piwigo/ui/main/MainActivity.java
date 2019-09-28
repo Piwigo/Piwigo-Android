@@ -20,35 +20,60 @@ package org.piwigo.ui.main;
 
 import android.Manifest;
 import android.accounts.Account;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
+import android.text.InputType;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.leinardi.android.speeddial.SpeedDialActionItem;
+import com.leinardi.android.speeddial.SpeedDialView;
+import com.tingyik90.snackprogressbar.SnackProgressBar;
+import com.tingyik90.snackprogressbar.SnackProgressBarManager;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.piwigo.R;
+import org.piwigo.bg.AlbumService;
+import org.piwigo.bg.ImageUploadQueue;
 import org.piwigo.bg.UploadService;
+import org.piwigo.bg.action.UploadAction;
 import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
+import org.piwigo.helper.DialogHelper;
+import org.piwigo.helper.NetworkHelper;
+import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.event.SimpleEvent;
+import org.piwigo.io.event.SnackProgressEvent;
+import org.piwigo.io.event.SnackbarShowEvent;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.shared.BaseActivity;
-import org.piwigo.io.RestServiceFactory;
 
 import java.io.File;
 
@@ -63,18 +88,27 @@ import rx.Observable;
 public class MainActivity extends BaseActivity implements HasSupportFragmentInjector {
     private static final String TAG = MainActivity.class.getName();
 
-    @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
-    @Inject MainViewModelFactory viewModelFactory;
-    @Inject RestServiceFactory restServiceFactory;
-    @Inject UserRepository userRepository;
+    @Inject
+    DispatchingAndroidInjector<Fragment> fragmentInjector;
+    @Inject
+    MainViewModelFactory viewModelFactory;
+    @Inject
+    RestServiceFactory restServiceFactory;
+    @Inject
+    UserRepository userRepository;
 
     private Account currentAccount = null;
+
+    private SpeedDialView speedDialView;
+
+    private SnackProgressBarManager snackProgressBarManager;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
 
     int SELECT_PICTURES = 1;
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
 
@@ -89,14 +123,24 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
 
+        snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
+
+        if (!NetworkHelper.INSTANCE.hasInternet(this))
+            EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
+
         currentAccount = userManager.getActiveAccount().getValue();
+        speedDialView = binding.fab;
+
+        setFABListener();
+        refreshFAB(0);
 
         final Observer<Account> accountObserver = account -> {
             // reload the albums on account changes
-            if(account != null && !account.equals(currentAccount)) {
+            if (account != null && !account.equals(currentAccount)) {
                 currentAccount = account;
                 viewModel.username.set(userManager.getUsername(account));
                 viewModel.url.set(userManager.getSiteUrl(account));
+                viewModel.displayFab.set(!userManager.isGuest(currentAccount));
                 /* Login to the new site after account changes.
                  * It seems quite unclean to do that here -> TODO: FIXME*/
                 Observable<LoginResponse> a = userRepository.login(account);
@@ -105,20 +149,22 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                     public void onCompleted() {
                     }
 
-                    @Override public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
                         Log.e(TAG, "Login failed: " + e.getMessage());
                     }
 
-                    @Override public void onNext(LoginResponse loginResponse) {
+                    @Override
+                    public void onNext(LoginResponse loginResponse) {
                         Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
-// TODO: it is crazy to have this code here AND in LauncherActivity
+                        // TODO: it is crazy to have this code here AND in LauncherActivity
                         userManager.setCookie(account, loginResponse.pwgId);
                         userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
                     }
                 });
                 initStartFragment(viewModel);
             }
-            if(account == null){
+            if (account == null) {
                 viewModel.username.set("");
                 viewModel.url.set("");
             }
@@ -133,7 +179,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
     private void initStartFragment(MainViewModel viewModel) {
         viewModel.title.set(getString(R.string.nav_albums));
         Bundle bndl = new Bundle();
-        // TODO: make configurable which is the root album
+        // TODO: make configurable which is the root album (See #44 option to select Default Album)
         bndl.putInt("Category", 0);
         AlbumsFragment frag = new AlbumsFragment();
         frag.setArguments(bndl);
@@ -146,18 +192,86 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 .commit();
     }
 
-    @Override protected void onResume() {
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        refreshFAB(getCurrentCategoryId());
+    }
+
+    protected void refreshFAB(int categoryId) {
+        speedDialView.close(true);
+        speedDialView.clearActionItems();
+        if (categoryId != 0) {
+            speedDialView.addActionItem(new SpeedDialActionItem.Builder(R.id.fab_create_subalbum, R.drawable.ic_action_folder)
+                    .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setFabImageTintColor(ResourcesCompat.getColor(getResources(), R.color.piwigo_orange, getTheme()))
+                    .setLabelColor(Color.BLACK)
+                    .setLabelBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setLabelClickable(true)
+                    .setLabel(R.string.fab_create_subalbum).create());
+            speedDialView.addActionItem(new SpeedDialActionItem.Builder(R.id.fab_upload_photos, R.drawable.ic_action_cloud_upload)
+                    .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setFabImageTintColor(ResourcesCompat.getColor(getResources(), R.color.piwigo_orange, getTheme()))
+                    .setLabelColor(Color.BLACK)
+                    .setLabelBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setLabelClickable(true)
+                    .setLabel(R.string.fab_upload_photos).create());
+        } else
+            speedDialView.addActionItem(new SpeedDialActionItem.Builder(R.id.fab_create_album, R.drawable.ic_action_folder)
+                    .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setFabImageTintColor(ResourcesCompat.getColor(getResources(), R.color.piwigo_orange, getTheme()))
+                    .setLabelColor(Color.BLACK)
+                    .setLabelBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.material_white, getTheme()))
+                    .setLabelClickable(true)
+                    .setLabel(R.string.fab_create_album).create());
+    }
+
+    @Override
+    protected void onResume() {
         super.onResume();
         MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.navigationItemId.set(R.id.nav_albums);
+        speedDialView.setVisibility(viewModel.displayFab.get() ? View.VISIBLE : View.INVISIBLE);
+        EventBus.getDefault().register(this);
     }
 
-    @Override public AndroidInjector<Fragment> supportFragmentInjector() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        snackProgressBarManager.disable();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(SimpleEvent event) {
+        if (event instanceof SnackbarShowEvent)
+            Snackbar.make(findViewById(android.R.id.content), event.getMessage(), ((SnackbarShowEvent) event).getDuration()).show();
+        if (event instanceof SnackProgressEvent) {
+            SnackProgressBar bar = snackProgressBarManager.getSnackProgressBar(((SnackProgressEvent) event).getSnackbarId());
+            if (bar != null && ((SnackProgressEvent) event).getAction().equals(SnackProgressEvent.SnackbarUpdateAction.REFRESH)) {
+                bar.setMessage(((SnackProgressEvent) event).getSnackbarDesc());
+                snackProgressBarManager.updateTo(((SnackProgressEvent) event).getSnackbarId());
+            } else if (bar != null && ((SnackProgressEvent) event).getAction().equals(SnackProgressEvent.SnackbarUpdateAction.KILL))
+                snackProgressBarManager.dismissAll();
+            else {
+                bar = new SnackProgressBar(((SnackProgressEvent) event).getSnackbarType(), ((SnackProgressEvent) event).getSnackbarDesc()).setIsIndeterminate(true);
+                snackProgressBarManager.put(bar, ((SnackProgressEvent) event).getSnackbarId());
+                snackProgressBarManager.show(bar, SnackProgressBarManager.LENGTH_INDEFINITE);
+            }
+        }
+    }
+
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
         return fragmentInjector;
     }
 
     private void itemSelected(int itemId) {
-
         switch (itemId) {
             case R.id.nav_albums:
                 break;
@@ -165,118 +279,165 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 startActivity(new Intent(getApplicationContext(),
                         ManageAccountsActivity.class));
                 break;
-            case R.id.nav_upload:
-                // Here, thisActivity is the current activity
-
-                /* TODO: check whether we really need the permission unconditionally
-                * I (ramack) could imagine, that we don't need it depending on the media chooser... */
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-
-                    // Permission is not granted
-                    // Should we show an explanation?
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        // Show an explanation to the user *asynchronously* -- don't block
-                        // this thread waiting for the user's response! After the user
-                        // sees the explanation, try again to request the permission.
-                        Toast.makeText(this,R.string.storage_permission_explaination, Toast.LENGTH_LONG).show();
-                    } else {
-                        // No explanation needed; request the permission
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-                    }
-                } else {
-                    // Permission has already been granted
-                    selectPhoto();
-                }
-
-
-				break;
             case R.id.nav_about:
-                startActivity(new Intent(getApplicationContext(),
-                        AboutActivity.class));
+                startActivity(new Intent(getApplicationContext(), AboutActivity.class));
                 break;
             case R.id.nav_privacy:
-                startActivity(new Intent(getApplicationContext(),
-                        PrivacyPolicyActivity.class));
+                startActivity(new Intent(getApplicationContext(), PrivacyPolicyActivity.class));
                 break;
 
-			default:
-                Toast.makeText(this,"not yet implemented",Toast.LENGTH_LONG).show();
+            default:
+                DialogHelper.INSTANCE.showErrorDialog(R.string.not_implemented_title, R.string.not_implemented_msg, this);
                 break;
         }
     }
 
+    public void setFABListener() {
+        speedDialView.setOnActionSelectedListener(speedDialActionItem -> {
+            switch (speedDialActionItem.getId()) {
+                case R.id.fab_create_album:
+                case R.id.fab_create_subalbum:
+                    if (!hasAdminRights()) {
+                        DialogHelper.INSTANCE.showErrorDialog(R.string.not_admin, R.string.not_admin_explanation, this);
+                        return (false);
+                    }
+                    promptAlbumCreation();
+                    return (false);
+                case R.id.fab_upload_photos:
+                    if (!hasAdminRights()) {
+                        DialogHelper.INSTANCE.showErrorDialog(R.string.not_admin, R.string.not_admin_explanation, this);
+                        return (false);
+                    }
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        checkExternalStoragePermissions();
+                    } else
+                        selectPhoto(); // Permission has already been granted
+                    return (false);
+                default:
+                    return (false);
+            }
+        });
+    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    selectPhoto();
-
-                } else {
-                    // permission denied, we just don't do anything in this case
-                }
-                return;
+    private void checkExternalStoragePermissions() {
+        // Permission is not granted
+        // Should we show an explanation?
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            // Show an explanation to the user *asynchronously* -- don't block
+            // this thread waiting for the user's response! After the user
+            // sees the explanation, try again to request the permission.
+            DialogHelper.INSTANCE.showErrorDialog(R.string.storage_permission_title, R.string.storage_permission_explanation, this);
+        } else {
+            // No explanation needed; request the permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
             }
         }
     }
 
-    private void selectPhoto(){
+    private boolean hasAdminRights() {
+        return (!userManager.isGuest(currentAccount));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                selectPhoto();
+            }
+        }
+    }
+
+    private void selectPhoto() {
         Intent intent = new Intent();
         intent.setType("image/*");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        }
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent,
                 getResources().getString(R.string.title_select_image)), SELECT_PICTURES);
     }
 
-    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    private int getCurrentCategoryId() {
+        int catId = 0;
+
+        Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
+        if (f instanceof AlbumsFragment) {
+            Integer cat = ((AlbumsFragment) f).getViewModel().getCategory();
+            if (cat != null)
+                catId = cat;
+        }
+        return (catId);
+    }
+
+    private void promptAlbumCreation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_Piwigo_AlertDialog);
+        final AppCompatEditText input = new AppCompatEditText(this);
+
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setTitle(R.string.create_album_title);
+        builder.setView(input);
+        builder.setPositiveButton(R.string.button_ok, (dialog, which) -> createAlbum(input.getText().toString()));
+        builder.setNegativeButton(R.string.button_cancel, (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void createAlbum(String catName) {
+        int catId;
+        Intent intent;
+
+        if (catName == null)
+            return;
+        catId = getCurrentCategoryId();
+        intent = new Intent(this, AlbumService.class);
+        intent.putExtra(AlbumService.KEY_CATEGORY_NAME, catName);
+        intent.putExtra(AlbumService.KEY_ACCOUNT, userManager.getActiveAccount().getValue());
+        intent.putExtra(AlbumService.KEY_PARENT_CATEGORY_ID, catId);
+
+        startService(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == SELECT_PICTURES) {
-            if(resultCode == RESULT_OK) {
-                if(data.getData() != null) {
-
-                    String imageName = "";
-                    Uri targetUri = data.getData();
-                    if (data.toString().contains("content:")) {
-                        imageName = getRealPathFromURI(targetUri);
-                    } else if (data.toString().contains("file:")) {
-                        imageName = targetUri.getPath();
-                    } else {
-                        imageName = null;
-                        /* TODO add proper error handling */
-                    }
-
-
-                    int catid = 0;
-                    Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
-                    if(f instanceof AlbumsFragment){
-                        Integer cat = ((AlbumsFragment)f).getViewModel().getCategory();
-                        if (cat != null){
-                            catid = cat;
-                        }
-                    }
-
+        if (requestCode == SELECT_PICTURES) {
+            if (resultCode == RESULT_OK) {
+                if (data.getClipData() != null) {
                     Intent intent = new Intent(this, UploadService.class);
-                    intent.putExtra(UploadService.KEY_IMAGE_NAME, imageName);
-                    intent.putExtra(UploadService.KEY_IMAGE_URI, targetUri);
-                    intent.putExtra(UploadService.KEY_ACCOUNT, userManager.getActiveAccount().getValue());
-                    intent.putExtra(UploadService.KEY_CATEGORY_ID, catid);
+                    ImageUploadQueue<UploadAction> imageUploadQueue = new ImageUploadQueue<>();
+                    for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                        Uri targetUri = data.getClipData().getItemAt(i).getUri();
+                        String imageName = getNameFromURI(data.getClipData().getItemAt(i), targetUri);
+                        UploadAction uploadAction = new UploadAction(imageName);
 
+                        uploadAction.getUploadData().setTargetUri(targetUri);
+                        uploadAction.getUploadData().setCategoryId(getCurrentCategoryId());
+                        if (!imageUploadQueue.offer(uploadAction))
+                            Log.e("ImageUploadQueue", "Unable to offer UploadAction..");
+                    }
+                    intent.putExtra(UploadService.KEY_UPLOAD_QUEUE, imageUploadQueue);
+                    EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, String.format("Uploading your photos.."), 100, SnackProgressEvent.SnackbarUpdateAction.REFRESH));
                     startService(intent);
                 }
             }
         }
+    }
+
+    private String getNameFromURI(ClipData.Item item, Uri contentUri) {
+        if (item.toString().contains("content:"))
+            return (getRealPathFromURI(contentUri));
+        else if (item.toString().contains("file:"))
+            return (contentUri.getPath());
+        else
+            return (null);
+        /* TODO add proper error handling */
     }
 
     //-
@@ -289,11 +450,11 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
             int mediaDataIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
-            if(nameIndex > -1) {
+            if (nameIndex > -1) {
                 return cursor.getString(nameIndex);
-            }else if(mediaDataIndex > -1){
+            } else if (mediaDataIndex > -1) {
                 return new File(cursor.getString(mediaDataIndex)).getName();
-            }else{
+            } else {
                 /* no usable column found, return the last Uri segment as name */
                 return alternative;
             }

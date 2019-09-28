@@ -19,11 +19,9 @@
 package org.piwigo.ui.main;
 
 import android.accounts.Account;
-import android.arch.core.executor.testing.InstantTaskExecutorRule;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
-
-import com.google.common.base.Optional;
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import org.junit.Before;
 import org.junit.Rule;
