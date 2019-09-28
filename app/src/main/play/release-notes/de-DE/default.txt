@@ -2,5 +2,5 @@ Dies ist eine Testversion welche nicht für Produktionszwecke vorgesehen ist. Se
 
 In dieser Version haben wir
 - Absturzberichte (via ACRA) hinzugefügt
-- increase compatibility with older Android versions
-- some minor improvements
+- die Kompatibilität mit älteren Androidversionen verbessert
+- einige kleinere Verbesserungen

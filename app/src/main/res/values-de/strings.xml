@@ -34,15 +34,19 @@
     <string name="nav_delete_account">Konto entfernen</string>
     <string name="nav_edit_account">Konto bearbeiten</string>
     <!-- Login -->
-    <string name="login_url_hint">Site address</string>
-    <string name="login_username_hint">Benutzername (optional)</string>
-    <string name="login_password_hint">Password (optional)</string>
-    <string name="login_url_empty">Enter your site address</string>
-    <string name="login_url_invalid">Not a valid site address</string>
+    <string name="login_url_hint">Server address</string>
+    <string name="login_url_description">URL of the Piwigo gallery to login</string>
+    <string name="login_url_empty">Enter your server address</string>
+    <string name="login_url_invalid">Not a valid server address</string>
+    <string name="login_username_description">Username to login to the Piwigo gallery</string>
     <string name="login_username_empty">Enter your username</string>
+    <string name="login_username_hint">Benutzername (optional)</string>
+    <string name="login_password_description">Password to login to the Piwigo gallery</string>
+    <string name="login_button_description">Login</string>
     <string name="login_password_empty">Enter your password</string>
+    <string name="login_password_hint">Password (empty for guest)</string>
     <string name="login_error">Login failed, please try again</string>
-    <string name="login_account_error">An account for this site already exists</string>
+    <string name="login_account_error">An account for this server already exists</string>
     <string name="login_host_error">Host could not be reached, please check site address</string>
     <!-- Account -->
     <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
@@ -60,7 +64,7 @@
     <string name="about_text_contact_2"><![CDATA[Der Quellcode ist auf <a href="https://github.com/Piwigo/Piwigo-Android">Github</a> zu finden.]]></string>
     <string name="about_text_contact_3"><![CDATA[Discussions should take place in the <a href="https://piwigo.org/forum/">Piwigo Forum</a>.]]></string>
     <string name="about_text_contact_4"><![CDATA[For anything you want to tell us privately send an email to <a href="mailto:android@piwigo.org">android@piwigo.org</a>.]]></string>
-    <string name="about_text_support_h">Contribution</string>
+    <string name="about_text_support_h">Mithilfe</string>
     <string name="about_text_support"><![CDATA[In case you want to support the development of %1$s consider discussing <a href="https://github.com/Piwigo/Piwigo-Android/issues">issues on github</a> or submitting <a href="https://github.com/Piwigo/Piwigo-Android/pulls">pull requests</a>.]]></string>
     <string name="about_text_ack_h">Danksagungen</string>
     <string name="about_text_ack_2">Es würde uns freuen auch deinen Namen bald hier auflisten zu können.</string>
@@ -75,8 +79,6 @@
         <item quantity="one">, 1 Foto in Unteralben</item>
         <item quantity="other">, %1$d Fotos in Unteralben</item>
     </plurals>
-    <!-- ManageAccounts -->
-    <string name="title_activity_manage_accounts">ManageAccountsActivity</string>
     <!-- Privacy Policy -->
     <string name="privacy_text">Piwigo-Android und Piwigo-Mobile sind kostenlose, freie, Open Source Programme (Apps) um auf eine Piwigo-Gallerie zuzugreifen. Diese Datenschutzerklärung gilt für diese nativen Android- und iOS-Anwendungen, welche eine Verbindung zu Piwigo-Gallerie-Seiten aufbauen, die außerhalb der Kontrolle der Autoren sind. Konsultieren Sie die Datenschutzerklärung der entsprechenden Webseiten, bevor Sie ein Konto in Piwigo-Android oder Piwigo-Mobile konfigurieren um die App mit einer Gallerie zu verbinden.</string>
     <string name="privacy_last_update">Letzte Aktualisierung: 25. Oktober 2018</string>
@@ -106,11 +108,32 @@
     <string name="privacy_contact_title">Kontakt</string>
     <string name="privacy_contact_text">Bei Fragen oder Anmerkungen zu dieser Datenschutzerklärung kontaktieren Sie uns bitte über:</string>
     <string name="privacy_contact_address">Piwigo, 42 rue des Vignes, 21800 Quetigny (Frankreich)</string>
-    <!-- upload -->
-    <string name="uploading_toast">Bild wird hochgeladen</string>
-    <string name="uploading_not_to_cat_null">Uploading is only possible in an album.</string>
-    <string name="storage_permission_explaination">Uploading photos is only possible if you give access to the storage.</string>
+    <!-- Upload -->
+    <string name="upload_success">Upload successful</string>
+    <string name="upload_failed">Upload failed</string>
+    <string name="upload_error">An error occurred while upload your photo(s).. Please try again.</string>
+    <string name="upload_success_body">Uploaded %1$s photo(s) to %2$s</string>
+    <string name="storage_permission_title">Missing permissions..</string>
+    <string name="storage_permission_explanation">Uploading photos is only possible if you give access to the storage.</string>
+    <!-- Album created -->
+    <string name="create_album_title">Create album</string>
+    <string name="create_album_success">Album %1$s created.</string>
+    <string name="create_album_error">Unable to create album.</string>
+    <!-- Buttons -->
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancel</string>
+    <!-- FAB -->
+    <string name="fab_create_album">Create album</string>
+    <string name="fab_create_subalbum">Create sub-album</string>
+    <string name="fab_upload_photos">Upload photos</string>
     <!-- ACRA crash reporting -->
     <string name="crash_dialog_text">An unexpected error occurred forcing the application to stop. Please help us fix this by sending us error data, all you have to do is click OK and send the email that we prepared.</string>
     <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
+    <!-- Not implemented -->
+    <string name="not_implemented_title">Not implemented yet..</string>
+    <string name="not_implemented_msg">This feature has not been implemented yet !</string>
+    <!-- Guest error messages-->
+    <string name="not_admin">Not logged in</string>
+    <string name="not_admin_explanation">You need to be logged to do this.</string>
+    <string name="no_internet">Oops ! It seems like you have no internet connection.. Please connect and try again.</string>
 </resources>
