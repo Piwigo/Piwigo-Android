@@ -1,6 +1,11 @@
-Ceci est une version bêta, non destinée à une utilisation en production. S'il vous plaît, soyez prudent et assurez-vous que vous avez sauvegardé les données de votre galerie.
+This is a beta version, with major improvement since the first public beta but still not intended for production use. S'il vous plaît, soyez prudent et assurez-vous que vous avez sauvegardé les données de votre galerie.
 
 Dans cette version nous avons :
-- ajouté le rapport de crashs via ACRA
-- amélioré la compatibilité avec des versions anciennes d’Android
-- apporté quelques améliorations mineures
+- dropped support for Android 4.0 "Ice Cream Sandwich" and 4.1 "Jelly Bean"
+- adjusted the UI to new Piwigo style
+- added German, French and initial Kannada translation
+- improved upload functionality
+- support creation of albums
+- added auto detection correction of the gallery site (automatically choosing HTTPS if possible)
+- minor improvements and
+- a lot of bug fixes
