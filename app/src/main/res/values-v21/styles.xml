@@ -6,9 +6,9 @@
     </style>
 
     <style name="Theme.Piwigo.Login">
-        <item name="colorPrimary">@color/piwigo_grey</item>
-        <item name="colorPrimaryDark">@color/piwigo_grey_secondary</item>
-        <item name="android:windowBackground">@color/piwigo_grey</item>
+        <item name="colorPrimary">@color/piwigo_background_color</item>
+        <item name="colorPrimaryDark">@color/piwigo_dark_text_color</item>
+        <item name="android:windowBackground">@color/piwigo_background_color</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowEnterTransition">@android:transition/explode</item>
         <item name="android:windowExitTransition">@android:transition/explode</item>

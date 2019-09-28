@@ -20,10 +20,10 @@
 package org.piwigo.ui.account;
 
 import android.accounts.Account;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 import android.content.Intent;
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableField;
 
 import org.piwigo.BR;
 import org.piwigo.R;

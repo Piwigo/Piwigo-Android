@@ -30,7 +30,7 @@
         android:layout_centerVertical="true"
         android:orientation="vertical"
         android:padding="8dp"
-        android:background="@drawable/account_select_bg">
+        android:background="@android:color/white">
 
         <TextView
             android:id="@+id/username"

@@ -6,11 +6,6 @@
             android:id="@+id/nav_albums"
             android:icon="@drawable/ic_action_folder"
             android:title="@string/nav_albums" />
-        <item
-            android:id="@+id/nav_upload"
-            android:checkable="true"
-            android:icon="@drawable/ic_action_cloud_upload"
-            android:title="@string/nav_upload" />
     </group>
     <group
         android:id="@+id/nav_group_accounts"

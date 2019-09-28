@@ -20,7 +20,7 @@ package org.piwigo.ui.launcher;
 
 import android.accounts.Account;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -35,7 +35,6 @@ import org.piwigo.ui.shared.Navigator;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
-import rx.Observable;
 import rx.Subscriber;
 
 public class LauncherActivity extends BaseActivity {

@@ -53,7 +53,7 @@ public interface RestService {
 
     @GET("ws.php?method=pwg.session.logout") Observable<SuccessResponse> logout();
 
-    @POST("ws.php?method=pwg.categories.add") @FormUrlEncoded Observable<AddCategoryResponse> addCategory(
+    @POST("ws.php?method=pwg.categories.add") @FormUrlEncoded Call<AddCategoryResponse> addCategory(
             @Field("name") String name,
             @Field("parent") Integer parent,
             @Field("comment") String comment,

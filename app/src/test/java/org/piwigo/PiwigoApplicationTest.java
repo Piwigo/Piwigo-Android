@@ -18,6 +18,8 @@
 
 package org.piwigo;
 
+import android.os.Build;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +30,7 @@ import org.robolectric.annotation.Config;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(application = TestPiwigoApplication.class, constants = BuildConfig.class)
+@Config(application = TestPiwigoApplication.class, sdk = Build.VERSION_CODES.P)
 public class PiwigoApplicationTest {
 
     private PiwigoApplication application;

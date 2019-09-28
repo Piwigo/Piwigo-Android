@@ -18,24 +18,28 @@
 
 package org.piwigo.ui.main;
 
-import android.accounts.Account;
-import android.app.Activity;
-import android.arch.lifecycle.ViewModelProviders;
-import android.arch.lifecycle.Observer;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.databinding.DataBindingUtil;
-import android.os.Build;
+
+import androidx.databinding.DataBindingUtil;
+
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.piwigo.R;
 import org.piwigo.databinding.FragmentAlbumsBinding;
+import org.piwigo.io.event.RefreshRequestEvent;
 import org.piwigo.ui.shared.BaseFragment;
 
 import javax.inject.Inject;
@@ -47,64 +51,72 @@ public class AlbumsFragment extends BaseFragment {
     private static final int PHONE_MIN_WIDTH = 320;
     private static final int TABLET_MIN_WIDTH = 360;
 
-    @Inject AlbumsViewModelFactory viewModelFactory;
+    @Inject
+    AlbumsViewModelFactory viewModelFactory;
 
     private FragmentAlbumsBinding binding;
     private int categoryID;
+    private String categoryName;
 
-    public AlbumsFragment(){
+    public AlbumsFragment() {
         super();
         categoryID = 0;
+        categoryName = "";
     }
 
-    private void attach(Context context){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            AndroidSupportInjection.inject(this);
-        }
+    @Override
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             categoryID = bundle.getInt("Category", 0);
+            categoryName = bundle.getString("Title", getString(R.string.nav_albums));
         }
-    }
-
-    @Override public void onAttach(Context context) {
-        attach(context);
         super.onAttach(context);
     }
 
-    @Override @SuppressWarnings("deprecation") public void onAttach(Activity activity) {
-        attach(activity);
-        super.onAttach(activity);
+    @Override
+    public void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
     }
 
-    @Override public void onResume(){
+    @Subscribe
+    public void onEvent(RefreshRequestEvent event)
+    {
+        binding.getViewModel().loadAlbums(event.getCategoryId());
+    }
+
+    @Override
+    public void onResume() {
         MainViewModel vm = ViewModelProviders.of(this.getActivity(), viewModelFactory).get(MainViewModel.class);
-// as we don't work on #69 for release 0.9 let's remove this here...
-//        vm.title.set("Album " + binding.getViewModel().getCategory());
+        vm.title.set(categoryName);
+        EventBus.getDefault().register(this);
         super.onResume();
     }
 
-    @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_albums, container, false);
         binding.albumRecycler.setHasFixedSize(true);
         binding.albumRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
         binding.photoRecycler.setHasFixedSize(true);
         binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount() * 3));
 
-
         return binding.getRoot();
     }
 
-    public AlbumsViewModel getViewModel(){
+    public AlbumsViewModel getViewModel() {
         return binding.getViewModel();
     }
 
-    @Override public void onActivityCreated(Bundle savedInstanceState) {
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         AlbumsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AlbumsViewModel.class);
         binding.setViewModel(viewModel);
-
         binding.getViewModel().loadAlbums(categoryID);
     }
 

@@ -59,14 +59,14 @@
     <string name="about_text_licence"><![CDATA[%1$s est un logiciel libre: vous pouvez le redistribuer et / ou le modifier selon les termes de la <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License</a>]]></string>
     <string name="about_text_license_2">Ce programme est distribué dans l\'espoir qu\'il sera utile, mais SANS AUCUNE GARANTIE; sans même la garantie implicite de QUALITÉ MARCHANDE ou d\'ADÉQUATION À UN USAGE PARTICULIER. Voir la licence publique générale GNU pour plus de détails.</string>
     <string name="about_text_privacy_h">Politique de Confidentialité</string>
-    <string name="about_text_privacy"><![CDATA[%1$s et ses auteurs ont tout intérêt à respecter votre vie privée. Par conséquent, cette application est conçue pour ne pas suivre votre comportement et garder vos données entre vos mains. Il est recommandé d'héberger vous-même votre galerie Piwigo et d'utiliser uniquement des connexions chiffrées via HTTPS. Lire le <a href=\"org.piwigo.privacy_policy://show\">politique de confidentialité</a>.]]></string>
+    <string name="about_text_privacy"><![CDATA[%1$s et ses auteurs ont tout intérêt à respecter votre vie privée. Par conséquent, cette application est conçue pour ne pas suivre votre comportement et garder vos données entre vos mains. Il est recommandé d\'héberger vous-même votre galerie Piwigo et d\'utiliser uniquement des connexions chiffrées via HTTPS. Lire le <a href="org.piwigo.privacy_policy://show">politique de confidentialité</a>.]]></string>
     <string name="about_text_contact_h">Contact</string>
     <string name="about_text_contact"><![CDATA[Pour les bugs et suggestions utilisez le <a href="https://github.com/Piwigo/Piwigo-Android/issues">problème tacker</a>, de préférence en langue anglaise.]]></string>
     <string name="about_text_contact_2"><![CDATA[Le code source peut être trouvé sur <a href="https://github.com/Piwigo/Piwigo-Android">Github</a>.]]></string>
     <string name="about_text_contact_3"><![CDATA[Les discussions sont souhaitées dans le <a href="https://piwigo.org/forum/"> Forum de Piwigo</a>.]]></string>
     <string name="about_text_contact_4"><![CDATA[Pour tout ce que vous voulez nous dire en privé, envoyez un email à <a href="mailto:android@piwigo.org">android@piwigo.org</a>.]]></string>
     <string name="about_text_support_h">Contribution</string>
-    <string name="about_text_support"><![CDATA[Si vous souhaitez soutenir le développement de %1$s, envisagez de discuter des <a href="https://github.com/Piwigo/Piwigo-Android/issues">problèmes sur Github</a> ou de soumettre <a href="https://github.com/Piwigo/Piwigo-Android/pulls">demandes d'ajout de code</a>.]]></string>
+    <string name="about_text_support"><![CDATA[Si vous souhaitez soutenir le développement de %1$s, envisagez de discuter des <a href="https://github.com/Piwigo/Piwigo-Android/issues">problèmes sur Github</a> ou de soumettre <a href="https://github.com/Piwigo/Piwigo-Android/pulls">demandes d\'ajout de code</a>.]]></string>
     <string name="about_text_ack_h">Remerciements</string>
     <string name="about_text_ack_2">Nous sommes aussi impatients de mentionner votre nom dans cette liste.</string>
     <string name="about_text_lib_h">Bibliothèques</string>

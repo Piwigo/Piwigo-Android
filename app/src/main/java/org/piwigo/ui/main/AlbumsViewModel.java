@@ -20,10 +20,12 @@
 package org.piwigo.ui.main;
 
 import android.accounts.Account;
-import android.arch.lifecycle.ViewModel;
 import android.content.res.Resources;
-import android.databinding.ObservableArrayList;
 import android.util.Log;
+
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableBoolean;
+import androidx.lifecycle.ViewModel;
 
 import org.piwigo.BR;
 import org.piwigo.R;
@@ -34,6 +36,7 @@ import org.piwigo.io.repository.CategoriesRepository;
 import org.piwigo.io.repository.ImageRepository;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 
+import java.io.IOException;
 import java.util.List;
 
 import rx.Subscriber;
@@ -42,6 +45,8 @@ import rx.Subscription;
 public class AlbumsViewModel extends ViewModel {
 
     private static final String TAG = AlbumsViewModel.class.getName();
+
+    public ObservableBoolean isLoading = new ObservableBoolean();
 
     public ObservableArrayList<ImageInfo> images = new ObservableArrayList<>();
     public ObservableArrayList<Category> albums = new ObservableArrayList<>();
@@ -67,7 +72,8 @@ public class AlbumsViewModel extends ViewModel {
         this.resources = resources;
     }
 
-    @Override protected void onCleared() {
+    @Override
+    protected void onCleared() {
         if (albumsSubscription != null) {
             albumsSubscription.unsubscribe();
         }
@@ -79,39 +85,50 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     void loadAlbums(Integer categoryId) {
-        if(category != categoryId) {
-            category = categoryId;
+        category = categoryId;
 
-            Account account = userManager.getActiveAccount().getValue();
-            if (albumsSubscription != null) {
-                // cleanup, just in case
-                albumsSubscription.unsubscribe();
-                albumsSubscription = null;
-            }
-            if (photosSubscription != null) {
-                // cleanup, just in case
-                photosSubscription.unsubscribe();
-                photosSubscription = null;
-            }
-            if (account != null) {
-                albumsSubscription = categoriesRepository.getCategories(account, categoryId)
-                        .subscribe(new CategoriesSubscriber());
-                photosSubscription = imageRepository.getImages(account, categoryId)
-                        .subscribe(new ImagesSubscriber());
-
-            }
+        Account account = userManager.getActiveAccount().getValue();
+        if (albumsSubscription != null) {
+            // cleanup, just in case
+            albumsSubscription.unsubscribe();
+            albumsSubscription = null;
         }
+        if (photosSubscription != null) {
+            // cleanup, just in case
+            photosSubscription.unsubscribe();
+            photosSubscription = null;
+        }
+        if (account != null) {
+            albumsSubscription = categoriesRepository.getCategories(account, categoryId)
+                    .subscribe(new CategoriesSubscriber());
+            photosSubscription = imageRepository.getImages(account, categoryId)
+                    .subscribe(new ImagesSubscriber());
+        }
+    }
+
+    public void onRefresh() {
+        isLoading.set(true);
+        loadAlbums(getCategory());
     }
 
     private class CategoriesSubscriber extends Subscriber<List<Category>> {
 
-        @Override public void onCompleted() {}
-
-        @Override public void onError(Throwable e) {
-            Log.e(TAG, e.getMessage());
+        @Override
+        public void onCompleted() {
         }
 
-        @Override public void onNext(List<Category> categories) {
+        @Override
+        public void onError(Throwable e) {
+            if (e instanceof IOException) {
+                Log.e(TAG, "CategoriesSubscriber: " + e.getMessage());
+                // TODO: #91 tell the user about the network problem
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public void onNext(List<Category> categories) {
             albums.clear();
             albums.addAll(categories);
         }
@@ -119,15 +136,18 @@ public class AlbumsViewModel extends ViewModel {
 
     private class CategoryViewBinder implements BindingRecyclerViewAdapter.ViewBinder<Category> {
 
-        @Override public int getViewType(Category category) {
+        @Override
+        public int getViewType(Category category) {
             return 0;
         }
 
-        @Override public int getLayout(int viewType) {
+        @Override
+        public int getLayout(int viewType) {
             return R.layout.item_album;
         }
 
-        @Override public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, Category category) {
+        @Override
+        public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, Category category) {
             String photos = resources.getQuantityString(R.plurals.album_photos, category.nbImages, category.nbImages);
             if (category.totalNbImages > category.nbImages) {
                 int subPhotos = category.totalNbImages - category.nbImages;
@@ -140,33 +160,45 @@ public class AlbumsViewModel extends ViewModel {
 
     private class ImagesSubscriber extends Subscriber<List<ImageInfo>> {
 
-        @Override public void onCompleted() {}
-
-        @Override public void onError(Throwable e) {
-            Log.e("error", e.getMessage());
+        @Override
+        public void onCompleted() {
+            isLoading.set(false);
         }
 
-        @Override public void onNext(List<ImageInfo> imagelist) {
+        @Override
+        public void onError(Throwable e) {
+            if (e instanceof IOException) {
+                Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
+// TODO: #91 tell the user about the network problem
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public void onNext(List<ImageInfo> imageList) {
             images.clear();
-            images.addAll(imagelist);
+            images.addAll(imageList);
         }
-
     }
 
     private class ImagesViewBinder implements BindingRecyclerViewAdapter.ViewBinder<ImageInfo> {
 
-        @Override public int getViewType(ImageInfo image) {
+        @Override
+        public int getViewType(ImageInfo image) {
             return 0;
         }
 
-        @Override public int getLayout(int viewType) {
+        @Override
+        public int getLayout(int viewType) {
             return R.layout.item_images;
         }
 
-        @Override public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, ImageInfo image) {
-            String imageurl ="";
+        @Override
+        public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, ImageInfo image) {
+            String imageurl = "";
             //imageurl = image.elementUrl;
-            imageurl = image.derivatives.small.url;
+            imageurl = image.derivatives.xsmall.url;
             // TODO: make image size selectable via settings (jca)
 
             String imagename = image.name;

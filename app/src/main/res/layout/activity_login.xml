@@ -11,6 +11,7 @@
     </data>
 
     <ScrollView
+        android:background="@color/piwigo_background_color"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
@@ -30,7 +31,7 @@
                 android:contentDescription="@string/nav_icon_description"
                 android:transitionName="@string/logo_transition_name" />
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 style="@style/Theme.Piwigo.Login.CardView"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -45,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -56,16 +57,18 @@
                             android:id="@+id/url"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:autofillHints="url"
+                            android:contentDescription="@string/login_url_description"
                             android:hint="@string/login_url_hint"
                             android:imeOptions="actionNext"
                             android:inputType="textUri"
                             android:maxLines="1"
+                            android:minHeight="48dp"
                             android:nextFocusDown="@+id/username"
-                            android:autofillHints="url"
                             android:text="@={viewModel.url}" />
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:error="@{viewModel.usernameError}"
@@ -75,50 +78,63 @@
                             android:id="@+id/username"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:contentDescription="@string/login_username_description"
                             android:hint="@string/login_username_hint"
                             android:imeOptions="actionNext"
                             android:inputType="text"
+                            android:minHeight="48dp"
                             android:maxLines="1"
                             android:nextFocusDown="@+id/password"
                             android:nextFocusUp="@+id/url"
                             android:autofillHints="username"
                             android:text="@={viewModel.username}" />
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:error="@{viewModel.passwordError}"
-                        app:errorEnabled="true">
+                        app:errorEnabled="true"
+                        app:passwordToggleEnabled="true" >
 
                         <EditText
                             android:id="@+id/password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
+                            android:contentDescription="@string/login_password_description"
                             android:hint="@string/login_password_hint"
                             android:imeOptions="actionDone"
                             android:inputType="textPassword"
+                            android:minHeight="48dp"
                             android:maxLines="1"
                             android:nextFocusDown="@+id/login_button"
                             android:nextFocusUp="@+id/username"
                             android:autofillHints="password"
                             android:text="@={viewModel.password}" />
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <android.support.design.widget.FloatingActionButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="24dp"
+                    <com.github.jorgecastilloprz.FABProgressCircle
+                        android:id="@+id/fabLoginCircle"
                         android:layout_gravity="center_horizontal"
-                        android:onClick="@{() -> viewModel.onLoginClick()}"
-                        android:scaleType="center"
-                        android:src="@drawable/ic_chevron_right"
-                        app:elevation="8dp"
-                        app:fabSize="normal" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
 
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:id="@+id/login_button"
+                            android:contentDescription="@string/login_button_description"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="24dp"
+                            android:layout_gravity="center_horizontal"
+                            android:onClick="onClick"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_chevron_right"
+                            app:elevation="8dp"
+                            app:fabSize="normal" />
+                    </com.github.jorgecastilloprz.FABProgressCircle>
                 </LinearLayout>
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
     </ScrollView>
 </layout>
