@@ -51,7 +51,7 @@
     <string name="login_host_error">Host could not be reached, please check site address</string>
     <!-- Account -->
     <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
-    <string name="account_not_selected">Select an account for deletion first</string>
+    <string name="account_not_selected">ಮೊದಲು ಅಳಿಸಲು ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
     <!-- About -->
     <string name="about_text_version">version <b>%1$s</b></string>
     <string name="about_text_intro"> - access Piwigo galleries from your Android phone.</string>
@@ -63,18 +63,18 @@
     <string name="about_text_contact_h">ಸಂಪರ್ಕಿಸು</string>
     <string name="about_text_contact"><![CDATA[For bugs and suggestions use the <a href="https://github.com/Piwigo/Piwigo-Android/issues">issue tacker</a>, preferably in English language.]]></string>
     <string name="about_text_contact_2"><![CDATA[Source code can be found on <a href="https://github.com/Piwigo/Piwigo-Android">Github</a>.]]></string>
-    <string name="about_text_contact_3"><![CDATA[Discussions should take place in the <a href="https://piwigo.org/forum/">Piwigo Forum</a>.]]></string>
+    <string name="about_text_contact_3"><![CDATA[ಚರ್ಚೆಗಳು <a href="https://piwigo.org/forum/">Piwigo ವೇದಿಕೆಯಲ್ಲಿ</a> ನಡೆಯಬೇಕು.]]></string>
     <string name="about_text_contact_4"><![CDATA[For anything you want to tell us privately send an email to <a href="mailto:android@piwigo.org">android@piwigo.org</a>.]]></string>
-    <string name="about_text_support_h">Contribution</string>
+    <string name="about_text_support_h">ಕೊಡುಗೆ</string>
     <string name="about_text_support"><![CDATA[In case you want to support the development of %1$s consider discussing <a href="https://github.com/Piwigo/Piwigo-Android/issues">issues on github</a> or submitting <a href="https://github.com/Piwigo/Piwigo-Android/pulls">pull requests</a>.]]></string>
-    <string name="about_text_ack_h">Acknowledgements</string>
+    <string name="about_text_ack_h">ಸ್ವೀಕೃತಿಗಳು</string>
     <string name="about_text_ack_2">We are looking forward to mention your name in this list, too.</string>
     <string name="about_text_lib_h">Libraries</string>
     <string name="about_text_lib">The following libraries are used by this application and licensed under the named licenses:</string>
     <!-- Albums -->
     <plurals name="album_photos">
         <item quantity="one">1 photo</item>
-        <item quantity="other">%1$d photos</item>
+        <item quantity="other">%1$d ಆಯಾಚಿತ್ರಗಳು</item>
     </plurals>
     <plurals name="album_photos_subs">
         <item quantity="one">, 1 photo in sub-albums</item>
@@ -83,28 +83,28 @@
     <!-- Privacy Policy -->
     <string name="privacy_text">Piwigo-Android and Piwigo-Mobile are free, libre and open source client applications for Piwigo galleries. This privacy policy applies to these native Android and iOS applications, connecting to Piwigo sites which are out of the control of the authors. Check the privacy policy of the corresponding sites before configuring an account in Piwigo-Android or Piwigo-Mobile to connect to a gallery.</string>
     <string name="privacy_last_update">Last updated October 25, 2018</string>
-    <string name="privacy_intro_title">Introduction</string>
+    <string name="privacy_intro_title">ಪರಿಚಯ</string>
     <string name="privacy_intro_text1">Developers of Piwigo-Android and Piwigo-Mobile, we (or “us” or “our”) respect the privacy of our users (“user” or “you”). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile applications (the “Applications”). Our names can be extracted from the meta data in the git repositories and within the Applications.</string>
-    <string name="privacy_intro_text2">Please read this Privacy Policy carefully. If you do not agree with the terms of this Privacy Policy, please do not access the Applications.</string>
+    <string name="privacy_intro_text2">ದಯವಿಟ್ಟು ಈ ಗೌಪ್ಯತಾ ನೀತಿಯನ್ನು ಎಚ್ಚರಿಕೆಯಿಂದ ಓದಿ. ನೀವು ಈ ಗೌಪ್ಯತಾ ನೀತಿಯ ನಿಯಮಗಳನ್ನು ಒಪ್ಪದಿದ್ದರೆ, ದಯವಿಟ್ಟು ಅಪ್ಲಿಕೇಶನ್ಗಳನ್ನು ಪ್ರವೇಶಿಸಬೇಡಿ.</string>
     <string name="privacy_intro_text3">We reserve the right to make changes to this Privacy Policy at any time and for any reason. We will alert you about any changes by updating the “Last updated” date of this Privacy Policy.</string>
     <string name="privacy_intro_text4">You are encouraged to periodically review this Privacy Policy to stay informed of updates. You will be deemed to have been made aware of, will be subject to, and will be deemed to have accepted the changes in any revised Privacy Policy by your continued use of the Applications after the date such revised Privacy Policy is posted.</string>
     <string name="privacy_intro_text5">This Privacy Policy does not apply to the third-party online/mobile store from which you install the Applications or make payments, including any in-app virtual items, which may also collect and use data about you. We are not responsible for any of the data collected by any such third party.</string>
     <string name="privacy_what_title">What data is processed and stored?</string>
     <string name="privacy_what_subTitle1">Piwigo Gallery Data</string>
     <string name="privacy_what_subText1a">Account credentials are stored by the Applications and submitted to the configured sites to connect to one or several Piwigo galleries. Beside that, all the photos, videos and other files that are selected for download/upload and the entered content is stored, processed and transmitted to the configured gallery site.</string>
-    <string name="privacy_what_subTitle2">Geo-Location Information</string>
+    <string name="privacy_what_subTitle2">ಭೂಮಿಯಲ್ಲಿ ಸ್ಥಳದ ಮಾಹಿತಿ</string>
     <string name="privacy_what_subText2a">We may request access or permission to and track location-based information from your mobile device, either continuously or while you are using the Applications, to provide location-based services. If you wish to change our access or permissions, you may do so in your device’s settings.</string>
-    <string name="privacy_what_subTitle3">Mobile Device Access</string>
+    <string name="privacy_what_subTitle3">ಮೊಬೈಲ್ ಸಾಧನ ಪ್ರವೇಶ</string>
     <string name="privacy_what_subText3a">The Applications may request access or permission to certain features from your mobile device, including your mobile device’s photo library and file storage, the Android AccountManager, the Apple Keychain, foreign and cloud based storage folders, geolocalisation, and other features. If you wish to change our access or permissions, you may do so in your device’s settings but be aware that some accesses are necessary to upload media files of your mobile to the Piwigo gallery or to store Piwigo media files in your mobile.</string>
-    <string name="privacy_what_subTitle4">Mobile Device Data</string>
+    <string name="privacy_what_subTitle4">ಮೊಬೈಲ್ ಸಾಧನ ಡೇಟಾ</string>
     <string name="privacy_what_subText4a">When contacting the support team, device information such as your mobile device ID, model, and manufacturer, version of your operating system, email, country, location, and any other data you choose to provide may be transmitted to the development team of the Applications. Beside the data explicitly shared by the user with the developers no content will be stored, transmitted or processed by us.</string>
     <string name="privacy_why_title">Why does the mobile app store data?</string>
     <string name="privacy_why_text1">The Applications store only data to satisfy one intention: accessing a Piwigo gallery hosted on a foreign webserver. No data is collected, transmitted or stored that is not required for its intended functionality.</string>
     <string name="privacy_why_text2">When you access the Applications, your personal information is not collected through the use of tracking technology. We only use caching mechanisms to help customize the Applications and improve your experience. You can disable or clear caches, but be aware that such action could affect the availability and functionality of the Applications.</string>
-    <string name="privacy_how_title">How is the data protected?</string>
+    <string name="privacy_how_title">ಡೇಟಾವನ್ನು ಹೇಗೆ ರಕ್ಷಿಸಲಾಗಿದೆ?</string>
     <string name="privacy_how_text1">The Applications store data locally on the device it is executed on. You are responsible to protect the stored data from unauthorized access. We strongly recommend to use HTTPS to protect data during transmission and the Applications try to use HTTPS the first time the user establishes a connection with a Piwigo gallery. Keeping certificates and libraries for HTTPS access up to date is under responsibility of the Piwigo server operator. When the Applications cannot use HTTPS, they switches to HTTP and data are not encrypted during transmission.</string>
     <string name="privacy_how_text2">When you upload images to a Piwigo gallery, images may contain private data like GPS coordinates or comments. The Applications provide an option for removing these data from image files before upload in the Settings section. It is the responsibility of the user to decide whether those private data are uploaded.</string>
-    <string name="privacy_security_title">Security of your information</string>
+    <string name="privacy_security_title">ನಿಮ್ಮ ಮಾಹಿತಿಯ ಭದ್ರತೆ</string>
     <string name="privacy_security_text">We use technical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed against any interception or other type of misuse. Any information disclosed online is vulnerable to interception and misuse by unauthorized parties. Therefore, we cannot guarantee complete security if you provide personal information.</string>
     <string name="privacy_contact_title">Contact us</string>
     <string name="privacy_contact_text">If you have questions or comments about this Privacy Policy, please contact us at:</string>
