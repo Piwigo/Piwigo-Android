@@ -132,7 +132,7 @@
     <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
     <!-- Not implemented -->
     <string name="not_implemented_title">Not implemented yet.</string>
-    <string name="not_implemented_msg">This feature has not been implemented yet!</string>
+    <string name="not_implemented_msg">ಈ ವೈಶಿಷ್ಠ್ಯವನ್ನು ಇನ್ನೂ ಕಾರ್ಯಗತಗೊಳಿಸಲಾಗಿಲ್ಲ!</string>
     <!-- Guest error messages-->
     <string name="not_admin">ನೀವು ಲಾಗಿನ್ ಆಗಿಲ್ಲ</string>
     <string name="not_admin_explanation">ಇದನ್ನು ಮಾಡಲು ನೀವು ಲಾಗಿನ್ನಾಗಿರಬೇಕು.</string>
