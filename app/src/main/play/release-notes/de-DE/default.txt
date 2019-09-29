@@ -1,11 +1,7 @@
-Dies ist eine Beta-Version, mit großen Verbesserungen seit der ersten öffentlichen Beta, aber noch nicht für den produktiven Einsatz vorgesehen. Seien Sie vorsichtig und stellen Sie sicher, dass Sie ein vollständiges Backup Ihrer Galleriedaten gemacht haben.
+Dies ist eine Beta-Version, mit großen Verbesserungen, aber noch nicht für den produktiven Einsatz vorgesehen. Seien Sie vorsichtig und stellen Sie sicher, ein vollständiges Backup zu haben.
 
 In dieser Version haben wir
-- die Unterstützung für Android 4.0 "Ice Cream Sandwich" und 4.1 "Jelly Bean" entfernt
-- das Design auf den neuen Piwigo Stil angepasst
-- die Sprachen Deutsch, Französisch und eine erste Version der indischen Sprache Kannada hinzugefügt
-- verbesserte Upload-Funktionalität
+- die Unterstützung für Android 4.0 und 4.1 entfernt
+- neues Design und weitere Sprachen hinzugefügt
 - Unterstützung der Erstellung von Alben
 - automatische Korrektur der Galerie-Seite hinzugefügt (falls möglich wird automatisch HTTPS verwendet)
-- kleinere Verbesserungen und
-- eine Menge Fehlerbehebungen
