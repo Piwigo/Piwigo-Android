@@ -69,7 +69,7 @@
     <string name="about_text_support"><![CDATA[In case you want to support the development of %1$s consider discussing <a href="https://github.com/Piwigo/Piwigo-Android/issues">issues on github</a> or submitting <a href="https://github.com/Piwigo/Piwigo-Android/pulls">pull requests</a>.]]></string>
     <string name="about_text_ack_h">ಸ್ವೀಕೃತಿಗಳು</string>
     <string name="about_text_ack_2">We are looking forward to mention your name in this list, too.</string>
-    <string name="about_text_lib_h">Libraries</string>
+    <string name="about_text_lib_h">ಲೈಬ್ರೆರಿಗಳು</string>
     <string name="about_text_lib">The following libraries are used by this application and licensed under the named licenses:</string>
     <!-- Albums -->
     <plurals name="album_photos">
