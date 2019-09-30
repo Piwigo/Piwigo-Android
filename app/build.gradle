@@ -134,6 +134,8 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
     /* Don't forget to add to string libraries if you add a library here. */
 
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
+
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:4.3'
     testImplementation("com.squareup.assertj:assertj-android:${assertjVersion}") {
