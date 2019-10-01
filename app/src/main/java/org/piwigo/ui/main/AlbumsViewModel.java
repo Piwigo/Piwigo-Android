@@ -200,7 +200,7 @@ public class AlbumsViewModel extends ViewModel {
         public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, ImageInfo image) {
             // TODO: make image size selectable via settings (jca)
             // TODO: make configurable to also show the photo name here
-            ImagesItemViewModel viewModel = new ImagesItemViewModel(image.derivatives.xsmall.url, imageId, image.name, images);
+            ImagesItemViewModel viewModel = new ImagesItemViewModel(image.derivatives.medium.url, imageId, image.name, images);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
             imageId++;
         }
