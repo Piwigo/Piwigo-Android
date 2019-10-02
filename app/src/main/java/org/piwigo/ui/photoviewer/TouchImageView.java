@@ -1,4 +1,4 @@
-package org.piwigo.helper;
+package org.piwigo.ui.photoviewer;
 
 import android.content.Context;
 import android.graphics.Matrix;
