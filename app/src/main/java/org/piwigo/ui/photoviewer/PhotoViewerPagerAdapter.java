@@ -10,7 +10,6 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.R;
-import org.piwigo.helper.TouchImageView;
 import org.piwigo.io.model.ImageInfo;
 
 import java.util.List;
