@@ -185,9 +185,10 @@ public class TouchImageView extends ImageView {
 		viewWidth = MeasureSpec.getSize(widthMeasureSpec);
 		viewHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-		if (oldMeasuredHeight == viewWidth && oldMeasuredHeight == viewHeight
-				|| viewWidth == 0 || viewHeight == 0)
+		if ((oldMeasuredHeight == viewWidth && oldMeasuredHeight == viewHeight)
+				|| viewWidth == 0 || viewHeight == 0) {
 			return;
+		}
 		oldMeasuredHeight = viewHeight;
 		oldMeasuredWidth = viewWidth;
 
@@ -195,7 +196,8 @@ public class TouchImageView extends ImageView {
 			float scale;
 
 			Drawable drawable = getDrawable();
-			if (drawable == null || drawable.getIntrinsicWidth() == 0
+			if (drawable == null
+					|| drawable.getIntrinsicWidth() == 0
 					|| drawable.getIntrinsicHeight() == 0)
 				return;
 			int bmWidth = drawable.getIntrinsicWidth();
