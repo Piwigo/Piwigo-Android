@@ -82,14 +82,14 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
+import dagger.android.HasAndroidInjector;
 import rx.Observable;
 
-public class MainActivity extends BaseActivity implements HasSupportFragmentInjector {
+public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private static final String TAG = MainActivity.class.getName();
 
     @Inject
-    DispatchingAndroidInjector<Fragment> fragmentInjector;
+    DispatchingAndroidInjector<Object> androidInjector;
     @Inject
     MainViewModelFactory viewModelFactory;
     @Inject
@@ -265,9 +265,12 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         }
     }
 
+    /**
+     * Returns an {@link AndroidInjector}.
+     */
     @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return fragmentInjector;
+    public AndroidInjector<Object> androidInjector() {
+        return androidInjector;
     }
 
     private void itemSelected(int itemId) {
@@ -463,5 +466,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             }
         }
     }
+
 }
 
