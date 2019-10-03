@@ -12,13 +12,22 @@ If you're considering contributing, a working knowledge of the following would b
 
 ## Progress
 
+### Install
+
+<a href="https://f-droid.org/packages/org.piwigo.android/" target="_blank">
+<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80"/></a>
+<a href="https://play.google.com/store/apps/details?id=org.piwigo.android" target="_blank">
+<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" height="80"/></a>
+
 ### Login
 
+To show your photos enter the URL of your gallery into the server address field. For a quick try you can enter http://www.piwigo.org/demo. Keep username and password empty for guest login.
 <img src="./app/src/main/play/listings/en-US/graphics/phone-screenshots/01_Login.jpg" width="238" />
-<img src="./app/src/main/play/listings/en-US/graphics/tablet-screenshots/01_Login.png" width="600" />
 
 #### Done
 
+- Full screen photo view
+- Upload
 - Guest login (see Settings -> Accounts after successful login)
 - User login (see Settings -> Accounts after successful login)
 - Should scale well on all phone and table screens
