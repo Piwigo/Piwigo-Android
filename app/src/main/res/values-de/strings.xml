@@ -137,4 +137,5 @@
     <string name="not_admin">Nicht eingeloggt</string>
     <string name="not_admin_explanation">Sie müssen angemeldet sein, um dies zu tun.</string>
     <string name="no_internet">Hoppla! Es scheint, als bestünde keine Internetverbindung. Bitte Verbindung herstellen und erneut versuchen.</string>
+    <string name="show_details">Show details</string>
 </resources>
