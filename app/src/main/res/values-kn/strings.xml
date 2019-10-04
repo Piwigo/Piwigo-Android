@@ -137,4 +137,5 @@
     <string name="not_admin">ನೀವು ಲಾಗಿನ್ ಆಗಿಲ್ಲ</string>
     <string name="not_admin_explanation">ಇದನ್ನು ಮಾಡಲು ನೀವು ಲಾಗಿನ್ನಾಗಿರಬೇಕು.</string>
     <string name="no_internet">ಅಯ್ಯೋ! ನಿಮಗೆ ಅಂತರ್ಜಾಲಕ್ಕೆ ಸಂಪರ್ಕವಿಲ್ಲವೆಂದು ಅನ್ನಿಸುತ್ತೆ. ದಯವಿಟ್ಟು ಸಂಪರ್ಕಿಸಿ ಹಾಗು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="show_details">Show details</string>
 </resources>
