@@ -34,6 +34,8 @@
     <string name="nav_add_account">Ajoutez un compte</string>
     <string name="nav_delete_account">Supprimer le compte</string>
     <string name="nav_edit_account">Modifier le compte</string>
+    <string name="nav_drawer_open">Open navigation</string>
+    <string name="nav_drawer_close">Close navigation</string>
     <!-- Login -->
     <string name="login_url_hint">Adresse du serveur</string>
     <string name="login_url_description">URL de la galerie Piwigo pour ouvrir une session</string>
