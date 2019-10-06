@@ -20,7 +20,6 @@
 package org.piwigo.ui.main;
 
 import android.accounts.Account;
-import android.view.View;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -45,6 +44,7 @@ public class MainViewModel extends ViewModel {
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
     public ObservableBoolean drawerState = new ObservableBoolean(false);
+    public ObservableBoolean showingRootAlbum = new ObservableBoolean(true);
     public ObservableBoolean displayFab = new ObservableBoolean(false);
     public ObservableInt navigationItemId = new ObservableInt(R.id.nav_albums);
     // TODO: finish loginstatus
@@ -73,14 +73,6 @@ public class MainViewModel extends ViewModel {
 
     LiveData<Integer> getSelectedNavigationItemId() {
         return selectedNavigationItemId;
-    }
-
-    public void navigationIconClick() {
-        // TODO: show an "up arrow" and navigate back to the upper album if we are not in root
-//        mDrawerToggle.setDrawerIndicatorEnabled(false);// TODO: do this whenever we are displaying album > 0
-        mDrawerToggle.setDrawerIndicatorEnabled(true);// TODO: do this whenever we are displaying abum 0
-
-        drawerState.set(true);
     }
 
 }

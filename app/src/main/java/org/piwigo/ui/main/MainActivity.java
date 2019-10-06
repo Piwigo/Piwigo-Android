@@ -43,6 +43,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
@@ -85,7 +87,6 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import rx.Observable;
 
 public class MainActivity extends BaseActivity implements HasSupportFragmentInjector {
     private static final String TAG = MainActivity.class.getName();
@@ -133,26 +134,18 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         );
         binding.drawerLayout.addDrawerListener(mDrawerToggle);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(false);
-
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
-//        mDrawerToggle.setDrawerIndicatorEnabled(false);// TODO: do this whenever we are displaying album > 0
-        mDrawerToggle.setDrawerIndicatorEnabled(true);// TODO: do this whenever we are displaying abum 0
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+        viewModel.showingRootAlbum.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
-            public void onClick(View v) {
-                onBackPressed();
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                mDrawerToggle.setDrawerIndicatorEnabled(((ObservableBoolean)sender).get());
             }
         });
 
-
         snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
 
-        if (!NetworkHelper.INSTANCE.hasInternet(this))
+        if (!NetworkHelper.INSTANCE.hasInternet(this)){
             EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
+        }
 
         currentAccount = userManager.getActiveAccount().getValue();
         speedDialView = binding.fab;
@@ -169,7 +162,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 viewModel.displayFab.set(!userManager.isGuest(currentAccount));
                 /* Login to the new site after account changes.
                  * It seems quite unclean to do that here -> TODO: FIXME*/
-                Observable<LoginResponse> a = userRepository.login(account);
+                rx.Observable<LoginResponse> a = userRepository.login(account);
                 a.subscribe(new rx.Observer<LoginResponse>() {
                     @Override
                     public void onCompleted() {
@@ -219,7 +212,12 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (mDrawerToggle.isDrawerIndicatorEnabled()){
+            MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+            viewModel.drawerState.set(false);
+        } else {
+            super.onBackPressed();
+        }
         refreshFAB(getCurrentCategoryId());
     }
 

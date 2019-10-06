@@ -94,6 +94,7 @@ public class AlbumsFragment extends BaseFragment {
     public void onResume() {
         MainViewModel vm = ViewModelProviders.of(this.getActivity(), viewModelFactory).get(MainViewModel.class);
         vm.title.set(categoryName);
+        vm.showingRootAlbum.set(categoryID == 0);
         EventBus.getDefault().register(this);
         super.onResume();
     }
