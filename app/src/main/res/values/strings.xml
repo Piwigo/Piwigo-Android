@@ -40,6 +40,8 @@
     <string name="nav_delete_account">Remove account</string>
     <string name="nav_edit_account">Edit account</string>
     <string name="nav_manage_accounts" translatable="false">@string/title_activity_accounts</string>
+    <string name="nav_drawer_open">Open navigation</string>
+    <string name="nav_drawer_close">Close navigation</string>
 
     <!-- Login -->
     <string name="login_url_hint">Server address</string>

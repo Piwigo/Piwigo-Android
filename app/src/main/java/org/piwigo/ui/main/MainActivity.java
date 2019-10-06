@@ -32,15 +32,19 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.InputType;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
@@ -83,10 +87,11 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
-import rx.Observable;
 
 public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private static final String TAG = MainActivity.class.getName();
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
+    int SELECT_PICTURES = 1;
 
     @Inject
     DispatchingAndroidInjector<Object> androidInjector;
@@ -103,9 +108,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
 
     private SnackProgressBarManager snackProgressBarManager;
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
-
-    int SELECT_PICTURES = 1;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,10 +126,26 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         binding.navigationView.addHeaderView(headerBinding.getRoot());
         setSupportActionBar(binding.toolbar);
 
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                binding.drawerLayout,
+                R.string.nav_drawer_open,
+                R.string.nav_drawer_close
+        );
+        binding.drawerLayout.addDrawerListener(mDrawerToggle);
+
+        viewModel.showingRootAlbum.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                mDrawerToggle.setDrawerIndicatorEnabled(((ObservableBoolean)sender).get());
+            }
+        });
+
         snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
 
-        if (!NetworkHelper.INSTANCE.hasInternet(this))
+        if (!NetworkHelper.INSTANCE.hasInternet(this)){
             EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
+        }
 
         currentAccount = userManager.getActiveAccount().getValue();
         speedDialView = binding.fab;
@@ -143,7 +162,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 viewModel.displayFab.set(!userManager.isGuest(currentAccount));
                 /* Login to the new site after account changes.
                  * It seems quite unclean to do that here -> TODO: FIXME*/
-                Observable<LoginResponse> a = userRepository.login(account);
+                rx.Observable<LoginResponse> a = userRepository.login(account);
                 a.subscribe(new rx.Observer<LoginResponse>() {
                     @Override
                     public void onCompleted() {
@@ -193,7 +212,12 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (mDrawerToggle.isDrawerIndicatorEnabled()){
+            MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+            viewModel.drawerState.set(false);
+        } else {
+            super.onBackPressed();
+        }
         refreshFAB(getCurrentCategoryId());
     }
 
@@ -292,6 +316,19 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 DialogHelper.INSTANCE.showErrorDialog(R.string.not_implemented_title, R.string.not_implemented_msg, this);
                 break;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }else if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void setFABListener() {
