@@ -40,6 +40,6 @@ public class PiwigoApplicationTest {
     }
 
     @Test public void shouldHaveInjector() {
-        assertThat(application.dispatchingAndroidInjector).isNotNull();
+        assertThat(application.androidInjector).isNotNull();
     }
 }
