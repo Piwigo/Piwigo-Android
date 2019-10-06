@@ -32,6 +32,17 @@ public class DialogHelper {
         builder.show();
     }
 
+    public void showLogDialog(String title, String message, Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Theme_Piwigo_ErrorDialog);
+
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setPositiveButton(R.string.button_ok, (dialog, which) -> {
+            closeDialog(dialog);
+        });
+        builder.show();
+    }
+
     private void closeDialog(DialogInterface dialog)
     {
         dialog.cancel();

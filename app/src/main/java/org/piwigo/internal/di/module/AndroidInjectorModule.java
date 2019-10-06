@@ -32,6 +32,8 @@ import org.piwigo.ui.main.AlbumsFragment;
 import org.piwigo.ui.main.AlbumsFragmentModule;
 import org.piwigo.ui.main.MainActivity;
 import org.piwigo.ui.main.MainActivityModule;
+import org.piwigo.ui.photoviewer.PhotoViewerDialogFragment;
+import org.piwigo.ui.photoviewer.PhotoViewerDialogFragmentModule;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -49,6 +51,8 @@ public abstract class AndroidInjectorModule {
     @PerActivity @ContributesAndroidInjector(modules = MainActivityModule.class) abstract ManageAccountsActivity accountActivity();
 
     @PerFragment @ContributesAndroidInjector(modules = AlbumsFragmentModule.class) abstract AlbumsFragment albumsFragment();
+
+    @PerFragment @ContributesAndroidInjector(modules = PhotoViewerDialogFragmentModule.class) abstract PhotoViewerDialogFragment photoViewerDialogFragment();
 
     @PerService @ContributesAndroidInjector() abstract UploadService uploadService();
 
