@@ -60,6 +60,8 @@ public class AlbumsFragment extends BaseFragment {
 
     public AlbumsFragment() {
         super();
+        /* TODO: architecture improvement: can we move categoryID and name into the AlbumsViewModel?
+         *   maybe even use call Category for this, to have not only ID and name, but all properties? */
         categoryID = 0;
         categoryName = "";
     }
