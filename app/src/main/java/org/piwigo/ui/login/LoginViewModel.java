@@ -100,24 +100,26 @@ public class LoginViewModel extends ViewModel {
         boolean siteValid = isSiteValid();
         boolean loginValid = isGuest() || isLoginValid();
 
-        if (!siteValid)
+        if (!siteValid) {
             return;
-        if (fabCircle != null)
-            fabCircle.show();
-        try {
-            new URLHelper(newUrl -> testConnection(loginValid, newUrl)).execute(url.get());
-        } catch (Exception e) {
-            // TODO: this seem to throw an exception on its own sometimes, that is not caught
-            testConnection(loginValid, url.get());
         }
+        if (fabCircle != null) {
+            fabCircle.show();
+        }
+        new URLHelper(newUrl -> testConnection(loginValid, newUrl)).execute(url.get());
     }
 
-    // TODO: document throwing exceptions (java.lang.IllegalArgumentException)
-    void testConnection(boolean loginValid, String url) {
-        if (isGuest())
-            subscription = userRepository.status(url).subscribe(new LoginSubscriber());
-        else if (loginValid)
-            subscription = userRepository.login(url, username.get(), password.get()).subscribe(new LoginSubscriber());
+    void testConnection(boolean loginValid, String url){
+        try {
+            if (isGuest()) {
+                subscription = userRepository.status(url).subscribe(new LoginSubscriber());
+            } else if (loginValid) {
+                subscription = userRepository.login(url, username.get(), password.get()).subscribe(new LoginSubscriber());
+            }
+        }catch(IllegalArgumentException illArgE){
+            Log.e(TAG, illArgE.getMessage(), illArgE);
+            loginError.setValue(illArgE);
+        }
     }
 
     void onProgressAnimationEnd() {

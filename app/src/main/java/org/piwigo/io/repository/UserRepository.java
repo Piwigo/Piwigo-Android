@@ -23,6 +23,7 @@ import android.util.Log;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.CookieHelper;
+import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.LoginResponse;
@@ -62,7 +63,8 @@ public class UserRepository extends BaseRepository {
                         loginResponse.pwgId = CookieHelper.extract("pwg_id", response.headers());
                         return Observable.just(response.body());
                     }
-                    return Observable.error(new Throwable("Login failed"));
+                    // TODO: add piwigo response details here
+                    return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed"));
                 })
                 .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId))
                 .map(statusResponse -> {

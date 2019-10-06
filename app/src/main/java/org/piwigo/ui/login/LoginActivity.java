@@ -40,14 +40,17 @@ import com.google.android.material.snackbar.Snackbar;
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
 import org.piwigo.helper.DialogHelper;
+import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.shared.BaseActivity;
 
 import java.net.UnknownHostException;
 
 import javax.inject.Inject;
+import javax.net.ssl.SSLPeerUnverifiedException;
 
 import dagger.android.AndroidInjection;
+import retrofit2.HttpException;
 
 public class LoginActivity extends BaseActivity {
 
@@ -137,20 +140,33 @@ public class LoginActivity extends BaseActivity {
 
     private void loginError(Throwable throwable) {
         fabProgressCircle.hide();
-        if (throwable instanceof IllegalArgumentException)
-            Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
-                    .show();
-        else if (throwable instanceof UnknownHostException)
-            Snackbar.make(binding.getRoot(), R.string.login_host_error, Snackbar.LENGTH_LONG)
-                    .show();
-        else
-            Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG).setAction(R.string.show_details, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DialogHelper.INSTANCE.showLogDialog(getResources().getString(R.string.login_error), throwable.getMessage(), binding.getRoot().getContext());
-                }
-            }).show();
+        int msg;
+        if(throwable instanceof IllegalArgumentException){
+            msg = R.string.login_baseurl_invalid;
+        }else if(throwable instanceof HttpException){
+            HttpException he = (HttpException) throwable;
+            if(he.code() == 404){
+                msg = R.string.login_http_404_error;
+            }else {
+                msg = R.string.login_http_error;
+            }
+        }else if (throwable instanceof SSLPeerUnverifiedException) {
+            msg = R.string.login_ssl_error;
+        }else if (throwable instanceof UnknownHostException) {
+            msg = R.string.login_host_error;
+        }else if (throwable instanceof PiwigoLoginException) {
+            msg = R.string.login_invalid_credentials;
+        }else {
+            msg = R.string.login_error;
+        }
+        Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_LONG).setAction(R.string.show_details, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogHelper.INSTANCE.showLogDialog(getResources().getString(R.string.login_error), throwable, binding.getRoot().getContext());
+            }
+        }).show();
     }
+
 
     private void setResultIntent(Account account) {
         Intent intent = new Intent();
