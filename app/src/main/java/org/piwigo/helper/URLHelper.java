@@ -30,7 +30,7 @@ public class URLHelper extends AsyncTask<String, Void, String> {
             else
                 return ("https://" + newUrl);
         } catch (IOException e) {
-            Log.e("URLHelper", "IOException", e.getCause());
+            Log.e("URLHelper", "IOException", e);
             return ("https://" + newUrl);
         }
     }

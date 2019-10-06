@@ -17,16 +17,33 @@
 
 package org.piwigo.ui.main;
 
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.os.Bundle;
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModel;
+
+import org.piwigo.ui.photoviewer.PhotoViewerDialogFragment;
+import org.piwigo.io.model.ImageInfo;
+
+import java.util.ArrayList;
 
 public class ImagesItemViewModel extends ViewModel {
 
     private final String url;
+    private final int imageId;
     private final String title;
 
-    public ImagesItemViewModel(String url, String title) {
+    private final ArrayList<ImageInfo> images;
+
+    public ImagesItemViewModel(String url, int imageId, String title, ArrayList<ImageInfo> images) {
         this.url = url;
+        this.imageId = imageId;
         this.title = title;
+        this.images = images;
     }
 
     public String getUrl() {
@@ -35,6 +52,34 @@ public class ImagesItemViewModel extends ViewModel {
 
     public String getTitle() {
         return title;
+    }
+
+    public int getImageId()
+    {
+        return (imageId);
+    }
+
+    public void onClickDo(View v)
+    {
+        Context ctx = v.getContext();
+        while (ctx instanceof ContextWrapper
+                && !(ctx instanceof AppCompatActivity)) {
+            ctx = ((ContextWrapper)ctx).getBaseContext();
+        }
+
+        //TODO Maybe find a better way to do this (note that AppCompatActivity doesn't work on SDK 16)
+        MainActivity mainActivity = (MainActivity)ctx;
+        if(mainActivity != null)
+        {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("images", images);
+            bundle.putInt("position", getImageId());
+
+            FragmentTransaction ft = mainActivity.getSupportFragmentManager().beginTransaction();
+            PhotoViewerDialogFragment newFragment = PhotoViewerDialogFragment.newInstance();
+            newFragment.setArguments(bundle);
+            newFragment.show(ft, "PhotoViewer");
+        }
     }
 
 }

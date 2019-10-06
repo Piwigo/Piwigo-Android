@@ -49,8 +49,8 @@ android {
         applicationId "org.piwigo.android"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 93
-        versionName "0.9.5-beta-dev"
+        versionCode 95
+        versionName "0.9.5-beta"
         multiDexEnabled true
     }
     buildTypes {
@@ -91,11 +91,11 @@ android {
     }
 }
 
-def daggerVersion = '2.19'
+def daggerVersion = '2.23.2'
 def okhttpVersion = '3.11.0'
-def retrofitVersion = '2.4.0'
+def retrofitVersion = '2.6.1'
 def assertjVersion = '1.2.0'
-def acraVersion = '5.1.3'
+def acraVersion = '5.4.0'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -133,6 +133,8 @@ dependencies {
     implementation 'com.github.tingyik90:snackprogressbar:6.1.1'
     implementation 'org.greenrobot:eventbus:3.1.1'
     /* Don't forget to add to string libraries if you add a library here. */
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:4.3'

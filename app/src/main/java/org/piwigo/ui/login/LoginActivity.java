@@ -39,6 +39,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
+import org.piwigo.helper.DialogHelper;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.shared.BaseActivity;
 
@@ -143,8 +144,12 @@ public class LoginActivity extends BaseActivity {
             Snackbar.make(binding.getRoot(), R.string.login_host_error, Snackbar.LENGTH_LONG)
                     .show();
         else
-            Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG)
-                    .show();
+            Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG).setAction(R.string.show_details, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DialogHelper.INSTANCE.showLogDialog(getResources().getString(R.string.login_error), throwable.getMessage(), binding.getRoot().getContext());
+                }
+            }).show();
     }
 
     private void setResultIntent(Account account) {
