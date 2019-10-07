@@ -50,7 +50,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 95
-        versionName "0.9.5-beta"
+        versionName "0.9.6-dev-beta"
         multiDexEnabled true
     }
     buildTypes {

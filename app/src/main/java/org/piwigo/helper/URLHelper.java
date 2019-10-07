@@ -67,10 +67,10 @@ public class URLHelper extends AsyncTask<String, Void, String> {
         try {
             responseCode = httpsCon.getResponseCode();
         } catch (SSLException e) {
-            Log.e("URLHelper", "SSLException", e.getCause());
+            Log.e("URLHelper", "SSLException", e);
             return (false);
         } catch (UnknownHostException e1) {
-            Log.e("URLHelper", "UnknownHostException", e1.getCause());
+            Log.e("URLHelper", "UnknownHostException", e1);
             return (false);
         }
         httpsCon.disconnect();
