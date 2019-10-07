@@ -21,7 +21,10 @@ public class URLHelper extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... url) {
-        String newUrl = url[0].replaceAll("https://", "").replaceAll("http://", "");
+        String newUrl = url[0];
+        newUrl = getPiwigoBaseFor(newUrl);
+
+        newUrl = newUrl.replaceAll("https://", "").replaceAll("http://", "");
         try {
             if (isHttpsWebsite(newUrl))
                 return ("https://" + newUrl);
@@ -33,6 +36,20 @@ public class URLHelper extends AsyncTask<String, Void, String> {
             Log.e("URLHelper", "IOException", e);
             return ("https://" + newUrl);
         }
+    }
+
+    /**
+     * Remove trailing URL parts specify piwigo-internal pages
+     *
+     * @param url the url to stip
+     * @return the base address of a piwigo URL
+     */
+    private String getPiwigoBaseFor(String url) {
+        String newUrl;
+
+        newUrl = url.replaceAll("(^.*)((?:about|admin|comments|feed|index|notification|picture|profile|ws).php(?:[?]\\/)?(?:.*))$", "$1");
+
+        return newUrl;
     }
 
     @Override
