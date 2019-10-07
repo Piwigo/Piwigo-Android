@@ -44,7 +44,10 @@ import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.shared.BaseActivity;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -140,29 +143,49 @@ public class LoginActivity extends BaseActivity {
 
     private void loginError(Throwable throwable) {
         fabProgressCircle.hide();
-        int msg;
+        String msg;
+        URI uri = null;
+        String host = viewModel.url.get();
+        String path = host;
+        try {
+            uri = new URI(viewModel.url.get());
+            if(!uri.isAbsolute()) {
+                uri = uri.resolve(new URI("https://" + host));
+            }
+            host = uri.getHost();
+            path = uri.getPath();
+        } catch (URISyntaxException e) {
+            /* this one should not occur, otherwise we should not even login */
+        }
+
         if(throwable instanceof IllegalArgumentException){
-            msg = R.string.login_baseurl_invalid;
+            msg = getResources().getString(R.string.login_baseurl_invalid, path);
         }else if(throwable instanceof HttpException){
             HttpException he = (HttpException) throwable;
             if(he.code() == 404){
-                msg = R.string.login_http_404_error;
+                List<String> segments = he.response().raw().request().url().pathSegments();
+                if("ws.php".equals(segments.get(segments.size() - 1))){
+                    msg = getResources().getString(R.string.login_baseurl_invalid, path);
+                }else{
+                    msg = getResources().getString(R.string.login_http_404_error, he.response().raw().request().url().encodedPath());
+                }
             }else {
-                msg = R.string.login_http_error;
+                msg = getResources().getString(R.string.login_http_error, he.code() + ": " + he.message());
             }
         }else if (throwable instanceof SSLPeerUnverifiedException) {
-            msg = R.string.login_ssl_error;
+            msg = getResources().getString(R.string.login_ssl_error, host);
         }else if (throwable instanceof UnknownHostException) {
-            msg = R.string.login_host_error;
+            msg = getResources().getString(R.string.login_host_error, host);
         }else if (throwable instanceof PiwigoLoginException) {
-            msg = R.string.login_invalid_credentials;
+            msg = getResources().getString(R.string.login_invalid_credentials, viewModel.username.get());
         }else {
-            msg = R.string.login_error;
+            msg = getResources().getString(R.string.login_error);
         }
+
         Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_LONG).setAction(R.string.show_details, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogHelper.INSTANCE.showLogDialog(getResources().getString(R.string.login_error), throwable, binding.getRoot().getContext());
+                DialogHelper.INSTANCE.showLogDialog(getResources().getString(R.string.login_error), msg, throwable, binding.getRoot().getContext());
             }
         }).show();
     }
