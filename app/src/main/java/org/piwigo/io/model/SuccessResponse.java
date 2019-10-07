@@ -26,4 +26,8 @@ public class SuccessResponse {
 
     @SerializedName("result") public boolean result;
 
+    // only used in case stat == fail
+    @SerializedName("err") public int err;
+
+    @SerializedName("message") public String message;
 }

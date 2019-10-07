@@ -63,8 +63,7 @@ public class UserRepository extends BaseRepository {
                         loginResponse.pwgId = CookieHelper.extract("pwg_id", response.headers());
                         return Observable.just(response.body());
                     }
-                    // TODO: add piwigo response details here
-                    return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed"));
+                    return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with code " + response.body().err + ": " + response.body().message));
                 })
                 .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId))
                 .map(statusResponse -> {
