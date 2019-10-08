@@ -115,6 +115,8 @@
     <string name="upload_success">Upload erfolgreich</string>
     <string name="upload_failed">Upload fehlgeschlagen</string>
     <string name="upload_error">Beim Hochladen der Fotos ist ein Fehler aufgetreten. Bitte erneut versuchen.</string>
+    <string name="upload_progress_body">Uploaded %1$d / %2$d photos</string>
+    <string name="upload_started">Uploading your photos</string>
     <string name="upload_success_body"> %1$s Foto(s) nach %2$s hochgeladen</string>
     <string name="storage_permission_title">Fehlende Berechtigungen.</string>
     <string name="storage_permission_explanation">Um Fotos hochzuladen wird die Berechtigung für den lokalen Speicher benötigt</string>
