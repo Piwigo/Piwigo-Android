@@ -20,7 +20,6 @@ package org.piwigo.ui.main;
 
 import android.Manifest;
 import android.accounts.Account;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -69,7 +68,6 @@ import org.piwigo.databinding.DrawerHeaderBinding;
 import org.piwigo.helper.DialogHelper;
 import org.piwigo.helper.NetworkHelper;
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.io.event.RefreshRequestEvent;
 import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
@@ -86,7 +84,6 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import dagger.Provides;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
