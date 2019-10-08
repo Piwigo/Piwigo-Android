@@ -20,7 +20,6 @@ package org.piwigo.ui.main;
 
 import android.Manifest;
 import android.accounts.Account;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -72,6 +71,7 @@ import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
+import org.piwigo.io.model.ImageUploadItem;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.about.AboutActivity;
@@ -80,6 +80,7 @@ import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -275,16 +276,25 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         if (event instanceof SnackbarShowEvent)
             Snackbar.make(findViewById(android.R.id.content), event.getMessage(), ((SnackbarShowEvent) event).getDuration()).show();
         if (event instanceof SnackProgressEvent) {
-            SnackProgressBar bar = snackProgressBarManager.getSnackProgressBar(((SnackProgressEvent) event).getSnackbarId());
-            if (bar != null && ((SnackProgressEvent) event).getAction().equals(SnackProgressEvent.SnackbarUpdateAction.REFRESH)) {
-                bar.setMessage(((SnackProgressEvent) event).getSnackbarDesc());
-                snackProgressBarManager.updateTo(((SnackProgressEvent) event).getSnackbarId());
-            } else if (bar != null && ((SnackProgressEvent) event).getAction().equals(SnackProgressEvent.SnackbarUpdateAction.KILL))
-                snackProgressBarManager.dismissAll();
+            SnackProgressEvent progressEvent = (SnackProgressEvent) event;
+            SnackProgressBar bar = snackProgressBarManager.getSnackProgressBar(progressEvent.getSnackbarId());
+
+            if (bar != null) {
+                bar.setMessage(progressEvent.getSnackbarDesc());
+                if (progressEvent.getAction() == (SnackProgressEvent.SnackbarUpdateAction.KILL)) {
+                    bar.setType(SnackProgressBar.TYPE_NORMAL);
+                    bar.setAction(getResources().getString(R.string.button_ok), () -> snackProgressBarManager.dismiss());
+                    snackProgressBarManager.show(progressEvent.getSnackbarId(), SnackProgressBarManager.LENGTH_LONG);
+                }
+                snackProgressBarManager.updateTo(progressEvent.getSnackbarId());
+            }
             else {
-                bar = new SnackProgressBar(((SnackProgressEvent) event).getSnackbarType(), ((SnackProgressEvent) event).getSnackbarDesc()).setIsIndeterminate(true);
-                snackProgressBarManager.put(bar, ((SnackProgressEvent) event).getSnackbarId());
-                snackProgressBarManager.show(bar, SnackProgressBarManager.LENGTH_INDEFINITE);
+                if (progressEvent.getAction().equals(SnackProgressEvent.SnackbarUpdateAction.KILL)) {
+                    return;
+                }
+                bar = new SnackProgressBar(progressEvent.getSnackbarType(), progressEvent.getSnackbarDesc()).setIsIndeterminate(true);
+                snackProgressBarManager.put(bar, progressEvent.getSnackbarId());
+                snackProgressBarManager.show(bar, progressEvent.getSnackbarDuration());
             }
         }
     }
@@ -448,31 +458,45 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SELECT_PICTURES) {
             if (resultCode == RESULT_OK) {
-                if (data.getClipData() != null) {
-                    Intent intent = new Intent(this, UploadService.class);
-                    ImageUploadQueue<UploadAction> imageUploadQueue = new ImageUploadQueue<>();
-                    for (int i = 0; i < data.getClipData().getItemCount(); i++) {
-                        Uri targetUri = data.getClipData().getItemAt(i).getUri();
-                        String imageName = getNameFromURI(data.getClipData().getItemAt(i), targetUri);
-                        UploadAction uploadAction = new UploadAction(imageName);
+                ArrayList<ImageUploadItem> images = new ArrayList<>();
+                Intent intent = new Intent(this, UploadService.class);
+                ImageUploadQueue<UploadAction> imageUploadQueue = new ImageUploadQueue<>();
 
-                        uploadAction.getUploadData().setTargetUri(targetUri);
-                        uploadAction.getUploadData().setCategoryId(getCurrentCategoryId());
-                        if (!imageUploadQueue.offer(uploadAction))
-                            Log.e("ImageUploadQueue", "Unable to offer UploadAction..");
+                if (data.getClipData() != null) {
+                    for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                        ImageUploadItem item = new ImageUploadItem();
+
+                        item.setImageData(data.getClipData().getItemAt(i).toString());
+                        item.setImageUri(data.getClipData().getItemAt(i).getUri());
+                        images.add(item);
                     }
-                    intent.putExtra(UploadService.KEY_UPLOAD_QUEUE, imageUploadQueue);
-                    EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, String.format("Uploading your photos.."), 100, SnackProgressEvent.SnackbarUpdateAction.REFRESH));
-                    startService(intent);
+                } else if (data.getData() != null) {
+                    ImageUploadItem item = new ImageUploadItem();
+
+                    item.setImageData(data.toString());
+                    item.setImageUri(data.getData());
+                    images.add(item);
                 }
+                for (int i = 0; i < images.size(); i++) {
+                    ImageUploadItem item = images.get(i);
+
+                    item.setImageName(getNameFromURI(item.getImageData(), item.getImageUri()));
+                    UploadAction uploadAction = new UploadAction(item.getImageName());
+                    uploadAction.getUploadData().setTargetUri(item.getImageUri());
+                    uploadAction.getUploadData().setCategoryId(getCurrentCategoryId());
+                    if (!imageUploadQueue.offer(uploadAction))
+                        Log.e("ImageUploadQueue", "Unable to offer UploadAction..");
+                }
+                intent.putExtra(UploadService.KEY_UPLOAD_QUEUE, imageUploadQueue);
+                startService(intent);
             }
         }
     }
 
-    private String getNameFromURI(ClipData.Item item, Uri contentUri) {
-        if (item.toString().contains("content:"))
+    private String getNameFromURI(String item, Uri contentUri) {
+        if (item.contains("content:"))
             return (getRealPathFromURI(contentUri));
-        else if (item.toString().contains("file:"))
+        else if (item.contains("file:"))
             return (contentUri.getPath());
         else
             return (null);

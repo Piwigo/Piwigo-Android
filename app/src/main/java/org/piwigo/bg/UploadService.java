@@ -29,6 +29,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.tingyik90.snackprogressbar.SnackProgressBar;
+import com.tingyik90.snackprogressbar.SnackProgressBarManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.piwigo.R;
@@ -65,6 +66,7 @@ public class UploadService extends IntentService {
     private int totalImagesCount = 0;
     private int uploadedImages = 1;
     private int snackbarId;
+    private SnackProgressEvent snackProgressEvent;
 
     @Inject
     RestServiceFactory restServiceFactory;
@@ -109,6 +111,13 @@ public class UploadService extends IntentService {
             return;
         totalImagesCount = imageUploadQueue.size();
         snackbarId = new Random().nextInt(100);
+        snackProgressEvent = new SnackProgressEvent();
+
+        snackProgressEvent.setSnackbarId(snackbarId);
+        snackProgressEvent.setSnackbarType(SnackProgressBar.TYPE_CIRCULAR);
+        snackProgressEvent.setSnackbarDuration(SnackProgressBarManager.LENGTH_INDEFINITE);
+        snackProgressEvent.setAction(SnackProgressEvent.SnackbarUpdateAction.REFRESH);
+        snackProgressEvent.setSnackbarDesc(getResources().getString(R.string.upload_started));
         onUploadStarted(imageUploadQueue);
     }
 
@@ -181,31 +190,39 @@ public class UploadService extends IntentService {
     private void callUploadResponse(ImageUploadQueue<UploadAction> imageUploadQueue, RestService restService, ArrayList<RequestBody> requestBodies,
                                     int catId, MultipartBody.Part filePart) {
         Call<ImageUploadResponse> call = restService.uploadImage(requestBodies.get(0), catId, requestBodies.get(1), requestBodies.get(2), filePart);
+        RefreshRequestEvent refreshEvent = new RefreshRequestEvent(catId);
 
         call.enqueue(new Callback<ImageUploadResponse>() {
             @Override
             public void onResponse(@NonNull Call<ImageUploadResponse> call, @NonNull Response<ImageUploadResponse> response) {
                 if (response.raw().code() == 200 && ("ok".equals(response.body().up_stat))) {
-                    EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, String.format("Uploaded image %d / %d", uploadedImages, totalImagesCount), snackbarId, SnackProgressEvent.SnackbarUpdateAction.REFRESH));
+                    snackProgressEvent.setSnackbarDesc(String.format(getResources().getString(R.string.upload_progress_body), uploadedImages, totalImagesCount));
+                    EventBus.getDefault().post(snackProgressEvent);
                     uploadedImages++;
-                    if (imageUploadQueue.size() == 0) {
+                    if (imageUploadQueue.size() <= 0) {
                         NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_success), String.format(getResources().getString(R.string.upload_success_body), totalImagesCount, response.body().up_result.up_category.catlabel), getApplicationContext());
-                        EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, getResources().getString(R.string.upload_success), snackbarId, SnackProgressEvent.SnackbarUpdateAction.KILL));
-                        EventBus.getDefault().post(new RefreshRequestEvent(response.body().up_result.up_category.catid));
+                        snackProgressEvent.setSnackbarDesc(String.format(getResources().getString(R.string.upload_success_body), totalImagesCount, response.body().up_result.up_category.catlabel));
+                        snackProgressEvent.setAction(SnackProgressEvent.SnackbarUpdateAction.KILL);
+                        EventBus.getDefault().post(snackProgressEvent);
+                        EventBus.getDefault().post(refreshEvent);
                     }
                     onUploadStarted(imageUploadQueue);
                 } else {
                     NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_failed), getResources().getString(R.string.upload_error), getApplicationContext());
-                    EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, getResources().getString(R.string.upload_failed), snackbarId, SnackProgressEvent.SnackbarUpdateAction.KILL));
-                    EventBus.getDefault().post(new RefreshRequestEvent(catId));
+                    snackProgressEvent.setSnackbarDesc(getResources().getString(R.string.upload_failed));
+                    snackProgressEvent.setAction(SnackProgressEvent.SnackbarUpdateAction.KILL);
+                    EventBus.getDefault().post(snackProgressEvent);
+                    EventBus.getDefault().post(refreshEvent);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ImageUploadResponse> call, @NonNull Throwable t) {
                 NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_failed), getResources().getString(R.string.upload_error), getApplicationContext());
-                EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, getResources().getString(R.string.upload_failed), snackbarId, SnackProgressEvent.SnackbarUpdateAction.KILL));
-                EventBus.getDefault().post(new RefreshRequestEvent(catId));
+                snackProgressEvent.setSnackbarDesc(getResources().getString(R.string.upload_failed));
+                snackProgressEvent.setAction(SnackProgressEvent.SnackbarUpdateAction.KILL);
+                EventBus.getDefault().post(snackProgressEvent);
+                EventBus.getDefault().post(refreshEvent);
             }
         });
     }
