@@ -115,7 +115,9 @@
     <string name="upload_success">Upload successful</string>
     <string name="upload_failed">Upload failed</string>
     <string name="upload_error">An error occurred while upload your photo(s). Please try again.</string>
-    <string name="upload_success_body">Uploaded %1$s photo(s) to %2$s</string>
+    <string name="upload_progress_body">Uploaded %1$d / %2$d photos</string>
+    <string name="upload_started">Uploading your photos</string>
+    <string name="upload_success_body">Uploaded %1$d photo(s) to %2$s</string>
     <string name="storage_permission_title">Missing permissions.</string>
     <string name="storage_permission_explanation">Uploading photos is only possible if you give access to the storage.</string>
     <!-- Album created -->
