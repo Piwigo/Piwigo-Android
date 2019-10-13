@@ -27,6 +27,9 @@ public class CategoryListResponse {
 
     @SerializedName("stat") public String stat;
 
+    @SerializedName("err") public int err;
+    @SerializedName("message") public String message;
+
     @SerializedName("result") public Result result;
 
     public class Result {

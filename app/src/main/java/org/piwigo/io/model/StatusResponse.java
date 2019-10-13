@@ -47,7 +47,7 @@ public class StatusResponse {
         @SerializedName("version") public String version;
 
         @SerializedName("upload_file_types") public String uploadFileTypes;
-
+// TODO: add "available_sizes":["square","thumb","small","medium","large","xxlarge"]
     }
 
 }

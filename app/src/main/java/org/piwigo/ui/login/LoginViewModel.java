@@ -46,6 +46,8 @@ import java.util.regex.Pattern;
 
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class LoginViewModel extends ViewModel {
 
@@ -112,9 +114,13 @@ public class LoginViewModel extends ViewModel {
     void testConnection(boolean loginValid, String url){
         try {
             if (isGuest()) {
-                subscription = userRepository.status(url).subscribe(new LoginSubscriber());
+                subscription = userRepository.status(url)
+                        .compose(applySchedulers())
+                        .subscribe(new LoginSubscriber());
             } else if (loginValid) {
-                subscription = userRepository.login(url, username.get(), password.get()).subscribe(new LoginSubscriber());
+                subscription = userRepository.login(url, username.get(), password.get())
+                        .compose(applySchedulers())
+                        .subscribe(new LoginSubscriber());
             }
         }catch(IllegalArgumentException illArgE){
             Log.e(TAG, illArgE.getMessage(), illArgE);
@@ -226,5 +232,9 @@ public class LoginViewModel extends ViewModel {
                 loginSuccess.setValue(loginResponse);
             }
         }
+    }
+    <T> rx.Observable.Transformer<T, T> applySchedulers() {
+        return observable -> observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }

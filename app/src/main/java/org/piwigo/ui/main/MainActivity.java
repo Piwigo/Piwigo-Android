@@ -84,6 +84,8 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private static final String TAG = MainActivity.class.getName();
@@ -152,6 +154,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "Login failed: " + e.getMessage());
+                        // TODO: notify loginfailure
                     }
 
                     @Override

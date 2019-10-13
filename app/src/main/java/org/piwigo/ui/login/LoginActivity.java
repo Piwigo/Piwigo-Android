@@ -144,7 +144,7 @@ public class LoginActivity extends BaseActivity {
     private void loginError(Throwable throwable) {
         fabProgressCircle.hide();
         String msg;
-        URI uri = null;
+        URI uri;
         String host = viewModel.url.get();
         String path = host;
         try {

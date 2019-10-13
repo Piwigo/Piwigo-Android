@@ -123,7 +123,10 @@ public class AlbumsViewModel extends ViewModel {
                 Log.e(TAG, "CategoriesSubscriber: " + e.getMessage());
                 // TODO: #91 tell the user about the network problem
             } else {
-                throw new RuntimeException(e);
+                // NO: NEVER throw an exception here
+                // throw new RuntimeException(e);
+                Log.e(TAG, "CategoriesSubscriber: " + e.getMessage());
+                // TODO: highlight problem to the user
             }
         }
 
@@ -171,7 +174,10 @@ public class AlbumsViewModel extends ViewModel {
                 Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
 // TODO: #91 tell the user about the network problem
             } else {
-                throw new RuntimeException(e);
+                // NO: NEVER throw an exception here
+                // throw new RuntimeException(e);
+                Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
+                // TODO: highlight problem to the user
             }
         }
 
