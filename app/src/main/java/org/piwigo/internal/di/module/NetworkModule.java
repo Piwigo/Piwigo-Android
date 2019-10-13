@@ -18,8 +18,6 @@
 
 package org.piwigo.internal.di.module;
 
-import com.jakewharton.picasso.OkHttp3Downloader;
-
 import org.piwigo.BuildConfig;
 
 import javax.inject.Singleton;
@@ -42,9 +40,5 @@ public class NetworkModule {
         return new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .build();
-    }
-
-    @Provides @Singleton OkHttp3Downloader provideOkHttp3Downloader(OkHttpClient client) {
-        return new OkHttp3Downloader(client);
     }
 }

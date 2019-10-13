@@ -94,7 +94,7 @@ android {
 def daggerVersion = '2.24'
 def okhttpVersion = '4.2.2'
 def retrofitVersion = '2.6.1'
-def picassoVersion = '2.71828'
+def picassoVersion = '2.5.2'
 def assertjVersion = '1.2.0'
 def acraVersion = '5.4.0'
 
@@ -119,7 +119,6 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
     implementation "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}"
     implementation "com.squareup.picasso:picasso:${picassoVersion}"
-    implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
     implementation 'io.reactivex:rxjava:1.3.2'
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'com.google.guava:guava:28.1-jre'
