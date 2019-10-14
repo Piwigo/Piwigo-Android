@@ -48,9 +48,14 @@
     <string name="login_button_description">ಲಾಗಿನ್</string>
     <string name="login_password_empty">ನಿನ್ನ ಗುಪ್ತಪದವನ್ನು ನಮೂದಿಸು</string>
     <string name="login_password_hint">ಗುಪ್ತಪದ (ಅತಿಥಿಗಾಗಿ ಖಾಲಿ)</string>
-    <string name="login_error">Login failed, please try again</string>
+    <string name="login_error">Login failed</string>
     <string name="login_account_error">An account for this server already exists</string>
-    <string name="login_host_error">Host could not be reached, please check site address</string>
+    <string name="login_ssl_error">Encrypted connection (SSL) to \'%1s\' cannot be established</string>
+    <string name="login_host_error">Host \'%1s\' could not be reached, please check site address</string>
+    <string name="login_http_error">Server returned unexpected response \'%1s\'</string>
+    <string name="login_http_404_error">Given path \'%1s\' not found on server</string>
+    <string name="login_baseurl_invalid">No Piwigo gallery found at given path \'%1s\'</string>
+    <string name="login_invalid_credentials">Login failed for given credentials \'%1s/*****\'</string>
     <!-- Account -->
     <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
     <string name="account_not_selected">ಮೊದಲು ಅಳಿಸಲು ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
@@ -127,6 +132,7 @@
     <!-- Buttons -->
     <string name="button_ok">ಸರಿ</string>
     <string name="button_cancel">ರದ್ದು ಮಾಡು</string>
+    <string name="button_report">Report</string>
     <!-- FAB -->
     <string name="fab_create_album">ಆಲ್ಬಂ ರಚಿಸು</string>
     <string name="fab_create_subalbum">Create sub-album</string>
