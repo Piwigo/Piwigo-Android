@@ -108,7 +108,10 @@ public class LoginViewModel extends ViewModel {
         if (fabCircle != null) {
             fabCircle.show();
         }
-        new URLHelper(newUrl -> testConnection(loginValid, newUrl)).execute(url.get());
+        new URLHelper(newUrl -> {
+            testConnection(loginValid, newUrl);
+            url.set(newUrl);
+        }).execute(url.get());
     }
 
     void testConnection(boolean loginValid, String url){
