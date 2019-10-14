@@ -172,6 +172,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "Login failed: " + e.getMessage());
+                        // TODO: notify loginfailure
                     }
 
                     @Override

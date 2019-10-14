@@ -46,9 +46,17 @@ public class ImageRepository extends BaseRepository {
 
         return restService
                 .getImages(categoryId)
-                .map(imageListResponse -> imageListResponse.result.images)
+                .compose(applySchedulers())
+//                .map(imageListResponse -> imageListResponse.result.images)
+                  .map(imageListResponse -> {
+                      if(imageListResponse.result != null) {
+                          return imageListResponse.result.images;
+                      }else {
+                          return null; //Observable.error(new Throwable("Error " + imageListResponse.stat + " " + imageListResponse.err + ": " + imageListResponse.message));
+                      }
+                  })
 // TODO: #90 generalize sorting
-                .compose(applySchedulers());
+                ;
 
    }
 }

@@ -45,11 +45,19 @@ public class CategoriesRepository extends BaseRepository {
         RestService restService = restServiceFactory.createForAccount(account);
         /* TODO: make thumbnail Size configurable, also check for ImageRepository, whether it can reduce the amount of REST/JSON traffic */
         return restService.getCategories(categoryId, "medium")
-                .flatMap(response -> Observable.from(response.result.categories))
+//                .flatMap(response -> Observable.from(response.result.categories))
+                .compose(applySchedulers())
+                .flatMap(response -> {
+                    if(response.result != null) {
+                        return Observable.from(response.result.categories);
+                    }else{
+                        return null; //Observable.error(new Throwable("Error " + imageListResponse.stat + " " + imageListResponse.err + ": " + imageListResponse.message));
+                    }
+                })
                 .filter(category -> categoryId == null || category.id != categoryId)
 // TODO: #90 generalize sorting
                 .toSortedList((category1, category2) -> NaturalOrderComparator.compare(category1.globalRank, category2.globalRank))
-                .compose(applySchedulers());
+                ;
 
     }
 }

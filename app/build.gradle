@@ -50,7 +50,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 95
-        versionName "0.9.5-beta"
+        versionName "0.9.6-dev-beta"
         multiDexEnabled true
     }
     buildTypes {
@@ -92,8 +92,9 @@ android {
 }
 
 def daggerVersion = '2.24'
-def okhttpVersion = '3.14.4'
+def okhttpVersion = '4.2.2'
 def retrofitVersion = '2.6.1'
+def picassoVersion = '2.5.2'
 def assertjVersion = '1.2.0'
 def acraVersion = '5.4.0'
 
@@ -117,8 +118,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:${retrofitVersion}"
     implementation "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
     implementation "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}"
-    implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+    implementation "com.squareup.picasso:picasso:${picassoVersion}"
     implementation 'io.reactivex:rxjava:1.3.2'
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'com.google.guava:guava:28.1-jre'

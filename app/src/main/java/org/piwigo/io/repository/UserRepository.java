@@ -23,6 +23,7 @@ import android.util.Log;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.CookieHelper;
+import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.LoginResponse;
@@ -56,20 +57,23 @@ public class UserRepository extends BaseRepository {
         loginResponse.password = password;
 
         return restService.login(username, password)
+                .compose(applySchedulers())
                 .flatMap(response -> {
                     if (response.body().result) {
 // TODO: check: should we set the cookie in the Usermanager here?
                         loginResponse.pwgId = CookieHelper.extract("pwg_id", response.headers());
-                        return Observable.just(response.body());
+                        return Observable.just(response.body()).compose(applySchedulers());
                     }
-                    return Observable.error(new Throwable("Login failed"));
+                    // TODO:
+//            return Observable.error(new Throwable("Login failed"));
+                    return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with code " + response.body().err + ": " + response.body().message));
                 })
-                .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId))
+                .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId).compose(applySchedulers()))
                 .map(statusResponse -> {
                     loginResponse.statusResponse = statusResponse;
                     return loginResponse;
                 })
-                .compose(applySchedulers());
+                ;
     }
 
     /* intended only for Login view, otherwise consider status(Account account) */
@@ -78,13 +82,14 @@ public class UserRepository extends BaseRepository {
             siteUrl = siteUrl + "/";
         }
         RestService restService = restServiceFactory.createForUrl(siteUrl);
-        return status(restService, siteUrl);
+
+        return status(restService, siteUrl).compose(applySchedulers());
     }
 
     public Observable<LoginResponse> status(Account account) {
         String siteUrl = validateUrl(userManager.getSiteUrl(account));
         RestService restService = restServiceFactory.createForAccount(account);
-        return status(restService, siteUrl);
+        return status(restService, siteUrl).compose(applySchedulers());
     }
 
     private Observable<LoginResponse> status(RestService restService, String url) {
@@ -92,10 +97,11 @@ public class UserRepository extends BaseRepository {
         loginResponse.url = url;
 
         return restService.getStatus()
+                .compose(applySchedulers())
                 .map(statusResponse -> {
                     loginResponse.statusResponse = statusResponse;
                     return loginResponse;
                 })
-                .compose(applySchedulers());
+                ;
     }
 }

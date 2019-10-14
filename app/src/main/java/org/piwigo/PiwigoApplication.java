@@ -76,8 +76,8 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
 
         new NetworkHelper();
         new NotificationHelper(getApplicationContext());
-        new DialogHelper()
-;        initializeDependencyInjection();
+        new DialogHelper();
+        initializeDependencyInjection();
     }
 
     @Override
