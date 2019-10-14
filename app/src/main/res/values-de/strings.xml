@@ -50,7 +50,7 @@
     <string name="login_password_hint">Passwort (leer für Gast)</string>
     <string name="login_error">Login fehlgeschlagen, bitte erneut versuchen</string>
     <string name="login_account_error">Für diesen Server existiert bereits ein Konto</string>
-    <string name="login_ssl_error">Encrypted connection (SSL) to \'%1s\' cannot be established</string>
+    <string name="login_ssl_error">SSL-verschlüsselte Verbindung zu \'%1s\' kann nicht hergestellt werden</string>
     <string name="login_host_error">Server konnte nicht erreicht werden, bitte überprüfen Sie die Serveradresse</string>
     <string name="login_http_error">Server returned unexpected response \'%1s\'</string>
     <string name="login_http_404_error">Given path \'%1s\' not found on server</string>
