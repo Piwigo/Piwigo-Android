@@ -34,6 +34,8 @@
     <string name="nav_add_account">Konto Hinzufügen</string>
     <string name="nav_delete_account">Konto entfernen</string>
     <string name="nav_edit_account">Konto bearbeiten</string>
+    <string name="nav_drawer_open">Menü öffnen</string>
+    <string name="nav_drawer_close">Menü schließen</string>
     <!-- Login -->
     <string name="login_url_hint">Serveradresse</string>
     <string name="login_url_description">URL der Piwigo Galerie zum Login</string>
@@ -48,7 +50,12 @@
     <string name="login_password_hint">Passwort (leer für Gast)</string>
     <string name="login_error">Login fehlgeschlagen, bitte erneut versuchen</string>
     <string name="login_account_error">Für diesen Server existiert bereits ein Konto</string>
+    <string name="login_ssl_error">SSL-verschlüsselte Verbindung zu \'%1s\' kann nicht hergestellt werden</string>
     <string name="login_host_error">Server konnte nicht erreicht werden, bitte überprüfen Sie die Serveradresse</string>
+    <string name="login_http_error">Server hat das unerwartete Resultat \'%1s\' zurückgegeben</string>
+    <string name="login_http_404_error">Angegebener Pfad \'%1s\' wurde auf dem Server nicht gefunden</string>
+    <string name="login_baseurl_invalid">Keine Piwigo-Galerie im angegebenen Pfad \'%1s\' gefunden</string>
+    <string name="login_invalid_credentials">Login mit den Zugangsdaten \'%1s/*****\' fehlgeschlagen</string>
     <!-- Account -->
     <string name="account_image_description">Symbol der Galerie (Favicon)</string>
     <string name="account_not_selected">Zum Löschen erst ein Konto auswählen</string>
@@ -113,6 +120,8 @@
     <string name="upload_success">Upload erfolgreich</string>
     <string name="upload_failed">Upload fehlgeschlagen</string>
     <string name="upload_error">Beim Hochladen der Fotos ist ein Fehler aufgetreten. Bitte erneut versuchen.</string>
+    <string name="upload_progress_body">%1$d / %2$d Fotos hochgeladen</string>
+    <string name="upload_started">Fotos werden hochgeladen</string>
     <string name="upload_success_body"> %1$s Foto(s) nach %2$s hochgeladen</string>
     <string name="storage_permission_title">Fehlende Berechtigungen.</string>
     <string name="storage_permission_explanation">Um Fotos hochzuladen wird die Berechtigung für den lokalen Speicher benötigt</string>
@@ -123,6 +132,7 @@
     <!-- Buttons -->
     <string name="button_ok">OK</string>
     <string name="button_cancel">Abbrechen</string>
+    <string name="button_report">Melden</string>
     <!-- FAB -->
     <string name="fab_create_album">Album erstellen</string>
     <string name="fab_create_subalbum">Unter-Album erstellen</string>
@@ -137,4 +147,5 @@
     <string name="not_admin">Nicht eingeloggt</string>
     <string name="not_admin_explanation">Sie müssen angemeldet sein, um dies zu tun.</string>
     <string name="no_internet">Hoppla! Es scheint, als bestünde keine Internetverbindung. Bitte Verbindung herstellen und erneut versuchen.</string>
+    <string name="show_details">Details anzeigen</string>
 </resources>
