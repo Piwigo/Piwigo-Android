@@ -3,7 +3,7 @@ Il s'agit d'une version bêta, avec des améliorations majeures mais pas encore 
 Dans cette version nous avons :
 - Abandonné le support d'Android 4.0 "Ice Cream Sandwich" et 4.1 "Jelly Bean"
 - Modifié l'UI pour se conformer au nouveau style graphique de Piwigo
-- added German, French and initial Kannada translation
-- support creation of albums
-- added auto detection correction of the gallery site (automatically choosing HTTPS if possible)
+- Ajouté les traductions en Allemand, Français et Kannada
+- Ajouté la possibilité de créer un album
+- Ajouté la détection et la correction des URL des galleries Piwigo (le protocole HTTPS est directement choisi si possible)
 
