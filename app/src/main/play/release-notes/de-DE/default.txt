@@ -1,4 +1,4 @@
-Piwigo-Android 1.0 is finally here, and it has plenty of new features:
+Piwigo-Android 1.0 ist endlich da, und es hat viele neue Funktionen:
 
 - Added a full-screen photoviewer
 - Update design elements
