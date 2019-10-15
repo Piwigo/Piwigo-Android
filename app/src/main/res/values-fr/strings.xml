@@ -146,6 +146,6 @@
     <!-- Guest error messages-->
     <string name="not_admin">Not logged in</string>
     <string name="not_admin_explanation">You need to be logged to do this.</string>
-    <string name="no_internet">Oops! It seems like you have no internet connection. Please connect and try again.</string>
+    <string name="no_internet">Oups ! Il semble que vous n\'ayez pas de connexion internet. Veuillez vous connecter et réessayer.</string>
     <string name="show_details">Show details</string>
 </resources>
