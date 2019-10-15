@@ -1,9 +1,9 @@
-Il s'agit d'une version bêta, avec des améliorations majeures mais pas encore destinée à l'utilisation en production. S'il vous plaît, soyez prudent et assurez-vous que vous avez sauvegardé les données de votre galerie.
+Piwigo-Android 1.0 is finally here, and it has plenty of new features:
 
-Dans cette version nous avons :
-- Abandonné le support d'Android 4.0 "Ice Cream Sandwich" et 4.1 "Jelly Bean"
-- Modifié l'UI pour se conformer au nouveau style graphique de Piwigo
-- Ajouté les traductions en Allemand, Français et Kannada
-- Ajouté la possibilité de créer un album
-- Ajouté la détection et la correction des URL des galleries Piwigo (le protocole HTTPS est directement choisi si possible)
+- Added a full-screen photoviewer
+- Update design elements
+- Support creation of albums
+- Made the login form easier to use, and fixed some crashes
+- Some major and minor bug fixes
 
+We do really appreciate your feedback on our work. Do not hesitate to rate and leave your review to help us to improve!

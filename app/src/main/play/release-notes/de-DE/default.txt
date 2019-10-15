@@ -1,7 +1,9 @@
-Dies ist eine Beta-Version, mit großen Verbesserungen, aber noch nicht für den produktiven Einsatz vorgesehen. Seien Sie vorsichtig und stellen Sie sicher, ein vollständiges Backup zu haben.
+Piwigo-Android 1.0 ist endlich da, und es hat viele neue Funktionen:
 
-In dieser Version haben wir
-- die Unterstützung für Android 4.0 und 4.1 entfernt
-- neues Design und weitere Sprachen hinzugefügt
-- Unterstützung der Erstellung von Alben
-- automatische Korrektur der Galerie-Seite hinzugefügt (falls möglich wird automatisch HTTPS verwendet)
+- Added a full-screen photoviewer
+- Update design elements
+- Support creation of albums
+- Made the login form easier to use, and fixed some crashes
+- Some major and minor bug fixes
+
+We do really appreciate your feedback on our work. Do not hesitate to rate and leave your review to help us to improve!
