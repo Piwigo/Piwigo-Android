@@ -21,6 +21,7 @@ package org.piwigo.ui.account;
 
 import android.accounts.Account;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import android.content.Intent;
 import androidx.databinding.ObservableField;
@@ -38,7 +39,7 @@ public class ManageAccountsViewModel extends ViewModel {
     public final ObservableField<String> title = new ObservableField<>();
 
     public final LiveData<List<Account>> accounts;
-    Account selectedAccount;
+    MutableLiveData<Account> selectedAccount = new MutableLiveData<>();
 
     private List<Account> items;
     public final BindingRecyclerViewAdapter.ViewBinder<Account> viewBinder = new AccountViewBinder();
@@ -49,11 +50,11 @@ public class ManageAccountsViewModel extends ViewModel {
         this.userManager = userManager;
         accounts = userManager.getAccounts();
         items = accounts.getValue();
-        selectedAccount = userManager.getActiveAccount().getValue();
+        selectedAccount.setValue(userManager.getActiveAccount().getValue());
     }
 
     public Account getSelectedAccount(){
-        return selectedAccount;
+        return selectedAccount.getValue();
     }
 
     public List<Account> getItems() {
@@ -76,7 +77,7 @@ public class ManageAccountsViewModel extends ViewModel {
             boolean x = vm.isActive();
             viewHolder.itemView.setSelected(x);
             viewHolder.itemView.setOnClickListener(v -> {
-                selectedAccount = account;
+                selectedAccount.postValue(account);
 
                 userManager.setActiveAccount(account);
             });
