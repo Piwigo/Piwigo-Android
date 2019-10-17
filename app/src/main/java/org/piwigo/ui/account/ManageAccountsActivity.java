@@ -23,13 +23,11 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.lifecycle.Observer;
 import android.content.Intent;
 import androidx.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.core.app.NavUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -42,8 +40,6 @@ import org.piwigo.databinding.ActivityManageAccountsBinding;
 import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -87,24 +83,26 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
         setSupportActionBar(toolbar);
         viewModel.title.set(getString(R.string.title_activity_accounts));
 
-        userManager.getAccounts().observe(this, new Observer<List<Account>>() {
-            @Override
-            public void onChanged(@Nullable List<Account> newItems) {
-                BindingRecyclerViewAdapter<Account> a = (BindingRecyclerViewAdapter<Account>) binding.accountRecycler.getAdapter();
+        userManager.getAccounts().observe(this, newItems -> {
+            BindingRecyclerViewAdapter<Account> a = (BindingRecyclerViewAdapter<Account>) binding.accountRecycler.getAdapter();
 
-                if (a != null) {
-                    a.update(newItems);
-                }
+            if (a != null) {
+                a.update(newItems);
             }
         });
-        userManager.getActiveAccount().observe(this, new Observer<Account>(){
-            @Override
-            public void onChanged(@Nullable Account account) {
-                BindingRecyclerViewAdapter<Account> a = (BindingRecyclerViewAdapter<Account>) binding.accountRecycler.getAdapter();
+        userManager.getActiveAccount().observe(this, account -> {
+            BindingRecyclerViewAdapter<Account> a = (BindingRecyclerViewAdapter<Account>) binding.accountRecycler.getAdapter();
 
-                if (a != null) {
-                    a.notifyDataSetChanged();
-                }
+            if (a != null) {
+                a.notifyDataSetChanged();
+            }
+        });
+
+        viewModel.selectedAccount.observe(this, account -> {
+            BindingRecyclerViewAdapter<Account> a = (BindingRecyclerViewAdapter<Account>) binding.accountRecycler.getAdapter();
+
+            if (a != null) {
+                finish();
             }
         });
 
