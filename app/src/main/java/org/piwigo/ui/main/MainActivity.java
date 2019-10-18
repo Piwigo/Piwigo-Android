@@ -110,37 +110,42 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private SnackProgressBarManager snackProgressBarManager;
 
     private ActionBarDrawerToggle mDrawerToggle;
+    private Observable.OnPropertyChangedCallback mDrawerCallBack;
+    private ActivityMainBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
 
-        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, mBinding.navigationView, false);
 
         MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.getSelectedNavigationItemId().observe(this, this::itemSelected);
 
-        binding.setViewModel(viewModel);
+        mBinding.setViewModel(viewModel);
         headerBinding.setViewModel(viewModel);
-        binding.navigationView.addHeaderView(headerBinding.getRoot());
-        setSupportActionBar(binding.toolbar);
+        mBinding.navigationView.addHeaderView(headerBinding.getRoot());
+        setSupportActionBar(mBinding.toolbar);
 
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,
-                binding.drawerLayout,
+                mBinding.drawerLayout,
                 R.string.nav_drawer_open,
                 R.string.nav_drawer_close
         );
-        binding.drawerLayout.addDrawerListener(mDrawerToggle);
+        mBinding.drawerLayout.addDrawerListener(mDrawerToggle);
 
-        viewModel.showingRootAlbum.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        mDrawerToggle.setDrawerIndicatorEnabled(viewModel.showingRootAlbum.get());
+
+        mDrawerCallBack = new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
                 mDrawerToggle.setDrawerIndicatorEnabled(((ObservableBoolean)sender).get());
             }
-        });
+        };
+        viewModel.showingRootAlbum.addOnPropertyChangedCallback(mDrawerCallBack);
 
         snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
 
@@ -149,7 +154,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         }
 
         currentAccount = userManager.getActiveAccount().getValue();
-        speedDialView = binding.fab;
+        speedDialView = mBinding.fab;
 
         setFABListener();
         refreshFAB(0);
@@ -263,6 +268,10 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        viewModel.showingRootAlbum.removeOnPropertyChangedCallback(mDrawerCallBack);
+        mBinding.drawerLayout.removeDrawerListener(mDrawerToggle);
+
         snackProgressBarManager.disable();
     }
 

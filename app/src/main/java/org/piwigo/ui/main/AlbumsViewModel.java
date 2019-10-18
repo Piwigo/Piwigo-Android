@@ -84,9 +84,7 @@ public class AlbumsViewModel extends ViewModel {
         return category;
     }
 
-    void loadAlbums(Integer categoryId) {
-        category = categoryId;
-
+    private void forcedLoadAlbums(){
         Account account = userManager.getActiveAccount().getValue();
         if (albumsSubscription != null) {
             // cleanup, just in case
@@ -99,16 +97,23 @@ public class AlbumsViewModel extends ViewModel {
             photosSubscription = null;
         }
         if (account != null) {
-            albumsSubscription = categoriesRepository.getCategories(account, categoryId)
+            albumsSubscription = categoriesRepository.getCategories(account, category)
                     .subscribe(new CategoriesSubscriber());
-            photosSubscription = imageRepository.getImages(account, categoryId)
+            photosSubscription = imageRepository.getImages(account, category)
                     .subscribe(new ImagesSubscriber());
+        }
+    }
+
+    void loadAlbums(Integer categoryId) {
+        if(category == null || category != category) {
+            category = categoryId;
+            forcedLoadAlbums();
         }
     }
 
     public void onRefresh() {
         isLoading.set(true);
-        loadAlbums(getCategory());
+        forcedLoadAlbums();
     }
 
     private class CategoriesSubscriber extends Subscriber<List<Category>> {

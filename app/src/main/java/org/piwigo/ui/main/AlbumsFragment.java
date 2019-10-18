@@ -87,7 +87,7 @@ public class AlbumsFragment extends BaseFragment {
     @Subscribe
     public void onEvent(RefreshRequestEvent event)
     {
-        binding.getViewModel().loadAlbums(event.getCategoryId());
+        binding.getViewModel().onRefresh();
     }
 
     @Override
