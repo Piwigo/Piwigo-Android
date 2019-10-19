@@ -24,7 +24,10 @@
             android:src="@{viewModel.url}"
             android:contentDescription="@{viewModel.title}"
             android:onClick="@{viewModel::onClickDo}"
-            app:heightRatio="@{0.66}" />
+            app:heightRatio="@{0.66}"
+            android:cropToPadding="false"
+            android:scaleType="centerCrop"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
