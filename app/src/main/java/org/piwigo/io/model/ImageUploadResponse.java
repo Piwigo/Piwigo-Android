@@ -28,15 +28,15 @@ public class ImageUploadResponse {
     @SerializedName("result") public ImageUploadResponse.UpResult up_result;
 
     //only on upload fail
-    @SerializedName("err") public int up_err;
+    @SerializedName("err") public int up_err; // not sure whether this is set at all
     @SerializedName("message") public String up_message;
+    @SerializedName("error") public Error err;
 
     public class UpResult {
         @SerializedName("image_id") public int up_image_id;
         @SerializedName("src") public String up_src;
         @SerializedName("name") public String up_name;
         @SerializedName("category") public UpCategory up_category;
-
     }
 
     public class UpCategory {

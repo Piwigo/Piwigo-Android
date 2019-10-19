@@ -208,7 +208,9 @@ public class UploadService extends IntentService {
                     }
                     onUploadStarted(imageUploadQueue);
                 } else {
-                    NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_failed), getResources().getString(R.string.upload_error), getApplicationContext());
+                    // TODO: handle this properly for #161
+                    String add = " (" + response.body().err.message + ")";
+                    NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_failed), getResources().getString(R.string.upload_error) + add, getApplicationContext());
                     snackProgressEvent.setSnackbarDesc(getResources().getString(R.string.upload_failed));
                     snackProgressEvent.setAction(SnackProgressEvent.SnackbarUpdateAction.KILL);
                     EventBus.getDefault().post(snackProgressEvent);
@@ -218,6 +220,7 @@ public class UploadService extends IntentService {
 
             @Override
             public void onFailure(@NonNull Call<ImageUploadResponse> call, @NonNull Throwable t) {
+                // TODO: handle this properly for #161
                 NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_failed), getResources().getString(R.string.upload_error), getApplicationContext());
                 snackProgressEvent.setSnackbarDesc(getResources().getString(R.string.upload_failed));
                 snackProgressEvent.setAction(SnackProgressEvent.SnackbarUpdateAction.KILL);
