@@ -26,6 +26,8 @@ public class AddCategoryResponse {
 
     @SerializedName("result") public Result result;
 
+    @SerializedName("error") public Error err;
+
     public class Result {
 
         @SerializedName("id") public int id;
