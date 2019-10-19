@@ -16,29 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.internal.di.module;
+package org.piwigo.ui.photoviewer;
 
-import org.piwigo.BuildConfig;
-
-import javax.inject.Singleton;
+import android.content.res.Resources;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 @Module
-public class NetworkModule {
+public class PhotoViewerDialogFragmentModule {
 
-    @Provides @Singleton HttpLoggingInterceptor provideHttpLoggingInterceptor() {
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
-        return loggingInterceptor;
-    }
-
-    @Provides @Singleton OkHttpClient provideOkHttpClient(HttpLoggingInterceptor loggingInterceptor) {
-        return new OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .build();
+    @Provides Resources provideResources(PhotoViewerDialogFragment fragment) {
+        return fragment.getResources();
     }
 }

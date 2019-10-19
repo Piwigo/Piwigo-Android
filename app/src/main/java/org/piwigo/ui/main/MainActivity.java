@@ -20,7 +20,6 @@ package org.piwigo.ui.main;
 
 import android.Manifest;
 import android.accounts.Account;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -32,15 +31,19 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.InputType;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
@@ -68,6 +71,7 @@ import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
+import org.piwigo.io.model.ImageUploadItem;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.about.AboutActivity;
@@ -76,20 +80,22 @@ import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
-import rx.Observable;
+import dagger.android.HasAndroidInjector;
 
-public class MainActivity extends BaseActivity implements HasSupportFragmentInjector {
+public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private static final String TAG = MainActivity.class.getName();
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
+    int SELECT_PICTURES = 1;
 
     @Inject
-    DispatchingAndroidInjector<Fragment> fragmentInjector;
+    DispatchingAndroidInjector<Object> androidInjector;
     @Inject
     MainViewModelFactory viewModelFactory;
     @Inject
@@ -103,33 +109,52 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
     private SnackProgressBarManager snackProgressBarManager;
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
-
-    int SELECT_PICTURES = 1;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private Observable.OnPropertyChangedCallback mDrawerCallBack;
+    private ActivityMainBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
 
-        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, binding.navigationView, false);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, mBinding.navigationView, false);
 
         MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.getSelectedNavigationItemId().observe(this, this::itemSelected);
 
-        binding.setViewModel(viewModel);
+        mBinding.setViewModel(viewModel);
         headerBinding.setViewModel(viewModel);
-        binding.navigationView.addHeaderView(headerBinding.getRoot());
-        setSupportActionBar(binding.toolbar);
+        mBinding.navigationView.addHeaderView(headerBinding.getRoot());
+        setSupportActionBar(mBinding.toolbar);
+
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mBinding.drawerLayout,
+                R.string.nav_drawer_open,
+                R.string.nav_drawer_close
+        );
+        mBinding.drawerLayout.addDrawerListener(mDrawerToggle);
+
+        mDrawerToggle.setDrawerIndicatorEnabled(viewModel.showingRootAlbum.get());
+
+        mDrawerCallBack = new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                mDrawerToggle.setDrawerIndicatorEnabled(((ObservableBoolean)sender).get());
+            }
+        };
+        viewModel.showingRootAlbum.addOnPropertyChangedCallback(mDrawerCallBack);
 
         snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
 
-        if (!NetworkHelper.INSTANCE.hasInternet(this))
+        if (!NetworkHelper.INSTANCE.hasInternet(this)){
             EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
+        }
 
         currentAccount = userManager.getActiveAccount().getValue();
-        speedDialView = binding.fab;
+        speedDialView = mBinding.fab;
 
         setFABListener();
         refreshFAB(0);
@@ -143,7 +168,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 viewModel.displayFab.set(!userManager.isGuest(currentAccount));
                 /* Login to the new site after account changes.
                  * It seems quite unclean to do that here -> TODO: FIXME*/
-                Observable<LoginResponse> a = userRepository.login(account);
+                rx.Observable<LoginResponse> a = userRepository.login(account);
                 a.subscribe(new rx.Observer<LoginResponse>() {
                     @Override
                     public void onCompleted() {
@@ -152,6 +177,7 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "Login failed: " + e.getMessage());
+                        // TODO: notify loginfailure
                     }
 
                     @Override
@@ -193,7 +219,12 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (mDrawerToggle.isDrawerIndicatorEnabled()){
+            MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+            viewModel.drawerState.set(false);
+        } else {
+            super.onBackPressed();
+        }
         refreshFAB(getCurrentCategoryId());
     }
 
@@ -237,6 +268,10 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        viewModel.showingRootAlbum.removeOnPropertyChangedCallback(mDrawerCallBack);
+        mBinding.drawerLayout.removeDrawerListener(mDrawerToggle);
+
         snackProgressBarManager.disable();
     }
 
@@ -251,23 +286,35 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         if (event instanceof SnackbarShowEvent)
             Snackbar.make(findViewById(android.R.id.content), event.getMessage(), ((SnackbarShowEvent) event).getDuration()).show();
         if (event instanceof SnackProgressEvent) {
-            SnackProgressBar bar = snackProgressBarManager.getSnackProgressBar(((SnackProgressEvent) event).getSnackbarId());
-            if (bar != null && ((SnackProgressEvent) event).getAction().equals(SnackProgressEvent.SnackbarUpdateAction.REFRESH)) {
-                bar.setMessage(((SnackProgressEvent) event).getSnackbarDesc());
-                snackProgressBarManager.updateTo(((SnackProgressEvent) event).getSnackbarId());
-            } else if (bar != null && ((SnackProgressEvent) event).getAction().equals(SnackProgressEvent.SnackbarUpdateAction.KILL))
-                snackProgressBarManager.dismissAll();
+            SnackProgressEvent progressEvent = (SnackProgressEvent) event;
+            SnackProgressBar bar = snackProgressBarManager.getSnackProgressBar(progressEvent.getSnackbarId());
+
+            if (bar != null) {
+                bar.setMessage(progressEvent.getSnackbarDesc());
+                if (progressEvent.getAction() == (SnackProgressEvent.SnackbarUpdateAction.KILL)) {
+                    bar.setType(SnackProgressBar.TYPE_NORMAL);
+                    bar.setAction(getResources().getString(R.string.button_ok), () -> snackProgressBarManager.dismiss());
+                    snackProgressBarManager.show(progressEvent.getSnackbarId(), SnackProgressBarManager.LENGTH_LONG);
+                }
+                snackProgressBarManager.updateTo(progressEvent.getSnackbarId());
+            }
             else {
-                bar = new SnackProgressBar(((SnackProgressEvent) event).getSnackbarType(), ((SnackProgressEvent) event).getSnackbarDesc()).setIsIndeterminate(true);
-                snackProgressBarManager.put(bar, ((SnackProgressEvent) event).getSnackbarId());
-                snackProgressBarManager.show(bar, SnackProgressBarManager.LENGTH_INDEFINITE);
+                if (progressEvent.getAction().equals(SnackProgressEvent.SnackbarUpdateAction.KILL)) {
+                    return;
+                }
+                bar = new SnackProgressBar(progressEvent.getSnackbarType(), progressEvent.getSnackbarDesc()).setIsIndeterminate(true);
+                snackProgressBarManager.put(bar, progressEvent.getSnackbarId());
+                snackProgressBarManager.show(bar, progressEvent.getSnackbarDuration());
             }
         }
     }
 
+    /**
+     * Returns an {@link AndroidInjector}.
+     */
     @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return fragmentInjector;
+    public AndroidInjector<Object> androidInjector() {
+        return androidInjector;
     }
 
     private void itemSelected(int itemId) {
@@ -289,6 +336,19 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
                 DialogHelper.INSTANCE.showErrorDialog(R.string.not_implemented_title, R.string.not_implemented_msg, this);
                 break;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }else if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void setFABListener() {
@@ -408,31 +468,45 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SELECT_PICTURES) {
             if (resultCode == RESULT_OK) {
-                if (data.getClipData() != null) {
-                    Intent intent = new Intent(this, UploadService.class);
-                    ImageUploadQueue<UploadAction> imageUploadQueue = new ImageUploadQueue<>();
-                    for (int i = 0; i < data.getClipData().getItemCount(); i++) {
-                        Uri targetUri = data.getClipData().getItemAt(i).getUri();
-                        String imageName = getNameFromURI(data.getClipData().getItemAt(i), targetUri);
-                        UploadAction uploadAction = new UploadAction(imageName);
+                ArrayList<ImageUploadItem> images = new ArrayList<>();
+                Intent intent = new Intent(this, UploadService.class);
+                ImageUploadQueue<UploadAction> imageUploadQueue = new ImageUploadQueue<>();
 
-                        uploadAction.getUploadData().setTargetUri(targetUri);
-                        uploadAction.getUploadData().setCategoryId(getCurrentCategoryId());
-                        if (!imageUploadQueue.offer(uploadAction))
-                            Log.e("ImageUploadQueue", "Unable to offer UploadAction..");
+                if (data.getClipData() != null) {
+                    for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                        ImageUploadItem item = new ImageUploadItem();
+
+                        item.setImageData(data.getClipData().getItemAt(i).toString());
+                        item.setImageUri(data.getClipData().getItemAt(i).getUri());
+                        images.add(item);
                     }
-                    intent.putExtra(UploadService.KEY_UPLOAD_QUEUE, imageUploadQueue);
-                    EventBus.getDefault().post(new SnackProgressEvent(SnackProgressBar.TYPE_CIRCULAR, String.format("Uploading your photos.."), 100, SnackProgressEvent.SnackbarUpdateAction.REFRESH));
-                    startService(intent);
+                } else if (data.getData() != null) {
+                    ImageUploadItem item = new ImageUploadItem();
+
+                    item.setImageData(data.toString());
+                    item.setImageUri(data.getData());
+                    images.add(item);
                 }
+                for (int i = 0; i < images.size(); i++) {
+                    ImageUploadItem item = images.get(i);
+
+                    item.setImageName(getNameFromURI(item.getImageData(), item.getImageUri()));
+                    UploadAction uploadAction = new UploadAction(item.getImageName());
+                    uploadAction.getUploadData().setTargetUri(item.getImageUri());
+                    uploadAction.getUploadData().setCategoryId(getCurrentCategoryId());
+                    if (!imageUploadQueue.offer(uploadAction))
+                        Log.e("ImageUploadQueue", "Unable to offer UploadAction..");
+                }
+                intent.putExtra(UploadService.KEY_UPLOAD_QUEUE, imageUploadQueue);
+                startService(intent);
             }
         }
     }
 
-    private String getNameFromURI(ClipData.Item item, Uri contentUri) {
-        if (item.toString().contains("content:"))
+    private String getNameFromURI(String item, Uri contentUri) {
+        if (item.contains("content:"))
             return (getRealPathFromURI(contentUri));
-        else if (item.toString().contains("file:"))
+        else if (item.contains("file:"))
             return (contentUri.getPath());
         else
             return (null);
@@ -463,5 +537,6 @@ public class MainActivity extends BaseActivity implements HasSupportFragmentInje
             }
         }
     }
+
 }
 

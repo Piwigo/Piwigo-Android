@@ -54,18 +54,21 @@ public class LauncherActivity extends BaseActivity {
 
         if (userManager.hasAccounts()) {
 
-            // TODO: check: should we move this login into the MainViewModel and create this already here?
             Account a = userManager.getActiveAccount().getValue();
             userRepository.login(a)
                     .subscribe(new Subscriber<LoginResponse>() {
-                        @Override public void onCompleted() {
+                        @Override
+                        public void onCompleted() {
                         }
 
-                        @Override public void onError(Throwable e) {
-                            Log.e(TAG, "Login failed: " + e.getMessage());
+                        @Override
+                        public void onError(Throwable e) {
+//                                Log.e(TAG, "Login failed: " + e.toString()); //getMessage());
+                            // TODO: handle this properly... (can be triggered with empty password)
                         }
 
-                        @Override public void onNext(LoginResponse loginResponse) {
+                        @Override
+                        public void onNext(LoginResponse loginResponse) {
                             Log.i(TAG, "Login succeeded: " + loginResponse.pwgId);
                             userManager.setCookie(a, loginResponse.pwgId);
                             userManager.setToken(a, loginResponse.statusResponse.result.pwgToken);

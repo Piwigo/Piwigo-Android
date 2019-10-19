@@ -45,8 +45,7 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
-import dagger.android.HasServiceInjector;
+import dagger.android.HasAndroidInjector;
 
 @AcraCore(reportContent = { ReportField.APP_VERSION_CODE,
         ReportField.APP_VERSION_NAME,
@@ -66,10 +65,9 @@ import dagger.android.HasServiceInjector;
 @AcraMailSender(mailTo = "android@piwigo.org")
 @AcraDialog(resCommentPrompt = R.string.crash_dialog_comment_prompt,
         resText = R.string.crash_dialog_text)
-public class PiwigoApplication extends Application implements HasActivityInjector, HasServiceInjector {
+public class PiwigoApplication extends Application implements HasAndroidInjector {
 
-    @Inject DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
-    @Inject DispatchingAndroidInjector<Service> dispatchingAndroidServiceInjector;
+    @Inject DispatchingAndroidInjector<Object> androidInjector;
 
     private ApplicationComponent applicationComponent;
 
@@ -78,8 +76,8 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
 
         new NetworkHelper();
         new NotificationHelper(getApplicationContext());
-        new DialogHelper()
-;        initializeDependencyInjection();
+        new DialogHelper();
+        initializeDependencyInjection();
     }
 
     @Override
@@ -87,10 +85,6 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
         super.attachBaseContext(base);
         MultiDex.install(base);
         ACRA.init(this);
-    }
-
-    @Override public AndroidInjector<Activity> activityInjector() {
-        return dispatchingAndroidInjector;
     }
 
     private void initializeDependencyInjection() {
@@ -106,10 +100,10 @@ public class PiwigoApplication extends Application implements HasActivityInjecto
     }
 
     /**
-     * Returns an {@link AndroidInjector} of {@link Service}s.
+     * Returns an {@link AndroidInjector}.
      */
     @Override
-    public AndroidInjector<Service> serviceInjector() {
-        return dispatchingAndroidServiceInjector;
+    public AndroidInjector<Object> androidInjector() {
+        return androidInjector;
     }
 }

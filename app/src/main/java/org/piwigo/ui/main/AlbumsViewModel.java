@@ -84,9 +84,7 @@ public class AlbumsViewModel extends ViewModel {
         return category;
     }
 
-    void loadAlbums(Integer categoryId) {
-        category = categoryId;
-
+    private void forcedLoadAlbums(){
         Account account = userManager.getActiveAccount().getValue();
         if (albumsSubscription != null) {
             // cleanup, just in case
@@ -99,16 +97,23 @@ public class AlbumsViewModel extends ViewModel {
             photosSubscription = null;
         }
         if (account != null) {
-            albumsSubscription = categoriesRepository.getCategories(account, categoryId)
+            albumsSubscription = categoriesRepository.getCategories(account, category)
                     .subscribe(new CategoriesSubscriber());
-            photosSubscription = imageRepository.getImages(account, categoryId)
+            photosSubscription = imageRepository.getImages(account, category)
                     .subscribe(new ImagesSubscriber());
+        }
+    }
+
+    void loadAlbums(Integer categoryId) {
+        if(category == null || category != category) {
+            category = categoryId;
+            forcedLoadAlbums();
         }
     }
 
     public void onRefresh() {
         isLoading.set(true);
-        loadAlbums(getCategory());
+        forcedLoadAlbums();
     }
 
     private class CategoriesSubscriber extends Subscriber<List<Category>> {
@@ -123,7 +128,10 @@ public class AlbumsViewModel extends ViewModel {
                 Log.e(TAG, "CategoriesSubscriber: " + e.getMessage());
                 // TODO: #91 tell the user about the network problem
             } else {
-                throw new RuntimeException(e);
+                // NO: NEVER throw an exception here
+                // throw new RuntimeException(e);
+                Log.e(TAG, "CategoriesSubscriber: " + e.getMessage());
+                // TODO: highlight problem to the user
             }
         }
 
@@ -171,7 +179,10 @@ public class AlbumsViewModel extends ViewModel {
                 Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
 // TODO: #91 tell the user about the network problem
             } else {
-                throw new RuntimeException(e);
+                // NO: NEVER throw an exception here
+                // throw new RuntimeException(e);
+                Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
+                // TODO: highlight problem to the user
             }
         }
 
@@ -183,6 +194,8 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     private class ImagesViewBinder implements BindingRecyclerViewAdapter.ViewBinder<ImageInfo> {
+
+        int imageId = 0;
 
         @Override
         public int getViewType(ImageInfo image) {
@@ -196,15 +209,11 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override
         public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, ImageInfo image) {
-            String imageurl = "";
-            //imageurl = image.elementUrl;
-            imageurl = image.derivatives.xsmall.url;
             // TODO: make image size selectable via settings (jca)
-
-            String imagename = image.name;
             // TODO: make configurable to also show the photo name here
-            ImagesItemViewModel viewModel = new ImagesItemViewModel(imageurl, imagename);
+            ImagesItemViewModel viewModel = new ImagesItemViewModel(image.derivatives.medium.url, imageId, image.name, images);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
+            imageId++;
         }
 
     }

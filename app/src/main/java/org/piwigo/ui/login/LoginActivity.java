@@ -39,14 +39,21 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
+import org.piwigo.helper.DialogHelper;
+import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.ui.shared.BaseActivity;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import javax.inject.Inject;
+import javax.net.ssl.SSLPeerUnverifiedException;
 
 import dagger.android.AndroidInjection;
+import retrofit2.HttpException;
 
 public class LoginActivity extends BaseActivity {
 
@@ -136,16 +143,53 @@ public class LoginActivity extends BaseActivity {
 
     private void loginError(Throwable throwable) {
         fabProgressCircle.hide();
-        if (throwable instanceof IllegalArgumentException)
-            Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
-                    .show();
-        else if (throwable instanceof UnknownHostException)
-            Snackbar.make(binding.getRoot(), R.string.login_host_error, Snackbar.LENGTH_LONG)
-                    .show();
-        else
-            Snackbar.make(binding.getRoot(), R.string.login_error, Snackbar.LENGTH_LONG)
-                    .show();
+        String msg;
+        URI uri;
+        String host = viewModel.url.get();
+        String path = host;
+        try {
+            uri = new URI(viewModel.url.get());
+            if(!uri.isAbsolute()) {
+                uri = uri.resolve(new URI("https://" + host));
+            }
+            host = uri.getHost();
+            path = uri.getPath();
+        } catch (URISyntaxException e) {
+            /* this one should not occur, otherwise we should not even login */
+        }
+
+        if(throwable instanceof IllegalArgumentException){
+            msg = getResources().getString(R.string.login_baseurl_invalid, path);
+        }else if(throwable instanceof HttpException){
+            HttpException he = (HttpException) throwable;
+            if(he.code() == 404){
+                List<String> segments = he.response().raw().request().url().pathSegments();
+                if("ws.php".equals(segments.get(segments.size() - 1))){
+                    msg = getResources().getString(R.string.login_baseurl_invalid, path);
+                }else{
+                    msg = getResources().getString(R.string.login_http_404_error, he.response().raw().request().url().encodedPath());
+                }
+            }else {
+                msg = getResources().getString(R.string.login_http_error, he.code() + ": " + he.message());
+            }
+        }else if (throwable instanceof SSLPeerUnverifiedException) {
+            msg = getResources().getString(R.string.login_ssl_error, host);
+        }else if (throwable instanceof UnknownHostException) {
+            msg = getResources().getString(R.string.login_host_error, host);
+        }else if (throwable instanceof PiwigoLoginException) {
+            msg = getResources().getString(R.string.login_invalid_credentials, viewModel.username.get());
+        }else {
+            msg = getResources().getString(R.string.login_error);
+        }
+
+        Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_LONG).setAction(R.string.show_details, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogHelper.INSTANCE.showLogDialog(getResources().getString(R.string.login_error), msg, throwable, binding.getRoot().getContext());
+            }
+        }).show();
     }
+
 
     private void setResultIntent(Account account) {
         Intent intent = new Intent();

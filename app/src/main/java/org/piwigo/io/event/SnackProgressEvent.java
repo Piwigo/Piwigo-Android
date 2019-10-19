@@ -2,17 +2,35 @@ package org.piwigo.io.event;
 
 public class SnackProgressEvent extends SimpleEvent
 {
-    private final int snackbarType;
-    private final String snackbarDesc;
-    private final int snackbarId;
+    private int snackbarType;
+    private String snackbarDesc;
+    private int snackbarId;
+    private int snackbarDuration;
     private SnackbarUpdateAction action;
 
-    public SnackProgressEvent(int snackbarType, String snackbarDesc, int snackbarId, SnackbarUpdateAction action)
+    public SnackProgressEvent()
     {
         super(null);
+    }
+
+    public void setSnackbarType(int snackbarType) {
         this.snackbarType = snackbarType;
+    }
+
+    public void setSnackbarDesc(String snackbarDesc) {
         this.snackbarDesc = snackbarDesc;
+    }
+
+    public void setSnackbarId(int snackbarId) {
         this.snackbarId = snackbarId;
+    }
+
+    public void setSnackbarDuration(int duration)
+    {
+        this.snackbarDuration = duration;
+    }
+
+    public void setAction(SnackbarUpdateAction action) {
         this.action = action;
     }
 
@@ -26,6 +44,11 @@ public class SnackProgressEvent extends SimpleEvent
 
     public int getSnackbarId() {
         return (snackbarId);
+    }
+
+    public int getSnackbarDuration()
+    {
+        return (snackbarDuration);
     }
 
     public SnackbarUpdateAction getAction() {

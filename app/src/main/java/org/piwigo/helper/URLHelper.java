@@ -21,7 +21,10 @@ public class URLHelper extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... url) {
-        String newUrl = url[0].replaceAll("https://", "").replaceAll("http://", "");
+        String newUrl = url[0];
+        newUrl = getPiwigoBaseFor(newUrl);
+
+        newUrl = newUrl.replaceAll("https://", "").replaceAll("http://", "");
         try {
             if (isHttpsWebsite(newUrl))
                 return ("https://" + newUrl);
@@ -30,9 +33,23 @@ public class URLHelper extends AsyncTask<String, Void, String> {
             else
                 return ("https://" + newUrl);
         } catch (IOException e) {
-            Log.e("URLHelper", "IOException", e.getCause());
+            Log.e("URLHelper", "IOException", e);
             return ("https://" + newUrl);
         }
+    }
+
+    /**
+     * Remove trailing URL parts specify piwigo-internal pages
+     *
+     * @param url the url to stip
+     * @return the base address of a piwigo URL
+     */
+    private String getPiwigoBaseFor(String url) {
+        String newUrl;
+
+        newUrl = url.replaceAll("(^.*)((?:about|admin|comments|feed|index|notification|picture|profile|ws).php(?:[?]\\/)?(?:.*))$", "$1");
+
+        return newUrl;
     }
 
     @Override
@@ -50,10 +67,10 @@ public class URLHelper extends AsyncTask<String, Void, String> {
         try {
             responseCode = httpsCon.getResponseCode();
         } catch (SSLException e) {
-            Log.e("URLHelper", "SSLException", e.getCause());
+            Log.e("URLHelper", "SSLException", e);
             return (false);
         } catch (UnknownHostException e1) {
-            Log.e("URLHelper", "UnknownHostException", e1.getCause());
+            Log.e("URLHelper", "UnknownHostException", e1);
             return (false);
         }
         httpsCon.disconnect();
