@@ -49,8 +49,8 @@ android {
         applicationId "org.piwigo.android"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 95
-        versionName "0.9.6-dev-beta"
+        versionCode 100
+        versionName "1.0.0"
         multiDexEnabled true
     }
     buildTypes {
