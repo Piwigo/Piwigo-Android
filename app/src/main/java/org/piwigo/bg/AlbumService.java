@@ -59,11 +59,14 @@ public class AlbumService extends IntentService {
                     EventBus.getDefault().post(new SnackbarShowEvent(String.format(getResources().getString(R.string.create_album_success), catName), Snackbar.LENGTH_LONG));
                     EventBus.getDefault().post(new RefreshRequestEvent(parentId));
                 }
-                else
+                else {
+                    // TODO: handle this properly for #161
                     Toast.makeText(getApplicationContext(), R.string.create_album_error, Toast.LENGTH_LONG).show();
+                }
             }
             @Override
             public void onFailure(Call<AddCategoryResponse> call, Throwable t) {
+                // TODO: handle this properly for #161
                 Toast.makeText(getApplicationContext(), R.string.create_album_error, Toast.LENGTH_LONG).show();
                 Log.e("AlbumService", "Unable to create a new album:", t);
             }

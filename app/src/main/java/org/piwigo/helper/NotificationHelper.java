@@ -16,7 +16,7 @@ import org.piwigo.ui.main.MainActivity;
 
 public class NotificationHelper
 {
-
+// TODO: rework: CHANNEL_ID is defined but never used
     private final String CHANNEL_ID = "piwigo-info";
     public static NotificationHelper INSTANCE;
     private int progressStatus;
@@ -49,8 +49,9 @@ public class NotificationHelper
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = new NotificationChannel("default",
-                "Channel name",
+                "Piwigo",
                 NotificationManager.IMPORTANCE_DEFAULT);
+        // TODO: add a proper description and channel name from the resources
         channel.setDescription("Channel description");
         notificationManager.createNotificationChannel(channel);
     }
