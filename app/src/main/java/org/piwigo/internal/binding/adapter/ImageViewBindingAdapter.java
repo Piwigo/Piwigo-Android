@@ -33,10 +33,7 @@ public class ImageViewBindingAdapter {
     }
 
     @BindingAdapter("android:src") public void loadImage(ImageView imageView, String url) {
-        picasso.load(url)
-                .fit()
-                .centerCrop()
-                .into(imageView);
+        picasso.load(url).into(imageView); // centering and cropping is done by ImageView from the resources
     }
 
     @BindingAdapter("heightRatio") public void setHeighRatio(ImageView imageView, double ratio) {

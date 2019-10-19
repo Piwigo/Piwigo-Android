@@ -131,7 +131,7 @@ public class AlbumsViewModel extends ViewModel {
                 // NO: NEVER throw an exception here
                 // throw new RuntimeException(e);
                 Log.e(TAG, "CategoriesSubscriber: " + e.getMessage());
-                // TODO: highlight problem to the user
+                // TODO: #161 highlight problem to the user
             }
         }
 
@@ -182,7 +182,7 @@ public class AlbumsViewModel extends ViewModel {
                 // NO: NEVER throw an exception here
                 // throw new RuntimeException(e);
                 Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
-                // TODO: highlight problem to the user
+                // TODO: #161 highlight problem to the user
             }
         }
 
