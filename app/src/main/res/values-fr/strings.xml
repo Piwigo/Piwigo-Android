@@ -38,13 +38,10 @@
     <string name="nav_drawer_close">Fermer la navigation</string>
     <!-- Login -->
     <string name="login_url_hint">Adresse du serveur</string>
-    <string name="login_url_description">URL de la galerie Piwigo pour ouvrir une session</string>
     <string name="login_url_empty">Entrez l\'adresse de votre serveur</string>
     <string name="login_url_invalid">Adresse de serveur non valide</string>
-    <string name="login_username_description">Nom d’utilisateur pour vous connecter à la galerie Piwigo</string>
     <string name="login_username_empty">Saisissez votre nom d\'utilisateur</string>
     <string name="login_username_hint">Nom d\'utilisateur (vide pour invité)</string>
-    <string name="login_password_description">Mot de passe pour vous connecter à la galerie Piwigo</string>
     <string name="login_button_description">Connexion</string>
     <string name="login_password_empty">Entrez votre mot de passe</string>
     <string name="login_password_hint">Mot de passe (vide pour invité)</string>
