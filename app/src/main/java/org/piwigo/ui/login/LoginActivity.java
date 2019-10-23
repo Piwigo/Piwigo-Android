@@ -106,7 +106,8 @@ public class LoginActivity extends BaseActivity {
         viewModel.loadAccount(account);
     }
 
-    public void onClick(View v) {
+    public void onClick(View v)
+    {
         viewModel.onLoginClick(fabProgressCircle);
     }
 
@@ -127,7 +128,8 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void loginSuccess(LoginResponse response) {
-        fabProgressCircle.hide();
+        if (fabProgressCircle != null)
+            fabProgressCircle.hide();
         if (viewModel.isEditExisting()) {
             finish();
         } else if (userManager.userExists(response.url, response.username)) {
@@ -142,7 +144,8 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void loginError(Throwable throwable) {
-        fabProgressCircle.hide();
+        if (fabProgressCircle != null)
+            fabProgressCircle.hide();
         String msg;
         URI uri;
         String host = viewModel.url.get();
