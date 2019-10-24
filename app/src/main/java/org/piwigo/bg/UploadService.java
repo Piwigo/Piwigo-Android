@@ -208,8 +208,11 @@ public class UploadService extends IntentService {
                     }
                     onUploadStarted(imageUploadQueue);
                 } else {
+                    String add = "()";
+                    // TODO: This is a quick workaround to avoid crashing..
                     // TODO: handle this properly for #161
-                    String add = " (" + response.body().err.message + ")";
+                    if (response.body() != null)
+                        add = " (" + response.body().err.message + ")";
                     NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_failed), getResources().getString(R.string.upload_error) + add, getApplicationContext());
                     snackProgressEvent.setSnackbarDesc(getResources().getString(R.string.upload_failed));
                     snackProgressEvent.setAction(SnackProgressEvent.SnackbarUpdateAction.KILL);
