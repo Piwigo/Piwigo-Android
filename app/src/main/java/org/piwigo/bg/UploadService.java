@@ -208,11 +208,15 @@ public class UploadService extends IntentService {
                     }
                     onUploadStarted(imageUploadQueue);
                 } else {
-                    String add = "()";
-                    // TODO: This is a quick workaround to avoid crashing..
+                    String add = " (code: " + response.raw().code() + ")";
                     // TODO: handle this properly for #161
-                    if (response.body() != null)
-                        add = " (" + response.body().err.message + ")";
+                    if (response.body() != null) {
+                        if(response.body().err != null) {
+                            add = " (" + response.body().err.message + ")";
+                        }else{
+                            add = " (unknown)"; // this should be quite abnormal to happen but who knows...
+                        }
+                    }
                     NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_failed), getResources().getString(R.string.upload_error) + add, getApplicationContext());
                     snackProgressEvent.setSnackbarDesc(getResources().getString(R.string.upload_failed));
                     snackProgressEvent.setAction(SnackProgressEvent.SnackbarUpdateAction.KILL);
