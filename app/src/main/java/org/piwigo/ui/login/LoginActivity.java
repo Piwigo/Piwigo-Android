@@ -31,7 +31,6 @@ import androidx.databinding.DataBindingUtil;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
@@ -86,14 +85,15 @@ public class LoginActivity extends BaseActivity {
         }
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(LoginViewModel.class);
 
-        handleIntent(getIntent());
-        viewModel.getLoginSuccess().observe(this, this::loginSuccess);
-        viewModel.getLoginError().observe(this, this::loginError);
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setViewModel(viewModel);
 
         fabProgressCircle = findViewById(R.id.fabLoginCircle);
+
+        viewModel.getLoginSuccess().observe(this, this::loginSuccess);
+        viewModel.getLoginError().observe(this, this::loginError);
+
+        handleIntent(getIntent());
     }
 
     private void handleIntent(Intent intent) {
@@ -128,8 +128,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void loginSuccess(LoginResponse response) {
-        if (fabProgressCircle != null)
-            fabProgressCircle.hide();
+        fabProgressCircle.hide();
         if (viewModel.isEditExisting()) {
             finish();
         } else if (userManager.userExists(response.url, response.username)) {
@@ -144,8 +143,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void loginError(Throwable throwable) {
-        if (fabProgressCircle != null)
-            fabProgressCircle.hide();
+        fabProgressCircle.hide();
         String msg;
         URI uri;
         String host = viewModel.url.get();
