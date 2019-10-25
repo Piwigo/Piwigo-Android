@@ -72,7 +72,8 @@ public class NotificationHelper
                 .setContentText(body)
                 .setAutoCancel(true)
                 .setSound(sound)
-                .setContentIntent(pi);
+                .setContentIntent(pi)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(body));
 
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
