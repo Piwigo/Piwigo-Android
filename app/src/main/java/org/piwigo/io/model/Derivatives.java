@@ -20,7 +20,9 @@ package org.piwigo.io.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Derivatives {
+import java.io.Serializable;
+
+public class Derivatives implements Serializable {
 
     @SerializedName("thumb") public Derivative thumb;
 
