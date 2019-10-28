@@ -77,6 +77,7 @@ import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
+import org.piwigo.ui.settings.SettingsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 
 import java.io.File;
@@ -330,6 +331,9 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 break;
             case R.id.nav_privacy:
                 startActivity(new Intent(getApplicationContext(), PrivacyPolicyActivity.class));
+                break;
+            case R.id.nav_settings:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 break;
 
             default:
