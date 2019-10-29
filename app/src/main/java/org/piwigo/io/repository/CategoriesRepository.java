@@ -26,6 +26,7 @@ import org.piwigo.helper.NaturalOrderComparator;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.Category;
+import org.piwigo.ui.settings.SettingsPreferences;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class CategoriesRepository extends BaseRepository {
     public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId) {
         RestService restService = restServiceFactory.createForAccount(account);
         /* TODO: make thumbnail Size configurable, also check for ImageRepository, whether it can reduce the amount of REST/JSON traffic */
-        return restService.getCategories(categoryId, "medium")
+        return restService.getCategories(categoryId, SettingsPreferences.getSettingPreference(SettingsPreferences.KEY_THUMBNAIL_SIZE, "medium"))
 //                .flatMap(response -> Observable.from(response.result.categories))
                 .compose(applySchedulers())
                 .flatMap(response -> {

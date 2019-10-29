@@ -229,4 +229,14 @@
 
     <string name="no_internet">Oops! It seems like you have no internet connection. Please connect and try again.</string>
     <string name="show_details">Show details</string>
+
+    <!-- Spinner Thumbnail Size array-->
+    <string-array name="thumbnails_size_array">
+        <item>square</item>
+        <item>thumb</item>
+        <item>small</item>
+        <item>medium</item>
+        <item>large</item>
+        <item>xxlarge</item>
+    </string-array>
 </resources>

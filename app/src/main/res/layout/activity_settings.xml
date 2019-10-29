@@ -187,20 +187,19 @@
                     android:text="@string/settings_thumbnails_size"
                     android:textSize="25sp" />
 
-                <SeekBar
-                    android:id="@+id/seekbar_thumbnail_size_value"
+
+                <Spinner
+                    android:id="@+id/spinner_thumbnail_size_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/spinner_default_sort_value"
+                    android:layout_below="@id/spinner_default_sort_value"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginTop="22dp"
-                    android:layout_toEndOf="@+id/tv_thumbnail_size"
-                    android:layout_toRightOf="@+id/tv_thumbnail_size" />
+                    android:layout_marginTop="5dp" />
 
                 <TextView
                     android:id="@+id/tv_display_titles_on_thumbnails"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/tv_thumbnail_size"
                     android:text="@string/settings_display_titles_on_thumbnails"
@@ -209,14 +208,13 @@
 
                 <Switch
                     android:id="@+id/switch_settings_ring_alert"
+                    android:textSize="25sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/seekbar_thumbnail_size_value"
+                    android:layout_below="@+id/spinner_thumbnail_size_value"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_toEndOf="@+id/tv_display_titles_on_thumbnails"
-                    android:layout_toRightOf="@+id/tv_display_titles_on_thumbnails"
-                    android:layout_marginTop="20dp"/>
+                    android:layout_marginTop="10dp"/>
 
             </RelativeLayout>
 
@@ -334,7 +332,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:textSize="25sp"
-                    android:layout_marginTop="10dp"/>
+                    android:layout_marginTop="15dp"/>
 
                 <TextView
                     android:id="@+id/tv_strip_private_metadata"

@@ -20,6 +20,10 @@
 package org.piwigo.ui.settings;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import org.piwigo.R;
 import org.piwigo.ui.shared.BaseActivity;
@@ -32,11 +36,38 @@ public class SettingsActivity extends BaseActivity {
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         setContentView(R.layout.activity_settings);
 
         setSupportActionBar(findViewById(R.id.toolbar));
         ActionBar bar = getSupportActionBar();
-        if(bar != null) bar.setDisplayHomeAsUpEnabled(true);
+        if (bar != null) bar.setDisplayHomeAsUpEnabled(true);
 
+
+        initializeThumbnailSizeSpinner();
+
+
+    }
+
+    private void initializeThumbnailSizeSpinner(){
+        Spinner spinner = findViewById(R.id.spinner_thumbnail_size_value);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+
+                R.array.thumbnails_size_array, R.layout.spinner_item);
+
+        adapter.setDropDownViewResource(R.layout.spinner_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SettingsPreferences.setSettingPreference(SettingsPreferences.KEY_THUMBNAIL_SIZE, spinner.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 }
