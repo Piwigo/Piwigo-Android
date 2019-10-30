@@ -19,7 +19,6 @@
 package org.piwigo.io.repository;
 
 import android.accounts.Account;
-import android.util.Log;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.CookieHelper;
@@ -59,13 +58,15 @@ public class UserRepository extends BaseRepository {
         return restService.login(username, password)
                 .compose(applySchedulers())
                 .flatMap(response -> {
-                    if (response.body().result) {
-// TODO: check: should we set the cookie in the Usermanager here?
+                    if (response.body() != null && response.body().result) {
+                        // TODO: check: should we set the cookie in the UserManager here?
                         loginResponse.pwgId = CookieHelper.extract("pwg_id", response.headers());
                         return Observable.just(response.body()).compose(applySchedulers());
                     }
                     // TODO:
 //            return Observable.error(new Throwable("Login failed"));
+                    if (response.body() == null)
+                        return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with null response body"));
                     return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with code " + response.body().err + ": " + response.body().message));
                 })
                 .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId).compose(applySchedulers()))
