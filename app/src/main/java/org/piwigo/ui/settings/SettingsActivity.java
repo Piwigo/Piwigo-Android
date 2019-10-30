@@ -19,34 +19,36 @@
 
 package org.piwigo.ui.settings;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.piwigo.R;
 import org.piwigo.ui.shared.BaseActivity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 
 public class SettingsActivity extends BaseActivity {
-
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.activity_settings);
 
         setSupportActionBar(findViewById(R.id.toolbar));
         ActionBar bar = getSupportActionBar();
         if (bar != null) bar.setDisplayHomeAsUpEnabled(true);
 
-
         initializeThumbnailSizeSpinner();
-
-
+        initializeBrightnessSeekBar();
     }
 
     private void initializeThumbnailSizeSpinner(){
@@ -66,6 +68,47 @@ public class SettingsActivity extends BaseActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void initializeBrightnessSeekBar(){
+        SeekBar brightnessSeekBar = findViewById(R.id.seekbar_brightness);
+        TextView textView = findViewById(R.id.tv_brightness_value);
+
+        int cBrightness = Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, 0);
+        textView.setText(cBrightness + "/255");
+        brightnessSeekBar.setProgress(cBrightness);
+
+        brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                Context context = getApplicationContext();
+                boolean canWrite = Settings.System.canWrite(context);
+                if(canWrite){
+                    int sBrightness = i * 255/255;
+                    textView.setText(sBrightness + "/255");
+
+                    Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+                    Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, sBrightness);
+
+                } else {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
         });

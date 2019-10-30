@@ -644,14 +644,28 @@
 
                 <SeekBar
                     android:id="@+id/seekbar_brightness"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:max="255"
+                    android:progress="20"
                     android:layout_below="@+id/switch_switch_automatically"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_marginTop="22dp"
                     android:layout_toEndOf="@+id/tv_brightness"
-                    android:layout_toRightOf="@+id/tv_brightness" />
+                    android:layout_toRightOf="@+id/tv_brightness"
+                    android:layout_toStartOf="@+id/tv_brightness_value"
+                    android:layout_toLeftOf="@+id/tv_brightness_value"/>
+
+                <TextView
+                    android:id="@+id/tv_brightness_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@+id/tv_switch_automatically"
+                    android:layout_marginTop="10dp"
+                    android:text="/255"
+                    android:textSize="25sp"
+                   />
 
             </RelativeLayout>
         </RelativeLayout>
