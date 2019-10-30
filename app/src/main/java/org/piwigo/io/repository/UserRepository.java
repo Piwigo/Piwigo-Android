@@ -65,8 +65,9 @@ public class UserRepository extends BaseRepository {
                     }
                     // TODO:
 //            return Observable.error(new Throwable("Login failed"));
-                    if (response.body() == null)
+                    if (response.body() == null) {
                         return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with null response body"));
+                    }
                     return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with code " + response.body().err + ": " + response.body().message));
                 })
                 .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId).compose(applySchedulers()))
