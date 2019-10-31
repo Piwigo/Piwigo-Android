@@ -30,18 +30,42 @@ import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.piwigo.R;
+import org.piwigo.databinding.ActivitySettingsBinding;
+import org.piwigo.io.model.SuccessResponse;
+import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.shared.BaseActivity;
+
+import javax.inject.Inject;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+import dagger.android.AndroidInjection;
 
 public class SettingsActivity extends BaseActivity {
+
+    @Inject
+    SettingsViewModelFactory viewModelFactory;
+
+    private SettingsViewModel viewModel;
+    private ActivitySettingsBinding binding;
+
+    private static final String TAG = SettingsActivity.class.getName();
+
+
     @Override
     protected void onCreate( Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(SettingsViewModel.class);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_settings);
+        binding.setViewModel(viewModel);
 
         setSupportActionBar(findViewById(R.id.toolbar));
         ActionBar bar = getSupportActionBar();
@@ -49,6 +73,27 @@ public class SettingsActivity extends BaseActivity {
 
         initializeThumbnailSizeSpinner();
         initializeBrightnessSeekBar();
+
+        TextView tvLogout = findViewById(R.id.tv_logout);
+        tvLogout.setOnClickListener(view -> {
+            viewModel.onLogoutClick();
+
+        });
+
+        viewModel.getLogoutSuccess().observe(this, this::logoutSuccess);
+        viewModel.getLogoutError().observe(this, this::logoutError);
+
+    }
+
+
+    private void logoutSuccess(SuccessResponse response) {
+        Toast.makeText(getApplicationContext(), R.string.settings_logout_successful, Toast.LENGTH_LONG).show();
+        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+    }
+
+    private void logoutError(Throwable throwable) {
+        Toast.makeText(getApplicationContext(), R.string.settings_logout_unsuccessfull, Toast.LENGTH_LONG).show();
+        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
     }
 
     private void initializeThumbnailSizeSpinner(){

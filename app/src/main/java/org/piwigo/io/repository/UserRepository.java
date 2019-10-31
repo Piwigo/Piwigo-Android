@@ -27,6 +27,7 @@ import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.model.SuccessResponse;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -103,5 +104,14 @@ public class UserRepository extends BaseRepository {
                     return loginResponse;
                 })
                 ;
+    }
+
+    public Observable<SuccessResponse> logout(Account account) {
+        RestService restService = restServiceFactory.createForUrl(validateUrl(userManager.getSiteUrl(account)));
+        final SuccessResponse successResponse = new SuccessResponse();
+
+        return restService.logout()
+                .compose(applySchedulers())
+                .map(statusResponse -> successResponse);
     }
 }

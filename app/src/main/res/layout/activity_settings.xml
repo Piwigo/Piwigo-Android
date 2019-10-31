@@ -15,11 +15,17 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
-
-
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.piwigo.ui.settings.SettingsActivity">
+    <data>
+        <variable
+            name="viewModel"
+            type="org.piwigo.ui.settings.SettingsViewModel" />
+    </data>
+
+<ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -36,9 +42,7 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:title="@string/title_activity_settings"
-
             />
-
 
         <RelativeLayout
             android:id="@+id/sub_layout"
@@ -57,7 +61,6 @@
                 android:text="@string/settings_title"
                 android:textSize="40sp"
                 android:textStyle="bold" />
-
 
             <RelativeLayout
                 android:id="@+id/user_address_layout"
@@ -560,7 +563,6 @@
 <!--                style="@style/Divider"-->
 <!--                android:layout_below="@id/cache_used_settings_layout" />-->
 
-
             <RelativeLayout
                 android:id="@+id/colors_layout"
                 android:layout_width="match_parent"
@@ -661,10 +663,10 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="10dp"
                     android:text="/255"
-                    android:textSize="25sp"
-                   />
+                    android:textSize="25sp" />
 
             </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
 </ScrollView>
+</layout>

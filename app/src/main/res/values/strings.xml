@@ -189,6 +189,8 @@
     <string name="settings_translate_piwigo">Translate Piwigo Mobile</string>
     <string name="settings_release_notes">Release Notes</string>
     <string name="settings_acknowledgements">Acknowledgements</string>
+    <string name="settings_logout_successful">Logout Succesfull!</string>
+    <string name="settings_logout_unsuccessfull">Something Went Wrong</string>
 
     <!-- Upload -->
     <string name="upload_success">Upload successful</string>
