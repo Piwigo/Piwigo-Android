@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.content.res.Resources;
 import android.util.Log;
 
+import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.model.SuccessResponse;
 import org.piwigo.io.repository.UserRepository;
@@ -43,13 +44,13 @@ public class SettingsViewModel extends ViewModel {
 
     }
 
-    public void onLogoutClick(){
-        if(account != null){
-        userRepository.logout(userManager.getActiveAccount().getValue())
-                .compose(applySchedulers())
-                .subscribe(new LogoutSubscriber());
+    public void onLogoutClick() {
+        if (account != null) {
+            userRepository.logout(userManager.getActiveAccount().getValue())
+                    .compose(applySchedulers())
+                    .subscribe(new LogoutSubscriber());
         } else {
-          Throwable e =  new Throwable("Empty account");
+            Throwable e = new Throwable(String.valueOf(R.string.account_empty_message));
             logoutError.setValue(e);
         }
     }

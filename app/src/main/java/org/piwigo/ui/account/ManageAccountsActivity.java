@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityManageAccountsBinding;
@@ -139,10 +140,14 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
                 startActivity(editIntent);
                 break;
             case R.id.action_del_account:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    accountManager.removeAccount(userManager.getActiveAccount().getValue(), this, future -> userManager.refreshAccounts(), null);
-                }else {
-                    accountManager.removeAccount(userManager.getActiveAccount().getValue(), future -> userManager.refreshAccounts(), null);
+                if(accountManager.getAccounts().length > 1) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                        accountManager.removeAccount(userManager.getActiveAccount().getValue(), this, future -> userManager.refreshAccounts(), null);
+                    } else {
+                        accountManager.removeAccount(userManager.getActiveAccount().getValue(), future -> userManager.refreshAccounts(), null);
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.account_last_account_remove, Toast.LENGTH_LONG).show();
                 }
                 break;
             case android.R.id.home:

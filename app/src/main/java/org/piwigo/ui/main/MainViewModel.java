@@ -39,7 +39,7 @@ import org.piwigo.io.model.SuccessResponse;
 import org.piwigo.io.repository.UserRepository;
 
 public class MainViewModel extends ViewModel {
-// TODO: cleanup here...
+    // TODO: cleanup here...
     public static int STAT_OFFLINE = 0;
     public static int STAT_LOGGED_IN = 1;
     public static int STAT_LOGGED_OFF = 2;
@@ -50,7 +50,10 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<SuccessResponse> logoutSuccess = new MutableLiveData<>();
     private MutableLiveData<Throwable> logoutError = new MutableLiveData<>();
 
-    LiveData<SuccessResponse> getLogoutSuccess() { return logoutSuccess; }
+    LiveData<SuccessResponse> getLogoutSuccess() {
+        return logoutSuccess;
+    }
+
     LiveData<Throwable> getLogoutError() {
         return logoutError;
     }
@@ -69,7 +72,7 @@ public class MainViewModel extends ViewModel {
 
     private MutableLiveData<Integer> selectedNavigationItemId = new MutableLiveData<>();
     private UserRepository mUserRepository;
-    private  UserManager userManager;
+    private UserManager userManager;
 
     MainViewModel(UserManager userManager, UserRepository userRepository) {
         Account account = userManager.getActiveAccount().getValue();
@@ -83,7 +86,8 @@ public class MainViewModel extends ViewModel {
 
         navigationItemId.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
 
-            @Override public void onPropertyChanged(Observable sender, int propertyId) {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
                 selectedNavigationItemId.setValue(navigationItemId.get());
                 drawerState.set(false);
             }
@@ -94,10 +98,15 @@ public class MainViewModel extends ViewModel {
         return selectedNavigationItemId;
     }
 
-    public void onLogoutClick(){
-        mUserRepository.logout(userManager.getActiveAccount().getValue())
-                .compose(applySchedulers())
-                .subscribe(new MainViewModel.LogoutSubscriber());
+    public void onLogoutClick() {
+        if (userManager.getActiveAccount().getValue() != null) {
+            mUserRepository.logout(userManager.getActiveAccount().getValue())
+                    .compose(applySchedulers())
+                    .subscribe(new MainViewModel.LogoutSubscriber());
+        } else {
+            Throwable e = new Throwable(String.valueOf(R.string.account_empty_message));
+            logoutError.setValue(e);
+        }
     }
 
 

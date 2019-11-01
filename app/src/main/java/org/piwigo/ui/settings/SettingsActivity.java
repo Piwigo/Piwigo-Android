@@ -91,12 +91,18 @@ public class SettingsActivity extends BaseActivity {
 
     private void logoutSuccess(SuccessResponse response) {
         Toast.makeText(getApplicationContext(), R.string.settings_logout_successful, Toast.LENGTH_LONG).show();
-        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void logoutError(Throwable throwable) {
         Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.settings_logout_unsuccessfull), throwable.getMessage()), Toast.LENGTH_LONG).show();
-        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void initializeThumbnailSizeSpinner(){
