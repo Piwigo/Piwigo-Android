@@ -23,6 +23,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
@@ -254,6 +255,12 @@ public class UserManager {
             if(!newname.equals(account.name)) {
                 accountManager.renameAccount(account, newname, null, null);
             }
+        }
+    }
+
+    public void removeAccount(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            accountManager.removeAccountExplicitly(mCurrentAccount.getValue());
         }
     }
 }

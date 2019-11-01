@@ -22,6 +22,7 @@ public class SettingsViewModel extends ViewModel {
     private final UserRepository userRepository;
     private final Resources resources;
     private final UserManager userManager;
+    private Account account;
 
     private MutableLiveData<SuccessResponse> logoutSuccess = new MutableLiveData<>();
     private MutableLiveData<Throwable> logoutError = new MutableLiveData<>();
@@ -38,13 +39,19 @@ public class SettingsViewModel extends ViewModel {
         this.userRepository = userRepository;
         this.resources = resources;
         this.userManager = userManager;
+        this.account = userManager.getActiveAccount().getValue();
 
     }
 
     public void onLogoutClick(){
+        if(account != null){
         userRepository.logout(userManager.getActiveAccount().getValue())
                 .compose(applySchedulers())
                 .subscribe(new LogoutSubscriber());
+        } else {
+          Throwable e =  new Throwable("Empty account");
+            logoutError.setValue(e);
+        }
     }
 
 
@@ -64,8 +71,8 @@ public class SettingsViewModel extends ViewModel {
         @Override
         public void onNext(SuccessResponse successResponse) {
             Log.i(TAG, successResponse.toString());
-            userManager.setToken(userManager.getActiveAccount().getValue(), null);
-            userManager.setActiveAccount((Account) null);
+            userManager.removeAccount();
+            userManager.refreshAccounts();
             logoutSuccess.setValue(successResponse);
         }
     }

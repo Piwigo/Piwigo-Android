@@ -73,7 +73,10 @@ public class SettingsActivity extends BaseActivity {
 
         initializeThumbnailSizeSpinner();
         initializeBrightnessSeekBar();
+        initializeLogoutTextViewListener();
+    }
 
+    private void initializeLogoutTextViewListener(){
         TextView tvLogout = findViewById(R.id.tv_logout);
         tvLogout.setOnClickListener(view -> {
             viewModel.onLogoutClick();
@@ -82,8 +85,8 @@ public class SettingsActivity extends BaseActivity {
 
         viewModel.getLogoutSuccess().observe(this, this::logoutSuccess);
         viewModel.getLogoutError().observe(this, this::logoutError);
-
     }
+
 
 
     private void logoutSuccess(SuccessResponse response) {
@@ -92,7 +95,7 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void logoutError(Throwable throwable) {
-        Toast.makeText(getApplicationContext(), R.string.settings_logout_unsuccessfull, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.settings_logout_unsuccessfull), throwable.getMessage()), Toast.LENGTH_LONG).show();
         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
     }
 
