@@ -146,46 +146,45 @@
                 android:gravity="center"
                 android:padding="5dp">
 
-                <TextView
-                    android:id="@+id/tv_default_album"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_default_album"
-                    android:textSize="25sp" />
+<!--                <TextView-->
+<!--                    android:id="@+id/tv_default_album"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="@string/settings_default_album"-->
+<!--                    android:textSize="25sp" />-->
 
-                <Spinner
-                    android:id="@+id/spinner_default_album_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginTop="8dp"
-                    android:textSize="25sp" />
+<!--                <Spinner-->
+<!--                    android:id="@+id/spinner_default_album_value"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_alignParentEnd="true"-->
+<!--                    android:layout_alignParentRight="true"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:textSize="25sp" />-->
 
-                <TextView
-                    android:id="@+id/tv_default_sort"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tv_default_album"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/settings_default_sort"
-                    android:textSize="25sp" />
+<!--                <TextView-->
+<!--                    android:id="@+id/tv_default_sort"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_below="@+id/tv_default_album"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:text="@string/settings_default_sort"-->
+<!--                    android:textSize="25sp" />-->
 
-                <Spinner
-                    android:id="@+id/spinner_default_sort_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/spinner_default_album_value"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginTop="20dp"
-                    android:textSize="25sp" />
+<!--                <Spinner-->
+<!--                    android:id="@+id/spinner_default_sort_value"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_below="@id/spinner_default_album_value"-->
+<!--                    android:layout_alignParentEnd="true"-->
+<!--                    android:layout_alignParentRight="true"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:textSize="25sp" />-->
 
                 <TextView
                     android:id="@+id/tv_thumbnail_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/tv_default_sort"
                     android:layout_marginTop="10dp"
                     android:text="@string/settings_thumbnails_size"
                     android:textSize="25sp" />
@@ -195,7 +194,6 @@
                     android:id="@+id/spinner_thumbnail_size_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/spinner_default_sort_value"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_marginTop="10dp" />
@@ -227,40 +225,71 @@
                 android:layout_below="@id/album_settings_layout"
                 android:layout_marginTop="4dp" />
 
-<!--            <RelativeLayout-->
-<!--                android:id="@+id/images_layout"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_below="@id/view_divider4"-->
-<!--                android:layout_alignParentStart="true"-->
-<!--                android:layout_alignParentLeft="true"-->
-<!--                android:layout_marginTop="5dp">-->
+            <RelativeLayout
+                android:id="@+id/images_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/view_divider4"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="5dp">
 
-<!--                <TextView-->
-<!--                    android:id="@+id/tv_images_title"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="50dp"-->
-<!--                    android:layout_alignParentStart="true"-->
-<!--                    android:layout_alignParentLeft="true"-->
-<!--                    android:text="@string/settings_images"-->
-<!--                    android:textSize="25sp"-->
-<!--                    android:textStyle="bold" />-->
-<!--            </RelativeLayout>-->
+                <TextView
+                    android:id="@+id/tv_images_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:text="@string/settings_images"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
 
-<!--            <View-->
-<!--                android:id="@+id/view_divider5"-->
-<!--                style="@style/Divider"-->
-<!--                android:layout_below="@id/images_layout" />-->
+            <View
+                android:id="@+id/view_divider5"
+                style="@style/Divider"
+                android:layout_below="@id/images_layout" />
 
-<!--            <RelativeLayout-->
-<!--                android:id="@+id/images_settings_layout"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_below="@+id/view_divider5"-->
-<!--                android:layout_alignParentStart="true"-->
-<!--                android:layout_alignParentLeft="true"-->
-<!--                android:gravity="center"-->
-<!--                android:padding="5dp">-->
+            <RelativeLayout
+                android:id="@+id/images_settings_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view_divider5"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:gravity="center"
+                android:padding="5dp">
+
+
+                <TextView
+                    android:id="@+id/tv_number_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/settings_number_row"
+                    android:textSize="25sp" />
+
+                <SeekBar
+                    android:id="@+id/seekbar_number_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="6"
+                    android:progress="1"
+                    android:layout_marginTop="22dp"
+                    android:layout_toEndOf="@+id/tv_number_row"
+                    android:layout_toRightOf="@+id/tv_number_row"
+                    android:layout_toStartOf="@+id/tv_number_row_value"
+                    android:layout_toLeftOf="@+id/tv_number_row_value"/>
+
+                <TextView
+                    android:id="@+id/tv_number_row_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="10dp"
+                    android:text="3/6"
+                    android:textSize="25sp" />
 
 <!--                <TextView-->
 <!--                    android:id="@+id/tv_preview_file"-->
@@ -276,12 +305,16 @@
 <!--                    android:layout_alignParentEnd="true"-->
 <!--                    android:layout_alignParentRight="true"-->
 <!--                    android:textSize="25sp" />-->
-<!--            </RelativeLayout>-->
 
-<!--            <View-->
-<!--                android:id="@+id/view_divider6"-->
-<!--                style="@style/Divider"-->
-<!--                android:layout_below="@id/images_settings_layout" />-->
+
+
+
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/view_divider6"
+                style="@style/Divider"
+                android:layout_below="@id/images_settings_layout" />
 
 
 <!--            <RelativeLayout-->
@@ -567,7 +600,7 @@
                 android:id="@+id/colors_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/album_settings_layout"
+                android:layout_below="@id/view_divider6"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_marginTop="5dp">

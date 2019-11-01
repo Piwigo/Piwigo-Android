@@ -186,6 +186,7 @@
     <string name="settings_dark_palette">Dark Palette</string>
     <string name="settings_switch_automatically">Switch Automatically</string>
     <string name="settings_brightness">Brightness</string>
+    <string name="settings_number_row">Number/Row</string>
     <string name="settings_information">Information</string>
     <string name="settings_support_forum">Support Forum</string>
     <string name="settings_rate_piwigo">Rate Piwigo Mobile 2.2.4</string>

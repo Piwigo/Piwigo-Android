@@ -40,6 +40,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.piwigo.R;
 import org.piwigo.databinding.FragmentAlbumsBinding;
 import org.piwigo.io.event.RefreshRequestEvent;
+import org.piwigo.ui.settings.SettingsPreferences;
 import org.piwigo.ui.shared.BaseFragment;
 
 import javax.inject.Inject;
@@ -106,7 +107,7 @@ public class AlbumsFragment extends BaseFragment {
         binding.albumRecycler.setHasFixedSize(true);
         binding.albumRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
         binding.photoRecycler.setHasFixedSize(true);
-        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount() * 3));
+        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount() * Integer.parseInt(SettingsPreferences.getSettingPreference(SettingsPreferences.KEY_NUMBER_ROW, "3"))));
 
         return binding.getRoot();
     }

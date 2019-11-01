@@ -73,6 +73,7 @@ public class SettingsActivity extends BaseActivity {
 
         initializeThumbnailSizeSpinner();
         initializeBrightnessSeekBar();
+        initializeNumberRowSeekBar();
         initializeLogoutTextViewListener();
     }
 
@@ -154,6 +155,34 @@ public class SettingsActivity extends BaseActivity {
                     context.startActivity(intent);
                 }
 
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+
+    private void initializeNumberRowSeekBar(){
+        SeekBar numberRowSeekbar = findViewById(R.id.seekbar_number_row);
+        TextView textView = findViewById(R.id.tv_number_row_value);
+
+        textView.setText( SettingsPreferences.getSettingPreference(SettingsPreferences.KEY_NUMBER_ROW, "3") + "/6");
+        numberRowSeekbar.setProgress(Integer.parseInt(SettingsPreferences.getSettingPreference(SettingsPreferences.KEY_NUMBER_ROW, "3")));
+
+        numberRowSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if(i == 0) i ++;
+                int numberRow = i* 6/6;
+                SettingsPreferences.setSettingPreference("number_row", String.valueOf(numberRow));
+                textView.setText( numberRow + "/6");
             }
 
             @Override
