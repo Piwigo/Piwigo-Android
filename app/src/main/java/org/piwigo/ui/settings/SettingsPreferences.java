@@ -8,7 +8,7 @@ import org.piwigo.PiwigoApplication;
 public class SettingsPreferences {
 
     public static String KEY_THUMBNAIL_SIZE = "thumbnail_size";
-    public static String KEY_NUMBER_ROW = "number_row";
+    public static String KEY_PHOTOS_PER_ROW = "photos_per_row";
 
     public static void setSettingPreference(String key, String value) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(PiwigoApplication.getAppContext());

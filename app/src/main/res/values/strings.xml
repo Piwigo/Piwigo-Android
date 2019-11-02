@@ -69,8 +69,9 @@
     <string name="account_name" translatable="false">%1$s@%2$s</string>
     <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
     <string name="account_not_selected">Select an account for deletion first</string>
-    <string name="account_last_account_remove">Please make Logout</string>
     <string name="account_empty_message">Empty account!</string>
+    <string name="account_logout_successful">Logout Succesfull!</string>
+    <string name="account_logout_unsuccessfull">Something Went Wrong: %1$s</string>
 
     <!-- About -->
     <string name="about_text_version">version <b>%1$s</b></string>
@@ -160,41 +161,12 @@
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
-    <string name="settings_piwigo_server">Piwigo Server 2.9.4</string>
-    <string name="settings_logout">Logout</string>
     <string name="settings_file_types">The server accepts the following file types: jpg, jpeg, png, gif, tiff, tif, mpg, zip, avi, mp3, ogg, pdf, gpx, ogv, mp4, m4v, webm, webmv.</string>
     <string name="settings_albums_title">Albums</string>
-    <string name="settings_default_album">Default Album</string>
-    <string name="settings_default_sort">Default Sort</string>
     <string name="settings_thumbnails_size">Thumbnails Size</string>
-    <string name="settings_display_titles_on_thumbnails">Display Titles on Thumbnails</string>
     <string name="settings_images">Images</string>
-    <string name="settings_preview_file">Preview File</string>
-    <string name="settings_default_upload_settings">Default Upload Settings</string>
-    <string name="settings_privacy">Privacy</string>
-    <string name="settings_strip_private_metadata">Strip Private Metadata</string>
-    <string name="settings_resize_before_upload">Resize Before Upload</string>
-    <string name="settings_size">Size</string>
-    <string name="settings_compress_before_upload">Compress before Upload</string>
-    <string name="settings_quality">Quality</string>
-    <string name="settings_delete_after_upload">Delete After Upload</string>
-    <string name="settings_cache_settings_used_total">Cache Settings(Used/Total)</string>
-    <string name="settings_download_all_albums_at_start">Download all Albums at Start</string>
-    <string name="settings_disk">Disk</string>
-    <string name="settings_memory">Memory</string>
-    <string name="settings_colors">Colors</string>
-    <string name="settings_dark_palette">Dark Palette</string>
-    <string name="settings_switch_automatically">Switch Automatically</string>
-    <string name="settings_brightness">Brightness</string>
-    <string name="settings_number_row">Number/Row</string>
-    <string name="settings_information">Information</string>
-    <string name="settings_support_forum">Support Forum</string>
-    <string name="settings_rate_piwigo">Rate Piwigo Mobile 2.2.4</string>
-    <string name="settings_translate_piwigo">Translate Piwigo Mobile</string>
-    <string name="settings_release_notes">Release Notes</string>
-    <string name="settings_acknowledgements">Acknowledgements</string>
-    <string name="settings_logout_successful">Logout Succesfull!</string>
-    <string name="settings_logout_unsuccessfull">Something Went Wrong: %1$s</string>
+    <string name="settings_photos_per_row">Photos per Row</string>
+
 
     <!-- Upload -->
     <string name="upload_success">Upload successful</string>

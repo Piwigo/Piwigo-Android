@@ -18,7 +18,6 @@
 
 package org.piwigo.internal.di.module;
 
-import org.piwigo.accounts.PiwigoAccountAuthenticator;
 import org.piwigo.bg.AlbumService;
 import org.piwigo.bg.UploadService;
 import org.piwigo.internal.di.scope.PerActivity;
@@ -34,8 +33,6 @@ import org.piwigo.ui.main.MainActivity;
 import org.piwigo.ui.main.MainActivityModule;
 import org.piwigo.ui.photoviewer.PhotoViewerDialogFragment;
 import org.piwigo.ui.photoviewer.PhotoViewerDialogFragmentModule;
-import org.piwigo.ui.settings.SettingsActivity;
-import org.piwigo.ui.settings.SettingsActivityModule;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -47,8 +44,6 @@ public abstract class AndroidInjectorModule {
     @PerActivity @ContributesAndroidInjector() abstract LauncherActivity launcherActivity();
 
     @PerActivity @ContributesAndroidInjector(modules = LoginActivityModule.class) abstract LoginActivity loginActivity();
-
-    @PerActivity @ContributesAndroidInjector(modules = SettingsActivityModule.class) abstract SettingsActivity settingsActivity();
 
     @PerActivity @ContributesAndroidInjector(modules = MainActivityModule.class) abstract MainActivity mainActivity();
 

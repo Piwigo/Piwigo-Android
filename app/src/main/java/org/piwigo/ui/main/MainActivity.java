@@ -521,7 +521,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     }
 
     private void logoutSuccess(SuccessResponse response) {
-        Toast.makeText(getApplicationContext(), R.string.settings_logout_successful, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), R.string.account_logout_successful, Toast.LENGTH_LONG).show();
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
@@ -529,7 +529,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     }
 
     private void logoutError(Throwable throwable) {
-        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.settings_logout_unsuccessfull), throwable.getMessage()), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.account_logout_unsuccessfull), throwable.getMessage()), Toast.LENGTH_LONG).show();
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
