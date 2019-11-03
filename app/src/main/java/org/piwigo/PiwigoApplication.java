@@ -54,7 +54,6 @@ import dagger.android.HasAndroidInjector;
         ReportField.ANDROID_VERSION,
         ReportField.CUSTOM_DATA,
         ReportField.STACK_TRACE,
-        ReportField.BUILD,
         ReportField.BUILD_CONFIG,
         ReportField.CRASH_CONFIGURATION,
         ReportField.DISPLAY

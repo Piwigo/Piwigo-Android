@@ -162,7 +162,7 @@ public class LoginViewModel extends ViewModel {
         return true;
     }
 
-    private boolean isGuest() {
+    public boolean isGuest() {
         return isEmpty(username.get()) && isEmpty(password.get());
     }
 
