@@ -54,9 +54,8 @@ public class SettingsActivity extends PreferenceActivity {
         mPreferenceThumbnailSize = (ListPreference) getPreferenceScreen().findPreference(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE);
         mPreferencePhotosPerRow = (ListPreference) getPreferenceScreen().findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
 
-        String photosPerRowValue = preferences.getString(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, "4");
-        String thumbnailSizeValue = preferences.getString(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE, "medium");
-
+        String photosPerRowValue = preferences.getString(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, PreferencesRepository.DEFAULT_PREF_PHOTOS_PER_ROW);
+        String thumbnailSizeValue = preferences.getString(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE, PreferencesRepository.DEFAULT_PREF_THUMBNAIL_SIZE);
 
         mPreferenceThumbnailSize.setSummary(thumbnailSizeValue);
         mPreferencePhotosPerRow.setSummary(photosPerRowValue);
@@ -72,8 +71,6 @@ public class SettingsActivity extends PreferenceActivity {
         });
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);

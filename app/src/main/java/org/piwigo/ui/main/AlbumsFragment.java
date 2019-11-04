@@ -89,8 +89,7 @@ public class AlbumsFragment extends BaseFragment {
     }
 
     @Subscribe
-    public void onEvent(RefreshRequestEvent event)
-    {
+    public void onEvent(RefreshRequestEvent event) {
         binding.getViewModel().onRefresh();
     }
 
@@ -110,7 +109,8 @@ public class AlbumsFragment extends BaseFragment {
         binding.albumRecycler.setHasFixedSize(true);
         binding.albumRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
         binding.photoRecycler.setHasFixedSize(true);
-        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount() * preferences.getInteger(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, "4")));
+        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(),
+                calculateColumnCount() * preferences.getInteger(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, PreferencesRepository.DEFAULT_PREF_PHOTOS_PER_ROW)));
 
         return binding.getRoot();
     }

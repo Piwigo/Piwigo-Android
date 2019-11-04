@@ -102,7 +102,8 @@ public class AlbumsViewModel extends ViewModel {
             photosSubscription = null;
         }
         if (account != null) {
-            albumsSubscription = categoriesRepository.getCategories(account, category, preferences.getString(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE, "medium"))
+            albumsSubscription = categoriesRepository.getCategories(account, category,
+                    preferences.getString(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE, PreferencesRepository.DEFAULT_PREF_THUMBNAIL_SIZE))
                     .subscribe(new CategoriesSubscriber());
             photosSubscription = imageRepository.getImages(account, category)
                     .subscribe(new ImagesSubscriber());

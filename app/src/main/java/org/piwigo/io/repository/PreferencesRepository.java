@@ -30,6 +30,9 @@ public class PreferencesRepository {
     public static final String KEY_PREF_PHOTOS_PER_ROW = "photos_per_row";
     public static final String KEY_PREF_THUMBNAIL_SIZE = "thumbnail_size";
 
+    public static final String DEFAULT_PREF_PHOTOS_PER_ROW = "3";
+    public static final String DEFAULT_PREF_THUMBNAIL_SIZE = "medium";
+
     private final SharedPreferences preferences;
 
     @Inject
