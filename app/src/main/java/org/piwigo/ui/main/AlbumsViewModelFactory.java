@@ -37,22 +37,22 @@ public class AlbumsViewModelFactory implements ViewModelProvider.Factory {
     private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
     private final ImageRepository imagesRepository;
-    private final PreferencesRepository preferencesRepository;
+    private final PreferencesRepository preferences;
 
     @Inject public AlbumsViewModelFactory(Context context, UserManager userManager,
-                                          CategoriesRepository categoriesRepository, ImageRepository imagesRepository, PreferencesRepository preferencesRepository) {
+                                          CategoriesRepository categoriesRepository, ImageRepository imagesRepository, PreferencesRepository preferences) {
         this.context = context;
         this.userManager = userManager;
         this.categoriesRepository = categoriesRepository;
         this.imagesRepository = imagesRepository;
-        this.preferencesRepository = preferencesRepository;
+        this.preferences = preferences;
     }
 
     @Override public <T extends ViewModel> T create(Class<T> viewModelClass) {
         if (viewModelClass.isAssignableFrom(AlbumsViewModel.class)) {
             //noinspection unchecked
             return (T) new AlbumsViewModel(userManager, categoriesRepository,
-                    imagesRepository, context.getResources(), preferencesRepository);
+                    imagesRepository, context.getResources(), preferences);
         }
         throw new IllegalStateException("Unable to create " + viewModelClass.getName());
     }

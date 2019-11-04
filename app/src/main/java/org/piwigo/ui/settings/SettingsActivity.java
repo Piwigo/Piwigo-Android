@@ -39,7 +39,7 @@ import dagger.android.AndroidInjection;
 public class SettingsActivity extends PreferenceActivity {
 
     @Inject
-    PreferencesRepository preferencesRepository;
+    PreferencesRepository preferences;
 
     ListPreference mPreferencePhotosPerRow;
     ListPreference mPreferenceThumbnailSize;
@@ -54,8 +54,8 @@ public class SettingsActivity extends PreferenceActivity {
         mPreferenceThumbnailSize = (ListPreference) getPreferenceScreen().findPreference(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE);
         mPreferencePhotosPerRow = (ListPreference) getPreferenceScreen().findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
 
-        String photosPerRowValue = preferencesRepository.getStringPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, "4");
-        String thumbnailSizeValue = preferencesRepository.getStringPreference(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE, "medium");
+        String photosPerRowValue = preferences.getString(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, "4");
+        String thumbnailSizeValue = preferences.getString(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE, "medium");
 
 
         mPreferenceThumbnailSize.setSummary(thumbnailSizeValue);

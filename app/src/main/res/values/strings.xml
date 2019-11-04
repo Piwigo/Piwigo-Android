@@ -37,7 +37,7 @@
     <string name="nav_settings">Settings</string>
     <string name="nav_about" translatable="false">@string/title_activity_about</string>
     <string name="nav_privacy" translatable="false">@string/about_text_privacy_h</string>
-    <string name="nav_logout" translatable="false">Logout</string>
+    <string name="nav_logout">Logout</string>
     <string name="nav_add_account">Add account</string>
     <string name="nav_delete_account">Remove account</string>
     <string name="nav_edit_account">Edit account</string>
@@ -70,8 +70,8 @@
     <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
     <string name="account_not_selected">Select an account for deletion first</string>
     <string name="account_empty_message">Empty account!</string>
-    <string name="account_logout_successful">Logout Succesfull!</string>
-    <string name="account_logout_unsuccessfull">Something Went Wrong: %1$s</string>
+    <string name="account_logout_successful">Logout Successful!</string>
+    <string name="account_logout_unsuccessfull">Logout failed: %1$s</string>
 
     <!-- About -->
     <string name="about_text_version">version <b>%1$s</b></string>
@@ -161,7 +161,6 @@
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
-    <string name="settings_file_types">The server accepts the following file types: jpg, jpeg, png, gif, tiff, tif, mpg, zip, avi, mp3, ogg, pdf, gpx, ogv, mp4, m4v, webm, webmv.</string>
     <string name="settings_albums_title">Albums</string>
     <string name="settings_thumbnails_size">Thumbnails Size</string>
     <string name="settings_images">Images</string>

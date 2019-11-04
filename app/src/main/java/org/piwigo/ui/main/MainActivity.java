@@ -515,9 +515,9 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     }
 
     private void logoutUserClick() {
-        viewModel.onLogoutClick();
         viewModel.getLogoutSuccess().observe(this, this::logoutSuccess);
         viewModel.getLogoutError().observe(this, this::logoutError);
+        viewModel.onLogoutClick();
     }
 
     private void logoutSuccess(SuccessResponse response) {

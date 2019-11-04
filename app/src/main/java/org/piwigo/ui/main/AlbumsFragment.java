@@ -22,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 
 import androidx.databinding.DataBindingUtil;
@@ -57,7 +56,7 @@ public class AlbumsFragment extends BaseFragment {
     AlbumsViewModelFactory viewModelFactory;
 
     @Inject
-    PreferencesRepository preferencesRepository;
+    PreferencesRepository preferences;
 
     private FragmentAlbumsBinding binding;
     private int categoryID;
@@ -111,7 +110,7 @@ public class AlbumsFragment extends BaseFragment {
         binding.albumRecycler.setHasFixedSize(true);
         binding.albumRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
         binding.photoRecycler.setHasFixedSize(true);
-        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount() * preferencesRepository.getIntegerPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, "4")));
+        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount() * preferences.getInteger(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, "4")));
 
         return binding.getRoot();
     }
