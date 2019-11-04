@@ -32,7 +32,8 @@ public class PreferencesRepository {
 
     private final SharedPreferences preferences;
 
-    @Inject PreferencesRepository(Context context) {
+    @Inject
+    public PreferencesRepository(Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -51,4 +52,13 @@ public class PreferencesRepository {
         editor.putString(key, value);
         editor.apply();
     }
+
+    public String getStringPreference(String key, String value) {
+        return preferences.getString(key, value);
+    }
+
+    public Integer getIntegerPreference(String key, String value) {
+        return Integer.parseInt(preferences.getString(key, value));
+    }
+
 }

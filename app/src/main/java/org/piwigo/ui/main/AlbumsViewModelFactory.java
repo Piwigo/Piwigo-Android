@@ -21,11 +21,11 @@ package org.piwigo.ui.main;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.repository.CategoriesRepository;
 import org.piwigo.io.repository.ImageRepository;
+import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -37,22 +37,22 @@ public class AlbumsViewModelFactory implements ViewModelProvider.Factory {
     private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
     private final ImageRepository imagesRepository;
-    private final SharedPreferences sharedPreferences;
+    private final PreferencesRepository preferencesRepository;
 
     @Inject public AlbumsViewModelFactory(Context context, UserManager userManager,
-                                          CategoriesRepository categoriesRepository, ImageRepository imagesRepository, SharedPreferences sharedPreferences) {
+                                          CategoriesRepository categoriesRepository, ImageRepository imagesRepository, PreferencesRepository preferencesRepository) {
         this.context = context;
         this.userManager = userManager;
         this.categoriesRepository = categoriesRepository;
         this.imagesRepository = imagesRepository;
-        this.sharedPreferences = sharedPreferences;
+        this.preferencesRepository = preferencesRepository;
     }
 
     @Override public <T extends ViewModel> T create(Class<T> viewModelClass) {
         if (viewModelClass.isAssignableFrom(AlbumsViewModel.class)) {
             //noinspection unchecked
             return (T) new AlbumsViewModel(userManager, categoriesRepository,
-                    imagesRepository, context.getResources(), sharedPreferences);
+                    imagesRepository, context.getResources(), preferencesRepository);
         }
         throw new IllegalStateException("Unable to create " + viewModelClass.getName());
     }

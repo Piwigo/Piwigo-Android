@@ -20,7 +20,6 @@
 package org.piwigo.ui.main;
 
 import android.accounts.Account;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.util.Log;
 
@@ -60,7 +59,7 @@ public class AlbumsViewModel extends ViewModel {
     private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
     private final ImageRepository imageRepository;
-    private final SharedPreferences sharedPreferences;
+    private final PreferencesRepository preferencesRepository;
 
     private final Resources resources;
 
@@ -70,12 +69,12 @@ public class AlbumsViewModel extends ViewModel {
     private Integer category = null;
 
     AlbumsViewModel(UserManager userManager, CategoriesRepository categoriesRepository,
-                    ImageRepository imageRepository, Resources resources, SharedPreferences sharedPreferences) {
+                    ImageRepository imageRepository, Resources resources, PreferencesRepository preferencesRepository) {
         this.userManager = userManager;
         this.categoriesRepository = categoriesRepository;
         this.imageRepository = imageRepository;
         this.resources = resources;
-        this.sharedPreferences = sharedPreferences;
+        this.preferencesRepository = preferencesRepository;
     }
 
     @Override
@@ -103,7 +102,7 @@ public class AlbumsViewModel extends ViewModel {
             photosSubscription = null;
         }
         if (account != null) {
-            albumsSubscription = categoriesRepository.getCategories(account, category, sharedPreferences.getString(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE, "medium"))
+            albumsSubscription = categoriesRepository.getCategories(account, category, preferencesRepository.getStringPreference(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE, "medium"))
                     .subscribe(new CategoriesSubscriber());
             photosSubscription = imageRepository.getImages(account, category)
                     .subscribe(new ImagesSubscriber());

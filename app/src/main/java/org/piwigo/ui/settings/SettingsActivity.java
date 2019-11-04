@@ -1,6 +1,7 @@
 /*
  * Piwigo for Android
  * Copyright (C) 2019-2019 Piwigo Team http://piwigo.org
+ * Copyright (C) 2019-2019 Radko Varchola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +18,6 @@
  */
 package org.piwigo.ui.settings;
 
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -39,7 +39,7 @@ import dagger.android.AndroidInjection;
 public class SettingsActivity extends PreferenceActivity {
 
     @Inject
-    SharedPreferences sharedPreferences;
+    PreferencesRepository preferencesRepository;
 
     ListPreference mPreferencePhotosPerRow;
     ListPreference mPreferenceThumbnailSize;
@@ -54,11 +54,11 @@ public class SettingsActivity extends PreferenceActivity {
         mPreferenceThumbnailSize = (ListPreference) getPreferenceScreen().findPreference(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE);
         mPreferencePhotosPerRow = (ListPreference) getPreferenceScreen().findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
 
-        String photosPerRowValue = sharedPreferences.getString(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, "4");
-        int thumbnailSizeIndex = getResources().getStringArray(R.array.thumbnails_size_array).length - 1;
+        String photosPerRowValue = preferencesRepository.getStringPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, "4");
+        String thumbnailSizeValue = preferencesRepository.getStringPreference(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE, "medium");
 
 
-        mPreferenceThumbnailSize.setSummary(mPreferenceThumbnailSize.getEntries()[thumbnailSizeIndex]);
+        mPreferenceThumbnailSize.setSummary(thumbnailSizeValue);
         mPreferencePhotosPerRow.setSummary(photosPerRowValue);
 
         mPreferencePhotosPerRow.setOnPreferenceChangeListener((preference, value) -> {

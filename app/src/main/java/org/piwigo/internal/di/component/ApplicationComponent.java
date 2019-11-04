@@ -18,8 +18,6 @@
 
 package org.piwigo.internal.di.component;
 
-import android.content.SharedPreferences;
-
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.PiwigoApplication;
@@ -28,6 +26,7 @@ import org.piwigo.internal.di.module.ApiModule;
 import org.piwigo.internal.di.module.ApplicationModule;
 import org.piwigo.internal.di.module.AndroidInjectorModule;
 import org.piwigo.internal.di.module.NetworkModule;
+import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Singleton;
 
@@ -43,5 +42,5 @@ public interface ApplicationComponent {
 
     Picasso picasso();
 
-    SharedPreferences sharedPreferences();
+    PreferencesRepository preferencesRepository();
 }
