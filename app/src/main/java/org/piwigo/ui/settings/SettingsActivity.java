@@ -1,6 +1,5 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2019-2019 Radko Varchola
  * Copyright (C) 2019-2019 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,91 +15,73 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package org.piwigo.ui.settings;
 
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.SeekBar;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.preference.ListPreference;
+import android.preference.PreferenceActivity;
+import android.view.LayoutInflater;
+import android.widget.LinearLayout;
 
 import org.piwigo.R;
-import org.piwigo.ui.shared.BaseActivity;
+import org.piwigo.io.repository.PreferencesRepository;
 
-import androidx.appcompat.app.ActionBar;
+import javax.inject.Inject;
 
-public class SettingsActivity extends BaseActivity {
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.Toolbar;
+import dagger.android.AndroidInjection;
 
 
+public class SettingsActivity extends PreferenceActivity {
 
-    private static final String TAG = SettingsActivity.class.getName();
+    @Inject
+    SharedPreferences sharedPreferences;
+
+    ListPreference mPreferencePhotosPerRow;
+    ListPreference mPreferenceThumbnailSize;
 
     @Override
-    protected void onCreate( Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
+        addPreferencesFromResource(R.xml.settings_preferences);
 
 
-        setContentView(R.layout.activity_settings);
+        mPreferenceThumbnailSize = (ListPreference) getPreferenceScreen().findPreference(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE);
+        mPreferencePhotosPerRow = (ListPreference) getPreferenceScreen().findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
 
-        setSupportActionBar(findViewById(R.id.toolbar));
+        String photosPerRowValue = sharedPreferences.getString(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, "4");
+        int thumbnailSizeIndex = getResources().getStringArray(R.array.thumbnails_size_array).length - 1;
 
-        ActionBar bar = getSupportActionBar();
-        if (bar != null) bar.setDisplayHomeAsUpEnabled(true);
 
-        initializeThumbnailSizeSpinner();
-        initializeNumberRowSeekBar();
-    }
+        mPreferenceThumbnailSize.setSummary(mPreferenceThumbnailSize.getEntries()[thumbnailSizeIndex]);
+        mPreferencePhotosPerRow.setSummary(photosPerRowValue);
 
-    private void initializeThumbnailSizeSpinner(){
-        Spinner spinner = findViewById(R.id.spinner_thumbnail_size_value);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+        mPreferencePhotosPerRow.setOnPreferenceChangeListener((preference, value) -> {
+            mPreferencePhotosPerRow.setSummary(value.toString());
+            return true;
+        });
 
-                R.array.thumbnails_size_array, R.layout.spinner_item);
-
-        adapter.setDropDownViewResource(R.layout.spinner_item);
-        spinner.setAdapter(adapter);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SettingsPreferences.setSettingPreference(SettingsPreferences.KEY_THUMBNAIL_SIZE, spinner.getSelectedItem().toString());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+        mPreferenceThumbnailSize.setOnPreferenceChangeListener((preference, value) -> {
+            mPreferenceThumbnailSize.setSummary(value.toString());
+            return true;
         });
     }
 
-    private void initializeNumberRowSeekBar(){
-        SeekBar numberRowSeekbar = findViewById(R.id.seekbar_photos_per_row);
-        TextView textView = findViewById(R.id.tv_photos_per_row_value);
 
-        textView.setText( SettingsPreferences.getSettingPreference(SettingsPreferences.KEY_PHOTOS_PER_ROW, "3") + "/6");
-        numberRowSeekbar.setProgress(Integer.parseInt(SettingsPreferences.getSettingPreference(SettingsPreferences.KEY_PHOTOS_PER_ROW, "3")));
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
-        numberRowSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                 i ++;
-                int numberRow = i* 6/6;
-                SettingsPreferences.setSettingPreference("photos_per_row", String.valueOf(numberRow));
-                textView.setText( numberRow + "/6");
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
+        LinearLayout root = (LinearLayout)findViewById(android.R.id.list).getParent().getParent().getParent();
+        Toolbar bar = (Toolbar)LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
+        bar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_action_back));
+        root.addView(bar, 0);
+        bar.setNavigationOnClickListener(v -> finish());
     }
 }

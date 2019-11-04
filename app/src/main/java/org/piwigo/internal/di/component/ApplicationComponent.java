@@ -18,6 +18,8 @@
 
 package org.piwigo.internal.di.component;
 
+import android.content.SharedPreferences;
+
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.PiwigoApplication;
@@ -40,4 +42,6 @@ public interface ApplicationComponent {
     void inject(UploadService service);
 
     Picasso picasso();
+
+    SharedPreferences sharedPreferences();
 }

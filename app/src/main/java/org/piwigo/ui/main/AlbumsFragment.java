@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 
 import androidx.databinding.DataBindingUtil;
@@ -40,7 +41,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.piwigo.R;
 import org.piwigo.databinding.FragmentAlbumsBinding;
 import org.piwigo.io.event.RefreshRequestEvent;
-import org.piwigo.ui.settings.SettingsPreferences;
+import org.piwigo.io.repository.PreferencesRepository;
 import org.piwigo.ui.shared.BaseFragment;
 
 import javax.inject.Inject;
@@ -54,6 +55,9 @@ public class AlbumsFragment extends BaseFragment {
 
     @Inject
     AlbumsViewModelFactory viewModelFactory;
+
+    @Inject
+    SharedPreferences sharedPreferences;
 
     private FragmentAlbumsBinding binding;
     private int categoryID;
@@ -107,7 +111,7 @@ public class AlbumsFragment extends BaseFragment {
         binding.albumRecycler.setHasFixedSize(true);
         binding.albumRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
         binding.photoRecycler.setHasFixedSize(true);
-        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount() * Integer.parseInt(SettingsPreferences.getSettingPreference(SettingsPreferences.KEY_PHOTOS_PER_ROW, "3"))));
+        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount() * Integer.parseInt(sharedPreferences.getString(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, "4"))));
 
         return binding.getRoot();
     }

@@ -19,20 +19,19 @@
 package org.piwigo.io.repository;
 
 import android.accounts.Account;
-import androidx.annotation.Nullable;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.NaturalOrderComparator;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.Category;
-import org.piwigo.ui.settings.SettingsPreferences;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import androidx.annotation.Nullable;
 import rx.Observable;
 import rx.Scheduler;
 
@@ -42,10 +41,10 @@ public class CategoriesRepository extends BaseRepository {
         super(restServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
-    public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId) {
+    public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId, String thumbnailSize) {
         RestService restService = restServiceFactory.createForAccount(account);
         /* TODO: make thumbnail Size configurable, also check for ImageRepository, whether it can reduce the amount of REST/JSON traffic */
-        return restService.getCategories(categoryId, SettingsPreferences.getSettingPreference(SettingsPreferences.KEY_THUMBNAIL_SIZE, "medium"))
+        return restService.getCategories(categoryId, thumbnailSize)
 //                .flatMap(response -> Observable.from(response.result.categories))
                 .compose(applySchedulers())
                 .flatMap(response -> {

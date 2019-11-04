@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/settings_albums_title">
+    <ListPreference
+        android:title="@string/settings_photos_per_row"
+        android:summary="3"
+        android:key="photos_per_row"
+        android:defaultValue="4"
+        android:inputType="number"
+        android:entries="@array/photos_per_row_values"
+        android:entryValues="@array/photos_per_row_values" />
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/settings_images">
+    <ListPreference
+        android:title="@string/settings_thumbnails_size"
+        android:summary="medium"
+        android:key="thumbnail_size"
+        android:defaultValue="4"
+        android:entries="@array/thumbnails_size_array"
+        android:entryValues="@array/thumbnails_size_array" />
+    </PreferenceCategory>
+</PreferenceScreen>
+
+

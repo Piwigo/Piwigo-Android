@@ -20,6 +20,7 @@ package org.piwigo.internal.di.module;
 
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.squareup.picasso.Picasso;
 
@@ -31,6 +32,7 @@ import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Singleton;
 
+import androidx.preference.PreferenceManager;
 import dagger.Module;
 import dagger.Provides;
 
@@ -60,5 +62,10 @@ public class ApplicationModule {
 
     @Provides @Singleton UserManager provideUserManager(AccountManager accountManager, PreferencesRepository preferencesRepository) {
         return new UserManager(accountManager, application.getResources(), preferencesRepository);
+    }
+
+    @Provides @Singleton
+    SharedPreferences provideSharedPreference() {
+        return PreferenceManager.getDefaultSharedPreferences(application);
     }
 }

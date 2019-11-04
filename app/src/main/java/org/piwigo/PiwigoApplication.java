@@ -68,7 +68,6 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
     @Inject DispatchingAndroidInjector<Object> androidInjector;
 
     private ApplicationComponent applicationComponent;
-    private static Context mContext;
 
     @Override public void onCreate() {
         super.onCreate();
@@ -77,7 +76,6 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
         new NotificationHelper(getApplicationContext());
         new DialogHelper();
         initializeDependencyInjection();
-        mContext = getApplicationContext();
     }
 
     @Override
@@ -107,7 +105,4 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
         return androidInjector;
     }
 
-    public static Context getAppContext() {
-        return mContext;
-    }
 }

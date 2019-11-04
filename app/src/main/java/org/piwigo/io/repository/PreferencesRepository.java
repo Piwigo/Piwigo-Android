@@ -27,6 +27,8 @@ import javax.inject.Inject;
 public class PreferencesRepository {
 
     private static final String KEY_ACTIVE_ACCOUNT = "active_account";
+    public static final String KEY_PREF_PHOTOS_PER_ROW = "photos_per_row";
+    public static final String KEY_PREF_THUMBNAIL_SIZE = "thumbnail_size";
 
     private final SharedPreferences preferences;
 
