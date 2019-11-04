@@ -27,20 +27,20 @@
             >
 
             <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/layout_image"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:src="@{viewModel.url}"
-            android:contentDescription="@{viewModel.title}"
-            android:onClick="@{viewModel::onClickDo}"
+                android:id="@+id/layout_image"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:src="@{viewModel.url}"
+                android:contentDescription="@{viewModel.title}"
+                android:onClick="@{viewModel::onClickDo}"
                 android:scaleType="fitXY"
                 app:riv_corner_radius="10dip"
                 android:layout_margin="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
-            />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                />
 
             <FrameLayout
                 android:id="@+id/semi_transparent_layout"
@@ -89,6 +89,6 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.5"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </layout>
