@@ -18,7 +18,6 @@
  */
 package org.piwigo.ui.settings;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
@@ -31,7 +30,6 @@ import org.piwigo.io.repository.PreferencesRepository;
 import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import dagger.android.AndroidInjection;
 

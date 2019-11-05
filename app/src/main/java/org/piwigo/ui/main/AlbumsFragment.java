@@ -18,19 +18,9 @@
 
 package org.piwigo.ui.main;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Context;
 import android.content.res.Configuration;
-
-import androidx.databinding.DataBindingUtil;
-
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +35,11 @@ import org.piwigo.ui.shared.BaseFragment;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 import dagger.android.support.AndroidSupportInjection;
 
 public class AlbumsFragment extends BaseFragment {
