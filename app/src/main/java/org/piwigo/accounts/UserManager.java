@@ -209,6 +209,13 @@ public class UserManager {
                 return account;
             }
         }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
+            accountManager.removeAccount(account, null, null);
+        } else {
+            accountManager.removeAccountExplicitly(account);
+        }
+    }
         return null;
     }
 

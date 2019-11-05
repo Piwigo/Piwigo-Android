@@ -35,7 +35,7 @@ import javax.inject.Named;
 import rx.Observable;
 import rx.Scheduler;
 
-public class CategoriesRepository extends BaseRepository {
+public class CategoriesRepository extends RESTBaseRepository {
 
     @Inject public CategoriesRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
         super(restServiceFactory, ioScheduler, uiScheduler, userManager);

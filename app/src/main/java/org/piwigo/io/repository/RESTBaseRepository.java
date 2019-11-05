@@ -24,14 +24,14 @@ import org.piwigo.io.RestServiceFactory;
 import rx.Observable;
 import rx.Scheduler;
 
-abstract class BaseRepository {
+abstract class RESTBaseRepository {
 
     final RestServiceFactory restServiceFactory;
     private final Scheduler ioScheduler;
     private final Scheduler uiScheduler;
     final UserManager userManager;
 
-    BaseRepository(RestServiceFactory restServiceFactory, Scheduler ioScheduler, Scheduler uiScheduler, UserManager userManager) {
+    RESTBaseRepository(RestServiceFactory restServiceFactory, Scheduler ioScheduler, Scheduler uiScheduler, UserManager userManager) {
         this.restServiceFactory = restServiceFactory;
         this.ioScheduler = ioScheduler;
         this.uiScheduler = uiScheduler;

@@ -19,7 +19,6 @@
 package org.piwigo.io.repository;
 
 import android.accounts.Account;
-import android.util.Log;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.CookieHelper;
@@ -34,7 +33,7 @@ import javax.inject.Named;
 import rx.Observable;
 import rx.Scheduler;
 
-public class UserRepository extends BaseRepository {
+public class UserRepository extends RESTBaseRepository {
 
     @Inject UserRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
         super(restServiceFactory, ioScheduler, uiScheduler, userManager);
