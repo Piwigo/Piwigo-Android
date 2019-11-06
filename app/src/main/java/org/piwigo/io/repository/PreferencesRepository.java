@@ -22,16 +22,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.Objects;
+
 import javax.inject.Inject;
 
 public class PreferencesRepository {
 
     public static final String KEY_ACTIVE_ACCOUNT = "active_account";
     public static final String KEY_PREF_PHOTOS_PER_ROW = "photos_per_row";
-    public static final String KEY_PREF_THUMBNAIL_SIZE = "thumbnail_size";
+    public static final String KEY_PREF_DOWNLOAD_SIZE = "download_size";
 
     public static final String DEFAULT_PREF_PHOTOS_PER_ROW = "3";
-    public static final String DEFAULT_PREF_THUMBNAIL_SIZE = "medium";
+    public static final String DEFAULT_PREF_DOWNLOAD_SIZE = "medium";
 
     private final SharedPreferences preferences;
 
@@ -56,12 +58,28 @@ public class PreferencesRepository {
         editor.apply();
     }
 
-    public String getString(String key, String value) {
+    public String getString(String key) {
+     String value = null;
+
+        switch (key){
+            case KEY_PREF_PHOTOS_PER_ROW:
+               value = DEFAULT_PREF_PHOTOS_PER_ROW;
+                break;
+            case KEY_PREF_DOWNLOAD_SIZE:
+                value = DEFAULT_PREF_DOWNLOAD_SIZE;
+                break;
+        }
+
         return preferences.getString(key, value);
     }
 
-    public int getInteger(String key, String value) {
-        return Integer.parseInt(preferences.getString(key, value));
+    public int getInteger(String key) {
+        String value = null;
+        if (KEY_PREF_PHOTOS_PER_ROW.equals(key)) {
+            value = DEFAULT_PREF_PHOTOS_PER_ROW;
+        }
+
+        return Integer.parseInt(Objects.requireNonNull(preferences.getString(key, value)));
     }
 
 }

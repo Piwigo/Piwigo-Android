@@ -19,64 +19,72 @@
 package org.piwigo.ui.settings;
 
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.PreferenceActivity;
-import android.view.LayoutInflater;
-import android.widget.LinearLayout;
 
 import org.piwigo.R;
 import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.ListPreference;
+import androidx.preference.PreferenceFragmentCompat;
 import dagger.android.AndroidInjection;
 
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends AppCompatActivity {
 
     @Inject
     PreferencesRepository preferences;
 
-    ListPreference mPreferencePhotosPerRow;
-    ListPreference mPreferenceThumbnailSize;
+    private ListPreference mPreferenceThumbnailSize;
+    private ListPreference mPreferencePhotosPerRow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.settings_preferences);
+        setContentView(R.layout.activity_settings);
+
+        setSupportActionBar(findViewById(R.id.toolbar));
+        ActionBar bar = getSupportActionBar();
+        if (bar != null) bar.setDisplayHomeAsUpEnabled(true);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.settings_container, new SettingsFragment())
+                .commit();
 
 
-        mPreferenceThumbnailSize = (ListPreference) getPreferenceScreen().findPreference(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE);
-        mPreferencePhotosPerRow = (ListPreference) getPreferenceScreen().findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
+        mPreferenceThumbnailSize = new ListPreference(getApplicationContext());
+        mPreferencePhotosPerRow = new ListPreference(getApplicationContext());
 
-        String photosPerRowValue = preferences.getString(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW, PreferencesRepository.DEFAULT_PREF_PHOTOS_PER_ROW);
-        String thumbnailSizeValue = preferences.getString(PreferencesRepository.KEY_PREF_THUMBNAIL_SIZE, PreferencesRepository.DEFAULT_PREF_THUMBNAIL_SIZE);
+        mPreferenceThumbnailSize.setKey(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE);
+        mPreferencePhotosPerRow.setKey(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
+
+        String photosPerRowValue = getString(R.string.settings_photos_per_row_summary, preferences.getString(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW));
+        String thumbnailSizeValue = getString(R.string.settings_download_size_summary, preferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE));
 
         mPreferenceThumbnailSize.setSummary(thumbnailSizeValue);
         mPreferencePhotosPerRow.setSummary(photosPerRowValue);
 
         mPreferencePhotosPerRow.setOnPreferenceChangeListener((preference, value) -> {
-            mPreferencePhotosPerRow.setSummary(value.toString());
+            mPreferencePhotosPerRow.setSummary(getString(R.string.settings_photos_per_row_summary, value.toString()));
             return true;
         });
 
         mPreferenceThumbnailSize.setOnPreferenceChangeListener((preference, value) -> {
-            mPreferenceThumbnailSize.setSummary(value.toString());
+            mPreferenceThumbnailSize.setSummary(getString(R.string.settings_download_size_summary, value.toString()));
             return true;
         });
+
     }
 
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    public static class SettingsFragment extends PreferenceFragmentCompat {
 
-        LinearLayout root = (LinearLayout)findViewById(android.R.id.list).getParent().getParent().getParent();
-        Toolbar bar = (Toolbar)LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
-        bar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_action_back));
-        root.addView(bar, 0);
-        bar.setNavigationOnClickListener(v -> finish());
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.settings_preferences, rootKey);
+        }
     }
 }

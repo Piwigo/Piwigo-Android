@@ -161,11 +161,12 @@
     <string name="privacy_contact_email" translatable="false">android@piwigo.org</string>
 
     <!-- Settings -->
-    <string name="settings_title">Settings</string>
     <string name="settings_albums_title">Albums</string>
-    <string name="settings_thumbnails_size">Thumbnails Size</string>
+    <string name="settings_download_size">Download Size</string>
     <string name="settings_images">Images</string>
     <string name="settings_photos_per_row">Photos per Row</string>
+    <string name="settings_photos_per_row_summary">%1$s photos shown per row</string>
+    <string name="settings_download_size_summary">Photo size \'%1$s\' will be used for download</string>
 
 
     <!-- Upload -->
@@ -208,8 +209,8 @@
     <string name="no_internet">Oops! It seems like you have no internet connection. Please connect and try again.</string>
     <string name="show_details">Show details</string>
 
-    <!-- Spinner Thumbnail Size array-->
-    <string-array name="thumbnails_size_array">
+    <!-- Spinner Download Size array-->
+    <string-array name="download_size_array">
         <item>square</item>
         <item>thumb</item>
         <item>small</item>
