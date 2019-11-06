@@ -105,7 +105,7 @@ public class AlbumsFragment extends BaseFragment {
         binding.albumRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
         binding.photoRecycler.setHasFixedSize(true);
         binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(),
-                calculateColumnCount() * preferences.getInteger(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW)));
+                calculateColumnCount() * preferences.getInt(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW)));
 
         return binding.getRoot();
     }

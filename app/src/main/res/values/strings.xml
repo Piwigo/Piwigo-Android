@@ -165,7 +165,6 @@
     <string name="settings_download_size">Download Size</string>
     <string name="settings_images">Images</string>
     <string name="settings_photos_per_row">Photos per Row</string>
-    <string name="settings_photos_per_row_summary">%1$s photos shown per row</string>
     <string name="settings_download_size_summary">Photo size \'%1$s\' will be used for download</string>
 
 
@@ -217,15 +216,5 @@
         <item>medium</item>
         <item>large</item>
         <item>xxlarge</item>
-    </string-array>
-
-    <!-- Photos per row array-->
-    <string-array name="photos_per_row_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
     </string-array>
 </resources>

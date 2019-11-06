@@ -29,6 +29,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SeekBarPreference;
 import dagger.android.AndroidInjection;
 
 
@@ -38,7 +39,7 @@ public class SettingsActivity extends AppCompatActivity {
     PreferencesRepository preferences;
 
     private ListPreference mPreferenceThumbnailSize;
-    private ListPreference mPreferencePhotosPerRow;
+    private SeekBarPreference mPreferencePhotosPerRow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,19 +58,16 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         mPreferenceThumbnailSize = new ListPreference(getApplicationContext());
-        mPreferencePhotosPerRow = new ListPreference(getApplicationContext());
+        mPreferencePhotosPerRow = new SeekBarPreference(getApplicationContext());
 
         mPreferenceThumbnailSize.setKey(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE);
         mPreferencePhotosPerRow.setKey(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
 
-        String photosPerRowValue = getString(R.string.settings_photos_per_row_summary, preferences.getString(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW));
         String thumbnailSizeValue = getString(R.string.settings_download_size_summary, preferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE));
 
         mPreferenceThumbnailSize.setSummary(thumbnailSizeValue);
-        mPreferencePhotosPerRow.setSummary(photosPerRowValue);
 
         mPreferencePhotosPerRow.setOnPreferenceChangeListener((preference, value) -> {
-            mPreferencePhotosPerRow.setSummary(getString(R.string.settings_photos_per_row_summary, value.toString()));
             return true;
         });
 
