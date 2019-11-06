@@ -7,11 +7,11 @@
         android:title="@string/settings_albums_title"
         app:iconSpaceReserved="false">
         <ListPreference
-            android:defaultValue="4"
             android:entries="@array/photos_per_row_values"
             android:entryValues="@array/photos_per_row_values"
             android:inputType="number"
             android:key="photos_per_row"
+            app:defaultValue="3"
             app:iconSpaceReserved="false"
             app:summary="@string/settings_photos_per_row_summary"
             app:title="@string/settings_photos_per_row" />
@@ -22,10 +22,10 @@
         android:title="@string/settings_images"
         app:iconSpaceReserved="false">
         <ListPreference
-            android:defaultValue="4"
             android:entries="@array/download_size_array"
             android:entryValues="@array/download_size_array"
             android:key="download_size"
+            app:defaultValue="medium"
             app:iconSpaceReserved="false"
             app:summary="@string/settings_download_size_summary"
             app:title="@string/settings_download_size" />

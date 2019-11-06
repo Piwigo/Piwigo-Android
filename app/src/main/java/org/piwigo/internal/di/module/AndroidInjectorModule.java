@@ -34,7 +34,6 @@ import org.piwigo.ui.main.MainActivityModule;
 import org.piwigo.ui.photoviewer.PhotoViewerDialogFragment;
 import org.piwigo.ui.photoviewer.PhotoViewerDialogFragmentModule;
 import org.piwigo.ui.settings.SettingsActivity;
-import org.piwigo.ui.settings.SettingsActivityModule;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -53,7 +52,7 @@ public abstract class AndroidInjectorModule {
 
     @PerFragment @ContributesAndroidInjector(modules = AlbumsFragmentModule.class) abstract AlbumsFragment albumsFragment();
 
-    @PerFragment @ContributesAndroidInjector(modules = SettingsActivityModule.class) abstract SettingsActivity settingsActivity();
+    @PerFragment @ContributesAndroidInjector abstract SettingsActivity settingsActivity();
 
     @PerFragment @ContributesAndroidInjector(modules = PhotoViewerDialogFragmentModule.class) abstract PhotoViewerDialogFragment photoViewerDialogFragment();
 

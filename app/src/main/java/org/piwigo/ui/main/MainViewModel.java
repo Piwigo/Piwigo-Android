@@ -125,8 +125,6 @@ public class MainViewModel extends ViewModel {
         @Override
         public void onNext(SuccessResponse successResponse) {
             Log.i(TAG, successResponse.toString());
-            userManager.removeAccount();
-            userManager.refreshAccounts();
             logoutSuccess.setValue(successResponse);
         }
     }

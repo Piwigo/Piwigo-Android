@@ -257,12 +257,4 @@ public class UserManager {
             }
         }
     }
-
-    public void removeAccount(){
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
-            accountManager.removeAccount(mCurrentAccount.getValue(), null, null);
-        } else {
-            accountManager.removeAccountExplicitly(mCurrentAccount.getValue());
-        }
-    }
 }
