@@ -18,7 +18,6 @@
 
 package org.piwigo.internal.di.module;
 
-import org.piwigo.accounts.PiwigoAccountAuthenticator;
 import org.piwigo.bg.AlbumService;
 import org.piwigo.bg.UploadService;
 import org.piwigo.internal.di.scope.PerActivity;

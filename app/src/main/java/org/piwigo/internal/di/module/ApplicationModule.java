@@ -61,4 +61,9 @@ public class ApplicationModule {
     @Provides @Singleton UserManager provideUserManager(AccountManager accountManager, PreferencesRepository preferencesRepository) {
         return new UserManager(accountManager, application.getResources(), preferencesRepository);
     }
+
+    @Provides @Singleton
+    PreferencesRepository providePreferencesRepository() {
+        return new PreferencesRepository(application);
+    }
 }

@@ -26,6 +26,7 @@ import org.piwigo.internal.di.module.ApiModule;
 import org.piwigo.internal.di.module.ApplicationModule;
 import org.piwigo.internal.di.module.AndroidInjectorModule;
 import org.piwigo.internal.di.module.NetworkModule;
+import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Singleton;
 
@@ -40,4 +41,6 @@ public interface ApplicationComponent {
     void inject(UploadService service);
 
     Picasso picasso();
+
+    PreferencesRepository preferencesRepository();
 }

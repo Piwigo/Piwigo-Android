@@ -139,11 +139,11 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
                 startActivity(editIntent);
                 break;
             case R.id.action_del_account:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    accountManager.removeAccount(userManager.getActiveAccount().getValue(), this, future -> userManager.refreshAccounts(), null);
-                }else {
-                    accountManager.removeAccount(userManager.getActiveAccount().getValue(), future -> userManager.refreshAccounts(), null);
-                }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                        accountManager.removeAccount(userManager.getActiveAccount().getValue(), this, future -> userManager.refreshAccounts(), null);
+                    } else {
+                        accountManager.removeAccount(userManager.getActiveAccount().getValue(), future -> userManager.refreshAccounts(), null);
+                    }
                 break;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);

@@ -124,6 +124,7 @@ dependencies {
     implementation 'com.google.guava:guava:28.1-jre'
     annotationProcessor 'com.google.guava:guava:24.1-jre'
     implementation 'org.apache.commons:commons-lang3:3.9'
+    implementation "androidx.preference:preference:1.1.0"
 
     implementation "ch.acra:acra-mail:$acraVersion"
     implementation "ch.acra:acra-dialog:$acraVersion"

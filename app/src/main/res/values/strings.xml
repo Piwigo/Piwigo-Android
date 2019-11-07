@@ -25,6 +25,7 @@
     <string name="title_activity_login">Login</string>
     <string name="title_activity_accounts">Manage Accounts</string>
     <string name="title_activity_about">About</string>
+    <string name="title_activity_settings">Settings</string>
     <string name="title_activity_privacy_policy" translatable="false">@string/about_text_privacy_h</string>
     <string name="title_select_image">Select Image</string>
 
@@ -36,6 +37,7 @@
     <string name="nav_settings">Settings</string>
     <string name="nav_about" translatable="false">@string/title_activity_about</string>
     <string name="nav_privacy" translatable="false">@string/about_text_privacy_h</string>
+    <string name="nav_logout">Logout</string>
     <string name="nav_add_account">Add account</string>
     <string name="nav_delete_account">Remove account</string>
     <string name="nav_edit_account">Edit account</string>
@@ -67,6 +69,9 @@
     <string name="account_name" translatable="false">%1$s@%2$s</string>
     <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
     <string name="account_not_selected">Select an account for deletion first</string>
+    <string name="account_empty_message">Empty account!</string>
+    <string name="account_logout_successful">Logout Successful!</string>
+    <string name="account_logout_unsuccessfull">Logout failed: %1$s</string>
 
     <!-- About -->
     <string name="about_text_version">version <b>%1$s</b></string>
@@ -95,6 +100,7 @@
         <p><a href="https://github.com/EddyLB">Eddy Lelièvre-Berna</a></p>
         <p><a href="https://github.com/voriondev">Valentin Baizeau</a></p>
         <p>Chiraag Nataraj</p>
+        <p><a href="https://github.com/radass1996">Radko Varchola</a></p>
         ]]>
     </string>
     <string name="libraries" translatable="false"><![CDATA[
@@ -154,6 +160,14 @@
     <string name="privacy_contact_address">Piwigo, 42 rue des Vignes, 21800 Quetigny (France)</string>
     <string name="privacy_contact_email" translatable="false">android@piwigo.org</string>
 
+    <!-- Settings -->
+    <string name="settings_albums_title">Albums</string>
+    <string name="settings_download_size">Download Size</string>
+    <string name="settings_images">Images</string>
+    <string name="settings_photos_per_row">Photos per Row</string>
+    <string name="settings_download_size_summary">Photo size \'%1$s\' will be used for download</string>
+
+
     <!-- Upload -->
     <string name="upload_success">Upload successful</string>
     <string name="upload_failed">Upload failed</string>
@@ -193,4 +207,14 @@
 
     <string name="no_internet">Oops! It seems like you have no internet connection. Please connect and try again.</string>
     <string name="show_details">Show details</string>
+
+    <!-- Spinner Download Size array-->
+    <string-array name="download_size_array">
+        <item>square</item>
+        <item>thumb</item>
+        <item>small</item>
+        <item>medium</item>
+        <item>large</item>
+        <item>xxlarge</item>
+    </string-array>
 </resources>
