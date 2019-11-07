@@ -23,27 +23,17 @@ import android.os.Bundle;
 import org.piwigo.R;
 import org.piwigo.io.repository.PreferencesRepository;
 
-import javax.inject.Inject;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
-import dagger.android.AndroidInjection;
 
 
 public class SettingsActivity extends AppCompatActivity {
 
-    @Inject
-    PreferencesRepository preferences;
-
-    private ListPreference mPreferenceThumbnailSize;
-    private SeekBarPreference mPreferencePhotosPerRow;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
@@ -55,34 +45,26 @@ public class SettingsActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.settings_container, new SettingsFragment())
                 .commit();
-
-
-        mPreferenceThumbnailSize = new ListPreference(getApplicationContext());
-        mPreferencePhotosPerRow = new SeekBarPreference(getApplicationContext());
-
-        mPreferenceThumbnailSize.setKey(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE);
-        mPreferencePhotosPerRow.setKey(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
-
-        String thumbnailSizeValue = getString(R.string.settings_download_size_summary, preferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE));
-
-        mPreferenceThumbnailSize.setSummary(thumbnailSizeValue);
-
-        mPreferencePhotosPerRow.setOnPreferenceChangeListener((preference, value) -> {
-            return true;
-        });
-
-        mPreferenceThumbnailSize.setOnPreferenceChangeListener((preference, value) -> {
-            mPreferenceThumbnailSize.setSummary(getString(R.string.settings_download_size_summary, value.toString()));
-            return true;
-        });
-
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
 
+        private ListPreference mPreferenceThumbnailSize;
+        private SeekBarPreference mPreferencePhotosPerRow;
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.settings_preferences, rootKey);
+
+            mPreferencePhotosPerRow = findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
+            mPreferenceThumbnailSize = findPreference(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE);
+
+            mPreferencePhotosPerRow.setOnPreferenceChangeListener((preference, value) -> true);
+
+            mPreferenceThumbnailSize.setOnPreferenceChangeListener((preference, value) -> {
+                mPreferenceThumbnailSize.setSummary(getString(R.string.settings_download_size_summary, value.toString()));
+                return true;
+            });
         }
     }
 }
