@@ -2,4 +2,4 @@ Piwigo er en Android-app laget for den frie og åpen-kildekode bildetjeneren Piw
 
 Piwigo er bygget av et aktiv samfunn av brukere og utviklere.
 
-Piwigo empowers you to create your own photo gallery on the web and includes many powerful features such as albums, tags, geolocation, many levels of customization, upload by visitors, privacy, calendar or statistics.
+Piwigo motiverer deg til å lage dine egne bildegallerier på det nettet og inkluderer mange nyttige funksjoner som album, merknader, geolokasjon, mange nivåer av tilpasning, opplasting fra besøkende, personvern, kalendere og statistikker.
