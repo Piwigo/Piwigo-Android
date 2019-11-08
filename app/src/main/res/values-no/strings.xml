@@ -73,21 +73,21 @@
     <string name="about_text_contact"><![CDATA[For feil eller forslag til appen, bruk <a href="https://github.com/Piwigo/Piwigo-Android/issues">feilsøkeren</a>, helst på Engelsk.]]></string>
     <string name="about_text_contact_2"><![CDATA[Kildekoden finnes på <a href="https://github.com/Piwigo/Piwigo-Android">Github</a>.]]></string>
     <string name="about_text_contact_3"><![CDATA[Diskusjoner burde ta plass i <a href="https://piwigo.org/forum/">Piwigo-forumet</a>.]]></string>
-    <string name="about_text_contact_4"><![CDATA[For anything you want to tell us privately send an email to <a href="mailto:android@piwigo.org">android@piwigo.org</a>.]]></string>
-    <string name="about_text_support_h">Contribution</string>
-    <string name="about_text_support"><![CDATA[In case you want to support the development of %1$s consider discussing <a href="https://github.com/Piwigo/Piwigo-Android/issues">issues on github</a> or submitting <a href="https://github.com/Piwigo/Piwigo-Android/pulls">pull requests</a>.]]></string>
-    <string name="about_text_ack_h">Acknowledgements</string>
-    <string name="about_text_ack_2">We are looking forward to mention your name in this list, too.</string>
-    <string name="about_text_lib_h">Libraries</string>
-    <string name="about_text_lib">The following libraries are used by this application and licensed under the named licenses:</string>
+    <string name="about_text_contact_4"><![CDATA[For alt du vil fortelle oss privat, send en e-post til <a href="mailto:android@piwigo.org">android@piwigo.org</a>.]]></string>
+    <string name="about_text_support_h">Bidra</string>
+    <string name="about_text_support"><![CDATA[I tilfellet du har lyst til å støtte utviklingen av %1$s, vurder å diskutere <a href="https://github.com/Piwigo/Piwigo-Android/issues">feil på GitHub</a> eller ved å sende inn <a href="https://github.com/Piwigo/Piwigo-Android/pulls">Pull Requests</a>.]]></string>
+    <string name="about_text_ack_h">Anerkjennelser</string>
+    <string name="about_text_ack_2">Vi ser frem til å nevne deg i denne lista også.</string>
+    <string name="about_text_lib_h">Ressurser</string>
+    <string name="about_text_lib">De følgene ressursene brukes av denne applikasjonen og er lisensert under de nevnte lisensene:</string>
     <!-- Albums -->
     <plurals name="album_photos">
-        <item quantity="one">1 photo</item>
-        <item quantity="other">%1$d photos</item>
+        <item quantity="one">1 bilde</item>
+        <item quantity="other">%1$d bilder</item>
     </plurals>
     <plurals name="album_photos_subs">
-        <item quantity="one">, 1 photo in sub-albums</item>
-        <item quantity="other">, %1$d photos in sub-albums</item>
+        <item quantity="one">, 1 bilde i underalbum</item>
+        <item quantity="other">, %1$d bilder i underalbum</item>
     </plurals>
     <!-- Privacy Policy -->
     <string name="privacy_text">Piwigo-Android and Piwigo-Mobile are free, libre and open source client applications for Piwigo galleries. This privacy policy applies to these native Android and iOS applications, connecting to Piwigo sites which are out of the control of the authors. Check the privacy policy of the corresponding sites before configuring an account in Piwigo-Android or Piwigo-Mobile to connect to a gallery.</string>
