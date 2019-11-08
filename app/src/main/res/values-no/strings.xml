@@ -94,12 +94,12 @@
     <string name="privacy_last_update">Sist oppdatert 25. Oktober 2018</string>
     <string name="privacy_intro_title">Introduksjon</string>
     <string name="privacy_intro_text1">Utviklerene av Piwigo-Android og Piwigo-Mobile, vi (eller \"oss\" eller \"vår\") respekterer personvernet til våre brukere (\"bruker\" eller \"deg\"/\"du\"). Denne Personvernerklæringen forklarer hvordan vi samler, bruker, bearbeider og beskyatter informasjonen din når du bruker mobil-applikasjonene (\"Applikasjonene\") våre. Navnene våres kan hentes ut fra meta-data i git-tjenesten og fra Applikasjonene.</string>
-    <string name="privacy_intro_text2">Vennligst les denne Personvernerklæringen nøye. Hvis du ikke er enig med vilkårene i Personvernerklæringene, vennligst ikke bruk Applikasjonene.</string>
+    <string name="privacy_intro_text2">Vennligst les denne Personvernerklæringen nøye. Hvis du ikke er enig med vilkårene i Personvernerklæringen, vennligst ikke bruk Applikasjonene.</string>
     <string name="privacy_intro_text3">Vi reserverer rettighetene til å gjøre endringer til denne Personvernerklæringen når som helst og for hvilken som helst grunn. Vi vil varsle deg om alle endringer ved å oppdatere \"Sist oppdatert\"-datoen til Personvernerklæringen.</string>
     <string name="privacy_intro_text4">Du oppmuntres til å periodevis gjennomgå denne Personvernerklæringen for å holder deg oppdatert på endringer. Du vil erklære kjennskap, vil bli utsatt for og vil erklære aksept for endringer i Personvernerklæringen ved å fortsette å bruke Applikasjonene etter datoen for en revidert Personvernerklæring er lagt ut.</string>
     <string name="privacy_intro_text5">Denne Personvernerklæringen gjelder ikke tredjeparts-marked/butikk der du installerer Applikasjonene eller gjør transaksjoner, inkludert alle virtuelle elementer, som også kan samle og bruke dataene dine. Vi er ikke ansvarlige for dataene samlet av noen slik tredjepart.</string>
     <string name="privacy_what_title">Hvilke data blir lagret og bearbeidet?</string>
-    <string name="privacy_what_subTitle1">Piwigo-galleri-data</string>
+    <string name="privacy_what_subTitle1">Data i Piwigo-galleri</string>
     <string name="privacy_what_subText1a">Kontoinformasjon lagres av Applikasjonene og sendes til de konfigurerte sidene for å koble til en eller flere Piwigo-gallerier. I tillegg vil alle bilder, videoer eller andre filer som er valgt til ned-/opplasting og det angitte innholdet blir lagret, behandlet og sendt til den konfigurerte galleri-siden.</string>
     <string name="privacy_what_subTitle2">Geolokasjon-informasjon</string>
     <string name="privacy_what_subText2a">Vi kan spørre om tilgang til å bruke eller spore posisjon-basert informasjon fra enheten din, enten kontinuerlig eller mens du bruker Applikasjonene, og gi posisjon-baserte tjenester til brukeren. Hvis du ønsker å endre tilgangen vår, kan du gjøre det i enhetensinnstillingene.</string>
@@ -109,21 +109,21 @@
     <string name="privacy_what_subText4a">Når du kontakter støtte-teamet, vil enhetsinformasjon som enhetens ID, modell, produsent, versjonen på operativsystemet, e-posten, land, posisjon og all annen data du velger å dele, bli sendt til utvikler-teamet til Applikasjonene. Utenom dataen delt av brukeren til utvikler-teamet, vil ingen data lagres, deles eller behandles av oss.</string>
     <string name="privacy_why_title">Hvorfor lagrer mobilappen data?</string>
     <string name="privacy_why_text1">Applikasjonene lagrer bare data for å tilfredstille en funksjon; få tilgang til et Piwigo-galleri på en fjern web-tjener. Ingen data blir samlet, delt eller lagret som ikke er nødvendig for at appen skal fungere som tiltenkt.</string>
-    <string name="privacy_why_text2">Når du bruker Applikasjonene, blir ikke dine personlige data samlet ved bruk av sporingsteknologi. Vi bruker bare mellomlagring-mekanismer for å hjelpe tilpasning av Applikasjonene og forbedre opplevelsen din. Du kan deaktivere eller tømme mellomlageret, men vær klar over at det kan påvirke tilgjengeligheten og funksjonaliteten i Applikasjonene.</string>
+    <string name="privacy_why_text2">Når du bruker Applikasjonene, blir ikke dine persondata samlet ved bruk av sporingsteknologi. Vi bruker bare mellomlagring-mekanismer for å hjelpe tilpasning av Applikasjonene og forbedre opplevelsen din. Du kan deaktivere eller tømme mellomlageret, men vær klar over at det kan påvirke tilgjengeligheten og funksjonaliteten i Applikasjonene.</string>
     <string name="privacy_how_title">Hvordan beskyttes dataene?</string>
     <string name="privacy_how_text1">Applikasjonene lagrer data lokalt på enheten de brukes på. Du er ansvarlig for å beskytte lagrede data fra uautorisert tilgang. Vi anbefaler på det sterkeste å bruke HTTPS for å beskytte data under overføring, og Applikasjonene prøver å bruke HTTPS den første gangen brukeren etablerer en kobling til et Piwigo-galleri. Å holde nædvendige sertifikater og ressurser oppdaterte for HTTPS-funksjonaliteten er Piwigo-tjenerens Webmaster sitt ansvar. Når Applikasjonene ikke kan bruke HTTPS, vil de bytte til HTTP og data krypteres ikke under overføring.</string>
     <string name="privacy_how_text2">Når du laster opp bilder til et Piwigo-galleri, kan bildene inneholde private data som GPS-koordinater eller kommentarer. Applikasjonene tilbyr en innstilling som fjerner disse personlige dataene fra bildefiler før de lastes opp. Det er brukerens ansvar å velge om disse private dataene skal lastes opp eller ikke.</string>
-    <string name="privacy_security_title">Sikkerheten til informasjonen din</string>
-    <string name="privacy_security_text">Vi bruker tekniske sikkerhetstiltak for å hjelpe med å beskytte din privat informasjon. Selv om vi tar betydelige tiltak for å sikre personlig informasjon du gir oss, vennligst vær klar over at tross tiltakene våre, er det ingen sikkerhetstiltak som er perfekte eller ugjennomtrengelige, og ingen metode for data-overføring kan garantere ingen form for innbrudd i overføringene, eller annet misbruk. All informasjon gitt online kan utsettes for fare for innbrudd eller misbruk av uautoriserte parter. Derfor, kan vi ikke garantere en fullstendig sikkerhet hvis du oppgir personlig informasjon.</string>
+    <string name="privacy_security_title">Sikkerheten rundt informasjonen din</string>
+    <string name="privacy_security_text">Vi bruker tekniske sikkerhetstiltak for å hjelpe med å beskytte dine persondata. Selv om vi tar betydelige tiltak for å sikre personlig informasjon du gir oss, vennligst vær klar over at tross tiltakene våre, er det ingen sikkerhetstiltak som er perfekte eller ugjennomtrengelige, og ingen metode for data-overføring kan garantere ingen form for innbrudd i overføringene, eller annet misbruk. All informasjon gitt online kan utsettes for fare for innbrudd eller misbruk av uautoriserte parter. Derfor, kan vi ikke garantere en fullstendig sikkerhet hvis du oppgir personlig informasjon.</string>
     <string name="privacy_contact_title">Kontakt oss</string>
-    <string name="privacy_contact_text">Har du noen spørsmål eller kommentarer om denne Personvernerklæringen, vennligst kontakt oss på:</string>
+    <string name="privacy_contact_text">Har du noen spørsmål om eller kommentarer til denne Personvernerklæringen, vennligst kontakt oss på:</string>
     <string name="privacy_contact_address">Piwigo, 42 rue des Vignes, 21800 Quetigny (Frankrike)</string>
     <!-- Settings -->
     <string name="settings_albums_title">Album</string>
     <string name="settings_download_size">Størrelse på nedlastinger</string>
     <string name="settings_images">Bilder</string>
     <string name="settings_photos_per_row">Bilder per rad</string>
-    <string name="settings_download_size_summary">Bildestørrelse \'%1$s\' vil brukes for nedlastinger</string>
+    <string name="settings_download_size_summary">Bildestørrelse \'%1$s\' vil brukes på nedlastinger</string>
     <!-- Upload -->
     <string name="upload_success">Opplasting var vellykket</string>
     <string name="upload_failed">Opplasting feilet</string>
@@ -153,7 +153,7 @@
     <string name="not_implemented_msg">Denne funksjonen har ikke blitt implementert ennå!</string>
     <!-- Guest error messages-->
     <string name="not_admin">Ikke innlogget</string>
-    <string name="not_admin_explanation">Du må være pålogget for å gjøre dette.</string>
+    <string name="not_admin_explanation">Du må være innlogget for å gjøre dette.</string>
     <string name="no_internet">Oops! Det ser ut som du ikke har noen internett-tilkobling. Vennligst koble til internett og prøv på nytt.</string>
     <string name="show_details">Vis detaljer</string>
     <!-- Spinner Download Size array-->
