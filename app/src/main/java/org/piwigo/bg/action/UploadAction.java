@@ -27,8 +27,28 @@ public class UploadAction implements Serializable
 
     public class UploadData implements Serializable {
 
+        private String imageData;
+        private String imageName;
         private String targetUri;
         private int categoryId;
+
+        public void setImageData(String imageData)
+        {
+            this.imageData = imageData;
+        }
+
+        public void setImageName(String imageName)
+        {
+            this.imageName = imageName;
+        }
+
+        public String getImageData() {
+            return imageData;
+        }
+
+        public String getImageName() {
+            return imageName;
+        }
 
         public void setTargetUri(Uri targetUri)
         {
