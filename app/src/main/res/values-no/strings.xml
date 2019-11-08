@@ -72,7 +72,7 @@
     <string name="about_text_contact_h">Kontakt</string>
     <string name="about_text_contact"><![CDATA[For feil eller forslag til appen, bruk <a href="https://github.com/Piwigo/Piwigo-Android/issues">feilsøkeren</a>, helst på Engelsk.]]></string>
     <string name="about_text_contact_2"><![CDATA[Kildekoden finnes på <a href="https://github.com/Piwigo/Piwigo-Android">Github</a>.]]></string>
-    <string name="about_text_contact_3"><![CDATA[Discussions should take place in the <a href="https://piwigo.org/forum/">Piwigo Forum</a>.]]></string>
+    <string name="about_text_contact_3"><![CDATA[Diskusjoner burde ta plass i <a href="https://piwigo.org/forum/">Piwigo-forumet</a>.]]></string>
     <string name="about_text_contact_4"><![CDATA[For anything you want to tell us privately send an email to <a href="mailto:android@piwigo.org">android@piwigo.org</a>.]]></string>
     <string name="about_text_support_h">Contribution</string>
     <string name="about_text_support"><![CDATA[In case you want to support the development of %1$s consider discussing <a href="https://github.com/Piwigo/Piwigo-Android/issues">issues on github</a> or submitting <a href="https://github.com/Piwigo/Piwigo-Android/pulls">pull requests</a>.]]></string>
