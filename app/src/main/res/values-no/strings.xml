@@ -53,8 +53,8 @@
     <string name="login_host_error">Tjeneren \'%1s\' kunne ikke nås, vennligst sjekk adressen</string>
     <string name="login_http_error">Tjeneren ga et uventet svar \'%1s\'</string>
     <string name="login_http_404_error">Oppgitt filsti \'%1s\' ble ikke funnet på tjeneren</string>
-    <string name="login_baseurl_invalid">Intet Piwigo-galleri funnet på den oppgitte filstien \'%1s\'</string>
-    <string name="login_invalid_credentials">Innlogging feilet med den gitte brukerinformasjonen \'%1s/*****\'</string>
+    <string name="login_baseurl_invalid">Ingen Piwigo-gallerier funnet på den oppgitte filstien \'%1s\'</string>
+    <string name="login_invalid_credentials">Innlogging feilet med den gitte kontoinformasjonen \'%1s/*****\'</string>
     <!-- Account -->
     <string name="account_image_description">Snarvei-ikon for galleriet (favicon)</string>
     <string name="account_not_selected">Velg en konto som skal slettes først</string>
