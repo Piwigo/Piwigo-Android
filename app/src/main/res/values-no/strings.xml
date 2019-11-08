@@ -48,11 +48,11 @@
     <string name="login_password_empty">Angi passordet ditt</string>
     <string name="login_password_hint">Passord (tom for gjest)</string>
     <string name="login_error">Innlogging feilet</string>
-    <string name="login_account_error">An account for this server already exists</string>
-    <string name="login_ssl_error">Encrypted connection (SSL) to \'%1s\' cannot be established</string>
-    <string name="login_host_error">Host \'%1s\' could not be reached, please check site address</string>
-    <string name="login_http_error">Server returned unexpected response \'%1s\'</string>
-    <string name="login_http_404_error">Given path \'%1s\' not found on server</string>
+    <string name="login_account_error">En konto for denne serveren eksisterer allerede</string>
+    <string name="login_ssl_error">Kryptert tilkobling (SSL) til \'%1s\' kunne ikke etableres</string>
+    <string name="login_host_error">Tjeneren \'%1s\' kunne ikke nås, vennligst sjekk adressen</string>
+    <string name="login_http_error">Tjeneren ga et uventet svar \'%1s\'</string>
+    <string name="login_http_404_error">Angitt filsti \'%1s\' ble ikke funnet på tjeneren</string>
     <string name="login_baseurl_invalid">No Piwigo gallery found at given path \'%1s\'</string>
     <string name="login_invalid_credentials">Login failed for given credentials \'%1s/*****\'</string>
     <!-- Account -->
