@@ -90,9 +90,9 @@
         <item quantity="other">, %1$d bilder i underalbum</item>
     </plurals>
     <!-- Privacy Policy -->
-    <string name="privacy_text">Piwigo-Android and Piwigo-Mobile are free, libre and open source client applications for Piwigo galleries. This privacy policy applies to these native Android and iOS applications, connecting to Piwigo sites which are out of the control of the authors. Check the privacy policy of the corresponding sites before configuring an account in Piwigo-Android or Piwigo-Mobile to connect to a gallery.</string>
-    <string name="privacy_last_update">Last updated October 25, 2018</string>
-    <string name="privacy_intro_title">Introduction</string>
+    <string name="privacy_text">Piwigo-Android og Piwigo-Mobile er gratise, frie og åpne klient-apper for Piwigo-gallerier. Denne personvernerklæringen gjelder disse Android- og iOS-appene, koble til Piwigo-sider som er ikke kan kontrolleres av forfatterne. Sjekk personvernerklæringen til de korresponderende sidene før du konfigurerer en konto i Piwigo-Android eller Piwigo-Mobile for å koble til et galleri.</string>
+    <string name="privacy_last_update">Sist oppdatert 25. Oktober 2018</string>
+    <string name="privacy_intro_title">Introduksjon</string>
     <string name="privacy_intro_text1">Developers of Piwigo-Android and Piwigo-Mobile, we (or “us” or “our”) respect the privacy of our users (“user” or “you”). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile applications (the “Applications”). Our names can be extracted from the meta data in the git repositories and within the Applications.</string>
     <string name="privacy_intro_text2">Please read this Privacy Policy carefully. If you do not agree with the terms of this Privacy Policy, please do not access the Applications.</string>
     <string name="privacy_intro_text3">We reserve the right to make changes to this Privacy Policy at any time and for any reason. We will alert you about any changes by updating the “Last updated” date of this Privacy Policy.</string>
