@@ -57,7 +57,6 @@ import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
-import org.piwigo.io.model.ImageUploadItem;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.model.SuccessResponse;
 import org.piwigo.io.repository.UserRepository;
@@ -478,31 +477,33 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SELECT_PICTURES) {
             if (resultCode == RESULT_OK) {
-                ArrayList<ImageUploadItem> images = new ArrayList<>();
+                ArrayList<UploadAction> images = new ArrayList<>();
                 Intent intent = new Intent(this, UploadService.class);
                 ImageUploadQueue<UploadAction> imageUploadQueue = new ImageUploadQueue<>();
 
                 if (data.getClipData() != null) {
                     for (int i = 0; i < data.getClipData().getItemCount(); i++) {
-                        ImageUploadItem item = new ImageUploadItem();
+                        UploadAction uploadAction = new UploadAction(getNameFromURI(
+                                data.getClipData().getItemAt(i).toString(),
+                                data.getClipData().getItemAt(i).getUri()));
 
-                        item.setImageData(data.getClipData().getItemAt(i).toString());
-                        item.setImageUri(data.getClipData().getItemAt(i).getUri());
-                        images.add(item);
+                        uploadAction.getUploadData().setImageData(data.getClipData().getItemAt(i).toString());
+                        uploadAction.getUploadData().setTargetUri(data.getClipData().getItemAt(i).getUri());
+                        images.add(uploadAction);
                     }
                 } else if (data.getData() != null) {
-                    ImageUploadItem item = new ImageUploadItem();
+                    UploadAction uploadAction = new UploadAction(getNameFromURI(
+                            data.toString(),
+                            data.getData()));
 
-                    item.setImageData(data.toString());
-                    item.setImageUri(data.getData());
-                    images.add(item);
+                    uploadAction.getUploadData().setImageData(data.toString());
+                    uploadAction.getUploadData().setTargetUri(data.getData());
+                    images.add(uploadAction);
                 }
                 for (int i = 0; i < images.size(); i++) {
-                    ImageUploadItem item = images.get(i);
+                    UploadAction uploadAction = images.get(i);
 
-                    item.setImageName(getNameFromURI(item.getImageData(), item.getImageUri()));
-                    UploadAction uploadAction = new UploadAction(item.getImageName());
-                    uploadAction.getUploadData().setTargetUri(item.getImageUri());
+                    uploadAction.getUploadData().setImageName(uploadAction.getFileName());
                     uploadAction.getUploadData().setCategoryId(getCurrentCategoryId());
                     if (!imageUploadQueue.offer(uploadAction))
                         Log.e("ImageUploadQueue", "Unable to offer UploadAction..");
