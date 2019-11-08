@@ -152,17 +152,17 @@
     <string name="not_implemented_title">Ikke implementert ennå.</string>
     <string name="not_implemented_msg">Denne funksjonen har ikke blitt implementert ennå!</string>
     <!-- Guest error messages-->
-    <string name="not_admin">Not logged in</string>
-    <string name="not_admin_explanation">You need to be logged to do this.</string>
-    <string name="no_internet">Oops! It seems like you have no internet connection. Please connect and try again.</string>
-    <string name="show_details">Show details</string>
+    <string name="not_admin">Ikke innlogget</string>
+    <string name="not_admin_explanation">Du må være pålogget for å gjøre dette.</string>
+    <string name="no_internet">Oops! Det ser ut som du ikke har noen internett-tilkobling. Vennligst koble til internett og prøv på nytt.</string>
+    <string name="show_details">Vis detaljer</string>
     <!-- Spinner Download Size array-->
     <string-array name="download_size_array">
-        <item>square</item>
+        <item>kvadrat</item>
         <item>thumb</item>
-        <item>small</item>
-        <item>medium</item>
-        <item>large</item>
-        <item>xxlarge</item>
+        <item>liten</item>
+        <item>middels</item>
+        <item>stor</item>
+        <item>xxstor</item>
     </string-array>
 </resources>
