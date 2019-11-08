@@ -58,7 +58,7 @@
     <!-- Account -->
     <string name="account_image_description">Icône de raccourci de la galerie (favicon)</string>
     <string name="account_not_selected">Sélectionnez d’abord un compte pour la suppression</string>
-    <string name="account_empty_message">Empty account!</string>
+    <string name="account_empty_message">Compte vide !</string>
     <string name="account_logout_successful">Déconnexion réussie !</string>
     <string name="account_logout_unsuccessfull">Échec de la déconnexion: %1$s</string>
     <!-- About -->
