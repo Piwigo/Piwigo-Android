@@ -1,1 +1,1 @@
-Access photos in your Piwigo photo gallery.
+Få tilgang til bilder i ditt Piwigo-galleri.
