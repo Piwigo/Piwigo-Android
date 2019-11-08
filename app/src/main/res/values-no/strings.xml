@@ -54,18 +54,18 @@
     <string name="login_http_error">Tjeneren ga et uventet svar \'%1s\'</string>
     <string name="login_http_404_error">Angitt filsti \'%1s\' ble ikke funnet på tjeneren</string>
     <string name="login_baseurl_invalid">Intet Piwigo-galleri funnet på den oppgitte filstien \'%1s\'</string>
-    <string name="login_invalid_credentials">Login failed for given credentials \'%1s/*****\'</string>
+    <string name="login_invalid_credentials">Innlogging feilet med den gitte brukerinformasjonen \'%1s/*****\'</string>
     <!-- Account -->
-    <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
-    <string name="account_not_selected">Select an account for deletion first</string>
-    <string name="account_empty_message">Empty account!</string>
-    <string name="account_logout_successful">Logout Successful!</string>
-    <string name="account_logout_unsuccessfull">Logout failed: %1$s</string>
+    <string name="account_image_description">Snarvei-ikon for galleriet (favicon)</string>
+    <string name="account_not_selected">Velg en konto som skal slettes først</string>
+    <string name="account_empty_message">Tom konto!</string>
+    <string name="account_logout_successful">Utlogging var vellykket!</string>
+    <string name="account_logout_unsuccessfull">Utlogging feilet: %1$s</string>
     <!-- About -->
-    <string name="about_text_version">version <b>%1$s</b></string>
-    <string name="about_text_intro"> - access Piwigo galleries from your Android phone.</string>
-    <string name="about_text_licence_h">License</string>
-    <string name="about_text_licence"><![CDATA[%1$s is free software: you can redistribute it and/or modify it under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License</a>]]></string>
+    <string name="about_text_version">versjon <b>%1$s</b></string>
+    <string name="about_text_intro"> - få tilgang til Piwigo-gallerier fra Android-enheten din.</string>
+    <string name="about_text_licence_h">Lisens</string>
+    <string name="about_text_licence"><![CDATA[%1$s er gratis programvare: du kan redistribuere det og/eller endre det under vilkårene av <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License</a>]]></string>
     <string name="about_text_license_2">This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</string>
     <string name="about_text_privacy_h">Privacy Policy</string>
     <string name="about_text_privacy"><![CDATA[%1$s and its authors have a deep interest to respect your privacy. Therefore this app is designed to not track your behaviour and keep your data in your hands. It is recommended to host your Piwigo gallery by yourself and use only encrypted connections via HTTPS. Read the full <a href=\"org.piwigo.privacy_policy://show\">privacy policy</a>.]]></string>
