@@ -66,12 +66,12 @@
     <string name="about_text_intro"> - få tilgang til Piwigo-gallerier fra Android-enheten din.</string>
     <string name="about_text_licence_h">Lisens</string>
     <string name="about_text_licence"><![CDATA[%1$s er gratis programvare: du kan redistribuere det og/eller endre det under vilkårene av <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License</a>]]></string>
-    <string name="about_text_license_2">This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</string>
-    <string name="about_text_privacy_h">Privacy Policy</string>
-    <string name="about_text_privacy"><![CDATA[%1$s and its authors have a deep interest to respect your privacy. Therefore this app is designed to not track your behaviour and keep your data in your hands. It is recommended to host your Piwigo gallery by yourself and use only encrypted connections via HTTPS. Read the full <a href=\"org.piwigo.privacy_policy://show\">privacy policy</a>.]]></string>
-    <string name="about_text_contact_h">Contact</string>
-    <string name="about_text_contact"><![CDATA[For bugs and suggestions use the <a href="https://github.com/Piwigo/Piwigo-Android/issues">issue tacker</a>, preferably in English language.]]></string>
-    <string name="about_text_contact_2"><![CDATA[Source code can be found on <a href="https://github.com/Piwigo/Piwigo-Android">Github</a>.]]></string>
+    <string name="about_text_license_2">Dette programmet distribueres med håp om at det kan være nyttig, men UTEN NOEN GARANTI; også uten den antydde garantien gitt av VAREMERKET eller BRUKBARHETEN FOR ET SPESIELT FORMÅL. Se GNU General Public License for flere detaljer.</string>
+    <string name="about_text_privacy_h">Personvern</string>
+    <string name="about_text_privacy"><![CDATA[%1$s og dens utviklere har stor interesse i å respektere privatlivet ditt. Derfor er denne appen designet for å ikke spore bruken din av appen og holde dine data i dine hender. Det er anbefalt å sette opp ditt eget Piwigo-galleri med din egne lokale tjener og bare bruke krypterte koblinger via HTTPS. Les hele <a href=\"org.piwigo.privacy_policy://show\">personvernerklæringen</a>.]]></string>
+    <string name="about_text_contact_h">Kontakt</string>
+    <string name="about_text_contact"><![CDATA[For feil eller forslag til appen, bruk <a href="https://github.com/Piwigo/Piwigo-Android/issues">feilsøkeren</a>, helst på Engelsk.]]></string>
+    <string name="about_text_contact_2"><![CDATA[Kildekoden finnes på <a href="https://github.com/Piwigo/Piwigo-Android">Github</a>.]]></string>
     <string name="about_text_contact_3"><![CDATA[Discussions should take place in the <a href="https://piwigo.org/forum/">Piwigo Forum</a>.]]></string>
     <string name="about_text_contact_4"><![CDATA[For anything you want to tell us privately send an email to <a href="mailto:android@piwigo.org">android@piwigo.org</a>.]]></string>
     <string name="about_text_support_h">Contribution</string>
