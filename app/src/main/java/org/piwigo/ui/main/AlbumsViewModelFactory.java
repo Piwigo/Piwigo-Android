@@ -25,6 +25,7 @@ import android.content.Context;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.repository.CategoriesRepository;
 import org.piwigo.io.repository.ImageRepository;
+import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -36,20 +37,22 @@ public class AlbumsViewModelFactory implements ViewModelProvider.Factory {
     private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
     private final ImageRepository imagesRepository;
+    private final PreferencesRepository preferences;
 
     @Inject public AlbumsViewModelFactory(Context context, UserManager userManager,
-                                          CategoriesRepository categoriesRepository, ImageRepository imagesRepository) {
+                                          CategoriesRepository categoriesRepository, ImageRepository imagesRepository, PreferencesRepository preferences) {
         this.context = context;
         this.userManager = userManager;
         this.categoriesRepository = categoriesRepository;
         this.imagesRepository = imagesRepository;
+        this.preferences = preferences;
     }
 
     @Override public <T extends ViewModel> T create(Class<T> viewModelClass) {
         if (viewModelClass.isAssignableFrom(AlbumsViewModel.class)) {
             //noinspection unchecked
             return (T) new AlbumsViewModel(userManager, categoriesRepository,
-                    imagesRepository, context.getResources());
+                    imagesRepository, context.getResources(), preferences);
         }
         throw new IllegalStateException("Unable to create " + viewModelClass.getName());
     }

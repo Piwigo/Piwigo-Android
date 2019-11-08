@@ -33,21 +33,7 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.Observable;
-import androidx.databinding.ObservableBoolean;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
@@ -73,10 +59,13 @@ import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
 import org.piwigo.io.model.ImageUploadItem;
 import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.model.SuccessResponse;
 import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
+import org.piwigo.ui.login.LoginActivity;
+import org.piwigo.ui.settings.SettingsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 
 import java.io.File;
@@ -84,6 +73,20 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableBoolean;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
@@ -103,6 +106,8 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Inject
     UserRepository userRepository;
 
+    private MainViewModel viewModel;
+
     private Account currentAccount = null;
 
     private SpeedDialView speedDialView;
@@ -121,7 +126,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, mBinding.navigationView, false);
 
-        MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
         viewModel.getSelectedNavigationItemId().observe(this, this::itemSelected);
 
         mBinding.setViewModel(viewModel);
@@ -142,14 +147,14 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         mDrawerCallBack = new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                mDrawerToggle.setDrawerIndicatorEnabled(((ObservableBoolean)sender).get());
+                mDrawerToggle.setDrawerIndicatorEnabled(((ObservableBoolean) sender).get());
             }
         };
         viewModel.showingRootAlbum.addOnPropertyChangedCallback(mDrawerCallBack);
 
         snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
 
-        if (!NetworkHelper.INSTANCE.hasInternet(this)){
+        if (!NetworkHelper.INSTANCE.hasInternet(this)) {
             EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
         }
 
@@ -219,7 +224,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
 
     @Override
     public void onBackPressed() {
-        if (mDrawerToggle.isDrawerIndicatorEnabled()){
+        if (mDrawerToggle.isDrawerIndicatorEnabled()) {
             MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
             viewModel.drawerState.set(false);
         } else {
@@ -297,8 +302,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                     snackProgressBarManager.show(progressEvent.getSnackbarId(), SnackProgressBarManager.LENGTH_LONG);
                 }
                 snackProgressBarManager.updateTo(progressEvent.getSnackbarId());
-            }
-            else {
+            } else {
                 if (progressEvent.getAction().equals(SnackProgressEvent.SnackbarUpdateAction.KILL)) {
                     return;
                 }
@@ -331,6 +335,12 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
             case R.id.nav_privacy:
                 startActivity(new Intent(getApplicationContext(), PrivacyPolicyActivity.class));
                 break;
+            case R.id.nav_settings:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                break;
+            case R.id.nav_logout:
+                logoutUserClick();
+                break;
 
             default:
                 DialogHelper.INSTANCE.showErrorDialog(R.string.not_implemented_title, R.string.not_implemented_msg, this);
@@ -344,7 +354,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         // true, then it has handled the app icon touch event
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
-        }else if(item.getItemId() == android.R.id.home){
+        } else if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         }
 
@@ -502,6 +512,31 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
             }
         }
     }
+
+    private void logoutUserClick() {
+        viewModel.getLogoutSuccess().observe(this, this::logoutSuccess);
+        viewModel.getLogoutError().observe(this, this::logoutError);
+        viewModel.onLogoutClick();
+    }
+
+    private void logoutSuccess(SuccessResponse response) {
+        //TODO: #161 Show more failure details
+        Toast.makeText(getApplicationContext(), R.string.account_logout_successful, Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void logoutError(Throwable throwable) {
+        //TODO: #161 Show more failure details
+        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.account_logout_unsuccessfull), throwable.getMessage()), Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
 
     private String getNameFromURI(String item, Uri contentUri) {
         if (item.contains("content:"))

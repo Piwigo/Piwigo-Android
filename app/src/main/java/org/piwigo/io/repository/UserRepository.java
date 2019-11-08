@@ -26,6 +26,7 @@ import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.model.SuccessResponse;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -58,13 +59,16 @@ public class UserRepository extends RESTBaseRepository {
         return restService.login(username, password)
                 .compose(applySchedulers())
                 .flatMap(response -> {
-                    if (response.body().result) {
-// TODO: check: should we set the cookie in the Usermanager here?
+                    if (response.body() != null && response.body().result) {
+                        // TODO: check: should we set the cookie in the UserManager here?
                         loginResponse.pwgId = CookieHelper.extract("pwg_id", response.headers());
                         return Observable.just(response.body()).compose(applySchedulers());
                     }
                     // TODO:
 //            return Observable.error(new Throwable("Login failed"));
+                    if (response.body() == null) {
+                        return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with null response body"));
+                    }
                     return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with code " + response.body().err + ": " + response.body().message));
                 })
                 .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId).compose(applySchedulers()))
@@ -102,5 +106,14 @@ public class UserRepository extends RESTBaseRepository {
                     return loginResponse;
                 })
                 ;
+    }
+
+    public Observable<SuccessResponse> logout(Account account) {
+        RestService restService = restServiceFactory.createForUrl(validateUrl(userManager.getSiteUrl(account)));
+        final SuccessResponse successResponse = new SuccessResponse();
+
+        return restService.logout()
+                .compose(applySchedulers())
+                .map(statusResponse -> successResponse);
     }
 }

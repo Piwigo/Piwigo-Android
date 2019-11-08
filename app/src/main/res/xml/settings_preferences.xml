@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/settings_albums_title"
+        app:iconSpaceReserved="false">
+        <SeekBarPreference
+            android:inputType="number"
+            android:key="photos_per_row"
+            app:min="1"
+            android:max="6"
+            android:defaultValue="3"
+            app:iconSpaceReserved="false"
+            app:showSeekBarValue="true"
+            android:title="@string/settings_photos_per_row" />
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:title="@string/settings_images"
+        app:iconSpaceReserved="false">
+        <ListPreference
+            android:entries="@array/download_size_array"
+            android:entryValues="@array/download_size_array"
+            android:key="download_size"
+            app:defaultValue="medium"
+            app:iconSpaceReserved="false"
+            app:summary="@string/settings_download_size_summary"
+            app:title="@string/settings_download_size" />
+    </PreferenceCategory>
+</PreferenceScreen>
+
+

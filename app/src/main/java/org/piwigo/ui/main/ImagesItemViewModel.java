@@ -22,14 +22,14 @@ import android.content.ContextWrapper;
 import android.os.Bundle;
 import android.view.View;
 
+import org.piwigo.io.model.ImageInfo;
+import org.piwigo.ui.photoviewer.PhotoViewerDialogFragment;
+
+import java.util.ArrayList;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModel;
-
-import org.piwigo.ui.photoviewer.PhotoViewerDialogFragment;
-import org.piwigo.io.model.ImageInfo;
-
-import java.util.ArrayList;
 
 public class ImagesItemViewModel extends ViewModel {
 
