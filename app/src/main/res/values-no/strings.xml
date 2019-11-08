@@ -132,7 +132,7 @@
     <string name="upload_started">Laster opp bildene dine</string>
     <string name="upload_success_body">Lastet opp %1$d bilde(r) til %2$s</string>
     <string name="storage_permission_title">Manglende tillatelser.</string>
-    <string name="storage_permission_explanation">Opplasting av bilder er bare mulig hvis du gir oss tilgang til enhetslagringen.</string>
+    <string name="storage_permission_explanation">Opplasting av bilder er bare mulig hvis du gir tilgang til enhetslagringen.</string>
     <!-- Album created -->
     <string name="create_album_title">Lag album</string>
     <string name="create_album_success">Album %1$s ble laget.</string>
