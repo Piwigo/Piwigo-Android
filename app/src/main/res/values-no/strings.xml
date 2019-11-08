@@ -159,7 +159,7 @@
     <!-- Spinner Download Size array-->
     <string-array name="download_size_array">
         <item>kvadrat</item>
-        <item>thumb</item>
+        <item>miniatyr</item>
         <item>liten</item>
         <item>middels</item>
         <item>stor</item>
