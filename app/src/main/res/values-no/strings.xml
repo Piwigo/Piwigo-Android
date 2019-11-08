@@ -66,20 +66,20 @@
     <string name="about_text_intro"> - få tilgang til Piwigo-gallerier fra Android-enheten din.</string>
     <string name="about_text_licence_h">Lisens</string>
     <string name="about_text_licence"><![CDATA[%1$s er gratis programvare: du kan redistribuere det og/eller endre det under vilkårene av <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License</a>]]></string>
-    <string name="about_text_license_2">Dette programmet distribueres med håp om at det kan være nyttig, men UTEN NOEN GARANTI; også uten den antydde garantien gitt av VAREMERKET eller BRUKBARHETEN FOR ET SPESIELT FORMÅL. Se GNU General Public License for flere detaljer.</string>
+    <string name="about_text_license_2">Dette programmet distribueres med håp om at det kan være nyttig, men UTEN NOEN GARANTI; også uten den antydde garantien gitt av VAREMERKET eller BRUKBARHETEN TIL ET SPESIELT FORMÅL. Se GNU General Public License for flere detaljer.</string>
     <string name="about_text_privacy_h">Personvern</string>
-    <string name="about_text_privacy"><![CDATA[%1$s og dens utviklere har stor interesse i å respektere privatlivet ditt. Derfor er denne appen designet for å ikke spore bruken din av appen og holde dine data i dine hender. Det er anbefalt å sette opp ditt eget Piwigo-galleri med din egne lokale tjener og bare bruke krypterte koblinger via HTTPS. Les hele <a href=\"org.piwigo.privacy_policy://show\">personvernerklæringen</a>.]]></string>
+    <string name="about_text_privacy"><![CDATA[%1$s og dens utviklere har stor interesse i å respektere privatlivet ditt. Derfor er denne appen designet for å ikke spore oppførselen din i appen og holde dine data i dine hender. Det er anbefalt å sette opp ditt eget Piwigo-galleri med din egen lokale tjener og bare bruke krypterte koblinger via HTTPS. Les hele <a href=\"org.piwigo.privacy_policy://show\">personvernerklæringen</a>.]]></string>
     <string name="about_text_contact_h">Kontakt</string>
-    <string name="about_text_contact"><![CDATA[For feil eller forslag til appen, bruk <a href="https://github.com/Piwigo/Piwigo-Android/issues">feilsøkeren</a>, helst på Engelsk.]]></string>
-    <string name="about_text_contact_2"><![CDATA[Kildekoden finnes på <a href="https://github.com/Piwigo/Piwigo-Android">Github</a>.]]></string>
+    <string name="about_text_contact"><![CDATA[For feil eller forslag til appen, bruk <a href="https://github.com/Piwigo/Piwigo-Android/issues">feilsøkeren</a>, helst på engelsk.]]></string>
+    <string name="about_text_contact_2"><![CDATA[Kildekoden finnes på <a href="https://github.com/Piwigo/Piwigo-Android">GitHub</a>.]]></string>
     <string name="about_text_contact_3"><![CDATA[Diskusjoner burde ta plass i <a href="https://piwigo.org/forum/">Piwigo-forumet</a>.]]></string>
     <string name="about_text_contact_4"><![CDATA[For alt du vil fortelle oss privat, send en e-post til <a href="mailto:android@piwigo.org">android@piwigo.org</a>.]]></string>
     <string name="about_text_support_h">Bidra</string>
-    <string name="about_text_support"><![CDATA[I tilfellet du har lyst til å støtte utviklingen av %1$s, vurder å diskutere <a href="https://github.com/Piwigo/Piwigo-Android/issues">feil på GitHub</a> eller ved å sende inn <a href="https://github.com/Piwigo/Piwigo-Android/pulls">Pull Requests</a>.]]></string>
+    <string name="about_text_support"><![CDATA[I tilfelle du har lyst til å støtte utviklingen av %1$s, vurder å diskutere <a href="https://github.com/Piwigo/Piwigo-Android/issues">feil på GitHub</a> eller sende inn <a href="https://github.com/Piwigo/Piwigo-Android/pulls">Pull Requests</a>.]]></string>
     <string name="about_text_ack_h">Anerkjennelser</string>
     <string name="about_text_ack_2">Vi ser frem til å nevne deg i denne lista også.</string>
     <string name="about_text_lib_h">Ressurser</string>
-    <string name="about_text_lib">De følgene ressursene brukes av denne applikasjonen og er lisensert under de nevnte lisensene:</string>
+    <string name="about_text_lib">De følgene ressursene brukes av denne applikasjonen og er lisensiert under de nevnte lisensene:</string>
     <!-- Albums -->
     <plurals name="album_photos">
         <item quantity="one">1 bilde</item>
@@ -90,7 +90,7 @@
         <item quantity="other">, %1$d bilder i underalbum</item>
     </plurals>
     <!-- Privacy Policy -->
-    <string name="privacy_text">Piwigo-Android og Piwigo-Mobile er gratise, frie og åpne klient-apper for Piwigo-gallerier. Denne personvernerklæringen gjelder disse Android- og iOS-appene, koble til Piwigo-sider som er ikke kan kontrolleres av forfatterne. Sjekk personvernerklæringen til de korresponderende sidene før du konfigurerer en konto i Piwigo-Android eller Piwigo-Mobile for å koble til et galleri.</string>
+    <string name="privacy_text">Piwigo-Android og Piwigo-Mobile er gratis, frie og åpne klient-apper for Piwigo-gallerier. Denne personvernerklæringen gjelder disse Android- og iOS-appene, koble til Piwigo-sider som er ikke kan kontrolleres av utviklerne. Sjekk personvernerklæringen til de korresponderende sidene før du konfigurerer en konto i Piwigo-Android eller Piwigo-Mobile for å koble til et galleri.</string>
     <string name="privacy_last_update">Sist oppdatert 25. Oktober 2018</string>
     <string name="privacy_intro_title">Introduksjon</string>
     <string name="privacy_intro_text1">Utviklerene av Piwigo-Android og Piwigo-Mobile, vi (eller \"oss\" eller \"vår\") respekterer personvernet til våre brukere (\"bruker\" eller \"deg\"/\"du\"). Denne Personvernerklæringen forklarer hvordan vi samler, bruker, bearbeider og beskyatter informasjonen din når du bruker mobil-applikasjonene (\"Applikasjonene\") våre. Navnene våres kan hentes ut fra meta-data i git-tjenesten og fra Applikasjonene.</string>
