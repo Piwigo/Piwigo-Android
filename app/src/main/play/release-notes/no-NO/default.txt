@@ -1,9 +1,9 @@
-Piwigo-Android 1.0 er endelig her, og har en haug nye funksjoner:
+Piwigo-Android 1.0 er endelig her, og har mange nye funksjoner:
 
-- Lagt til en fullskjerm bildeviser
+- Lagt til en bildeviser for fullskjerm
 - Oppdaterte design-elementer
 - Støtte for å lage album
 - Gjorde innlogging-skjemaet enklere å bruke, og fikset noen feil som fikk appen til å stoppe
 - Noen store og små feil er fikset
 
-Vi er virkelig takknemlige for tilbakemeldinger på arbeidet vårt. Ikke nøl med å rangere og skrive en omtale for å hjelpe oss å bli bedre!
+Vi er veldig takknemlige for tilbakemeldinger på arbeidet vårt. Ikke nøl med å rangere appen og skrive en omtale for å hjelpe oss å bli bedre!
