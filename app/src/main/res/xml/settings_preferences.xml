@@ -23,7 +23,7 @@
         app:iconSpaceReserved="false">
         <ListPreference
             android:entries="@array/download_size_array"
-            android:entryValues="@array/download_size_array"
+            android:entryValues="@array/download_size_array_values"
             android:key="download_size"
             app:defaultValue="medium"
             app:iconSpaceReserved="false"
