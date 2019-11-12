@@ -19,7 +19,6 @@
 package org.piwigo.ui.settings;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import org.piwigo.R;
 import org.piwigo.io.repository.PreferencesRepository;
@@ -30,7 +29,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
-import androidx.preference.SwitchPreference;
 
 
 public class SettingsActivity extends AppCompatActivity {

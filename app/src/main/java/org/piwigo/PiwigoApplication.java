@@ -41,7 +41,6 @@ import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
 import org.piwigo.internal.di.component.DaggerBindingComponent;
 import org.piwigo.internal.di.module.ApplicationModule;
-import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Inject;
 
