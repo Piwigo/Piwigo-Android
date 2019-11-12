@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Piwigo" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/piwigo_orange</item>
+        <item name="colorPrimaryDark">@color/piwigo_orange_secondary</item>
+        <item name="colorAccent">@color/piwigo_orange</item>
+        <item name="android:windowBackground">@color/piwigo_dark_background_color</item>
+        <item name="android:textColor"></item>
+    </style>
+
+    <style name="Theme.Piwigo.Login" parent="Theme.Piwigo">
+        <item name="colorPrimary">@color/piwigo_dark_background_color</item>
+        <item name="colorPrimaryDark">@color/piwigo_dark_dark_text_color</item>
+    </style>
+
+    <style name="Theme.Piwigo.ManageAccounts" parent="Theme.Piwigo">
+        <item name="android:background">@color/piwigo_dark_background_color</item>
+    </style>
+
+    <style name="Theme.Piwigo.ItemAlbum" parent="Theme.Piwigo">
+        <item name="android:background">@color/grey_semi_transparent</item>
+    </style>
+
+    <style name="Theme.Piwigo.ErrorDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/piwigo_dark_error_red</item>
+        <item name="colorPrimary">@color/piwigo_dark_error_red</item>
+    </style>
+
+</resources>

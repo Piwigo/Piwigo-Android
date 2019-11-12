@@ -43,7 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="?attr/actionBarSize"
-                    android:background="@color/piwigo_background_color" />
+                    android:theme="@style/Theme.Piwigo" />
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"

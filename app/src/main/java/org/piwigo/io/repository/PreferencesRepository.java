@@ -29,6 +29,7 @@ public class PreferencesRepository {
     public static final String KEY_ACTIVE_ACCOUNT = "active_account";
     public static final String KEY_PREF_PHOTOS_PER_ROW = "photos_per_row";
     public static final String KEY_PREF_DOWNLOAD_SIZE = "download_size";
+    public static final String KEY_PREF_COLOR_PALETTE = "color_palette";
 
     public static final int DEFAULT_PREF_PHOTOS_PER_ROW = 3;
     public static final String DEFAULT_PREF_DOWNLOAD_SIZE = "medium";

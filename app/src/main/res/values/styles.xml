@@ -4,12 +4,21 @@
         <item name="colorPrimary">@color/piwigo_orange</item>
         <item name="colorPrimaryDark">@color/piwigo_orange_secondary</item>
         <item name="colorAccent">@color/piwigo_orange</item>
+        <item name="android:windowAnimationStyle">@style/Theme.Piwigo.Transition</item>
     </style>
 
     <style name="Theme.Piwigo.Login">
-        <item name="colorPrimary">@color/piwigo_background_color</item>
-        <item name="colorPrimaryDark">@color/piwigo_dark_text_color</item>
-        <item name="android:windowBackground">@color/piwigo_background_color</item>
+        <item name="colorPrimary">@color/piwigo_light_background_color</item>
+        <item name="colorPrimaryDark">@color/piwigo_light_dark_text_color</item>
+        <item name="android:windowBackground">@color/piwigo_light_background_color</item>
+    </style>
+
+    <style name="Theme.Piwigo.ManageAccounts" parent="Theme.Piwigo">
+        <item name="android:background">@color/piwigo_light_background_color</item>
+    </style>
+
+    <style name="Theme.Piwigo.ItemAlbum" parent="Theme.Piwigo">
+        <item name="android:background">@color/white_semi_transparent</item>
     </style>
 
     <style name="Theme.Piwigo.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
@@ -18,14 +27,20 @@
     </style>
 
     <style name="Theme.Piwigo.ErrorDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
-        <item name="colorAccent">@color/error_red</item>
-        <item name="colorPrimary">@color/error_red</item>
+        <item name="colorAccent">@color/piwigo_light_error_red</item>
+        <item name="colorPrimary">@color/piwigo_light_error_red</item>
     </style>
 
     <style name="Theme.Piwigo.NavDrawer" />
 
     <style name="Theme.Piwigo.Login.CardView" parent="CardView">
         <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <!-- This will set the fade in animation on all your activities by default -->
+    <style name="Theme.Piwigo.Transition">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>
 
 </resources>

@@ -166,8 +166,10 @@
     <string name="settings_images">Images</string>
     <string name="settings_photos_per_row">Photos per Row</string>
     <string name="settings_download_size_summary">Photo size \'%1$s\' will be used for download</string>
+    <string name="settings_colors">Colors</string>
+    <string name="settings_color_palette">Color Palette</string>
+    <string name="settings_color_palette_summary">%1$s</string>
 
-    
     <!-- Upload -->
     <string name="upload_success">Upload successful</string>
     <string name="upload_failed">Upload failed</string>
@@ -226,5 +228,19 @@
         <item>medium</item>
         <item>large</item>
         <item>xxlarge</item>
+    </string-array>
+
+    <!-- Color palette array -->
+    <string-array name="colors_array">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>Auto</item>
+    </string-array>
+
+    <!-- Color palette array  (should stay untranslated) -->
+    <string-array name="colors_array_values">
+        <item>light</item>
+        <item>dark</item>
+        <item>auto</item>
     </string-array>
 </resources>

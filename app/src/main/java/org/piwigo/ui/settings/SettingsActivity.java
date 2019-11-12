@@ -19,15 +19,18 @@
 package org.piwigo.ui.settings;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import org.piwigo.R;
 import org.piwigo.io.repository.PreferencesRepository;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
+import androidx.preference.SwitchPreference;
 
 
 public class SettingsActivity extends AppCompatActivity {
@@ -51,6 +54,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         private ListPreference mPreferenceThumbnailSize;
         private SeekBarPreference mPreferencePhotosPerRow;
+        private ListPreference mPreferenceDarkTheme;
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -58,6 +62,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             mPreferencePhotosPerRow = findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
             mPreferenceThumbnailSize = findPreference(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE);
+            mPreferenceDarkTheme = findPreference(PreferencesRepository.KEY_PREF_COLOR_PALETTE);
 
             mPreferencePhotosPerRow.setOnPreferenceChangeListener((preference, value) -> true);
 
@@ -65,6 +70,21 @@ public class SettingsActivity extends AppCompatActivity {
                 mPreferenceThumbnailSize.setSummary(getString(R.string.settings_download_size_summary, value.toString()));
                 return true;
             });
+
+            mPreferenceDarkTheme.setOnPreferenceChangeListener(((preference, value) -> {
+                switch (value.toString()) {
+                    case "light":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                        break;
+                    case "dark":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                        break;
+                    case "auto":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                        break;
+                }
+                return true;
+            }));
         }
     }
 }
