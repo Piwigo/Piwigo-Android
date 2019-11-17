@@ -22,7 +22,7 @@ import android.content.ContextWrapper;
 import android.os.Bundle;
 import android.view.View;
 
-import org.piwigo.io.model.ImageInfo;
+import org.piwigo.data.model.Image;
 import org.piwigo.ui.photoviewer.PhotoViewerDialogFragment;
 
 import java.util.ArrayList;
@@ -33,21 +33,21 @@ import androidx.lifecycle.ViewModel;
 
 public class ImagesItemViewModel extends ViewModel {
 
-    private final String url;
+    private final Image image;
     private final int imageId;
     private final String title;
 
-    private final ArrayList<ImageInfo> images;
+    private final ArrayList<Image> images;
 
-    public ImagesItemViewModel(String url, int imageId, String title, ArrayList<ImageInfo> images) {
-        this.url = url;
+    public ImagesItemViewModel(Image img, int imageId, String title, ArrayList<Image> images) {
+        this.image = img;
         this.imageId = imageId;
         this.title = title;
         this.images = images;
     }
 
-    public String getUrl() {
-        return url;
+    public String getUrl() { // TODO: make this a LiveData and set it again after a more fine
+        return image.elementUrl;
     }
 
     public String getTitle() {

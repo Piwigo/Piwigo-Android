@@ -14,7 +14,7 @@ import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.event.RefreshRequestEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
-import org.piwigo.io.model.AddCategoryResponse;
+import org.piwigo.io.restmodel.AddCategoryResponse;
 
 import javax.inject.Inject;
 

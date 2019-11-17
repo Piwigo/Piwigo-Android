@@ -1,6 +1,6 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2019 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,14 +21,17 @@ package org.piwigo.io.repository;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestServiceFactory;
 
-import rx.Observable;
-import rx.Scheduler;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+
+//import rx.Observable;
+//import rx.Scheduler;
 
 abstract class RESTBaseRepository {
 
     final RestServiceFactory restServiceFactory;
-    private final Scheduler ioScheduler;
-    private final Scheduler uiScheduler;
+    final Scheduler ioScheduler;
+    final Scheduler uiScheduler;
     final UserManager userManager;
 
     RESTBaseRepository(RestServiceFactory restServiceFactory, Scheduler ioScheduler, Scheduler uiScheduler, UserManager userManager) {
@@ -48,9 +51,10 @@ abstract class RESTBaseRepository {
         }
         return result;
     }
-
+/*
     <T> Observable.Transformer<T, T> applySchedulers() {
         return observable -> observable.subscribeOn(ioScheduler)
                 .observeOn(uiScheduler);
     }
+    */
 }

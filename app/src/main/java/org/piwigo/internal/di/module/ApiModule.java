@@ -29,10 +29,11 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.logging.HttpLoggingInterceptor;
-import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @Module
 public class ApiModule {
@@ -43,11 +44,13 @@ public class ApiModule {
                 .create();
     }
 
-    @Provides @Singleton @Named("IoScheduler") Scheduler provideIoScheduler() {
+    @Provides @Singleton @Named("IoScheduler")
+    Scheduler provideIoScheduler() {
         return Schedulers.io();
     }
 
-    @Provides @Singleton @Named("UiScheduler") Scheduler provideUiScheduler() {
+    @Provides @Singleton @Named("UiScheduler")
+    Scheduler provideUiScheduler() {
         return AndroidSchedulers.mainThread();
     }
 

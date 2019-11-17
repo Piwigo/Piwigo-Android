@@ -57,9 +57,9 @@ import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
-import org.piwigo.io.model.ImageUploadItem;
-import org.piwigo.io.model.LoginResponse;
-import org.piwigo.io.model.SuccessResponse;
+import org.piwigo.data.model.ImageUploadItem;
+import org.piwigo.io.restmodel.LoginResponse;
+import org.piwigo.io.restmodel.SuccessResponse;
 import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
@@ -91,6 +91,7 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
+import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private static final String TAG = MainActivity.class.getName();
@@ -173,16 +174,21 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 viewModel.displayFab.set(!userManager.isGuest(currentAccount));
                 /* Login to the new site after account changes.
                  * It seems quite unclean to do that here -> TODO: FIXME*/
-                rx.Observable<LoginResponse> a = userRepository.login(account);
-                a.subscribe(new rx.Observer<LoginResponse>() {
+                io.reactivex.Observable<LoginResponse> a = userRepository.login(account);
+                a.subscribe(new io.reactivex.Observer<LoginResponse>() {
                     @Override
-                    public void onCompleted() {
+                    public void onComplete() {
+
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "Login failed: " + e.getMessage());
                         // TODO: notify loginfailure
+                    }
+
+                    public void onSubscribe(Disposable d) {
+
                     }
 
                     @Override

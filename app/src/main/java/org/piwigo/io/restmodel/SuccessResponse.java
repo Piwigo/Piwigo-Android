@@ -1,7 +1,6 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2017-2018 Piwigo Team http://piwigo.org
- * Copyright (C) 2017-2018 Jeff Ayers
+ * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,27 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.piwigo.io.model;
+
+package org.piwigo.io.restmodel;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
-public class ImageListResponse {
+public class SuccessResponse {
 
     @SerializedName("stat") public String stat;
 
+    @SerializedName("result") public boolean result;
+
+    // only used in case stat == fail
     @SerializedName("err") public int err;
+
     @SerializedName("message") public String message;
-
-    @SerializedName("result") public Result result;
-
-    public class Result {
-
-        @SerializedName("images") public List<ImageInfo> images = new ArrayList<>();
-
-    }
-
 }

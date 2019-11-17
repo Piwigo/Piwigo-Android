@@ -48,10 +48,12 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton Picasso providePicasso() {
-        return new Picasso.Builder(application)
+        Picasso p = new Picasso.Builder(application)
                 .indicatorsEnabled(BuildConfig.DEBUG) //We may not want this for production build..
-                .memoryCache(new PiwigoImageCache(application)) //What about this ?
+//                .memoryCache(new PiwigoImageCache(application)) //What about this ?
                 .build();
+//        p.setLoggingEnabled(true);
+        return p;
     }
 
     @Provides @Singleton AccountManager provideAccountManager() {

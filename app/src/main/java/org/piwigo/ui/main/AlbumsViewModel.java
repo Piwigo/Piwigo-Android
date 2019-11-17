@@ -30,36 +30,38 @@ import androidx.lifecycle.ViewModel;
 import org.piwigo.BR;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.model.Category;
-import org.piwigo.io.model.ImageInfo;
-import org.piwigo.io.repository.CategoriesRepository;
-import org.piwigo.io.repository.ImageRepository;
+import org.piwigo.data.model.Category;
+import org.piwigo.data.model.Image;
+import org.piwigo.data.repository.CategoriesRepository;
+import org.piwigo.data.repository.ImageRepository;
 import org.piwigo.io.repository.PreferencesRepository;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.io.IOException;
-import java.util.List;
 
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 
+/*
 import rx.Subscriber;
 import rx.Subscription;
-
+*/
 public class AlbumsViewModel extends ViewModel {
-
 
     private static final String TAG = AlbumsViewModel.class.getName();
 
     public ObservableBoolean isLoading = new ObservableBoolean();
 
-    public ObservableArrayList<ImageInfo> images = new ObservableArrayList<>();
+    public ObservableArrayList<Image> images = new ObservableArrayList<>();
     public ObservableArrayList<Category> albums = new ObservableArrayList<>();
     public BindingRecyclerViewAdapter.ViewBinder<Category> albumsViewBinder = new CategoryViewBinder();
-    public BindingRecyclerViewAdapter.ViewBinder<ImageInfo> photoViewBinder = new ImagesViewBinder();
+    public BindingRecyclerViewAdapter.ViewBinder<Image> photoViewBinder = new ImagesViewBinder();
 
     private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
     private final ImageRepository imageRepository;
-    private final PreferencesRepository preferences;
 
     private final Resources resources;
 
@@ -69,18 +71,17 @@ public class AlbumsViewModel extends ViewModel {
     private Integer category = null;
 
     AlbumsViewModel(UserManager userManager, CategoriesRepository categoriesRepository,
-                    ImageRepository imageRepository, Resources resources, PreferencesRepository preferences) {
+                    ImageRepository imageRepository, Resources resources) {
         this.userManager = userManager;
         this.categoriesRepository = categoriesRepository;
         this.imageRepository = imageRepository;
         this.resources = resources;
-        this.preferences = preferences;
     }
 
     @Override
     protected void onCleared() {
         if (albumsSubscription != null) {
-            albumsSubscription.unsubscribe();
+// TODO            albumsSubscription.unsubscribe();
         }
     }
 
@@ -93,20 +94,19 @@ public class AlbumsViewModel extends ViewModel {
         Account account = userManager.getActiveAccount().getValue();
         if (albumsSubscription != null) {
             // cleanup, just in case
-            albumsSubscription.unsubscribe();
+//            albumsSubscription.unsubscribe();
             albumsSubscription = null;
         }
         if (photosSubscription != null) {
             // cleanup, just in case
-            photosSubscription.unsubscribe();
+//            photosSubscription.unsubscribe();
             photosSubscription = null;
         }
         if (account != null) {
-            albumsSubscription = categoriesRepository.getCategories(account, category,
-                    preferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
+            categoriesRepository.getCategories(category)
                     .subscribe(new CategoriesSubscriber());
-            photosSubscription = imageRepository.getImages(account, category)
-                    .subscribe(new ImagesSubscriber());
+            imageRepository.getImages(category)
+                    .subscribe(new ImageSubscriber());
         }
     }
 
@@ -122,10 +122,11 @@ public class AlbumsViewModel extends ViewModel {
         forcedLoadAlbums();
     }
 
-    private class CategoriesSubscriber extends Subscriber<List<Category>> {
+    private class CategoriesSubscriber extends DisposableObserver<Category> {
 
         @Override
-        public void onCompleted() {
+        public void onComplete() {
+
         }
 
         @Override
@@ -142,9 +143,8 @@ public class AlbumsViewModel extends ViewModel {
         }
 
         @Override
-        public void onNext(List<Category> categories) {
-            albums.clear();
-            albums.addAll(categories);
+        public void onNext(Category category) {
+            albums.add(category);
         }
     }
 
@@ -172,11 +172,16 @@ public class AlbumsViewModel extends ViewModel {
         }
     }
 
-    private class ImagesSubscriber extends Subscriber<List<ImageInfo>> {
+    private class ImageSubscriber extends DisposableObserver<Image>{
+        //private class ImagesSubscriber implements Subscriber<Image> {
+        @Override
+        public void onNext(Image image) {
+            images.add(image);
+        }
 
         @Override
-        public void onCompleted() {
-            isLoading.set(false);
+        public void onComplete() {
+
         }
 
         @Override
@@ -191,18 +196,12 @@ public class AlbumsViewModel extends ViewModel {
                 // TODO: #161 highlight problem to the user
             }
         }
-
-        @Override
-        public void onNext(List<ImageInfo> imageList) {
-            images.clear();
-            images.addAll(imageList);
-        }
     }
 
-    private class ImagesViewBinder implements BindingRecyclerViewAdapter.ViewBinder<ImageInfo> {
+    private class ImagesViewBinder implements BindingRecyclerViewAdapter.ViewBinder<Image> {
 
         @Override
-        public int getViewType(ImageInfo image) {
+        public int getViewType(Image image) {
             return 0;
         }
 
@@ -211,14 +210,13 @@ public class AlbumsViewModel extends ViewModel {
             return R.layout.item_images;
         }
 
+
         @Override
-        public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, ImageInfo image) {
-            // TODO: make image size selectable via settings (jca)
+        public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, Image image) {
             // TODO: make configurable to also show the photo name here
-            ImagesItemViewModel viewModel = new ImagesItemViewModel(image.derivatives.medium.url, images.indexOf(image), image.name, images);
+            ImagesItemViewModel viewModel = new ImagesItemViewModel(image, images.indexOf(image), image.name, images);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
 
     }
-
 }

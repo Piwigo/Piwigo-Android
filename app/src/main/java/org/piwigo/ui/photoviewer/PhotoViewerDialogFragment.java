@@ -11,7 +11,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.R;
-import org.piwigo.io.model.ImageInfo;
+import org.piwigo.data.model.Image;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,7 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class PhotoViewerDialogFragment extends DialogFragment
 {
-    private ArrayList<ImageInfo> images;
+    private ArrayList<Image> images;
     private ViewPager viewPager;
     private PhotoViewerPagerAdapter pagerAdapter;
     private int selectedPosition = 0;
@@ -39,7 +39,7 @@ public class PhotoViewerDialogFragment extends DialogFragment
     {
         View v = inflater.inflate(R.layout.fragment_fullscreen_images, container, false);
         viewPager = v.findViewById(R.id.viewpager);
-        images = (ArrayList<ImageInfo>) getArguments().getSerializable("images");
+        images = (ArrayList<Image>) getArguments().getSerializable("images");
         selectedPosition = getArguments().getInt("position");
         pagerAdapter = new PhotoViewerPagerAdapter(getContext(), images);
 

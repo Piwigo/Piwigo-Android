@@ -1,6 +1,6 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2019 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.model;
+package org.piwigo.data.model;
 
-public class LoginResponse {
+import java.io.Serializable;
 
-    public String url;
+public class Image implements Serializable {
 
-    public String username;
+    public int id;
 
-    public String password;
+    public String name;
 
-    public String pwgId;
+    public Object comment;
 
-    public StatusResponse statusResponse;
+    public String author;
+
+    public int width;
+
+    public int height;
+
+    public String elementUrl;
+
+    @Override public boolean equals(Object o) {
+        if (o instanceof Image) {
+            return id == ((Image) o).id;
+        }
+        return super.equals(o);
+    }
 
 }

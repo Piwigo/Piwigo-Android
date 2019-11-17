@@ -1,6 +1,6 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2019 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,34 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package org.piwigo.io.model;
+package org.piwigo.io.restmodel;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
-
-public class ImageInfo implements Serializable {
+public class Category {
 
     @SerializedName("id") public int id;
 
     @SerializedName("name") public String name;
 
-    @SerializedName("comment") public Object comment;
+    @SerializedName("comment") public String comment;
 
-    @SerializedName("author") public String author;
+    @SerializedName("global_rank") public String globalRank;
 
-    @SerializedName("width") public int width;
+    @SerializedName("nb_images") public int nbImages;
 
-    @SerializedName("height") public int height;
+    @SerializedName("total_nb_images") public int totalNbImages;
 
-    @SerializedName("element_url") public String elementUrl;
+    @SerializedName("representative_picture_id") public int representativePictureId;
 
-    @SerializedName("derivatives") public Derivatives derivatives;
+    @SerializedName("nb_categories") public int nbCategories;
+
+    @SerializedName("tn_url") public String thumbnailUrl;
 
     @Override public boolean equals(Object o) {
-        if (o instanceof ImageInfo) {
-            return id == ((ImageInfo) o).id;
+        if (o instanceof Category) {
+            return id == ((Category) o).id;
         }
         return super.equals(o);
     }

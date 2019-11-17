@@ -1,6 +1,6 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2019 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,43 +20,41 @@ package org.piwigo.io.repository;
 
 import android.accounts.Account;
 
+import androidx.annotation.Nullable;
+
 import org.piwigo.accounts.UserManager;
-import org.piwigo.helper.NaturalOrderComparator;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.io.model.Category;
-
-import java.util.List;
+import org.piwigo.io.restmodel.Category;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import androidx.annotation.Nullable;
-import rx.Observable;
-import rx.Scheduler;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 
-public class CategoriesRepository extends RESTBaseRepository {
+public class RESTCategoriesRepository extends RESTBaseRepository {
 
-    @Inject public CategoriesRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
+    @Inject public RESTCategoriesRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
         super(restServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
-    public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId, String thumbnailSize) {
+    public Observable<Category> getCategories(Account account, @Nullable Integer categoryId, String thumbnailSize) {
         RestService restService = restServiceFactory.createForAccount(account);
-        /* TODO: make thumbnail Size configurable, also check for ImageRepository, whether it can reduce the amount of REST/JSON traffic */
         return restService.getCategories(categoryId, thumbnailSize)
 //                .flatMap(response -> Observable.from(response.result.categories))
-                .compose(applySchedulers())
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
                 .flatMap(response -> {
                     if(response.result != null) {
-                        return Observable.from(response.result.categories);
+                        return Observable.fromIterable(response.result.categories);
+//                        return Observable.from(response.result.categories);
                     }else{
                         return null; //Observable.error(new Throwable("Error " + imageListResponse.stat + " " + imageListResponse.err + ": " + imageListResponse.message));
                     }
                 })
+                // only return the child categories (or the root)
                 .filter(category -> categoryId == null || category.id != categoryId)
-// TODO: #90 generalize sorting
-                .toSortedList((category1, category2) -> NaturalOrderComparator.compare(category1.globalRank, category2.globalRank))
                 ;
 
     }

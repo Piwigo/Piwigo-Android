@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.model;
+package org.piwigo.io.restmodel;
 
 import com.google.gson.annotations.SerializedName;
 

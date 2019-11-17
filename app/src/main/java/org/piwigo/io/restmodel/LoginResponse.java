@@ -16,16 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.model;
+package org.piwigo.io.restmodel;
 
-import com.google.gson.annotations.SerializedName;
+public class LoginResponse {
 
-class FailureResponse {
+    public String url;
 
-    @SerializedName("stat") public String stat;
+    public String username;
 
-    @SerializedName("err") public int err;
+    public String password;
 
-    @SerializedName("message") public String message;
+    public String pwgId;
+
+    public StatusResponse statusResponse;
 
 }

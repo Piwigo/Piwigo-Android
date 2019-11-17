@@ -27,15 +27,18 @@ import android.util.Log;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLauncherBinding;
-import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.restmodel.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.ui.shared.Navigator;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
-import rx.Subscriber;
+import io.reactivex.observers.DisposableObserver;
+//import rx.Subscriber;
 
 public class LauncherActivity extends BaseActivity {
 
@@ -56,9 +59,9 @@ public class LauncherActivity extends BaseActivity {
 
             Account a = userManager.getActiveAccount().getValue();
             userRepository.login(a)
-                    .subscribe(new Subscriber<LoginResponse>() {
+                    .subscribe(new DisposableObserver<LoginResponse>() {
                         @Override
-                        public void onCompleted() {
+                        public void onComplete() {
                         }
 
                         @Override
@@ -66,6 +69,7 @@ public class LauncherActivity extends BaseActivity {
 //                                Log.e(TAG, "Login failed: " + e.toString()); //getMessage());
                             // TODO: handle this properly... (can be triggered with empty password)
                         }
+
 
                         @Override
                         public void onNext(LoginResponse loginResponse) {

@@ -39,16 +39,24 @@ import com.github.jorgecastilloprz.FABProgressCircle;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.URLHelper;
-import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.restmodel.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.util.regex.Pattern;
 
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
+
+/*
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
+*/
 public class LoginViewModel extends ViewModel {
 
     private static final String TAG = LoginViewModel.class.getName();
@@ -71,7 +79,6 @@ public class LoginViewModel extends ViewModel {
     private MutableLiveData<Throwable> loginError = new MutableLiveData<>();
     private MutableLiveData<Boolean> animationFinished = new MutableLiveData<>();
 
-    private Subscription subscription;
     private final UserManager userManager;
     private Account account = null;
 
@@ -83,13 +90,6 @@ public class LoginViewModel extends ViewModel {
         clearOnPropertyChange(url, urlError);
         clearOnPropertyChange(username, usernameError);
         clearOnPropertyChange(password, passwordError);
-    }
-
-    @Override
-    protected void onCleared() {
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
     }
 
     /**
@@ -117,12 +117,14 @@ public class LoginViewModel extends ViewModel {
     void testConnection(boolean loginValid, String url){
         try {
             if (isGuest()) {
-                subscription = userRepository.status(url)
-                        .compose(applySchedulers())
+                userRepository.status(url)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new LoginSubscriber());
             } else if (loginValid) {
-                subscription = userRepository.login(url, username.get(), password.get())
-                        .compose(applySchedulers())
+                userRepository.login(url, username.get(), password.get())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new LoginSubscriber());
             }
         }catch(IllegalArgumentException illArgE){
@@ -209,10 +211,11 @@ public class LoginViewModel extends ViewModel {
         this.account = account;
     }
 
-    private class LoginSubscriber extends Subscriber<LoginResponse> {
+    private class LoginSubscriber extends DisposableObserver<LoginResponse> {
 
         @Override
-        public void onCompleted() {
+        public void onComplete() {
+
         }
 
         @Override
@@ -235,9 +238,5 @@ public class LoginViewModel extends ViewModel {
                 loginSuccess.setValue(loginResponse);
             }
         }
-    }
-    <T> rx.Observable.Transformer<T, T> applySchedulers() {
-        return observable -> observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
     }
 }

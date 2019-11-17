@@ -16,26 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.model;
+package org.piwigo.io.restmodel;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class CategoryListResponse {
+class FailureResponse {
 
     @SerializedName("stat") public String stat;
 
     @SerializedName("err") public int err;
+
     @SerializedName("message") public String message;
-
-    @SerializedName("result") public Result result;
-
-    public class Result {
-
-        @SerializedName("categories") public List<Category> categories = new ArrayList<>();
-
-    }
 
 }

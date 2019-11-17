@@ -16,18 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.model;
+package org.piwigo.io.restmodel;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Derivative implements Serializable {
+public class CategoryListResponse {
 
-    @SerializedName("url") public String url;
+    @SerializedName("stat") public String stat;
 
-    @SerializedName("width") public int width;
+    @SerializedName("err") public int err;
+    @SerializedName("message") public String message;
 
-    @SerializedName("height") public int height;
+    @SerializedName("result") public Result result;
+
+    public class Result {
+
+        @SerializedName("categories") public List<Category> categories = new ArrayList<>();
+
+    }
 
 }

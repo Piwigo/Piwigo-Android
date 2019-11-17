@@ -1,6 +1,6 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2019 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,18 @@ import org.piwigo.helper.CookieHelper;
 import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.io.model.LoginResponse;
-import org.piwigo.io.model.SuccessResponse;
+import org.piwigo.io.repository.RESTBaseRepository;
+import org.piwigo.io.restmodel.LoginResponse;
+import org.piwigo.io.restmodel.SuccessResponse;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import rx.Observable;
-import rx.Scheduler;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+
+//import rx.Observable;
+//import rx.Scheduler;
 
 public class UserRepository extends RESTBaseRepository {
 
@@ -56,13 +60,20 @@ public class UserRepository extends RESTBaseRepository {
         loginResponse.username = username;
         loginResponse.password = password;
 
+
         return restService.login(username, password)
-                .compose(applySchedulers())
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
+//                .compose(applySchedulers())
                 .flatMap(response -> {
                     if (response.body() != null && response.body().result) {
                         // TODO: check: should we set the cookie in the UserManager here?
                         loginResponse.pwgId = CookieHelper.extract("pwg_id", response.headers());
-                        return Observable.just(response.body()).compose(applySchedulers());
+                        return Observable.just(response.body())
+                                .subscribeOn(ioScheduler)
+                                .observeOn(uiScheduler)
+//                .compose(applySchedulers())
+                                ;
                     }
                     // TODO:
 //            return Observable.error(new Throwable("Login failed"));
@@ -71,7 +82,11 @@ public class UserRepository extends RESTBaseRepository {
                     }
                     return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with code " + response.body().err + ": " + response.body().message));
                 })
-                .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId).compose(applySchedulers()))
+                .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId)
+                                .subscribeOn(ioScheduler)
+                                .observeOn(uiScheduler)
+//                .compose(applySchedulers())
+                )
                 .map(statusResponse -> {
                     loginResponse.statusResponse = statusResponse;
                     return loginResponse;
@@ -86,13 +101,21 @@ public class UserRepository extends RESTBaseRepository {
         }
         RestService restService = restServiceFactory.createForUrl(siteUrl);
 
-        return status(restService, siteUrl).compose(applySchedulers());
+        return status(restService, siteUrl)
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler);
+        //                .compose(applySchedulers())
+
     }
 
     public Observable<LoginResponse> status(Account account) {
         String siteUrl = validateUrl(userManager.getSiteUrl(account));
         RestService restService = restServiceFactory.createForAccount(account);
-        return status(restService, siteUrl).compose(applySchedulers());
+        return status(restService, siteUrl)
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
+//                .compose(applySchedulers())
+                ;
     }
 
     private Observable<LoginResponse> status(RestService restService, String url) {
@@ -100,7 +123,9 @@ public class UserRepository extends RESTBaseRepository {
         loginResponse.url = url;
 
         return restService.getStatus()
-                .compose(applySchedulers())
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
+//                .compose(applySchedulers())
                 .map(statusResponse -> {
                     loginResponse.statusResponse = statusResponse;
                     return loginResponse;
@@ -113,7 +138,10 @@ public class UserRepository extends RESTBaseRepository {
         final SuccessResponse successResponse = new SuccessResponse();
 
         return restService.logout()
-                .compose(applySchedulers())
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
+//                .compose(applySchedulers())
+
                 .map(statusResponse -> successResponse);
     }
 }

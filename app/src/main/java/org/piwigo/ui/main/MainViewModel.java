@@ -29,14 +29,17 @@ import androidx.databinding.Observable;
 import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.model.SuccessResponse;
+import org.piwigo.io.restmodel.SuccessResponse;
 import org.piwigo.io.repository.UserRepository;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends ViewModel {
     // TODO: cleanup here...
@@ -101,7 +104,8 @@ public class MainViewModel extends ViewModel {
     public void onLogoutClick() {
         if (userManager.getActiveAccount().getValue() != null) {
             mUserRepository.logout(userManager.getActiveAccount().getValue())
-                    .compose(applySchedulers())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new MainViewModel.LogoutSubscriber());
         } else {
             Throwable e = new Throwable(String.valueOf(R.string.account_empty_message));
@@ -110,10 +114,10 @@ public class MainViewModel extends ViewModel {
     }
 
 
-    private class LogoutSubscriber extends Subscriber<SuccessResponse> {
-
+    private class LogoutSubscriber extends DisposableObserver<SuccessResponse> {
         @Override
-        public void onCompleted() {
+        public void onComplete() {
+
         }
 
         @Override
@@ -128,10 +132,10 @@ public class MainViewModel extends ViewModel {
             logoutSuccess.setValue(successResponse);
         }
     }
-
+/*
     private <T> rx.Observable.Transformer<T, T> applySchedulers() {
         return observable -> observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
-
+*/
 }

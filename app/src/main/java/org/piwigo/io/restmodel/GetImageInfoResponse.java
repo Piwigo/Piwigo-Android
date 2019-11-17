@@ -16,28 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.model;
+package org.piwigo.io.restmodel;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
+public class GetImageInfoResponse {
 
-public class Derivatives implements Serializable {
+    @SerializedName("stat") public String stat;
 
-    @SerializedName("thumb") public Derivative thumb;
-
-    @SerializedName("square") public Derivative square;
-
-    @SerializedName("xsmall") public Derivative xsmall;
-
-    @SerializedName("small") public Derivative small;
-
-    @SerializedName("medium") public Derivative medium;
-
-    @SerializedName("large") public Derivative large;
-
-    @SerializedName("xlarge") public Derivative xlarge;
-
-    @SerializedName("xxlarge") public Derivative xxlarge;
+    @SerializedName("result") public ImageInfo imageInfo;
 
 }

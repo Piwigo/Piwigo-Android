@@ -18,14 +18,15 @@
 
 package org.piwigo.io;
 
-import org.piwigo.io.model.AddCategoryResponse;
-import org.piwigo.io.model.CategoryListResponse;
-import org.piwigo.io.model.GetImageInfoResponse;
-import org.piwigo.io.model.ImageListResponse;
-import org.piwigo.io.model.ImageUploadResponse;
-import org.piwigo.io.model.StatusResponse;
-import org.piwigo.io.model.SuccessResponse;
+import org.piwigo.io.restmodel.AddCategoryResponse;
+import org.piwigo.io.restmodel.CategoryListResponse;
+import org.piwigo.io.restmodel.GetImageInfoResponse;
+import org.piwigo.io.restmodel.ImageListResponse;
+import org.piwigo.io.restmodel.ImageUploadResponse;
+import org.piwigo.io.restmodel.StatusResponse;
+import org.piwigo.io.restmodel.SuccessResponse;
 
+import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -38,11 +39,12 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
-import rx.Observable;
+//import rx.Observable;
 
 public interface RestService {
 
-    @POST("ws.php?method=pwg.session.login") @FormUrlEncoded Observable<Response<SuccessResponse>> login(
+    @POST("ws.php?method=pwg.session.login") @FormUrlEncoded
+    Observable<Response<SuccessResponse>> login(
             @Field("username") String username,
             @Field("password") String password
     );
@@ -72,7 +74,7 @@ public interface RestService {
     );
 
     @GET("ws.php?method=pwg.categories.getImages")
-    Observable<ImageListResponse> getImages(@Query("cat_id") int categoryId);
+    Observable<ImageListResponse> getImages(@Query("cat_id") int categoryId, @Query("page") int page, @Query("per_page") int pageSize);
 
     @Multipart
     @POST("ws.php?method=pwg.images.upload")

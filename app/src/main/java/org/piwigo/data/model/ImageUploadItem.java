@@ -15,14 +15,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.piwigo.io.model;
 
-import com.google.gson.annotations.SerializedName;
+package org.piwigo.data.model;
 
-public class Error {
+import android.net.Uri;
 
-    @SerializedName("code") public int code;
+public class ImageUploadItem
+{
+    private String imageData;
+    private Uri imageUri;
+    private String imageName;
 
-    @SerializedName("message") public String message;
+    public ImageUploadItem() {}
 
+    public void setImageData(String imageData)
+    {
+        this.imageData = imageData;
+    }
+
+    public void setImageUri(Uri imageUri)
+    {
+        this.imageUri = imageUri;
+    }
+
+    public void setImageName(String imageName)
+    {
+        this.imageName = imageName;
+    }
+
+    public String getImageData() {
+        return imageData;
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public Uri getImageUri() {
+        return imageUri;
+    }
 }

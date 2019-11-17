@@ -211,16 +211,11 @@ public class UserManager {
             }
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
-            accountManager.removeAccount(account, null, null);
-        } else {
-            accountManager.removeAccountExplicitly(account);
-        }
-    }
         return null;
     }
 
     public void setActiveAccount(Account activeAccount) {
+        preferencesRepository.setActiveAccount(activeAccount.name);
         mCurrentAccount.setValue(activeAccount);
     }
 

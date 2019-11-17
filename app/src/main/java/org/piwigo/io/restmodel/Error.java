@@ -1,6 +1,6 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2019 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package org.piwigo.io.model;
+package org.piwigo.io.restmodel;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SuccessResponse {
+public class Error {
 
-    @SerializedName("stat") public String stat;
-
-    @SerializedName("result") public boolean result;
-
-    // only used in case stat == fail
-    @SerializedName("err") public int err;
+    @SerializedName("code") public int code;
 
     @SerializedName("message") public String message;
+
 }

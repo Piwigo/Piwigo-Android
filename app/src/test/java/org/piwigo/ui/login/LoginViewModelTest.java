@@ -31,18 +31,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.restmodel.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
 
 import java.util.regex.Pattern;
 
-import rx.Completable;
 import rx.Observable;
-import rx.Scheduler;
 import rx.android.plugins.RxAndroidPlugins;
-import rx.android.plugins.RxAndroidSchedulersHook;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

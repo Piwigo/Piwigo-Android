@@ -25,9 +25,9 @@ import org.mockito.MockitoAnnotations;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.io.model.LoginResponse;
-import org.piwigo.io.model.StatusResponse;
-import org.piwigo.io.model.SuccessResponse;
+import org.piwigo.io.restmodel.LoginResponse;
+import org.piwigo.io.restmodel.StatusResponse;
+import org.piwigo.io.restmodel.SuccessResponse;
 
 import okhttp3.Headers;
 import retrofit2.Response;

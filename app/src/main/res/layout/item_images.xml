@@ -16,29 +16,6 @@
         app:cardUseCompatPadding="false"
         app:cardCornerRadius="0dp">
 
-        <!--
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:background="@color/alpha_grey"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-
-                    >
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="@{viewModel.title}"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/piwigo_orange"
-                        />
-                </LinearLayout>
-        -->
-
-
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

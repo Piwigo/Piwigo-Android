@@ -57,7 +57,7 @@ public class PreferencesRepository {
     }
 
     public String getString(String key) {
-     String value = null;
+        String value = null;
 
         if (KEY_PREF_DOWNLOAD_SIZE.equals(key)) {
             value = DEFAULT_PREF_DOWNLOAD_SIZE;
