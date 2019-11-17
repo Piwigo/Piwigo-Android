@@ -18,19 +18,9 @@
 
 package org.piwigo.ui.main;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Context;
 import android.content.res.Configuration;
-
-import androidx.databinding.DataBindingUtil;
-
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,10 +30,16 @@ import org.greenrobot.eventbus.Subscribe;
 import org.piwigo.R;
 import org.piwigo.databinding.FragmentAlbumsBinding;
 import org.piwigo.io.event.RefreshRequestEvent;
+import org.piwigo.io.repository.PreferencesRepository;
 import org.piwigo.ui.shared.BaseFragment;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 import dagger.android.support.AndroidSupportInjection;
 
 public class AlbumsFragment extends BaseFragment {
@@ -53,6 +49,9 @@ public class AlbumsFragment extends BaseFragment {
 
     @Inject
     AlbumsViewModelFactory viewModelFactory;
+
+    @Inject
+    PreferencesRepository preferences;
 
     private FragmentAlbumsBinding binding;
     private int categoryID;
@@ -85,8 +84,7 @@ public class AlbumsFragment extends BaseFragment {
     }
 
     @Subscribe
-    public void onEvent(RefreshRequestEvent event)
-    {
+    public void onEvent(RefreshRequestEvent event) {
         binding.getViewModel().onRefresh();
     }
 
@@ -106,7 +104,8 @@ public class AlbumsFragment extends BaseFragment {
         binding.albumRecycler.setHasFixedSize(true);
         binding.albumRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
         binding.photoRecycler.setHasFixedSize(true);
-        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount() * 3));
+        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(),
+                calculateColumnCount() * preferences.getInt(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW)));
 
         return binding.getRoot();
     }

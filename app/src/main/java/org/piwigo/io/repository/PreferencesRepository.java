@@ -26,11 +26,17 @@ import javax.inject.Inject;
 
 public class PreferencesRepository {
 
-    private static final String KEY_ACTIVE_ACCOUNT = "active_account";
+    public static final String KEY_ACTIVE_ACCOUNT = "active_account";
+    public static final String KEY_PREF_PHOTOS_PER_ROW = "photos_per_row";
+    public static final String KEY_PREF_DOWNLOAD_SIZE = "download_size";
+
+    public static final int DEFAULT_PREF_PHOTOS_PER_ROW = 3;
+    public static final String DEFAULT_PREF_DOWNLOAD_SIZE = "medium";
 
     private final SharedPreferences preferences;
 
-    @Inject PreferencesRepository(Context context) {
+    @Inject
+    public PreferencesRepository(Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -48,5 +54,26 @@ public class PreferencesRepository {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(key, value);
         editor.apply();
+    }
+
+    public String getString(String key) {
+     String value = null;
+
+        if (KEY_PREF_DOWNLOAD_SIZE.equals(key)) {
+            value = DEFAULT_PREF_DOWNLOAD_SIZE;
+            return preferences.getString(key, value);
+        }
+
+        return value;
+    }
+
+    public int getInt(String key) {
+        int value = 0;
+        if (KEY_PREF_PHOTOS_PER_ROW.equals(key)) {
+            value = DEFAULT_PREF_PHOTOS_PER_ROW;
+            return preferences.getInt(key, value);
+        }
+
+        return value;
     }
 }

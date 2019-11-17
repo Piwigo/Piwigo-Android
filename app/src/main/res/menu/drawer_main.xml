@@ -20,12 +20,11 @@
     <group
         android:id="@+id/nav_group_settings"
         android:checkableBehavior="single">
-<!--        <item
+       <item
             android:id="@+id/nav_settings"
             android:checkable="true"
             android:icon="@drawable/ic_action_settings"
             android:title="@string/nav_settings" />
-            -->
         <item
             android:id="@+id/nav_about"
             android:checkable="true"
@@ -36,5 +35,10 @@
             android:checkable="true"
             android:icon="@drawable/ic_action_privacy"
             android:title="@string/nav_privacy" />
+        <item
+            android:id="@+id/nav_logout"
+            android:checkable="true"
+            android:icon="@drawable/logout_icon"
+            android:title="@string/nav_logout" />
     </group>
 </menu>

@@ -34,15 +34,18 @@ import org.piwigo.io.model.Category;
 import org.piwigo.io.model.ImageInfo;
 import org.piwigo.io.repository.CategoriesRepository;
 import org.piwigo.io.repository.ImageRepository;
+import org.piwigo.io.repository.PreferencesRepository;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 
 import java.io.IOException;
 import java.util.List;
 
+
 import rx.Subscriber;
 import rx.Subscription;
 
 public class AlbumsViewModel extends ViewModel {
+
 
     private static final String TAG = AlbumsViewModel.class.getName();
 
@@ -56,6 +59,7 @@ public class AlbumsViewModel extends ViewModel {
     private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
     private final ImageRepository imageRepository;
+    private final PreferencesRepository preferences;
 
     private final Resources resources;
 
@@ -65,11 +69,12 @@ public class AlbumsViewModel extends ViewModel {
     private Integer category = null;
 
     AlbumsViewModel(UserManager userManager, CategoriesRepository categoriesRepository,
-                    ImageRepository imageRepository, Resources resources) {
+                    ImageRepository imageRepository, Resources resources, PreferencesRepository preferences) {
         this.userManager = userManager;
         this.categoriesRepository = categoriesRepository;
         this.imageRepository = imageRepository;
         this.resources = resources;
+        this.preferences = preferences;
     }
 
     @Override
@@ -97,7 +102,8 @@ public class AlbumsViewModel extends ViewModel {
             photosSubscription = null;
         }
         if (account != null) {
-            albumsSubscription = categoriesRepository.getCategories(account, category)
+            albumsSubscription = categoriesRepository.getCategories(account, category,
+                    preferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
                     .subscribe(new CategoriesSubscriber());
             photosSubscription = imageRepository.getImages(account, category)
                     .subscribe(new ImagesSubscriber());

@@ -186,7 +186,7 @@ public class LoginActivity extends BaseActivity {
         Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_LONG).setAction(R.string.show_details, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogHelper.INSTANCE.showLogDialog(getResources().getString(R.string.login_error), msg, throwable, binding.getRoot().getContext());
+                DialogHelper.INSTANCE.showLogDialog(getResources().getString(R.string.login_error), msg, throwable, "URL: " + viewModel.url.get() + ", GUEST: " + (viewModel.isGuest() ? "TRUE" : "FALSE") + ", EDIT_EXISTING: " + (viewModel.isEditExisting() ? "TRUE" : "FALSE"), binding.getRoot().getContext());
             }
         }).show();
     }

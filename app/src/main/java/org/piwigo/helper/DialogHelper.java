@@ -25,7 +25,14 @@ public class DialogHelper {
                 .show();
     }
 
-    public void showLogDialog(String title, String description, Throwable problem, Context context) {
+    /**
+     * @param title title of the problem dialog to show
+     * @param description details for the user
+     * @param problem throwable that caused the trouble
+     * @param reportDetail details that are not shown to the user, but will be included if they "REPORT" the issue
+     * @param context the android context of the caller to show the dialog
+     */
+    public void showLogDialog(String title, String description, Throwable problem, String reportDetail, Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Theme_Piwigo_ErrorDialog);
 
         builder.setTitle(title)
@@ -34,7 +41,12 @@ public class DialogHelper {
                     dialog.cancel();
                 })
                 .setNegativeButton(R.string.button_report, (dialog, id) -> {
+                    ACRA.getErrorReporter().putCustomData("REPORT_TITLE", title);
+                    ACRA.getErrorReporter().putCustomData("REPORT_DESC", description);
+                    ACRA.getErrorReporter().putCustomData("REPORT_DETAIL", reportDetail);
+                    ACRA.getErrorReporter().putCustomData("REPORT", "TRUE");
                     ACRA.getErrorReporter().handleSilentException(problem);
+                    ACRA.getErrorReporter().putCustomData("REPORT", "FALSE");
                     dialog.cancel();
                 })
                 .show();

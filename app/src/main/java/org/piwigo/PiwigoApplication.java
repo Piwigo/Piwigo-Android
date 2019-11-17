@@ -19,9 +19,7 @@
 
 package org.piwigo;
 
-import android.app.Activity;
 import android.app.Application;
-import android.app.Service;
 import android.content.Context;
 import androidx.databinding.DataBindingUtil;
 import androidx.multidex.MultiDex;
@@ -54,7 +52,6 @@ import dagger.android.HasAndroidInjector;
         ReportField.ANDROID_VERSION,
         ReportField.CUSTOM_DATA,
         ReportField.STACK_TRACE,
-        ReportField.BUILD,
         ReportField.BUILD_CONFIG,
         ReportField.CRASH_CONFIGURATION,
         ReportField.DISPLAY
@@ -106,4 +103,5 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
     public AndroidInjector<Object> androidInjector() {
         return androidInjector;
     }
+
 }

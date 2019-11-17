@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.View;
 import android.widget.ImageView;
 
 public class TouchImageView extends ImageView {
@@ -45,6 +44,16 @@ public class TouchImageView extends ImageView {
 		sharedConstructing(context);
 	}
 
+	private void stopInterceptEvent()
+	{
+		getParent().requestDisallowInterceptTouchEvent(true);
+	}
+
+	private void startInterceptEvent()
+	{
+		getParent().requestDisallowInterceptTouchEvent(false);
+	}
+
 	private void sharedConstructing(Context context) {
 		super.setClickable(true);
 		this.context = context;
@@ -54,31 +63,34 @@ public class TouchImageView extends ImageView {
 		setImageMatrix(matrix);
 		setScaleType(ScaleType.MATRIX);
 
-		setOnTouchListener(new OnTouchListener() {
+		setOnTouchListener((v, event) -> {
+			mScaleDetector.onTouchEvent(event);
+			PointF curr = new PointF(event.getX(), event.getY());
 
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				mScaleDetector.onTouchEvent(event);
-				PointF curr = new PointF(event.getX(), event.getY());
-
-				switch (event.getAction()) {
+			switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
 					last.set(curr);
 					start.set(last);
 					mode = DRAG;
+					stopInterceptEvent();
 					break;
 
 				case MotionEvent.ACTION_MOVE:
 					if (mode == DRAG) {
 						float deltaX = curr.x - last.x;
 						float deltaY = curr.y - last.y;
-						float fixTransX = getFixDragTrans(deltaX, viewWidth,
-								origWidth * saveScale);
-						float fixTransY = getFixDragTrans(deltaY, viewHeight,
-								origHeight * saveScale);
+						float fixTransX = getFixDragTrans(deltaX, viewWidth, origWidth * saveScale);
+						float fixTransY = getFixDragTrans(deltaY, viewHeight, origHeight * saveScale);
 						matrix.postTranslate(fixTransX, fixTransY);
 						fixTrans();
 						last.set(curr.x, curr.y);
+
+						float transX = m[Matrix.MTRANS_X];
+
+						if((int) (getFixTrans(transX, viewWidth, origWidth * saveScale) + fixTransX) == 0)
+							startInterceptEvent();
+						else
+							stopInterceptEvent();
 					}
 					break;
 
@@ -88,18 +100,17 @@ public class TouchImageView extends ImageView {
 					int yDiff = (int) Math.abs(curr.y - start.y);
 					if (xDiff < CLICK && yDiff < CLICK)
 						performClick();
+					startInterceptEvent();
 					break;
 
 				case MotionEvent.ACTION_POINTER_UP:
 					mode = NONE;
 					break;
-				}
-
-				setImageMatrix(matrix);
-				invalidate();
-				return true;
 			}
 
+			setImageMatrix(matrix);
+			invalidate();
+			return true; // indicate event was handled
 		});
 	}
 
@@ -107,8 +118,7 @@ public class TouchImageView extends ImageView {
 		maxScale = x;
 	}
 
-	private class ScaleListener extends
-			ScaleGestureDetector.SimpleOnScaleGestureListener {
+	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 		@Override
 		public boolean onScaleBegin(ScaleGestureDetector detector) {
 			mode = ZOOM;
@@ -128,13 +138,10 @@ public class TouchImageView extends ImageView {
 				mScaleFactor = minScale / origScale;
 			}
 
-			if (origWidth * saveScale <= viewWidth
-					|| origHeight * saveScale <= viewHeight)
-				matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2,
-						viewHeight / 2);
+			if (origWidth * saveScale <= viewWidth || origHeight * saveScale <= viewHeight)
+				matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2, viewHeight / 2);
 			else
-				matrix.postScale(mScaleFactor, mScaleFactor,
-						detector.getFocusX(), detector.getFocusY());
+				matrix.postScale(mScaleFactor, mScaleFactor, detector.getFocusX(), detector.getFocusY());
 
 			fixTrans();
 			return true;
@@ -147,8 +154,7 @@ public class TouchImageView extends ImageView {
 		float transY = m[Matrix.MTRANS_Y];
 
 		float fixTransX = getFixTrans(transX, viewWidth, origWidth * saveScale);
-		float fixTransY = getFixTrans(transY, viewHeight, origHeight
-				* saveScale);
+		float fixTransY = getFixTrans(transY, viewHeight, origHeight * saveScale);
 
 		if (fixTransX != 0 || fixTransY != 0)
 			matrix.postTranslate(fixTransX, fixTransY);
@@ -185,10 +191,12 @@ public class TouchImageView extends ImageView {
 		viewWidth = MeasureSpec.getSize(widthMeasureSpec);
 		viewHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-		if ((oldMeasuredHeight == viewWidth && oldMeasuredHeight == viewHeight)
-				|| viewWidth == 0 || viewHeight == 0) {
+		//
+		// Rescales image on rotation
+		//
+		if (oldMeasuredHeight == viewWidth && oldMeasuredHeight == viewHeight
+				|| viewWidth == 0 || viewHeight == 0)
 			return;
-		}
 		oldMeasuredHeight = viewHeight;
 		oldMeasuredWidth = viewWidth;
 
@@ -196,9 +204,7 @@ public class TouchImageView extends ImageView {
 			float scale;
 
 			Drawable drawable = getDrawable();
-			if (drawable == null
-					|| drawable.getIntrinsicWidth() == 0
-					|| drawable.getIntrinsicHeight() == 0)
+			if (drawable == null || drawable.getIntrinsicWidth() == 0 || drawable.getIntrinsicHeight() == 0)
 				return;
 			int bmWidth = drawable.getIntrinsicWidth();
 			int bmHeight = drawable.getIntrinsicHeight();
@@ -209,10 +215,8 @@ public class TouchImageView extends ImageView {
 			matrix.setScale(scale, scale);
 
 			// Center the image
-			float redundantYSpace = (float) viewHeight
-					- (scale * (float) bmHeight);
-			float redundantXSpace = (float) viewWidth
-					- (scale * (float) bmWidth);
+			float redundantYSpace = (float) viewHeight - (scale * (float) bmHeight);
+			float redundantXSpace = (float) viewWidth - (scale * (float) bmWidth);
 			redundantYSpace /= (float) 2;
 			redundantXSpace /= (float) 2;
 
