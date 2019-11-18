@@ -21,6 +21,7 @@ package org.piwigo;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
@@ -41,6 +42,7 @@ import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
 import org.piwigo.internal.di.component.DaggerBindingComponent;
 import org.piwigo.internal.di.module.ApplicationModule;
+import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Inject;
 
@@ -103,7 +105,7 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
 
     private void applyColorPalette()
     {
-        switch (PreferenceManager.getDefaultSharedPreferences(this).getString("color_palette", "light")) {
+        switch (PreferenceManager.getDefaultSharedPreferences(this).getString(PreferencesRepository.KEY_PREF_COLOR_PALETTE, "light")) {
             case "light":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
@@ -111,7 +113,12 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 break;
             case "auto":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                }
+                else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
+                }
                 break;
         }
     }

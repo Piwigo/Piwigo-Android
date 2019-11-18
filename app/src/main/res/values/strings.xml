@@ -210,6 +210,9 @@
     <string name="no_internet">Oops! It seems like you have no internet connection. Please connect and try again.</string>
     <string name="show_details">Show details</string>
 
+    <string name="restart_needed">Restart needed</string>
+    <string name="restart_needed_explaination">In order for the theme change to take effect, please restart your application.</string>
+
     <!-- Spinner Download Size array-->
     <string-array name="download_size_array">
         <item>Square</item>

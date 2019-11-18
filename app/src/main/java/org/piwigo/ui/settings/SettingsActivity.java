@@ -18,9 +18,12 @@
  */
 package org.piwigo.ui.settings;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import org.piwigo.R;
+import org.piwigo.helper.DialogHelper;
 import org.piwigo.io.repository.PreferencesRepository;
 
 import androidx.appcompat.app.ActionBar;
@@ -70,6 +73,10 @@ public class SettingsActivity extends AppCompatActivity {
             });
 
             mPreferenceDarkTheme.setOnPreferenceChangeListener(((preference, value) -> {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                    DialogHelper.INSTANCE.showErrorDialog(R.string.restart_needed, R.string.restart_needed_explaination, getContext());
+                    return true;
+                }
                 switch (value.toString()) {
                     case "light":
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -78,7 +85,12 @@ public class SettingsActivity extends AppCompatActivity {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                         break;
                     case "auto":
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                        }
+                        else {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
+                        }
                         break;
                 }
                 return true;
