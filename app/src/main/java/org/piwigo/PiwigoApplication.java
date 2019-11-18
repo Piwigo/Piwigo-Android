@@ -105,7 +105,7 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
 
     private void applyColorPalette()
     {
-        switch (PreferenceManager.getDefaultSharedPreferences(this).getString(PreferencesRepository.KEY_PREF_COLOR_PALETTE, "light")) {
+        switch (PreferenceManager.getDefaultSharedPreferences(this).getString(PreferencesRepository.KEY_PREF_COLOR_PALETTE, PreferencesRepository.DEFAULT_PREF_COLOR_PALETTE)) {
             case "light":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;

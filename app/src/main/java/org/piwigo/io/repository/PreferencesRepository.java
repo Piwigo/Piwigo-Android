@@ -33,6 +33,7 @@ public class PreferencesRepository {
 
     public static final int DEFAULT_PREF_PHOTOS_PER_ROW = 3;
     public static final String DEFAULT_PREF_DOWNLOAD_SIZE = "medium";
+    public static final String DEFAULT_PREF_COLOR_PALETTE = "light";
 
     private final SharedPreferences preferences;
 
