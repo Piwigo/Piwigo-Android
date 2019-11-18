@@ -34,6 +34,7 @@ import android.os.Handler;
 import android.view.View;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.piwigo.R;
@@ -64,6 +65,7 @@ public class LoginActivity extends BaseActivity {
     private LoginViewModel viewModel;
     private ActivityLoginBinding binding;
 
+    private FloatingActionButton loginButton;
     private FABProgressCircle fabProgressCircle;
 
     private AccountAuthenticatorResponse authenticatorResponse;
@@ -88,11 +90,13 @@ public class LoginActivity extends BaseActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setViewModel(viewModel);
 
+        loginButton = findViewById(R.id.login_button);
         fabProgressCircle = findViewById(R.id.fabLoginCircle);
 
         viewModel.getLoginSuccess().observe(this, this::loginSuccess);
         viewModel.getLoginError().observe(this, this::loginError);
 
+        loginButton.setOnClickListener(v -> viewModel.onLoginClick(fabProgressCircle));
         handleIntent(getIntent());
     }
 
@@ -104,11 +108,6 @@ public class LoginActivity extends BaseActivity {
         }
 
         viewModel.loadAccount(account);
-    }
-
-    public void onClick(View v)
-    {
-        viewModel.onLoginClick(fabProgressCircle);
     }
 
     /**

@@ -124,7 +124,6 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="24dp"
                             android:layout_gravity="center_horizontal"
-                            android:onClick="onClick"
                             android:scaleType="center"
                             android:src="@drawable/ic_chevron_right"
                             app:elevation="8dp"
