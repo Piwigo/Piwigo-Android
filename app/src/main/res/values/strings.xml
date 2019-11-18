@@ -221,7 +221,7 @@
     </string-array>
 
     <!-- Spinner Download Size array (should stay untranslated) -->
-    <string-array name="download_size_array_values">
+    <string-array name="download_size_array_values" translatable="false">
         <item>square</item>
         <item>thumb</item>
         <item>small</item>
@@ -238,7 +238,7 @@
     </string-array>
 
     <!-- Color palette array  (should stay untranslated) -->
-    <string-array name="colors_array_values">
+    <string-array name="colors_array_values" translatable="false">
         <item>light</item>
         <item>dark</item>
         <item>auto</item>
