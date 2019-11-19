@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@color/white_semi_transparent"
+            android:theme="@style/Theme.Piwigo.ItemAlbum"
             android:orientation="vertical"
             android:padding="16dp">
 
@@ -43,14 +43,16 @@
                 android:layout_marginBottom="8dp"
                 android:text="@{viewModel.title}"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/piwigo_orange" />
+                android:textColor="@color/piwigo_orange"
+                android:background="@color/transparent"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.photos}"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/piwigo_dark_text_color" />
+                android:theme="@style/Theme.Piwigo"
+                android:background="@color/transparent"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>

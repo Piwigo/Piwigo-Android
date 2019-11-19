@@ -21,8 +21,12 @@ package org.piwigo;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
+
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
 import androidx.multidex.MultiDex;
+import androidx.preference.PreferenceManager;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -38,6 +42,7 @@ import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
 import org.piwigo.internal.di.component.DaggerBindingComponent;
 import org.piwigo.internal.di.module.ApplicationModule;
+import org.piwigo.io.repository.PreferencesRepository;
 
 import javax.inject.Inject;
 
@@ -75,6 +80,8 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
         new NotificationHelper(getApplicationContext());
         new DialogHelper();
         initializeDependencyInjection();
+
+        applyColorPalette();
     }
 
     @Override
@@ -94,6 +101,26 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
                 .applicationComponent(applicationComponent)
                 .build();
         DataBindingUtil.setDefaultComponent(bindingComponent);
+    }
+
+    private void applyColorPalette()
+    {
+        switch (PreferenceManager.getDefaultSharedPreferences(this).getString(PreferencesRepository.KEY_PREF_COLOR_PALETTE, PreferencesRepository.DEFAULT_PREF_COLOR_PALETTE)) {
+            case "light":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "dark":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            case "auto":
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                }
+                else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
+                }
+                break;
+        }
     }
 
     /**
