@@ -20,22 +20,19 @@ package org.piwigo.ui.settings;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
+import org.piwigo.PiwigoApplication;
 import org.piwigo.R;
 import org.piwigo.helper.DialogHelper;
 import org.piwigo.io.repository.PreferencesRepository;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
 
-
 public class SettingsActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,12 +50,16 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
 
+        PiwigoApplication piwigo;
+
         private ListPreference mPreferenceThumbnailSize;
         private SeekBarPreference mPreferencePhotosPerRow;
         private ListPreference mPreferenceDarkTheme;
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+
+            piwigo = (PiwigoApplication)getActivity().getApplication();
             setPreferencesFromResource(R.xml.settings_preferences, rootKey);
 
             mPreferencePhotosPerRow = findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
@@ -75,24 +76,10 @@ public class SettingsActivity extends AppCompatActivity {
             mPreferenceDarkTheme.setOnPreferenceChangeListener(((preference, value) -> {
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
                     DialogHelper.INSTANCE.showErrorDialog(R.string.restart_needed, R.string.restart_needed_explaination, getContext());
-                    return true;
+                } else {
+                    piwigo.applyColorPalette((String)value);
                 }
-                switch (value.toString()) {
-                    case "light":
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                        break;
-                    case "dark":
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                        break;
-                    case "auto":
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                        }
-                        else {
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
-                        }
-                        break;
-                }
+
                 return true;
             }));
         }

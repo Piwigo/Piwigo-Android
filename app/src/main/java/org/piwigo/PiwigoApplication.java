@@ -70,6 +70,7 @@ import dagger.android.HasAndroidInjector;
 public class PiwigoApplication extends Application implements HasAndroidInjector {
 
     @Inject DispatchingAndroidInjector<Object> androidInjector;
+    @Inject PreferencesRepository preferencesRepository;
 
     private ApplicationComponent applicationComponent;
 
@@ -81,7 +82,8 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
         new DialogHelper();
         initializeDependencyInjection();
 
-        applyColorPalette();
+        applyColorPalette(preferencesRepository.getString(PreferencesRepository.KEY_PREF_COLOR_PALETTE));
+
     }
 
     @Override
@@ -103,9 +105,9 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
         DataBindingUtil.setDefaultComponent(bindingComponent);
     }
 
-    private void applyColorPalette()
+    public void applyColorPalette(String colorPalette)
     {
-        switch (PreferenceManager.getDefaultSharedPreferences(this).getString(PreferencesRepository.KEY_PREF_COLOR_PALETTE, PreferencesRepository.DEFAULT_PREF_COLOR_PALETTE)) {
+        switch (colorPalette) {
             case "light":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
