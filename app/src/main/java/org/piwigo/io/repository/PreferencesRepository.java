@@ -20,18 +20,42 @@ package org.piwigo.io.repository;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 public class PreferencesRepository {
 
+    /* For adding new preferences, don't forget to add
+     * - add a KEY String
+     * - add a DEFAULT value
+     * - add the default to the defaults Map
+     * - add a setting in settings_preference.xml
+     * - add a setOnPreferenceChangeListener in SettingsActivity to adjust the summary
+     * */
+
     public static final String KEY_ACTIVE_ACCOUNT = "active_account";
     public static final String KEY_PREF_PHOTOS_PER_ROW = "photos_per_row";
     public static final String KEY_PREF_DOWNLOAD_SIZE = "download_size";
+    public static final String KEY_PREF_COLOR_PALETTE = "color_palette";
 
     public static final int DEFAULT_PREF_PHOTOS_PER_ROW = 3;
     public static final String DEFAULT_PREF_DOWNLOAD_SIZE = "medium";
+    public static final String DEFAULT_PREF_COLOR_PALETTE = "light";
+
+    private static final Map<String, Object> defaults;
+    static {
+        Map<String, Object> mutableMap = new HashMap<>();
+        mutableMap.put(KEY_PREF_PHOTOS_PER_ROW, DEFAULT_PREF_PHOTOS_PER_ROW);
+        mutableMap.put(KEY_PREF_DOWNLOAD_SIZE, DEFAULT_PREF_DOWNLOAD_SIZE);
+        mutableMap.put(KEY_PREF_COLOR_PALETTE, DEFAULT_PREF_COLOR_PALETTE);
+        defaults = Collections.unmodifiableMap(mutableMap);
+    }
 
     private final SharedPreferences preferences;
 
@@ -57,23 +81,22 @@ public class PreferencesRepository {
     }
 
     public String getString(String key) {
-        String value = null;
-
-        if (KEY_PREF_DOWNLOAD_SIZE.equals(key)) {
-            value = DEFAULT_PREF_DOWNLOAD_SIZE;
-            return preferences.getString(key, value);
+        Object def = defaults.get(key);
+        if(def instanceof String) {
+            return preferences.getString(key, (String) def);
+        } else {
+            /* no default string configured */
+            return preferences.getString(key, null);
         }
-
-        return value;
     }
 
     public int getInt(String key) {
-        int value = 0;
-        if (KEY_PREF_PHOTOS_PER_ROW.equals(key)) {
-            value = DEFAULT_PREF_PHOTOS_PER_ROW;
-            return preferences.getInt(key, value);
+        Object def = defaults.get(key);
+        if(def instanceof Integer) {
+            return preferences.getInt(key, (Integer) def);
+        } else {
+            /* no default int configured */
+            return preferences.getInt(key, -1);
         }
-
-        return value;
     }
 }

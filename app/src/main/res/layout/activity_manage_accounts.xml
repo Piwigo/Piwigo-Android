@@ -31,7 +31,7 @@
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
-        android:background="@color/piwigo_background_color"
+        android:theme="@style/Theme.Piwigo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
@@ -45,14 +45,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                android:theme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar"
                 app:navigationIcon="?android:attr/actionModeCloseDrawable"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight"
                 app:title="@{viewModel.title}"/>
 
             <FrameLayout
                 android:id="@+id/content"
-                android:background="@color/piwigo_light_gray"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="?attr/actionBarSize">

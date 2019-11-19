@@ -166,7 +166,9 @@
     <string name="settings_images">Images</string>
     <string name="settings_photos_per_row">Photos per Row</string>
     <string name="settings_download_size_summary">Photo size \'%1$s\' will be used for download</string>
-
+    <string name="settings_colors">Colors</string>
+    <string name="settings_color_palette">Color Palette</string>
+    <string name="settings_color_palette_summary">%1$s</string>
 
     <!-- Upload -->
     <string name="upload_success">Upload successful</string>
@@ -208,13 +210,40 @@
     <string name="no_internet">Oops! It seems like you have no internet connection. Please connect and try again.</string>
     <string name="show_details">Show details</string>
 
+    <string name="restart_needed">Restart needed</string>
+    <string name="restart_needed_explaination">In order for the theme change to take effect, please restart your application.</string>
+
     <!-- Spinner Download Size array-->
     <string-array name="download_size_array">
+        <item>Square</item>
+        <item>Thumbnail</item>
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+        <item>Extra Large</item>
+    </string-array>
+
+    <!-- Spinner Download Size array (should stay untranslated) -->
+    <string-array name="download_size_array_values" translatable="false">
         <item>square</item>
         <item>thumb</item>
         <item>small</item>
         <item>medium</item>
         <item>large</item>
         <item>xxlarge</item>
+    </string-array>
+
+    <!-- Color palette array -->
+    <string-array name="colors_array">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>Auto</item>
+    </string-array>
+
+    <!-- Color palette array  (should stay untranslated) -->
+    <string-array name="colors_array_values" translatable="false">
+        <item>light</item>
+        <item>dark</item>
+        <item>auto</item>
     </string-array>
 </resources>

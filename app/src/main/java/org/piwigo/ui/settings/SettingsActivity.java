@@ -18,9 +18,12 @@
  */
 package org.piwigo.ui.settings;
 
+import android.os.Build;
 import android.os.Bundle;
 
+import org.piwigo.PiwigoApplication;
 import org.piwigo.R;
+import org.piwigo.helper.DialogHelper;
 import org.piwigo.io.repository.PreferencesRepository;
 
 import androidx.appcompat.app.ActionBar;
@@ -30,9 +33,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
 
-
 public class SettingsActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,15 +51,21 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
 
+        PiwigoApplication piwigo;
+
         private ListPreference mPreferenceThumbnailSize;
         private SeekBarPreference mPreferencePhotosPerRow;
+        private ListPreference mPreferenceDarkTheme;
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+
+            piwigo = (PiwigoApplication)getActivity().getApplication();
             setPreferencesFromResource(R.xml.settings_preferences, rootKey);
 
             mPreferencePhotosPerRow = findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
             mPreferenceThumbnailSize = findPreference(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE);
+            mPreferenceDarkTheme = findPreference(PreferencesRepository.KEY_PREF_COLOR_PALETTE);
 
             mPreferencePhotosPerRow.setOnPreferenceChangeListener((preference, value) -> true);
 
@@ -66,6 +73,16 @@ public class SettingsActivity extends AppCompatActivity {
                 mPreferenceThumbnailSize.setSummary(getString(R.string.settings_download_size_summary, value.toString()));
                 return true;
             });
+
+            mPreferenceDarkTheme.setOnPreferenceChangeListener(((preference, value) -> {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                    DialogHelper.INSTANCE.showErrorDialog(R.string.restart_needed, R.string.restart_needed_explaination, getContext());
+                } else {
+                    piwigo.applyColorPalette((String)value);
+                }
+
+                return true;
+            }));
         }
     }
 }

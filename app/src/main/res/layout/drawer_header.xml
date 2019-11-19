@@ -12,7 +12,7 @@
             android:id="@+id/drawer_header"
             android:layout_width="match_parent"
             android:layout_height="@dimen/nav_header_size"
-            android:background="@color/android_color_light_gray"
+            android:theme="@style/Theme.Piwigo"
             android:fitsSystemWindows="true">
 
             <ImageView
@@ -34,7 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{viewModel.username}"
-                    android:textColor="@color/piwigo_dark_text_color"
+                    android:theme="@style/Theme.Piwigo"
                     android:textSize="@dimen/nav_header_user_text_size"
                     tools:text="guest" />
 
@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/username"
                     android:text="@{viewModel.url}"
-                    android:textColor="@color/piwigo_dark_text_color"
+                    android:theme="@style/Theme.Piwigo"
                     tools:text="piwigo.org" />
                 <!--
                 <ImageView
