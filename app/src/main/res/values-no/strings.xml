@@ -124,6 +124,9 @@
     <string name="settings_images">Bilder</string>
     <string name="settings_photos_per_row">Bilder per rad</string>
     <string name="settings_download_size_summary">Bildestørrelse \'%1$s\' vil brukes på nedlastinger</string>
+    <string name="settings_colors">Colors</string>
+    <string name="settings_color_palette">Color Palette</string>
+    <string name="settings_color_palette_summary">%1$s</string>
     <!-- Upload -->
     <string name="upload_success">Opplasting var vellykket</string>
     <string name="upload_failed">Opplasting feilet</string>
@@ -156,6 +159,8 @@
     <string name="not_admin_explanation">Du må være innlogget for å gjøre dette.</string>
     <string name="no_internet">Oops! Det ser ut som du ikke har noen internett-tilkobling. Vennligst koble til internett og prøv på nytt.</string>
     <string name="show_details">Vis detaljer</string>
+    <string name="restart_needed">Restart needed</string>
+    <string name="restart_needed_explaination">In order for the theme change to take effect, please restart your application.</string>
     <!-- Spinner Download Size array-->
     <string-array name="download_size_array">
         <item>kvadrat</item>
@@ -165,4 +170,12 @@
         <item>stor</item>
         <item>xxstor</item>
     </string-array>
+    <!-- Spinner Download Size array (should stay untranslated) -->
+    <!-- Color palette array -->
+    <string-array name="colors_array">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>Auto</item>
+    </string-array>
+    <!-- Color palette array  (should stay untranslated) -->
 </resources>
