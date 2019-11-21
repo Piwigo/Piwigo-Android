@@ -174,7 +174,7 @@
                 android:layout_width="330dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:text="@string/login_as_guest_hint" />
         </LinearLayout>
