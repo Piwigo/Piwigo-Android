@@ -40,7 +40,7 @@
     <string name="nav_drawer_close">Fermer la navigation</string>
     <!-- Login -->
     <string name="login_url_hint">Adresse du serveur</string>
-    <string name="login_url_how_to">\nFill this field with the URL that you use in a web browser to access your piwigo gallery.\n\nIf you are a piwigo.com client, it looks something like: <font color="#ff7700">example.piwigo.com</font> .\n\nIf you are self-hosted you have your own domain name and maybe a sub-directory like: <font color="#ff7700">example.com/photos</font> .</string>
+    <string name="login_url_how_to">\nRemplissez ce champ avec l\'URL que vous utilisez dans un navigateur web pour accéder à votre galerie Piwigo.\n\nSi vous êtes un client piwigo.com, cela devrait ressemblait à quelque chose comme: &lt;font color=#ff7700"&gt;exemple.piwigo.com&lt;/font&gt; .\n\nSi vous hébergez vous-même votre Piwigo, vous avez votre propre nom de domaine et peut-être un sous-répertoire comme: &lt;font color="#ff7700"&gt;exemple.com/photos&lt;/font&gt; .</string>
     <string name="login_url_empty">Entrez l\'adresse de votre serveur</string>
     <string name="login_url_invalid">Adresse de serveur non valide</string>
     <string name="login_username_empty">Saisissez votre nom d\'utilisateur</string>
@@ -56,7 +56,7 @@
     <string name="login_http_404_error">Adresse \'%1s\' introuvable sur le serveur</string>
     <string name="login_baseurl_invalid">Aucune galerie Piwigo trouvée à l\'adresse \'%1s\'</string>
     <string name="login_invalid_credentials">Échec de la connexion avec les identifiants \'%1s/*****\'</string>
-    <string name="login_as_guest_hint">Leave username and password empty to connect as a guest</string>
+    <string name="login_as_guest_hint">Laissez le nom d\'utilisateur et le mot de passe vide pour vous connecter en tant qu\'invité</string>
     <!-- Account -->
     <string name="account_image_description">Icône de raccourci de la galerie (favicon)</string>
     <string name="account_not_selected">Sélectionnez d’abord un compte pour la suppression</string>
