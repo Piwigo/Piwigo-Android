@@ -1,16 +1,10 @@
 <resources>
 
-    <style name="Theme.Piwigo" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.Piwigo" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/piwigo_orange</item>
         <item name="colorPrimaryDark">@color/piwigo_orange_secondary</item>
         <item name="colorAccent">@color/piwigo_orange</item>
         <item name="android:windowAnimationStyle">@style/Theme.Piwigo.Transition</item>
-    </style>
-
-    <style name="Theme.Piwigo.Login">
-        <item name="colorPrimary">@color/piwigo_light_background_color</item>
-        <item name="colorPrimaryDark">@color/piwigo_light_dark_text_color</item>
-        <item name="android:windowBackground">@color/piwigo_light_background_color</item>
     </style>
 
     <style name="Theme.Piwigo.ManageAccounts" parent="Theme.Piwigo">
@@ -35,6 +29,10 @@
 
     <style name="Theme.Piwigo.Login.CardView" parent="CardView">
         <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="Theme.Piwigo.EditText" parent="Theme.Piwigo">
+        <item name="android:background">@color/piwigo_text_field_color</item>
     </style>
 
     <!-- This will set the fade in animation on all your activities by default -->
