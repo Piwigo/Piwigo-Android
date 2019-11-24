@@ -22,38 +22,102 @@ import androidx.annotation.Nullable;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.data.model.Image;
+import org.piwigo.data.model.PositionedItem;
+import org.piwigo.io.repository.PreferencesRepository;
 import org.piwigo.io.repository.RESTImageRepository;
+import org.piwigo.io.restmodel.Derivative;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 
 public class ImageRepository {
 
     private final RESTImageRepository mRestImageRepo;
     private final UserManager mUserManager;
+    private final Scheduler ioScheduler;
+    private final Scheduler uiScheduler;
+    private final PreferencesRepository mPreferences;
 
-    @Inject public ImageRepository(RESTImageRepository restImageRepo, UserManager userManager) {
+    @Inject public ImageRepository(RESTImageRepository restImageRepo, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager, PreferencesRepository preferences) {
+        this.ioScheduler = ioScheduler;
+        this.uiScheduler = uiScheduler;
         mRestImageRepo = restImageRepo;
         mUserManager = userManager;
+        mPreferences = preferences;
     }
 
-    public Observable<Image> getImages(@Nullable Integer categoryId) {
+    /**
+     * fetch all images in given category
+     *
+     * @param categoryId
+     * @return items with their position
+     */
+    public Observable<PositionedItem> getImages(@Nullable Integer categoryId) {
+// TODO: #90 implement sorting
 
+// TODO: add fetching the images from local database/cache
         return mRestImageRepo.getImages(mUserManager.getActiveAccount().getValue(), categoryId)
-//                .flatMapIterable(list -> list)
-                .map(info -> {
-                    Image i = new Image();
+                .toFlowable(BackpressureStrategy.BUFFER)
+
+                .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> {
+                    Derivative d;
+                    switch(mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE)){
+                        case "thumb":
+                            d = info.derivatives.thumb;
+                            break;
+                        case "small":
+                            d = info.derivatives.small;
+                            break;
+                        case "xsmall":
+                            d = info.derivatives.xsmall;
+                            break;
+                        case "medium":
+                            d = info.derivatives.medium;
+                            break;
+                        case "large":
+                            d = info.derivatives.large;
+                            break;
+                        case "xlarge":
+                            d = info.derivatives.xlarge;
+                            break;
+                        case "xxlarge":
+                            d = info.derivatives.xxlarge;
+                            break;
+                        case "square":
+                        default:
+                            d = info.derivatives.square;
+                    }
+
+                    Image i = new Image(d.url, d.width, d.height);
                     i.name = info.name;
                     i.id = info.id;
-                    i.elementUrl = info.elementUrl;
                     i.author = info.author;
                     i.comment = info.height;
                     i.width = info.width;
-                    return i;
-                })
-                ;
-   }
+                    return new PositionedItem(counter, i);
+                }).toObservable();
+    }
+
+    /**
+     * store the img
+     *
+     * new images will be stored locally and add to the upload queue
+     * for existing images the meta data will be updated
+     *
+     * exchanging the bitmap (locally or remotely) is not yet supported
+     *
+     * @param img
+     */
+    public void saveImage(Image img){
+        // TODO: implement
+        // if img has no id, add a new one, locally in the DB and add it to the upload queue
+        // if img has an id, update the exisitng one
+    }
 }
 
 

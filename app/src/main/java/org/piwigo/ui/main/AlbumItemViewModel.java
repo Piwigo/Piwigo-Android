@@ -29,7 +29,7 @@ import android.view.View;
 import org.piwigo.R;
 
 public class AlbumItemViewModel extends ViewModel {
-
+// TODO: adjust Album model similar to Image model
     private final String url;
     private final String title;
     private final String photos;

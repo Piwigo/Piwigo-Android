@@ -59,6 +59,7 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
         /* TODO: it doesn't seem to make too much sense to have a MutuableLiveData for items
         * instead maybe it would be better to have List<T> and use in this update method a DiffUtil to update
         * only what was really changed... */
+        /* TODO: this one here is the culprit of the flickering */
         notifyDataSetChanged();
     }
 

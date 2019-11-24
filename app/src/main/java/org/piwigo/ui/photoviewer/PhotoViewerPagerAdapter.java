@@ -36,7 +36,8 @@ public class PhotoViewerPagerAdapter extends PagerAdapter {
         TouchImageView imageViewPreview = view.findViewById(R.id.imgDisplay);
         Image image = images.get(position);
 
-        picasso.load(image.elementUrl).noFade().into(imageViewPreview);
+        // TODO: trigger URL updates to get needed resolution and handle LiveData updates
+        picasso.load(image.getElementUrl().getValue()).noFade().into(imageViewPreview);
         container.addView(view);
         return view;
     }

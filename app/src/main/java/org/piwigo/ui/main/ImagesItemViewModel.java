@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 public class ImagesItemViewModel extends ViewModel {
@@ -40,14 +41,16 @@ public class ImagesItemViewModel extends ViewModel {
     private final ArrayList<Image> images;
 
     public ImagesItemViewModel(Image img, int imageId, String title, ArrayList<Image> images) {
+        // TODO: images should be removed, it is just there to pass it to the PhotoViewerDialogFragment
+        // for this we should better refer to the parent album
         this.image = img;
         this.imageId = imageId;
         this.title = title;
         this.images = images;
     }
 
-    public String getUrl() { // TODO: make this a LiveData and set it again after a more fine
-        return image.elementUrl;
+    public LiveData<String> getUrl() {
+        return image.getElementUrl();
     }
 
     public String getTitle() {

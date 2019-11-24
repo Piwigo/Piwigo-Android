@@ -18,7 +18,6 @@
 
 package org.piwigo.io.repository;
 
-
 import android.accounts.Account;
 
 import androidx.annotation.Nullable;
@@ -29,95 +28,43 @@ import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.restmodel.ImageInfo;
 import org.piwigo.io.restmodel.ImageListResponse;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.Scheduler;
-
 
 public class RESTImageRepository extends RESTBaseRepository {
 
-    private static final int PAGE_SIZE = 80;
+    private static final int PAGE_SIZE = 16;
 
     @Inject public RESTImageRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
         super(restServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
     public Observable<ImageInfo> getImages(Account account, @Nullable Integer categoryId) {
-        return getImageStartingAtPage(account, categoryId, restServiceFactory.createForAccount(account), 0);
+        return getPagesStartingAt(account, categoryId, restServiceFactory.createForAccount(account), 0)
+                .flatMap( imageListResponse -> Observable.fromIterable(imageListResponse.result.images));
     }
 
-    private Observable<ImageInfo> getImageStartingAtPage(Account account, @Nullable Integer categoryId, RestService restService, int page) {
-
+    private Observable<ImageListResponse> getPagesStartingAt(Account account, @Nullable Integer categoryId, RestService restService, int page) {
         Observable<ImageListResponse> a = restService
-        // TODO: #144
-            .getImages(categoryId, page, PAGE_SIZE)
-            .subscribeOn(ioScheduler)
-            .observeOn(uiScheduler);
+                .getImages(categoryId, page, PAGE_SIZE)
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler);
 
+        return a.concatMap(response -> {
+            int received = response.result.paging.count
+                    + response.result.paging.page * PAGE_SIZE;
 
-        return a.flatMap(imageListResponse -> {
-            if (imageListResponse.result != null
-                    && imageListResponse.result.paging.count < imageListResponse.result.paging.totalCount) {
-                return Observable.fromIterable(imageListResponse.result.images).concatWith(getImageStartingAtPage(account, categoryId, restService, page + 1));
+            if (response.result == null || response.result.paging.totalCount <= received) {
+                return Observable.just(response);
             } else {
-                return Observable.fromIterable(imageListResponse.result.images);
+                return Observable.just(response)
+                        .concatWith(getPagesStartingAt(account, categoryId, restService, page + 1));
             }
+
         });
-
-/*
-        a = a.flatMap(response -> {
-                    if (response.result != null) {
-                        return Observable.just(response).concatWith(restService.getImages(categoryId, page + 1, PAGE_SIZE)
-                                .subscribeOn(ioScheduler)
-                                .observeOn(uiScheduler)
-                        );
-                    } else {
-                        return Observable.just(response);
-                    }
-                }
-            );
-
-               ;
-*/
-/*
-                  .map(imageListResponse -> {
-                      if(imageListResponse.result != null) {
-                          if(imageListResponse.result.paging.count < imageListResponse.result.paging.totalCount) {
-*
-                              Observable<ImageInfo> a = restService.getImages(categoryId, 1, 10)
-                                      .subscribeOn(ioScheduler)
-                                      .observeOn(uiScheduler)
-
-                                      .map(imageListRespons -> {
-                                          if (imageListRespons.result != null) {
-                                              return Observable.fromIterable(imageListRespons.result.images);
-                                          } else {
-                                              return Observable.empty(); //Observable.error(new Throwable("Error " + imageListResponse.stat + " " + imageListResponse.err + ": " + imageListResponse.message));
-                                          }
-                                      })
-
-                                      ;
-                              return Observable.fromIterable(imageListResponse.result.images)
-                                      .concatWith(a);
-                                      * /
-                              return Observable.empty().concatWith(Observable.fromIterable(imageListResponse.result.images));
-                          } else {
-                              return Observable.fromIterable(imageListResponse.result.images);
-                          }
-                      }else {
-                          return null; //Observable.error(new Throwable("Error " + imageListResponse.stat + " " + imageListResponse.err + ": " + imageListResponse.message));
-                      }
-                  })
-// TODO: #90 generalize sorting
-                ;
-
- */
-
    }
 }
 

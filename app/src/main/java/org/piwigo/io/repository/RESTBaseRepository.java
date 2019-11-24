@@ -21,11 +21,7 @@ package org.piwigo.io.repository;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestServiceFactory;
 
-import io.reactivex.Observable;
 import io.reactivex.Scheduler;
-
-//import rx.Observable;
-//import rx.Scheduler;
 
 abstract class RESTBaseRepository {
 

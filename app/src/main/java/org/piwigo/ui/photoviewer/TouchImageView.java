@@ -10,6 +10,7 @@ import android.view.ScaleGestureDetector;
 import android.widget.ImageView;
 
 public class TouchImageView extends ImageView {
+// TODO: on zoom we should trigger a reload with the needed size and handle URL-update
 
 	Matrix matrix;
 

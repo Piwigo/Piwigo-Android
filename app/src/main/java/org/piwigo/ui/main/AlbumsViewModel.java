@@ -32,22 +32,16 @@ import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.data.model.Category;
 import org.piwigo.data.model.Image;
+import org.piwigo.data.model.PositionedItem;
 import org.piwigo.data.repository.CategoriesRepository;
 import org.piwigo.data.repository.ImageRepository;
-import org.piwigo.io.repository.PreferencesRepository;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
-import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import java.io.IOException;
 
-import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 
-/*
-import rx.Subscriber;
-import rx.Subscription;
-*/
 public class AlbumsViewModel extends ViewModel {
 
     private static final String TAG = AlbumsViewModel.class.getName();
@@ -81,7 +75,7 @@ public class AlbumsViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         if (albumsSubscription != null) {
-// TODO            albumsSubscription.unsubscribe();
+            albumsSubscription.cancel();
         }
     }
 
@@ -94,17 +88,18 @@ public class AlbumsViewModel extends ViewModel {
         Account account = userManager.getActiveAccount().getValue();
         if (albumsSubscription != null) {
             // cleanup, just in case
-//            albumsSubscription.unsubscribe();
+            albumsSubscription.cancel();
             albumsSubscription = null;
         }
         if (photosSubscription != null) {
             // cleanup, just in case
-//            photosSubscription.unsubscribe();
+            photosSubscription.cancel();
             photosSubscription = null;
         }
         if (account != null) {
             categoriesRepository.getCategories(category)
                     .subscribe(new CategoriesSubscriber());
+            images.clear();
             imageRepository.getImages(category)
                     .subscribe(new ImageSubscriber());
         }
@@ -172,11 +167,13 @@ public class AlbumsViewModel extends ViewModel {
         }
     }
 
-    private class ImageSubscriber extends DisposableObserver<Image>{
-        //private class ImagesSubscriber implements Subscriber<Image> {
+    private class ImageSubscriber extends DisposableObserver<PositionedItem>{
+        // TODO: get rid of flickering, as currently the images.add will cause the RececlerView to redraw completely which is a nightmare
+        // this is to be done in the BindingRecyclerViewAdapter
         @Override
-        public void onNext(Image image) {
-            images.add(image);
+        public void onNext(PositionedItem item) {
+            images.ensureCapacity(Math.max(item.getPosition() + 1, images.size() * 2));
+            images.add(item.getPosition(), item.getImage());
         }
 
         @Override
@@ -209,7 +206,6 @@ public class AlbumsViewModel extends ViewModel {
         public int getLayout(int viewType) {
             return R.layout.item_images;
         }
-
 
         @Override
         public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, Image image) {
