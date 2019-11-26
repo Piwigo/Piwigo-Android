@@ -42,13 +42,11 @@ public class RESTCategoriesRepository extends RESTBaseRepository {
     public Observable<Category> getCategories(Account account, @Nullable Integer categoryId, String thumbnailSize) {
         RestService restService = restServiceFactory.createForAccount(account);
         return restService.getCategories(categoryId, thumbnailSize)
-//                .flatMap(response -> Observable.from(response.result.categories))
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler)
                 .flatMap(response -> {
                     if(response.result != null) {
                         return Observable.fromIterable(response.result.categories);
-//                        return Observable.from(response.result.categories);
                     }else{
                         return null; //Observable.error(new Throwable("Error " + imageListResponse.stat + " " + imageListResponse.err + ": " + imageListResponse.message));
                     }

@@ -20,6 +20,7 @@ package org.piwigo.data.repository;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.data.model.Category;
+import org.piwigo.data.model.PositionedItem;
 import org.piwigo.helper.NaturalOrderComparator;
 import org.piwigo.io.repository.PreferencesRepository;
 import org.piwigo.io.repository.RESTCategoriesRepository;
@@ -28,6 +29,8 @@ import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 public class CategoriesRepository {
@@ -43,10 +46,12 @@ public class CategoriesRepository {
         mPreferences = preferences;
     }
 
-    public Observable<Category> getCategories(@Nullable Integer categoryId) {
+    public Observable<PositionedItem<Category>> getCategories(@Nullable Integer categoryId) {
         return mRestCategoryRepo.getCategories(mUserManager.getActiveAccount().getValue(), categoryId,
                 mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
-                .map(restCat -> {
+                .toFlowable(BackpressureStrategy.BUFFER)
+
+                .zipWith(Flowable.range(0, Integer.MAX_VALUE), (restCat, counter) -> {
                     Category c = new Category();
                     c.name = restCat.name;
                     c.id = restCat.id;
@@ -57,10 +62,10 @@ public class CategoriesRepository {
                     c.nbCategories = restCat.nbCategories;
                     c.representativePictureId = restCat.representativePictureId;
                     c.totalNbImages = restCat.totalNbImages;
-                    return c;
+                    return new PositionedItem<Category>(counter, c);
                 })
 // TODO: #90 generalize sorting
-                .sorted((category1, category2) -> NaturalOrderComparator.compare(category1.globalRank, category2.globalRank))
+                .sorted((categoryItem1, categoryItem2) -> NaturalOrderComparator.compare(categoryItem1.getItem().globalRank, categoryItem2.getItem().globalRank)).toObservable()
                 ;
     }
 }

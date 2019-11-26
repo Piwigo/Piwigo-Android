@@ -117,7 +117,7 @@ public class AlbumsViewModel extends ViewModel {
         forcedLoadAlbums();
     }
 
-    private class CategoriesSubscriber extends DisposableObserver<Category> {
+    private class CategoriesSubscriber extends DisposableObserver<PositionedItem<Category>> {
 
         @Override
         public void onComplete() {
@@ -138,8 +138,9 @@ public class AlbumsViewModel extends ViewModel {
         }
 
         @Override
-        public void onNext(Category category) {
-            albums.add(category);
+        public void onNext(PositionedItem<Category> category) {
+            albums.ensureCapacity(Math.max(category.getPosition() + 1, images.size() * 2));
+            albums.add(category.getPosition(), category.getItem());
         }
     }
 
@@ -167,13 +168,13 @@ public class AlbumsViewModel extends ViewModel {
         }
     }
 
-    private class ImageSubscriber extends DisposableObserver<PositionedItem>{
+    private class ImageSubscriber extends DisposableObserver<PositionedItem<Image>>{
         // TODO: get rid of flickering, as currently the images.add will cause the RececlerView to redraw completely which is a nightmare
         // this is to be done in the BindingRecyclerViewAdapter
         @Override
-        public void onNext(PositionedItem item) {
+        public void onNext(PositionedItem<Image> item) {
             images.ensureCapacity(Math.max(item.getPosition() + 1, images.size() * 2));
-            images.add(item.getPosition(), item.getImage());
+            images.add(item.getPosition(), item.getItem());
         }
 
         @Override

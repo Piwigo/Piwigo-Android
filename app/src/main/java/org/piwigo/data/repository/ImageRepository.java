@@ -57,7 +57,7 @@ public class ImageRepository {
      * @param categoryId
      * @return items with their position
      */
-    public Observable<PositionedItem> getImages(@Nullable Integer categoryId) {
+    public Observable<PositionedItem<Image>> getImages(@Nullable Integer categoryId) {
 // TODO: #90 implement sorting
 
 // TODO: add fetching the images from local database/cache
@@ -99,7 +99,7 @@ public class ImageRepository {
                     i.author = info.author;
                     i.comment = info.height;
                     i.width = info.width;
-                    return new PositionedItem(counter, i);
+                    return new PositionedItem<>(counter, i);
                 }).toObservable();
     }
 
