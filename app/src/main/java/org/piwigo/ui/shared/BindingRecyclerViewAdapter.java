@@ -19,19 +19,20 @@
 
 package org.piwigo.ui.shared;
 
-import androidx.lifecycle.MutableLiveData;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingRecyclerViewAdapter.ViewHolder> {
 
     private final ViewBinder<T> viewBinder;
-    private MutableLiveData<List<T>> items = new MutableLiveData<>();
+    private List<T> items = new ArrayList<T>();
 
     public BindingRecyclerViewAdapter(ViewBinder<T> viewBinder) {
         this.viewBinder = viewBinder;
@@ -43,24 +44,24 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
     }
 
     @Override public void onBindViewHolder(ViewHolder holder, int position) {
-        viewBinder.bind(holder, items.getValue().get(position));
+        viewBinder.bind(holder, items.get(position));
     }
 
     @Override public int getItemCount() {
-        return items.getValue().size();
+        return items.size();
     }
 
     @Override public int getItemViewType(int position) {
-        return viewBinder.getViewType(items.getValue().get(position));
+        return viewBinder.getViewType(items.get(position));
     }
 
     public void update(List<T> items) {
-        this.items.setValue(items);
-        /* TODO: it doesn't seem to make too much sense to have a MutuableLiveData for items
-        * instead maybe it would be better to have List<T> and use in this update method a DiffUtil to update
-        * only what was really changed... */
-        /* TODO: this one here is the culprit of the flickering */
-        notifyDataSetChanged();
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ItemDiffCB(this.items, items));
+        diffResult.dispatchUpdatesTo(this);
+
+        // remember as old list...
+        this.items.clear();
+        this.items.addAll(items);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -86,6 +87,36 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
 
         void bind(ViewHolder viewHolder, T item);
 
+    }
+
+    public class ItemDiffCB extends DiffUtil.Callback{
+        private final List<T> newItems;
+        private final List<T> oldItems;
+
+        public ItemDiffCB(List<T>newItems, List<T> oldItems){
+            this.newItems = newItems;
+            this.oldItems = oldItems;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldItems.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newItems.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldItems.get(oldItemPosition) == newItems.get(newItemPosition);
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldItems.get(oldItemPosition).equals(newItems.get(newItemPosition));
+        }
     }
 
 }
