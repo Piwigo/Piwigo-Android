@@ -75,6 +75,8 @@ public class LoginViewModel extends ViewModel {
     private final UserManager userManager;
     private Account account = null;
 
+    private String testedUrl = "";
+
     LoginViewModel(UserManager userManager, UserRepository userRepository, Resources resources) {
         this.userRepository = userRepository;
         this.resources = resources;
@@ -109,11 +111,12 @@ public class LoginViewModel extends ViewModel {
             fabCircle.show();
         }
 
+        //Trying to log in with "HTTPS" protocol first..
         testConnection(loginValid, URLHelper.INSTANCE.getUrlWithMethod(url.get(), "https"));
     }
 
     void testConnection(boolean loginValid, String url) {
-        this.url.set(url);
+        testedUrl = url;
         try {
             if (isGuest()) {
                 subscription = userRepository.status(url)
@@ -218,10 +221,13 @@ public class LoginViewModel extends ViewModel {
         public void onError(Throwable e) {
             Log.e(TAG, e.getMessage());
             loginError.setValue(e);
-            if (url.get() != null && url.get().contains("https"))
+
+            /**
+             *  HTTPS login did fail - retrying with HTTPS
+             *  Checking for 'https' in string to avoid infinite loop..
+             */
+            if (testedUrl != null && testedUrl.contains("https"))
                 testConnection(true, URLHelper.INSTANCE.getUrlWithMethod(url.get(), "http"));
-            else if (url.get().contains("http"))
-                url.set(url.get().replaceAll("http://", ""));
         }
 
         @Override
