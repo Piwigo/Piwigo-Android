@@ -12,9 +12,9 @@ public class URLHelper
 
     public String getUrlWithMethod(String url, String method)
     {
-        url = url.toLowerCase()
-                .replaceAll("https://", "")
-                .replaceAll("http://", "");
+        url = url
+                .replaceAll("(?i)https://", "")
+                .replaceAll("(?i)http://", "");
         return (method + "://" + getPiwigoBaseFor(url));
     }
 
