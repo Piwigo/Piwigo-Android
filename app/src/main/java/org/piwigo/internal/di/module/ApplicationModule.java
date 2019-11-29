@@ -26,8 +26,8 @@ import com.squareup.picasso.Picasso;
 import org.piwigo.BuildConfig;
 import org.piwigo.PiwigoApplication;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.internal.cache.PiwigoImageCache;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.data.repository.ImageRepository;
+import org.piwigo.io.PreferencesRepository;
 
 import javax.inject.Singleton;
 

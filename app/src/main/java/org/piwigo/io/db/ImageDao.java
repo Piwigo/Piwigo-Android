@@ -1,6 +1,6 @@
 /*
  * Piwigo for Android
- * Copyright (C) 2016-2017 Piwigo Team http://piwigo.org
+ * Copyright (C) 2016-2019 Piwigo Team http://piwigo.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.ui.shared;
+package org.piwigo.io.db;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.Query;
+import androidx.room.Update;
 
-import org.piwigo.accounts.UserManager;
-import org.piwigo.io.PreferencesRepository;
+import org.piwigo.data.model.Image;
 
-import javax.inject.Inject;
+import java.util.List;
 
-public abstract class BaseActivity extends AppCompatActivity {
+import io.reactivex.Single;
 
-    @Inject protected Navigator navigator;
-    @Inject protected UserManager userManager;
-    @Inject protected PreferencesRepository preferencesRepository;
+@Dao
+public interface ImageDao {
+    @Insert
+    void insert(Image image);
+
+    @Delete
+    void delete(Image image);
+
+    @Update
+    void update(Image image);
+
+
+    @Query("SELECT * FROM Image")
+    Single<List<Image>> getImages();
+
 }

@@ -32,10 +32,8 @@ import androidx.databinding.ObservableInt;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
+import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.io.restmodel.SuccessResponse;
-import org.piwigo.io.repository.UserRepository;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
@@ -74,10 +72,10 @@ public class MainViewModel extends ViewModel {
     public ObservableField<String> piwigoVersion = new ObservableField<>("");
 
     private MutableLiveData<Integer> selectedNavigationItemId = new MutableLiveData<>();
-    private UserRepository mUserRepository;
+    private RestUserRepository mUserRepository;
     private UserManager userManager;
 
-    MainViewModel(UserManager userManager, UserRepository userRepository) {
+    MainViewModel(UserManager userManager, RestUserRepository userRepository) {
         Account account = userManager.getActiveAccount().getValue();
         this.userManager = userManager;
         if (account != null) {

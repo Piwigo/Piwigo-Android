@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.repository;
+package org.piwigo.io.restrepository;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestServiceFactory;

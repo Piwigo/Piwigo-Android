@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.repository;
+package org.piwigo.io.restrepository;
 
 import android.accounts.Account;
 
@@ -25,7 +25,6 @@ import org.piwigo.helper.CookieHelper;
 import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
-import org.piwigo.io.repository.RESTBaseRepository;
 import org.piwigo.io.restmodel.LoginResponse;
 import org.piwigo.io.restmodel.SuccessResponse;
 
@@ -35,12 +34,10 @@ import javax.inject.Named;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 
-//import rx.Observable;
-//import rx.Scheduler;
+public class RestUserRepository extends RESTBaseRepository {
 
-public class UserRepository extends RESTBaseRepository {
-
-    @Inject UserRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
+    @Inject
+    RestUserRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
         super(restServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
@@ -72,7 +69,6 @@ public class UserRepository extends RESTBaseRepository {
                         return Observable.just(response.body())
                                 .subscribeOn(ioScheduler)
                                 .observeOn(uiScheduler)
-//                .compose(applySchedulers())
                                 ;
                     }
                     // TODO:
@@ -85,7 +81,6 @@ public class UserRepository extends RESTBaseRepository {
                 .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId)
                                 .subscribeOn(ioScheduler)
                                 .observeOn(uiScheduler)
-//                .compose(applySchedulers())
                 )
                 .map(statusResponse -> {
                     loginResponse.statusResponse = statusResponse;
@@ -104,7 +99,6 @@ public class UserRepository extends RESTBaseRepository {
         return status(restService, siteUrl)
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler);
-        //                .compose(applySchedulers())
 
     }
 
@@ -114,7 +108,6 @@ public class UserRepository extends RESTBaseRepository {
         return status(restService, siteUrl)
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler)
-//                .compose(applySchedulers())
                 ;
     }
 
@@ -125,7 +118,6 @@ public class UserRepository extends RESTBaseRepository {
         return restService.getStatus()
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler)
-//                .compose(applySchedulers())
                 .map(statusResponse -> {
                     loginResponse.statusResponse = statusResponse;
                     return loginResponse;
@@ -140,8 +132,6 @@ public class UserRepository extends RESTBaseRepository {
         return restService.logout()
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler)
-//                .compose(applySchedulers())
-
                 .map(statusResponse -> successResponse);
     }
 }

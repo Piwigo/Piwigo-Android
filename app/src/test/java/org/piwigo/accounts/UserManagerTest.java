@@ -30,10 +30,9 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.piwigo.BuildConfig;
 import org.piwigo.R;
 import org.piwigo.TestPiwigoApplication;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.io.PreferencesRepository;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 

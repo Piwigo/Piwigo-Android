@@ -20,18 +20,26 @@ package org.piwigo.data.model;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
+@Entity
 public class Image implements Serializable {
 
+    public Image(){
 
+    }
+
+    @PrimaryKey
     public int id;
 
     public String name;
 
-    public Object comment;
+    public String comment;
 
     public String author;
 
@@ -39,7 +47,10 @@ public class Image implements Serializable {
 
     public int height;
 
+    @Ignore
     private MutableLiveData<String> elementUrl;
+
+    @Ignore
     private MutableLiveData<Iterable<Variant>> mLiveVariants;
 
     /**
@@ -48,6 +59,7 @@ public class Image implements Serializable {
      *
      * => after modification of this structure be sure to trigger a mLiveVariants update
      */
+    @Ignore
     private ArrayList<Variant> mDeadVariants;
 
     public Image(String elementUrl, int width, int height) {

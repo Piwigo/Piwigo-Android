@@ -36,7 +36,7 @@ import com.google.common.collect.ImmutableList;
 
 import org.apache.commons.lang3.StringUtils;
 import org.piwigo.R;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.io.PreferencesRepository;
 
 import java.util.List;
 import java.util.Locale;
@@ -156,7 +156,7 @@ public class UserManager {
     }
 
     // TODO: rmk, 2018-11-24: not sure whether it is a good idea to store the token in the account at all
-    // maybe it would be better to just keep it in the UserRepository
+    // maybe it would be better to just keep it in the RestUserRepository
     public String getToken(Account account) {
         return accountManager.getUserData(account, KEY_TOKEN);
     }

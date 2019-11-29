@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.repository;
+package org.piwigo.io.restrepository;
 
 import android.accounts.Account;
 
@@ -49,9 +49,7 @@ public class RESTImageRepository extends RESTBaseRepository {
 
     private Observable<ImageListResponse> getPagesStartingAt(Account account, @Nullable Integer categoryId, RestService restService, int page) {
         Observable<ImageListResponse> a = restService
-                .getImages(categoryId, page, PAGE_SIZE)
-                .subscribeOn(ioScheduler)
-                .observeOn(uiScheduler);
+                .getImages(categoryId, page, PAGE_SIZE);
 
         return a.concatMap(response -> {
             int received = response.result.paging.count

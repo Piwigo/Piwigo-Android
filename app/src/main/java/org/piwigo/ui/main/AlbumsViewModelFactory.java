@@ -25,7 +25,7 @@ import android.content.Context;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.data.repository.CategoriesRepository;
 import org.piwigo.data.repository.ImageRepository;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.io.PreferencesRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

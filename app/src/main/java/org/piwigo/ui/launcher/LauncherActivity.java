@@ -28,11 +28,9 @@ import android.util.Log;
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLauncherBinding;
 import org.piwigo.io.restmodel.LoginResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.ui.shared.Navigator;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 import javax.inject.Inject;
 
@@ -47,7 +45,7 @@ public class LauncherActivity extends BaseActivity {
     private ActivityLauncherBinding binding;
 
     @Inject
-    UserRepository userRepository;
+    RestUserRepository userRepository;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);

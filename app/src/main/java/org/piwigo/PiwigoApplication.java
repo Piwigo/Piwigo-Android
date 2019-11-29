@@ -26,7 +26,6 @@ import android.os.Build;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
 import androidx.multidex.MultiDex;
-import androidx.preference.PreferenceManager;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -42,7 +41,7 @@ import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
 import org.piwigo.internal.di.component.DaggerBindingComponent;
 import org.piwigo.internal.di.module.ApplicationModule;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.io.PreferencesRepository;
 
 import javax.inject.Inject;
 

@@ -28,7 +28,7 @@ public class ImageInfo implements Serializable {
 
     @SerializedName("name") public String name;
 
-    @SerializedName("comment") public Object comment;
+    @SerializedName("comment") public String comment;
 
     @SerializedName("author") public String author;
 

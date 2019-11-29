@@ -22,8 +22,8 @@ import org.piwigo.accounts.UserManager;
 import org.piwigo.data.model.Category;
 import org.piwigo.data.model.PositionedItem;
 import org.piwigo.helper.NaturalOrderComparator;
-import org.piwigo.io.repository.PreferencesRepository;
-import org.piwigo.io.repository.RESTCategoriesRepository;
+import org.piwigo.io.PreferencesRepository;
+import org.piwigo.io.restrepository.RESTCategoriesRepository;
 
 import javax.inject.Inject;
 

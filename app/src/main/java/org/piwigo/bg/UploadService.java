@@ -41,7 +41,7 @@ import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.event.RefreshRequestEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.restmodel.ImageUploadResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restrepository.RestUserRepository;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -72,7 +72,7 @@ public class UploadService extends IntentService {
     RestServiceFactory restServiceFactory;
 
     @Inject
-    UserRepository userRepository;
+    RestUserRepository userRepository;
 
     @Inject
     UserManager userManager;

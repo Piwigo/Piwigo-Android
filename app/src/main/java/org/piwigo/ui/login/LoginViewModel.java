@@ -39,14 +39,11 @@ import com.github.jorgecastilloprz.FABProgressCircle;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.URLHelper;
+import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.io.restmodel.LoginResponse;
-import org.piwigo.io.repository.UserRepository;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 import java.util.regex.Pattern;
 
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -72,7 +69,7 @@ public class LoginViewModel extends ViewModel {
     public ObservableField<String> password = new ObservableField<>();
     public ObservableField<String> passwordError = new ObservableField<>();
 
-    private final UserRepository userRepository;
+    private final RestUserRepository userRepository;
     private final Resources resources;
 
     private MutableLiveData<LoginResponse> loginSuccess = new MutableLiveData<>();
@@ -82,7 +79,7 @@ public class LoginViewModel extends ViewModel {
     private final UserManager userManager;
     private Account account = null;
 
-    LoginViewModel(UserManager userManager, UserRepository userRepository, Resources resources) {
+    LoginViewModel(UserManager userManager, RestUserRepository userRepository, Resources resources) {
         this.userRepository = userRepository;
         this.resources = resources;
         this.userManager = userManager;

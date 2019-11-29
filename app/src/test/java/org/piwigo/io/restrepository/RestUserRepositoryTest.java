@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.repository;
+package org.piwigo.io.restrepository;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +40,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class UserRepositoryTest {
+public class RestUserRepositoryTest {
 
     private static final String URL = "https://piwigo.org/demo/";
     private static final String USERNAME = "test";
@@ -56,7 +56,7 @@ public class UserRepositoryTest {
     @Mock RestService restService;
     @Mock UserManager userManager;
 
-    private UserRepository userRepository;
+    private RestUserRepository userRepository;
 
     @Before public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -66,7 +66,7 @@ public class UserRepositoryTest {
         when(restService.login(USERNAME, PASSWORD)).thenReturn(getLoginSuccessResponse());
         when(restService.login(BAD_CREDENTIAL, BAD_CREDENTIAL)).thenReturn(getLoginFailureResponse());
 
-        userRepository = new UserRepository(restServiceFactory, Schedulers.immediate(), Schedulers.immediate(), userManager);
+        userRepository = new RestUserRepository(restServiceFactory, Schedulers.immediate(), Schedulers.immediate(), userManager);
     }
 
     @Test public void login_withValidCredentials_returnsSuccessResponse() {

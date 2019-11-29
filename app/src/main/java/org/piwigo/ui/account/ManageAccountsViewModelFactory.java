@@ -24,18 +24,18 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Context;
 
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restrepository.RestUserRepository;
 
 import javax.inject.Inject;
 
 public class ManageAccountsViewModelFactory implements ViewModelProvider.Factory {
 
     private final Context context;
-    private final UserRepository userRepository;
+    private final RestUserRepository userRepository;
 
     private final UserManager userManager;
 
-    @Inject public ManageAccountsViewModelFactory(UserManager userManager, Context context, UserRepository userRepository) {
+    @Inject public ManageAccountsViewModelFactory(UserManager userManager, Context context, RestUserRepository userRepository) {
         this.userManager = userManager;
         this.context = context;
         this.userRepository = userRepository;

@@ -32,7 +32,7 @@ import org.mockito.MockitoAnnotations;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.restmodel.LoginResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restrepository.RestUserRepository;
 
 import java.util.regex.Pattern;
 
@@ -55,7 +55,8 @@ public class LoginViewModelTest {
     private static final String ERROR_USERNAME = "Enter your username";
     private static final String ERROR_PASSWORD = "Enter your password";
 
-    @Mock UserRepository userRepository;
+    @Mock
+    RestUserRepository userRepository;
 
     @Mock Resources resources;
 

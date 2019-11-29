@@ -24,11 +24,10 @@ import android.os.Bundle;
 import org.piwigo.PiwigoApplication;
 import org.piwigo.R;
 import org.piwigo.helper.DialogHelper;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.io.PreferencesRepository;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;

@@ -60,7 +60,7 @@ import org.piwigo.io.event.SnackbarShowEvent;
 import org.piwigo.data.model.ImageUploadItem;
 import org.piwigo.io.restmodel.LoginResponse;
 import org.piwigo.io.restmodel.SuccessResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
@@ -105,7 +105,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Inject
     RestServiceFactory restServiceFactory;
     @Inject
-    UserRepository userRepository;
+    RestUserRepository userRepository;
 
     private MainViewModel viewModel;
 

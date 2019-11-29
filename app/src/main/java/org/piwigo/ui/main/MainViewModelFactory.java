@@ -22,7 +22,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restrepository.RestUserRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -31,9 +31,9 @@ import javax.inject.Singleton;
 public class MainViewModelFactory implements ViewModelProvider.Factory {
 
     private final UserManager userManager;
-    private final UserRepository userRepository;
+    private final RestUserRepository userRepository;
 
-    @Inject public MainViewModelFactory(UserManager userManager, UserRepository userRepository) {
+    @Inject public MainViewModelFactory(UserManager userManager, RestUserRepository userRepository) {
         this.userManager = userManager;
         this.userRepository = userRepository;
     }
