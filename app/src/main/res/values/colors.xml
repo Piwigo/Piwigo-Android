@@ -2,7 +2,7 @@
 
     <!-- Light theme colors -->
     <color name="piwigo_light_dark_text_color">#101010</color>
-    <color name="piwigo_light_background_color">#efefff</color>
+    <color name="piwigo_light_background_color">#F9F9F9</color>
     <color name="piwigo_light_error_red">#f55f5a</color>
 
     <!-- Constant colors -->
@@ -21,4 +21,6 @@
 
     <color name="piwigo_fab_background_color">#ffffff</color>
     <color name="piwigo_fab_text_color">#101010</color>
+
+    <color name="piwigo_text_field_color">#D7D7D7</color>
 </resources>

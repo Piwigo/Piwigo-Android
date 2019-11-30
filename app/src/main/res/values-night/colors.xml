@@ -3,10 +3,12 @@
 
     <!-- Dark theme colors -->
     <color name="piwigo_dark_dark_text_color">#FFFFFF</color>
-    <color name="piwigo_dark_background_color">#121212</color>
+    <color name="piwigo_dark_background_color">#000000</color>
     <color name="piwigo_dark_error_red">#CF6679</color>
     <color name="grey_semi_transparent">#CC202020</color>
 
     <color name="piwigo_fab_background_color">#1F1B24</color>
     <color name="piwigo_fab_text_color">#FFFFFF</color>
+
+    <color name="piwigo_text_field_color">#1E1E1E</color>
 </resources>

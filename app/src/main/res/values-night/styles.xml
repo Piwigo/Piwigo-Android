@@ -6,7 +6,8 @@
         <item name="colorPrimaryDark">@color/piwigo_orange_secondary</item>
         <item name="colorAccent">@color/piwigo_orange</item>
         <item name="android:windowBackground">@color/piwigo_dark_background_color</item>
-        <item name="android:textColor"></item>
+        <item name="android:statusBarColor">#1E1E1E</item>
+        <item name="android:textColor" />
     </style>
 
     <style name="Theme.Piwigo.Login" parent="Theme.Piwigo">
