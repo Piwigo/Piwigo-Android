@@ -52,6 +52,11 @@ android {
         versionCode 103
         versionName "1.0.3-dev"
         multiDexEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
     buildTypes {
         debug {

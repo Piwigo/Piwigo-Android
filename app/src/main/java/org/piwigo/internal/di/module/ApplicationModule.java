@@ -21,13 +21,15 @@ package org.piwigo.internal.di.module;
 import android.accounts.AccountManager;
 import android.content.Context;
 
+import androidx.room.Room;
+
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.BuildConfig;
 import org.piwigo.PiwigoApplication;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.data.repository.ImageRepository;
 import org.piwigo.io.PreferencesRepository;
+import org.piwigo.data.db.CacheDatabase;
 
 import javax.inject.Singleton;
 
@@ -45,6 +47,12 @@ public class ApplicationModule {
 
     @Provides @Singleton Context provideApplicationContext() {
         return application;
+    }
+
+    @Provides @Singleton
+    CacheDatabase provideCacheDatabase() {
+        return Room.databaseBuilder(application,
+                CacheDatabase.class, "piwigo-cache").build();
     }
 
     @Provides @Singleton Picasso providePicasso() {

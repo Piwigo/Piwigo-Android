@@ -16,14 +16,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.db;
+package org.piwigo.data.db;
 
-import androidx.room.Database;
-import androidx.room.RoomDatabase;
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.Query;
+import androidx.room.Update;
 
 import org.piwigo.data.model.Image;
 
-@Database(entities = {Image.class}, version = 1)
-public abstract class CacheDatabase extends RoomDatabase {
-    public abstract ImageDao imageDao();
+import java.util.List;
+
+import io.reactivex.Single;
+
+@Dao
+public interface ImageDao {
+    @Insert
+    void insert(Image image);
+
+    @Delete
+    void delete(Image image);
+
+    @Update
+    void update(Image image);
+
+
+    @Query("SELECT * FROM Image")
+    Single<List<Image>> getImages();
+
+    @Query("SELECT Image.* FROM Image INNER JOIN ImageCategoryMap ON Image.id=ImageCategoryMap.imageId WHERE ImageCategoryMap.categoryId=:categoryId")
+    Single<List<Image>> getImagesInCategory(int categoryId);
+
 }

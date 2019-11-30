@@ -16,33 +16,41 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.io.db;
+package org.piwigo.data.db;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
-import org.piwigo.data.model.Image;
+import org.piwigo.data.model.Category;
 
 import java.util.List;
 
 import io.reactivex.Single;
 
 @Dao
-public interface ImageDao {
+public abstract class CategoryDao {
+
     @Insert
-    void insert(Image image);
+    abstract void insert(Category category);
 
     @Delete
-    void delete(Image image);
+    abstract void delete(Category category);
 
     @Update
-    void update(Image image);
+    abstract int update(Category category);
 
+    @Transaction
+    public void upsert(Category category) {
+        int id = update(category);
+        if (id == -1) {
+            insert(category);
+        }
+    }
 
-    @Query("SELECT * FROM Image")
-    Single<List<Image>> getImages();
-
+    @Query("SELECT * FROM Category")
+    abstract Single<List<Category>> getAllCategories();
 }

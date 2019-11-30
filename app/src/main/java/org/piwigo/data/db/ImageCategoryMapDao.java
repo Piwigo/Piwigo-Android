@@ -15,38 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.piwigo.data.model;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
+package org.piwigo.data.db;
 
-@Entity
-public class Category {
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
 
-    @PrimaryKey
-    public int id;
+import java.util.List;
 
-    public String name;
+@Dao
+public abstract class ImageCategoryMapDao {
+    @Insert
+    abstract public void insert(List<CacheDBInternals.ImageCategoryMap> joins);
 
-    public String comment;
-
-    public String globalRank; /* TODO: change from String to int */
-
-    public int nbImages;
-
-    public int totalNbImages;
-
-    public int representativePictureId;
-
-    public int nbCategories;
-
-    public String thumbnailUrl; /* TODO: remove */
-
-    @Override public boolean equals(Object o) {
-        if (o instanceof Category) {
-            return id == ((Category) o).id;
-        }
-        return super.equals(o);
-    }
-
+    @Delete
+    abstract public void delete(List<CacheDBInternals.ImageCategoryMap> join);
 }

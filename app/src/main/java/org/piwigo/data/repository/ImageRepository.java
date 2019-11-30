@@ -18,20 +18,21 @@
 
 package org.piwigo.data.repository;
 
-import android.content.Context;
-
 import androidx.annotation.Nullable;
-import androidx.room.Room;
 
-import org.piwigo.PiwigoApplication;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.data.model.Category;
+import org.piwigo.data.db.CacheDBInternals;
+import org.piwigo.data.db.ImageCategoryMapDao;
 import org.piwigo.data.model.Image;
 import org.piwigo.data.model.PositionedItem;
 import org.piwigo.io.PreferencesRepository;
-import org.piwigo.io.db.CacheDatabase;
-import org.piwigo.io.restrepository.RESTImageRepository;
+import org.piwigo.data.db.CacheDatabase;
 import org.piwigo.io.restmodel.Derivative;
+import org.piwigo.io.restmodel.ImageInfo;
+import org.piwigo.io.restrepository.RESTImageRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,7 +50,7 @@ public class ImageRepository {
     private final Scheduler uiScheduler;
     private final PreferencesRepository mPreferences;
 
-    private CacheDatabase cache;
+    private CacheDatabase mCache;
 
     @Inject public ImageRepository(RESTImageRepository restImageRepo, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager, PreferencesRepository preferences, CacheDatabase cache) {
         this.ioScheduler = ioScheduler;
@@ -58,8 +59,8 @@ public class ImageRepository {
         mUserManager = userManager;
         mPreferences = preferences;
 
-        cache = Room.databaseBuilder(context,
-                CacheDatabase.class, "piwigo-cache").build();
+        mCache = cache;
+
 
     }
 
@@ -71,14 +72,14 @@ public class ImageRepository {
      */
     public Observable<PositionedItem<Image>> getImages(@Nullable Integer categoryId) {
 // TODO: #90 implement sorting
-    return cache.imageDao().getImages()
+/*    return mCache.imageDao().getImagesInCategory(categoryId)
             .subscribeOn(ioScheduler)
             .observeOn(uiScheduler)
             .flattenAsFlowable(s -> s)
             .zipWith(Flowable.range(0, Integer.MAX_VALUE), (item, counter) -> new PositionedItem<Image>(counter, item)).toObservable();
-
+*/
 // TODO: add fetching the images from local database/cache
-/*        return mRestImageRepo.getImages(mUserManager.getActiveAccount().getValue(), categoryId)
+        return mRestImageRepo.getImages(mUserManager.getActiveAccount().getValue(), categoryId)
                 .toFlowable(BackpressureStrategy.BUFFER)
                 .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> {
                     Derivative d;
@@ -111,19 +112,26 @@ public class ImageRepository {
 
                     Image i = new Image(d.url, d.width, d.height);
                     i.name = info.name;
+                    i.file = info.file;
                     i.id = info.id;
                     i.author = info.author;
                     i.comment = info.comment;
                     i.height = info.height;
                     i.width = info.width;
-                    cache.imageDao().insert(i);
+                    i.creationDate = info.dateCreation;
+                    i.availableDate = info.dateAvailable;
+                    mCache.imageDao().insert(i);
+                    List<CacheDBInternals.ImageCategoryMap> join = new ArrayList<>(info.categories.size());
+                    for(ImageInfo.CategoryID c : info.categories){
+                        join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));
+                    }
+                    mCache.imageCategoryMapDao().insert(join);
                     return new PositionedItem<>(counter, i);
                 })
         .subscribeOn(ioScheduler)
         .observeOn(uiScheduler)
         .toObservable();
 
- */
     }
 
     /**

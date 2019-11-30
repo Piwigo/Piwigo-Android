@@ -15,38 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.piwigo.data.model;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
+package org.piwigo.data.db;
 
-@Entity
-public class Category {
+import androidx.room.Database;
+import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
-    @PrimaryKey
-    public int id;
+import org.piwigo.data.model.Category;
+import org.piwigo.data.model.Image;
 
-    public String name;
-
-    public String comment;
-
-    public String globalRank; /* TODO: change from String to int */
-
-    public int nbImages;
-
-    public int totalNbImages;
-
-    public int representativePictureId;
-
-    public int nbCategories;
-
-    public String thumbnailUrl; /* TODO: remove */
-
-    @Override public boolean equals(Object o) {
-        if (o instanceof Category) {
-            return id == ((Category) o).id;
-        }
-        return super.equals(o);
-    }
-
+@Database(entities =
+        {
+            Image.class,
+            Category.class,
+            CacheDBInternals.ImageCategoryMap.class
+        },
+        version = 1)
+@TypeConverters({CacheDBInternals.class})
+public abstract class CacheDatabase extends RoomDatabase {
+    public abstract ImageDao imageDao();
+    public abstract CategoryDao categoryDao();
+    public abstract ImageCategoryMapDao imageCategoryMapDao();
 }

@@ -26,6 +26,7 @@ import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Entity
 public class Image implements Serializable {
@@ -37,6 +38,8 @@ public class Image implements Serializable {
     @PrimaryKey
     public int id;
 
+    public String file;
+
     public String name;
 
     public String comment;
@@ -46,6 +49,10 @@ public class Image implements Serializable {
     public int width;
 
     public int height;
+
+    public Date creationDate;
+
+    public Date availableDate;
 
     @Ignore
     private MutableLiveData<String> elementUrl;

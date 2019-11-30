@@ -19,6 +19,7 @@
 package org.piwigo.data.repository;
 
 import org.piwigo.accounts.UserManager;
+import org.piwigo.data.db.CacheDatabase;
 import org.piwigo.data.model.Category;
 import org.piwigo.data.model.PositionedItem;
 import org.piwigo.helper.NaturalOrderComparator;
@@ -26,30 +27,40 @@ import org.piwigo.io.PreferencesRepository;
 import org.piwigo.io.restrepository.RESTCategoriesRepository;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import androidx.annotation.Nullable;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 
 public class CategoriesRepository {
 
     private final RESTCategoriesRepository mRestCategoryRepo;
     private final UserManager mUserManager;
     private final PreferencesRepository mPreferences;
+    private final CacheDatabase mCache;
+    private final Scheduler ioScheduler;
+    private final Scheduler uiScheduler;
 
 
-    @Inject public CategoriesRepository(RESTCategoriesRepository restCategoryRepo, UserManager userManager, PreferencesRepository preferences) {
+    @Inject public CategoriesRepository(RESTCategoriesRepository restCategoryRepo, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager, PreferencesRepository preferences, CacheDatabase cache) {
         mRestCategoryRepo = restCategoryRepo;
         mUserManager = userManager;
         mPreferences = preferences;
+        mCache = cache;
+        this.ioScheduler = ioScheduler;
+        this.uiScheduler = uiScheduler;
     }
 
     public Observable<PositionedItem<Category>> getCategories(@Nullable Integer categoryId) {
         return mRestCategoryRepo.getCategories(mUserManager.getActiveAccount().getValue(), categoryId,
                 mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
                 .toFlowable(BackpressureStrategy.BUFFER)
+                .subscribeOn(ioScheduler)
+                .observeOn(ioScheduler)
 
                 .zipWith(Flowable.range(0, Integer.MAX_VALUE), (restCat, counter) -> {
                     Category c = new Category();
@@ -62,10 +73,14 @@ public class CategoriesRepository {
                     c.nbCategories = restCat.nbCategories;
                     c.representativePictureId = restCat.representativePictureId;
                     c.totalNbImages = restCat.totalNbImages;
+                    mCache.categoryDao().upsert(c);
                     return new PositionedItem<Category>(counter, c);
                 })
 // TODO: #90 generalize sorting
-                .sorted((categoryItem1, categoryItem2) -> NaturalOrderComparator.compare(categoryItem1.getItem().globalRank, categoryItem2.getItem().globalRank)).toObservable()
+                .sorted((categoryItem1, categoryItem2) -> NaturalOrderComparator.compare(categoryItem1.getItem().globalRank, categoryItem2.getItem().globalRank))
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
+                .toObservable()
                 ;
     }
 }

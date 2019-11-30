@@ -21,12 +21,16 @@ package org.piwigo.io.restmodel;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 public class ImageInfo implements Serializable {
 
     @SerializedName("id") public int id;
 
     @SerializedName("name") public String name;
+
+    @SerializedName("file") public String file;
 
     @SerializedName("comment") public String comment;
 
@@ -36,9 +40,16 @@ public class ImageInfo implements Serializable {
 
     @SerializedName("height") public int height;
 
+    @SerializedName("date_creation") public Date dateCreation;
+
+    @SerializedName("date_available") public Date dateAvailable;
+
     @SerializedName("element_url") public String elementUrl;
 
     @SerializedName("derivatives") public Derivatives derivatives;
+
+    @SerializedName("categories") public List<CategoryID> categories;
+
 
     @Override public boolean equals(Object o) {
         if (o instanceof ImageInfo) {
@@ -47,4 +58,8 @@ public class ImageInfo implements Serializable {
         return super.equals(o);
     }
 
+    public class CategoryID {
+        @SerializedName("id") public int id;
+
+    }
 }
