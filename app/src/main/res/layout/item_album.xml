@@ -14,7 +14,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cardview_background"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="160dp"
         android:layout_marginTop="4dp"
         >
 
@@ -52,7 +52,7 @@
                 android:src="@{viewModel.url}"
                 android:contentDescription="@{viewModel.title}"
                 android:onClick="@{viewModel::onClickDo}"
-                android:scaleType="fitXY"
+                android:scaleType="centerCrop"
                 />
 
         </androidx.cardview.widget.CardView>
@@ -62,6 +62,7 @@
             android:id="@+id/second_card"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:onClick="@{viewModel::onClickDo}"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
@@ -77,7 +78,7 @@
                 android:layout_marginTop="15dp"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/piwigo_orange"
-                tools:text="peterdqdwqdqwdqdwqdqw"
+                tools:text="Album Title"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -93,9 +94,9 @@
                 android:text="@{viewModel.photos}"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/piwigo_dark_text_color"
+                tools:text="Description of content"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:text="textetxtextefwefwefwefwefwefwefwefwefwetx"
                 app:layout_constraintStart_toStartOf="parent"
                 />
 
