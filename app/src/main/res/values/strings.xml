@@ -101,6 +101,8 @@
         <p><a href="https://github.com/voriondev">Valentin Baizeau</a></p>
         <p>Chiraag Nataraj</p>
         <p><a href="https://github.com/radass1996">Radko Varchola</a></p>
+        <p><a href="https://github.com/Walikdik">Gabriel Gábor</a></p>
+
         ]]>
     </string>
     <string name="libraries" translatable="false"><![CDATA[
@@ -117,6 +119,7 @@
         <p><a href="https://github.com/tingyik90/snackprogressbar/">tingyik90/SnackProgressBar</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p><a href="https://github.com/greenrobot/EventBus/">greenrobot/EventBus</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p><a href="https://commons.apache.org/proper/commons-lang/">Apache Commons Lang</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+        <p><a href="https://github.com/vipulasri/TicketView">TicketView</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p>appcompat, support-annotations, cardview, design, constraint-layout, recyclerview, design, preference, exifinterface, guava, dagger license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         ]]></string>
     <!-- Albums -->
