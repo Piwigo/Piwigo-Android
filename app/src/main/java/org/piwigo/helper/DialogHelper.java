@@ -25,6 +25,17 @@ public class DialogHelper {
                 .show();
     }
 
+    public void showInfoDialog(int titleId, int messageId, Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Theme_Piwigo_AlertDialog);
+
+        builder.setTitle(titleId)
+                .setMessage(messageId)
+                .setPositiveButton(R.string.button_ok, (dialog, which) -> {
+                    dialog.cancel();
+                })
+                .show();
+    }
+
     /**
      * @param title title of the problem dialog to show
      * @param description details for the user

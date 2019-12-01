@@ -11,127 +11,172 @@
     </data>
 
     <ScrollView
-        android:background="@color/piwigo_background_color"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fitsSystemWindows="true"
+        android:theme="@style/Theme.Piwigo">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:orientation="vertical">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginBottom="@dimen/login_logo_margin_bottom"
                 android:layout_marginTop="@dimen/login_logo_margin_top"
-                android:src="@drawable/piwigo_logo"
+                android:layout_marginBottom="@dimen/login_logo_margin_bottom"
                 android:contentDescription="@string/nav_icon_description"
+                android:src="@drawable/piwigo_logo"
                 android:transitionName="@string/logo_transition_name" />
 
-            <androidx.cardview.widget.CardView
-                style="@style/Theme.Piwigo.Login.CardView"
+            <LinearLayout
+                android:layout_width="330dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="center"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="32dp"
-                app:cardUseCompatPadding="true"
+                android:orientation="vertical"
                 app:contentPadding="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        app:error="@{viewModel.urlError}"
-                        app:errorEnabled="true">
-
-                        <EditText
-                            android:id="@+id/url"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:autofillHints="url"
-                            android:hint="@string/login_url_hint"
-                            android:imeOptions="actionNext"
-                            android:inputType="textUri"
-                            android:maxLines="1"
-                            android:minHeight="48dp"
-                            android:nextFocusDown="@+id/username"
-                            android:text="@={viewModel.url}" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:error="@{viewModel.usernameError}"
-                        app:errorEnabled="true">
-
-                        <EditText
-                            android:id="@+id/username"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/login_username_hint"
-                            android:imeOptions="actionNext"
-                            android:inputType="text"
-                            android:minHeight="48dp"
-                            android:maxLines="1"
-                            android:nextFocusDown="@+id/password"
-                            android:nextFocusUp="@+id/url"
-                            android:autofillHints="username"
-                            android:text="@={viewModel.username}" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:error="@{viewModel.passwordError}"
-                        app:errorEnabled="true"
-                        app:passwordToggleEnabled="true" >
-
-                        <EditText
-                            android:id="@+id/password"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:hint="@string/login_password_hint"
-                            android:imeOptions="actionDone"
-                            android:inputType="textPassword"
-                            android:minHeight="48dp"
-                            android:maxLines="1"
-                            android:nextFocusDown="@+id/login_button"
-                            android:nextFocusUp="@+id/username"
-                            android:autofillHints="password"
-                            android:text="@={viewModel.password}" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.github.jorgecastilloprz.FABProgressCircle
-                        android:id="@+id/fabLoginCircle"
-                        android:layout_gravity="center_horizontal"
+                    <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:paddingTop="14dp"
+                        android:paddingBottom="3dp"
+                        android:text="@string/login_url_hint" />
 
-                        <com.google.android.material.floatingactionbutton.FloatingActionButton
-                            android:id="@+id/login_button"
-                            android:contentDescription="@string/login_button_description"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="24dp"
-                            android:layout_gravity="center_horizontal"
-                            android:onClick="onClick"
-                            android:scaleType="center"
-                            android:src="@drawable/ic_chevron_right"
-                            app:elevation="8dp"
-                            app:fabSize="normal" />
-                    </com.github.jorgecastilloprz.FABProgressCircle>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="14dp"
+                        android:paddingBottom="3dp"
+                        android:text="@string/star" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:error="@{viewModel.urlError}"
+                    app:errorEnabled="true"
+                    app:hintEnabled="false">
+
+                    <EditText
+                        android:id="@+id/url"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="url"
+                        android:background="@color/piwigo_text_field_color"
+                        android:drawableStart="@drawable/ic_link"
+                        android:drawableEnd="@drawable/ic_help"
+                        android:drawablePadding="12dp"
+                        android:hint="example.piwigo.com"
+                        android:imeOptions="actionNext"
+                        android:inputType="textUri"
+                        android:maxLines="1"
+                        android:minHeight="48dp"
+                        android:nextFocusDown="@+id/username"
+                        android:padding="12dp"
+                        android:text="@={viewModel.url}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="3dp"
+                    android:text="@string/login_username_hint" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:error="@{viewModel.usernameError}"
+                    app:errorEnabled="true"
+                    app:hintEnabled="false">
+
+                    <EditText
+                        android:id="@+id/username"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/piwigo_text_field_color"
+                        android:drawableStart="@drawable/ic_user"
+                        android:drawablePadding="12dp"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:minHeight="48dp"
+                        android:nextFocusUp="@+id/url"
+                        android:nextFocusDown="@+id/password"
+                        android:padding="12dp"
+                        android:text="@={viewModel.username}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="3dp"
+                    android:text="@string/login_password_hint" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:error="@{viewModel.passwordError}"
+                    app:errorEnabled="true"
+                    app:hintEnabled="false"
+                    app:passwordToggleEnabled="true">
+
+                    <EditText
+                        android:id="@+id/password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/piwigo_text_field_color"
+                        android:drawableStart="@drawable/ic_lock"
+                        android:drawablePadding="12dp"
+                        android:fontFamily="sans-serif"
+                        android:imeOptions="actionDone"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:minHeight="48dp"
+                        android:nextFocusUp="@+id/username"
+                        android:nextFocusDown="@+id/login_button"
+                        android:padding="12dp"
+                        android:text="@={viewModel.password}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.github.jorgecastilloprz.FABProgressCircle
+                    android:id="@+id/fabLoginCircle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/login_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin="24dp"
+                        android:contentDescription="@string/login_button_description"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_chevron_right"
+                        app:elevation="8dp"
+                        app:fabSize="normal" />
+                </com.github.jorgecastilloprz.FABProgressCircle>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/login_as_guest_hint" />
         </LinearLayout>
     </ScrollView>
 </layout>
