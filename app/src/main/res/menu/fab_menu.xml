@@ -2,7 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.leinardi.android.speeddial.sample.MainActivity">
+    tools:context="com.leinardi.android.speeddial.sample.MainActivity"
+    android:theme="@style/Theme.Piwigo">
     <item
         android:id="@+id/fab_create_album"
         android:orderInCategory="100"

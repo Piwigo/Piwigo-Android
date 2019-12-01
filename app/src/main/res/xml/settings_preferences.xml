@@ -23,12 +23,25 @@
         app:iconSpaceReserved="false">
         <ListPreference
             android:entries="@array/download_size_array"
-            android:entryValues="@array/download_size_array"
+            android:entryValues="@array/download_size_array_values"
             android:key="download_size"
             app:defaultValue="medium"
             app:iconSpaceReserved="false"
             app:summary="@string/settings_download_size_summary"
             app:title="@string/settings_download_size" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_colors"
+        app:iconSpaceReserved="false">
+        <ListPreference
+            android:entries="@array/colors_array"
+            android:entryValues="@array/colors_array_values"
+            android:key="color_palette"
+            app:defaultValue="light"
+            app:iconSpaceReserved="false"
+            app:summary="@string/settings_color_palette_summary"
+            app:title="@string/settings_color_palette" />
     </PreferenceCategory>
 </PreferenceScreen>
 
