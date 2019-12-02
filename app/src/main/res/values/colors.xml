@@ -23,4 +23,5 @@
     <color name="piwigo_fab_text_color">#101010</color>
 
     <color name="piwigo_text_field_color">#D7D7D7</color>
+    <color name="piwigo_dark_text_color">#000000</color>
 </resources>
