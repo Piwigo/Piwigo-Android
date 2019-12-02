@@ -25,15 +25,19 @@ import android.accounts.AccountManager;
 
 import androidx.lifecycle.ViewModelProviders;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 
 import androidx.databinding.DataBindingUtil;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.piwigo.R;
@@ -64,6 +68,8 @@ public class LoginActivity extends BaseActivity {
     private LoginViewModel viewModel;
     private ActivityLoginBinding binding;
 
+    private EditText urlEditText;
+    private FloatingActionButton loginButton;
     private FABProgressCircle fabProgressCircle;
 
     private AccountAuthenticatorResponse authenticatorResponse;
@@ -72,6 +78,7 @@ public class LoginActivity extends BaseActivity {
     private Handler handler = new Handler();
 
     @Override
+    @SuppressLint("ClickableViewAccessibility") // We are silencing the warning since we don't want to create an extra view for only one purpose..
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         setTheme(R.style.Theme_Piwigo_Login);
@@ -88,11 +95,25 @@ public class LoginActivity extends BaseActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setViewModel(viewModel);
 
+        urlEditText = findViewById(R.id.url);
+        loginButton = findViewById(R.id.login_button);
         fabProgressCircle = findViewById(R.id.fabLoginCircle);
 
         viewModel.getLoginSuccess().observe(this, this::loginSuccess);
         viewModel.getLoginError().observe(this, this::loginError);
 
+        loginButton.setOnClickListener(v -> viewModel.onLoginClick(fabProgressCircle));
+        urlEditText.setOnTouchListener((v, event) -> {
+            final int DRAWABLE_RIGHT = 2;
+
+            if(event.getAction() == MotionEvent.ACTION_UP) {
+                if(event.getRawX() >= (urlEditText.getRight() - urlEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                    DialogHelper.INSTANCE.showInfoDialog(R.string.login_url_hint, R.string.login_url_how_to, LoginActivity.this);
+                    return true;
+                }
+            }
+            return false;
+        });
         handleIntent(getIntent());
     }
 
@@ -104,11 +125,6 @@ public class LoginActivity extends BaseActivity {
         }
 
         viewModel.loadAccount(account);
-    }
-
-    public void onClick(View v)
-    {
-        viewModel.onLoginClick(fabProgressCircle);
     }
 
     /**
