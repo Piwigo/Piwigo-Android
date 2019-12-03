@@ -158,6 +158,7 @@ public class LoginViewModelTest {
     }
 
     @Test public void callGetStatusIfUrlValid() {
+        viewModel.unitTesting = true;
         viewModel.url.set(URL);
 
         viewModel.testConnection(true, URL);
@@ -166,6 +167,7 @@ public class LoginViewModelTest {
     }
 
     @Test @SuppressWarnings("unchecked") public void loginSuccessObserverReceivesLoginResponse() {
+        viewModel.unitTesting = true;
         LoginResponse loginResponse = new LoginResponse();
         when(userRepository.login(URL, USERNAME, PASSWORD)).thenReturn(Observable.just(loginResponse));
         Observer<LoginResponse> observer = (Observer<LoginResponse>) mock(Observer.class);
@@ -180,6 +182,7 @@ public class LoginViewModelTest {
     }
 
     @Test @SuppressWarnings("unchecked") public void loginErrorObserverReceivesLoginError() {
+        viewModel.unitTesting = true;
         Throwable throwable = new Throwable();
         when(userRepository.login(URL, USERNAME, PASSWORD)).thenReturn(Observable.error(throwable));
         Observer<Throwable> observer = (Observer<Throwable>) mock(Observer.class);
@@ -195,6 +198,7 @@ public class LoginViewModelTest {
     }
 
     @Test @SuppressWarnings("unchecked") public void animationFinishedObserverReceivesTrue() {
+        viewModel.unitTesting = true;
         Observer<Boolean> observer = (Observer<Boolean>) mock(Observer.class);
         viewModel.getAnimationFinished().observeForever(observer);
 
