@@ -146,7 +146,8 @@ public class LoginViewModelTest {
         assertThat(viewModel.passwordError.get()).isEqualTo(ERROR_PASSWORD);
     }
 
-    @Test public void callloginIfUrlValid() {
+    @Test public void callLoginIfUrlValid() {
+        viewModel.unitTesting = true;
         viewModel.url.set(URL);
         viewModel.username.set(USERNAME);
         viewModel.password.set(PASSWORD);
