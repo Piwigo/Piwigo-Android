@@ -22,6 +22,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import org.piwigo.data.model.Image;
@@ -31,21 +32,28 @@ import java.util.List;
 import io.reactivex.Single;
 
 @Dao
-public interface ImageDao {
+abstract public class ImageDao {
     @Insert
-    void insert(Image image);
+    abstract public void insert(Image image);
 
     @Delete
-    void delete(Image image);
+    abstract public void delete(Image image);
 
     @Update
-    void update(Image image);
+    abstract public int update(Image image);
 
+    @Transaction
+    public void upsert(Image image) {
+        int id = update(image);
+        if (id == -1) {
+            insert(image);
+        }
+    }
 
     @Query("SELECT * FROM Image")
-    Single<List<Image>> getImages();
+    abstract public Single<List<Image>> getImages();
 
     @Query("SELECT Image.* FROM Image INNER JOIN ImageCategoryMap ON Image.id=ImageCategoryMap.imageId WHERE ImageCategoryMap.categoryId=:categoryId")
-    Single<List<Image>> getImagesInCategory(int categoryId);
+    abstract public Single<List<Image>> getImagesInCategory(int categoryId);
 
 }

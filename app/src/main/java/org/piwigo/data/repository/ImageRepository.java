@@ -120,7 +120,7 @@ public class ImageRepository {
                     i.width = info.width;
                     i.creationDate = info.dateCreation;
                     i.availableDate = info.dateAvailable;
-                    mCache.imageDao().insert(i);
+                    mCache.imageDao().upsert(i);
                     List<CacheDBInternals.ImageCategoryMap> join = new ArrayList<>(info.categories.size());
                     for(ImageInfo.CategoryID c : info.categories){
                         join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));

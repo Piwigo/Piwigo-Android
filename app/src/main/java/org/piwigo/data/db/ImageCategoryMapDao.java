@@ -21,14 +21,32 @@ package org.piwigo.data.db;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
+import androidx.room.Query;
+import androidx.room.Transaction;
 
 import java.util.List;
 
+import io.reactivex.Single;
+
 @Dao
 public abstract class ImageCategoryMapDao {
-    @Insert
-    abstract public void insert(List<CacheDBInternals.ImageCategoryMap> joins);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract public long rawInsert(CacheDBInternals.ImageCategoryMap join);
 
-    @Delete
+    @Transaction
+    public void insert(List<CacheDBInternals.ImageCategoryMap> joins){
+        for(CacheDBInternals.ImageCategoryMap join: joins){
+            List<CacheDBInternals.ImageCategoryMap> a = getImagesCategoryMap(join.categoryId, join.imageId);
+            if(a.size() == 0) {
+                rawInsert(join);
+            }
+        }
+    }
+
+    @Query("SELECT * FROM ImageCategoryMap WHERE categoryId=:categoryId AND imageId=:imageId")
+    abstract public List<CacheDBInternals.ImageCategoryMap> getImagesCategoryMap(int categoryId, int imageId);
+
+    @Delete()
     abstract public void delete(List<CacheDBInternals.ImageCategoryMap> join);
 }
