@@ -45,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                android:theme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:navigationIcon="?android:attr/actionModeCloseDrawable"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight"
                 app:title="@{viewModel.title}"/>

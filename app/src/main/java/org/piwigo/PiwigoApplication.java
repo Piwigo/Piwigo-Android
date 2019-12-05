@@ -37,6 +37,7 @@ import org.acra.data.StringFormat;
 import org.piwigo.helper.DialogHelper;
 import org.piwigo.helper.NetworkHelper;
 import org.piwigo.helper.NotificationHelper;
+import org.piwigo.helper.URLHelper;
 import org.piwigo.internal.di.component.ApplicationComponent;
 import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
@@ -80,6 +81,7 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
         new NetworkHelper();
         new NotificationHelper(getApplicationContext());
         new DialogHelper();
+        new URLHelper();
         initializeDependencyInjection();
 
         applyColorPalette(preferencesRepository.getString(PreferencesRepository.KEY_PREF_COLOR_PALETTE));
