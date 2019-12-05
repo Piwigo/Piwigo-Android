@@ -134,7 +134,7 @@ public class LoginActivity extends BaseActivity {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
         } else {
-            Account account = userManager.createUser(response.url, response.statusResponse.result.username, response.password, response.pwgId, response.statusResponse.result.pwgToken);
+            Account account = userManager.createUser(response.url, response.statusResponse.result.username, response.password, response.communityStatusResponse.result.status, response.pwgId, response.statusResponse.result.pwgToken);
             userManager.setActiveAccount(account);
             setResultIntent(account);
             finish();

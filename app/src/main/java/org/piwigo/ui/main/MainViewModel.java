@@ -35,8 +35,12 @@ import rx.schedulers.Schedulers;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
+import org.piwigo.io.model.MethodListResponse;
 import org.piwigo.io.model.SuccessResponse;
+import org.piwigo.io.repository.MethodsRepository;
 import org.piwigo.io.repository.UserRepository;
+
+import java.util.List;
 
 public class MainViewModel extends ViewModel {
     // TODO: cleanup here...
@@ -69,12 +73,14 @@ public class MainViewModel extends ViewModel {
     // TODO: finish loginstatus
     public ObservableInt loginStatus = new ObservableInt(STAT_OFFLINE);
     public ObservableField<String> piwigoVersion = new ObservableField<>("");
+    public ObservableBoolean communityEnabled = new ObservableBoolean(false);
 
     private MutableLiveData<Integer> selectedNavigationItemId = new MutableLiveData<>();
+    private MethodsRepository mMethodsRepository;
     private UserRepository mUserRepository;
     private UserManager userManager;
 
-    MainViewModel(UserManager userManager, UserRepository userRepository) {
+    MainViewModel(UserManager userManager, UserRepository userRepository, MethodsRepository methodsRepository) {
         Account account = userManager.getActiveAccount().getValue();
         this.userManager = userManager;
         if (account != null) {
@@ -83,6 +89,7 @@ public class MainViewModel extends ViewModel {
             displayFab.set(!userManager.isGuest(account));
         }
         mUserRepository = userRepository;
+        mMethodsRepository = methodsRepository;
 
         navigationItemId.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
 
@@ -92,6 +99,11 @@ public class MainViewModel extends ViewModel {
                 drawerState.set(false);
             }
         });
+
+        if (userManager.getActiveAccount().getValue() != null) {
+            mMethodsRepository.getMethodList(userManager.getActiveAccount().getValue())
+                    .subscribe(new MainViewModel.MethodsSubscriber());
+        }
     }
 
     LiveData<Integer> getSelectedNavigationItemId() {
@@ -106,6 +118,31 @@ public class MainViewModel extends ViewModel {
         } else {
             Throwable e = new Throwable(String.valueOf(R.string.account_empty_message));
             logoutError.setValue(e);
+        }
+    }
+
+    private class MethodsSubscriber extends Subscriber<List<String>> {
+
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        @Override
+        public void onNext(List<String> methods) {
+            if (methods.contains("community.session.getStatus")) {
+                //Here we put "false" as Piwigo expects this value to be false when Community is enabled..
+                Log.e("MVM", "Community method found.");
+                userManager.setFakedByCommunity(userManager.getActiveAccount().getValue(), "false");
+            } else {
+                Log.e("MVM", "Community method not found.");
+                userManager.setFakedByCommunity(userManager.getActiveAccount().getValue(), "true");
+            }
         }
     }
 
