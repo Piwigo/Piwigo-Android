@@ -94,7 +94,7 @@
                 android:text="@{viewModel.photos}"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 tools:text="Description of content"
-                android:textColor="@color/piwigo_dark_text_color"
+                android:textColor="@color/piwigo_fab_text_color"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
