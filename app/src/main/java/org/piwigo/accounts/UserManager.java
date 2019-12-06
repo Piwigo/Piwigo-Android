@@ -74,10 +74,6 @@ public class UserManager {
 
         refreshAccounts();
         setActiveAccount(preferencesRepository.getActiveAccountName());
-
-        mCurrentAccount.observe(newAccount -> {
-            meth
-        });
     }
 
     /* refresh account list - to be called by activities which are aware
