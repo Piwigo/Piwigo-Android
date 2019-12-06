@@ -76,6 +76,11 @@ public class UserRepository extends BaseRepository {
                     loginResponse.statusResponse = statusResponse;
                     return loginResponse;
                 })
+                .flatMap(communityResponse -> restService.getCommunitySessionStatus("pwg_id=" + loginResponse.pwgId).compose(applySchedulers()))
+                .map(communityStatusResponse -> {
+                    loginResponse.communityStatusResponse = communityStatusResponse;
+                    return loginResponse;
+                })
                 ;
     }
 

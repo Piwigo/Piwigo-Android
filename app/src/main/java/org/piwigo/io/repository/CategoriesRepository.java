@@ -41,10 +41,10 @@ public class CategoriesRepository extends BaseRepository {
         super(restServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
-    public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId, String thumbnailSize) {
+    public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId, String thumbnailSize, boolean fakedByCommunity) {
         RestService restService = restServiceFactory.createForAccount(account);
         /* TODO: make thumbnail Size configurable, also check for ImageRepository, whether it can reduce the amount of REST/JSON traffic */
-        return restService.getCategories(categoryId, thumbnailSize)
+        return restService.getCategories(categoryId, thumbnailSize, fakedByCommunity)
 //                .flatMap(response -> Observable.from(response.result.categories))
                 .compose(applySchedulers())
                 .flatMap(response -> {

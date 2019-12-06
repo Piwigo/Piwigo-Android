@@ -51,6 +51,8 @@ public class UserManager {
     @VisibleForTesting static final String KEY_IS_GUEST = "is_guest";
     @VisibleForTesting static final String KEY_SITE_URL = "url";
     @VisibleForTesting static final String KEY_USERNAME = "username";
+    @VisibleForTesting static final String KEY_STATUS = "status";
+    @VisibleForTesting static final String KEY_IS_FAKED_BY_COMMUNITY = "is_faked_by_community";
     @VisibleForTesting static final String KEY_COOKIE = "cookie";
     @VisibleForTesting static final String KEY_TOKEN  = "token";
 
@@ -103,12 +105,12 @@ public class UserManager {
         return getAccountForUser(siteUrl, username) != null;
     }
 
-    public Account createUser(String siteUrl, String username, String password, String cookie, String token) {
+    public Account createUser(String siteUrl, String username, String password, String status, String cookie, String token) {
         Account result;
         if (TextUtils.isEmpty(username) && TextUtils.isEmpty(password)) {
             result = createGuestUser(siteUrl);
         } else {
-            result = createNormalUser(siteUrl, username, password, cookie, token);
+            result = createNormalUser(siteUrl, username, status, password, cookie, token);
         }
         accountManager.setUserData(result, KEY_TOKEN, token);
 
@@ -161,6 +163,24 @@ public class UserManager {
         return accountManager.getUserData(account, KEY_TOKEN);
     }
 
+    public void setStatus(Account account, String status) {
+        accountManager.setUserData(account, KEY_STATUS, status);
+    }
+
+    public String getStatus(Account account)
+    {
+        return accountManager.getUserData(account, KEY_STATUS);
+    }
+
+    public void setFakedByCommunity(Account account, String fakedByCommunity) {
+        accountManager.setUserData(account, KEY_IS_FAKED_BY_COMMUNITY, fakedByCommunity);
+    }
+
+    public boolean isFakedByCommunity(Account account)
+    {
+        return Boolean.getBoolean(accountManager.getUserData(account, KEY_IS_FAKED_BY_COMMUNITY));
+    }
+
     public boolean isGuest(Account account) {
         return GUEST_ACCOUNT_NAME.equals(getUsername(account));
     }
@@ -178,13 +198,14 @@ public class UserManager {
         return resources.getString(R.string.account_name, username, sitename.toLowerCase(Locale.ROOT));
     }
 
-    private Account createNormalUser(String siteUrl, String username, String password, String cookie, String token) {
+    private Account createNormalUser(String siteUrl, String username, String password, String status, String cookie, String token) {
         String accountName = getAccountName(siteUrl, username);
         Account account = new Account(accountName, resources.getString(R.string.account_type));
         Bundle userdata = new Bundle();
         userdata.putString(KEY_IS_GUEST, Boolean.toString(false));
         userdata.putString(KEY_SITE_URL, siteUrl);
         userdata.putString(KEY_USERNAME, username);
+        userdata.putString(KEY_STATUS, status);
         userdata.putString(KEY_COOKIE, cookie);
         userdata.putString(KEY_TOKEN, token);
         accountManager.addAccountExplicitly(account, password, userdata);

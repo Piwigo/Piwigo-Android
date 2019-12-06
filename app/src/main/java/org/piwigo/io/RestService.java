@@ -20,9 +20,11 @@ package org.piwigo.io;
 
 import org.piwigo.io.model.AddCategoryResponse;
 import org.piwigo.io.model.CategoryListResponse;
+import org.piwigo.io.model.CommunityStatusResponse;
 import org.piwigo.io.model.GetImageInfoResponse;
 import org.piwigo.io.model.ImageListResponse;
 import org.piwigo.io.model.ImageUploadResponse;
+import org.piwigo.io.model.MethodListResponse;
 import org.piwigo.io.model.StatusResponse;
 import org.piwigo.io.model.SuccessResponse;
 
@@ -64,7 +66,8 @@ public interface RestService {
 
     @GET("ws.php?method=pwg.categories.getList") Observable<CategoryListResponse> getCategories(
             @Query("cat_id") Integer categoryId,
-            @Query("thumbnail_size") String thumbnailSize
+            @Query("thumbnail_size") String thumbnailSize,
+            @Query("faked_by_community") boolean fakedByCommunity
     );
 
     @GET("ws.php?method=pwg.images.getInfo") Observable<GetImageInfoResponse> getImageInfo(
@@ -83,5 +86,11 @@ public interface RestService {
             @Part("pwg_token") RequestBody token,
             @Part MultipartBody.Part filePart
     );
+
+    @GET("ws.php?method=reflection.getMethodList") Observable<MethodListResponse> getMethodList();
+
+    @GET("ws.php?method=community.session.getStatus") Observable<CommunityStatusResponse> getCommunitySessionStatus();
+
+    @GET("ws.php?method=community.session.getStatus") Observable<CommunityStatusResponse> getCommunitySessionStatus(@Header("Cookie") String pwgIdCookie);
 
 }

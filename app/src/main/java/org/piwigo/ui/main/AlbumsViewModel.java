@@ -102,8 +102,10 @@ public class AlbumsViewModel extends ViewModel {
             photosSubscription = null;
         }
         if (account != null) {
-            albumsSubscription = categoriesRepository.getCategories(account, category,
-                    preferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
+            albumsSubscription = categoriesRepository.getCategories(account,
+                    category,
+                    preferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE),
+                    userManager.isFakedByCommunity(account))
                     .subscribe(new CategoriesSubscriber());
             photosSubscription = imageRepository.getImages(account, category)
                     .subscribe(new ImagesSubscriber());
@@ -111,7 +113,7 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     void loadAlbums(Integer categoryId) {
-        if(category == null || category != category) {
+        if(category == null) {
             category = categoryId;
             forcedLoadAlbums();
         }

@@ -30,4 +30,6 @@ public class LoginResponse {
 
     public StatusResponse statusResponse;
 
+    public CommunityStatusResponse communityStatusResponse;
+
 }

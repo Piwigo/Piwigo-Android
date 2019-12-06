@@ -60,6 +60,7 @@ import org.piwigo.io.event.SnackbarShowEvent;
 import org.piwigo.io.model.ImageUploadItem;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.model.SuccessResponse;
+import org.piwigo.io.repository.MethodsRepository;
 import org.piwigo.io.repository.UserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
