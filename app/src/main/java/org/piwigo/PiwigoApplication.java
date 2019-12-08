@@ -66,7 +66,9 @@ import dagger.android.HasAndroidInjector;
 )
 @AcraMailSender(mailTo = "android@piwigo.org")
 @AcraDialog(resCommentPrompt = R.string.crash_dialog_comment_prompt,
-        resText = R.string.crash_dialog_text)
+        resText = R.string.crash_dialog_text,
+        resTitle = R.string.app_name,
+        resIcon = R.mipmap.ic_launcher)
 public class PiwigoApplication extends Application implements HasAndroidInjector {
 
     @Inject DispatchingAndroidInjector<Object> androidInjector;
