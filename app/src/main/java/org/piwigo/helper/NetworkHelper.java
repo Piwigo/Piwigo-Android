@@ -12,13 +12,30 @@ public class NetworkHelper {
         INSTANCE = this;
     }
 
-    public boolean hasInternet(Context context) {
+    public NetworkInfo getCurrentNetwork(Context context)
+    {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo currentNetwork = cm.getActiveNetworkInfo();
+        NetworkInfo network = cm.getActiveNetworkInfo();
+
+        return (network);
+    }
+
+    public boolean hasInternet(Context context) {
+        NetworkInfo currentNetwork = getCurrentNetwork(context);
 
         if (currentNetwork != null) {
             return (currentNetwork.isConnected());
         }
         return (false);
+    }
+
+    public int getNetworkType(Context context)
+    {
+        NetworkInfo currentNetwork = getCurrentNetwork(context);
+
+        if (currentNetwork != null) {
+            return (currentNetwork.getType());
+        }
+        return (0);
     }
 }
