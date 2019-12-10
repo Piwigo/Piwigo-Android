@@ -18,9 +18,9 @@
 
 package org.piwigo.data.db;
 
-import androidx.room.Dao;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.TypeConverter;
 
 import org.piwigo.data.model.Category;
@@ -44,6 +44,7 @@ public class CacheDBInternals {
 
     @Entity(
             primaryKeys = {"categoryId", "imageId"},
+            indices = {@Index("categoryId"), @Index("imageId")},
             foreignKeys = {
                 @ForeignKey(
                         entity = Category.class,

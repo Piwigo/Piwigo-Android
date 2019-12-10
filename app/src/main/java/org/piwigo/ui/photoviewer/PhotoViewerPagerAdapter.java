@@ -37,7 +37,7 @@ public class PhotoViewerPagerAdapter extends PagerAdapter {
         Image image = images.get(position);
 
         // TODO: trigger URL updates to get needed resolution and handle LiveData updates
-        picasso.load(image.getElementUrl().getValue()).noFade().into(imageViewPreview);
+        picasso.load(image.elementUrl).noFade().into(imageViewPreview);
         container.addView(view);
         return view;
     }

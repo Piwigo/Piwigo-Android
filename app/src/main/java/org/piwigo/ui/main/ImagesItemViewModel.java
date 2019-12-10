@@ -49,8 +49,8 @@ public class ImagesItemViewModel extends ViewModel {
         this.images = images;
     }
 
-    public LiveData<String> getUrl() {
-        return image.getElementUrl();
+    public String getUrl() {
+        return image.elementUrl;
     }
 
     public String getTitle() {

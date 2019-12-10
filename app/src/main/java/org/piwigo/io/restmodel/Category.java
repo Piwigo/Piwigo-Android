@@ -37,6 +37,8 @@ public class Category {
 
     @SerializedName("nb_categories") public int nbCategories;
 
+    @SerializedName("id_uppercat") public int idUppercat;
+
     @SerializedName("tn_url") public String thumbnailUrl;
 
     @Override public boolean equals(Object o) {

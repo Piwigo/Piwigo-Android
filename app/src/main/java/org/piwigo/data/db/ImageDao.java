@@ -18,6 +18,8 @@
 
 package org.piwigo.data.db;
 
+import android.database.SQLException;
+
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -34,26 +36,26 @@ import io.reactivex.Single;
 @Dao
 abstract public class ImageDao {
     @Insert
-    abstract public void insert(Image image);
+    abstract public void insert(Image image) throws SQLException;
 
     @Delete
-    abstract public void delete(Image image);
+    abstract public void delete(Image image) throws SQLException;
 
     @Update
-    abstract public int update(Image image);
+    abstract public int update(Image image) throws SQLException;
 
     @Transaction
-    public void upsert(Image image) {
+    public void upsert(Image image)  throws SQLException{
         int id = update(image);
-        if (id == -1) {
+        if (id == 0) {
             insert(image);
         }
     }
 
     @Query("SELECT * FROM Image")
-    abstract public Single<List<Image>> getImages();
+    abstract public Single<List<Image>> getImages() throws SQLException;
 
     @Query("SELECT Image.* FROM Image INNER JOIN ImageCategoryMap ON Image.id=ImageCategoryMap.imageId WHERE ImageCategoryMap.categoryId=:categoryId")
-    abstract public Single<List<Image>> getImagesInCategory(int categoryId);
+    abstract public Single<List<Image>> getImagesInCategory(int categoryId) throws SQLException;
 
 }

@@ -17,10 +17,24 @@
  */
 package org.piwigo.data.model;
 
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity
+import static androidx.room.ForeignKey.SET_NULL;
+
+@Entity(
+        indices = {@Index("parentCatId")},
+        foreignKeys = {
+                @ForeignKey(
+                        entity = Category.class,
+                        parentColumns = "id",
+                        childColumns = "parentCatId",
+                        onDelete = SET_NULL
+                )}
+)
 public class Category {
 
     @PrimaryKey
@@ -33,6 +47,9 @@ public class Category {
     public String globalRank; /* TODO: change from String to int */
 
     public int nbImages;
+
+    @Nullable
+    public Integer parentCatId;
 
     public int totalNbImages;
 

@@ -56,31 +56,44 @@ public class CategoriesRepository {
     }
 
     public Observable<PositionedItem<Category>> getCategories(@Nullable Integer categoryId) {
-        return mRestCategoryRepo.getCategories(mUserManager.getActiveAccount().getValue(), categoryId,
-                mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
-                .toFlowable(BackpressureStrategy.BUFFER)
-                .subscribeOn(ioScheduler)
-                .observeOn(ioScheduler)
-
-                .zipWith(Flowable.range(0, Integer.MAX_VALUE), (restCat, counter) -> {
-                    Category c = new Category();
-                    c.name = restCat.name;
-                    c.id = restCat.id;
-                    c.nbImages = restCat.nbImages;
-                    c.thumbnailUrl = restCat.thumbnailUrl;
-                    c.globalRank = restCat.globalRank;
-                    c.comment = restCat.comment;
-                    c.nbCategories = restCat.nbCategories;
-                    c.representativePictureId = restCat.representativePictureId;
-                    c.totalNbImages = restCat.totalNbImages;
-                    mCache.categoryDao().upsert(c);
-                    return new PositionedItem<Category>(counter, c);
-                })
-// TODO: #90 generalize sorting
-                .sorted((categoryItem1, categoryItem2) -> NaturalOrderComparator.compare(categoryItem1.getItem().globalRank, categoryItem2.getItem().globalRank))
+        return mCache.categoryDao().getCategoriesIn(categoryId)
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler)
-                .toObservable()
-                ;
+                .flattenAsFlowable(s -> s)
+                .zipWith(Flowable.range(0, Integer.MAX_VALUE),
+                        (item, counter) -> new PositionedItem<Category>(counter, item))
+                .concatWith(
+                        mRestCategoryRepo.getCategories(mUserManager.getActiveAccount().getValue(),
+                    categoryId,
+                    mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
+                    .toFlowable(BackpressureStrategy.BUFFER)
+                    .subscribeOn(ioScheduler)
+                    .observeOn(ioScheduler)
+
+                    .zipWith(Flowable.range(0, Integer.MAX_VALUE), (restCat, counter) -> {
+                        Category c = new Category();
+                        c.name = restCat.name;
+                        c.id = restCat.id;
+                        if(restCat.idUppercat != 0) {
+                            c.parentCatId = restCat.idUppercat;
+                        }
+                        c.nbImages = restCat.nbImages;
+                        c.thumbnailUrl = restCat.thumbnailUrl;
+                        c.globalRank = restCat.globalRank;
+                        c.comment = restCat.comment;
+                        c.nbCategories = restCat.nbCategories;
+                        c.representativePictureId = restCat.representativePictureId;
+                        c.totalNbImages = restCat.totalNbImages;
+                        mCache.categoryDao().upsert(c);
+                        return new PositionedItem<Category>(counter, c);
+                    })
+                                // TODO: delete categories in database after they have been deleted on the server
+    // TODO: #90 generalize sorting
+                    .sorted((categoryItem1, categoryItem2) -> NaturalOrderComparator.compare(categoryItem1.getItem().globalRank, categoryItem2.getItem().globalRank))
+                    .subscribeOn(ioScheduler)
+                    .observeOn(uiScheduler)
+
+                )
+                .toObservable();
     }
 }

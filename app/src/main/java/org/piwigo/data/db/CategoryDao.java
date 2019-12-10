@@ -18,6 +18,8 @@
 
 package org.piwigo.data.db;
 
+import android.database.SQLException;
+
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -35,22 +37,37 @@ import io.reactivex.Single;
 public abstract class CategoryDao {
 
     @Insert
-    abstract void insert(Category category);
+    public abstract void insert(Category category) throws SQLException;
 
     @Delete
-    abstract void delete(Category category);
+    public abstract void delete(Category category) throws SQLException;
 
     @Update
-    abstract int update(Category category);
+    public abstract int update(Category category) throws SQLException;
 
     @Transaction
-    public void upsert(Category category) {
+    public void upsert(Category category) throws SQLException{
         int id = update(category);
-        if (id == -1) {
+        if (id == 0) {
             insert(category);
         }
     }
 
+    public Single<List<Category>> getCategoriesIn(int categoryId) throws SQLException{
+        if(categoryId == 0){
+            return getRootCategoriesRaw();
+        }else{
+            return getCategoriesRaw(categoryId);
+        }
+    }
+
+    // TODO: #90 implement sorting by adding a parameter to give the sorting order
+    @Query("SELECT * FROM Category WHERE parentCatId = :categoryId ORDER BY globalRank")
+    public abstract Single<List<Category>> getCategoriesRaw(Integer categoryId) throws SQLException;
+
+    @Query("SELECT * FROM Category WHERE parentCatId IS NULL ORDER BY globalRank")
+    public abstract Single<List<Category>> getRootCategoriesRaw() throws SQLException;
+
     @Query("SELECT * FROM Category")
-    abstract Single<List<Category>> getAllCategories();
+    public abstract Single<List<Category>> getAllCategories() throws SQLException;
 }

@@ -52,7 +52,10 @@ public class ApplicationModule {
     @Provides @Singleton
     CacheDatabase provideCacheDatabase() {
         return Room.databaseBuilder(application,
-                CacheDatabase.class, "piwigo-cache").build();
+                CacheDatabase.class, "piwigo-cache")
+                .fallbackToDestructiveMigration() /* as the complete database is only a cache we'll loose nothing critical if we drop it */
+                .build();
+
     }
 
     @Provides @Singleton Picasso providePicasso() {

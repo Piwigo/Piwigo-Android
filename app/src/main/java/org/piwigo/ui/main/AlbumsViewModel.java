@@ -21,6 +21,8 @@ package org.piwigo.ui.main;
 
 import android.accounts.Account;
 import android.content.res.Resources;
+import android.database.sqlite.SQLiteConstraintException;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import androidx.databinding.ObservableArrayList;
@@ -99,7 +101,7 @@ public class AlbumsViewModel extends ViewModel {
         if (account != null) {
             categoriesRepository.getCategories(category)
                     .subscribe(new CategoriesSubscriber());
-            images.clear();
+
             imageRepository.getImages(category)
                     .subscribe(new ImageSubscriber());
         }
@@ -126,23 +128,27 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override
         public void onError(Throwable e) {
-            if (e instanceof IOException) {
-                Log.e(TAG, "CategoriesSubscriber: " + e.getMessage());
+            if (e instanceof SQLiteException){
+                // TODO: check whether this is really what we want here
+                Log.e(TAG, "CategoriesSubscriber.onError(): " + e.getMessage());
+                throw new RuntimeException(e);
+            } else if (e instanceof IOException) {
+                Log.e(TAG, "CategoriesSubscriber.onError(): " + e.getMessage());
                 // TODO: #91 tell the user about the network problem
             } else {
                 // NO: NEVER throw an exception here
                 // throw new RuntimeException(e);
-                Log.e(TAG, "CategoriesSubscriber: " + e.getMessage());
+                Log.e(TAG, "CategoriesSubscriber.onError(): " + e.getMessage());
                 // TODO: #161 highlight problem to the user
             }
         }
 
         @Override
         public void onNext(PositionedItem<Category> category) {
-            if(albums.size() <= category.getPosition()) {
-                albums.ensureCapacity(Math.max(category.getPosition() + 1, images.size() * 2));
+            while(albums.size() <= category.getPosition()) {
+                albums.add(null);
             }
-            albums.add(category.getPosition(), category.getItem());
+            albums.set(category.getPosition(), category.getItem());
         }
     }
 
@@ -173,10 +179,10 @@ public class AlbumsViewModel extends ViewModel {
     private class ImageSubscriber extends DisposableObserver<PositionedItem<Image>>{
         @Override
         public void onNext(PositionedItem<Image> item) {
-            if(images.size() <= item.getPosition()) {
-                images.ensureCapacity(Math.max(item.getPosition() + 1, images.size() * 2));
+            while(images.size() <= item.getPosition()) {
+                images.add(null);
             }
-            images.add(item.getPosition(), item.getItem());
+            images.set(item.getPosition(), item.getItem());
         }
 
         @Override

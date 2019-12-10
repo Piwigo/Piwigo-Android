@@ -72,67 +72,69 @@ public class ImageRepository {
      */
     public Observable<PositionedItem<Image>> getImages(@Nullable Integer categoryId) {
 // TODO: #90 implement sorting
-/*    return mCache.imageDao().getImagesInCategory(categoryId)
+    return mCache.imageDao().getImagesInCategory(categoryId)
             .subscribeOn(ioScheduler)
             .observeOn(uiScheduler)
             .flattenAsFlowable(s -> s)
-            .zipWith(Flowable.range(0, Integer.MAX_VALUE), (item, counter) -> new PositionedItem<Image>(counter, item)).toObservable();
-*/
-// TODO: add fetching the images from local database/cache
-        return mRestImageRepo.getImages(mUserManager.getActiveAccount().getValue(), categoryId)
-                .toFlowable(BackpressureStrategy.BUFFER)
-                .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> {
-                    Derivative d;
-                    switch(mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE)){
-                        case "thumb":
-                            d = info.derivatives.thumb;
-                            break;
-                        case "small":
-                            d = info.derivatives.small;
-                            break;
-                        case "xsmall":
-                            d = info.derivatives.xsmall;
-                            break;
-                        case "medium":
-                            d = info.derivatives.medium;
-                            break;
-                        case "large":
-                            d = info.derivatives.large;
-                            break;
-                        case "xlarge":
-                            d = info.derivatives.xlarge;
-                            break;
-                        case "xxlarge":
-                            d = info.derivatives.xxlarge;
-                            break;
-                        case "square":
-                        default:
-                            d = info.derivatives.square;
-                    }
+            .zipWith(Flowable.range(0, Integer.MAX_VALUE),
+                    (item, counter) -> new PositionedItem<Image>(counter, item))
 
-                    Image i = new Image(d.url, d.width, d.height);
-                    i.name = info.name;
-                    i.file = info.file;
-                    i.id = info.id;
-                    i.author = info.author;
-                    i.comment = info.comment;
-                    i.height = info.height;
-                    i.width = info.width;
-                    i.creationDate = info.dateCreation;
-                    i.availableDate = info.dateAvailable;
-                    mCache.imageDao().upsert(i);
-                    List<CacheDBInternals.ImageCategoryMap> join = new ArrayList<>(info.categories.size());
-                    for(ImageInfo.CategoryID c : info.categories){
-                        join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));
-                    }
-                    mCache.imageCategoryMapDao().insert(join);
-                    return new PositionedItem<>(counter, i);
-                })
-        .subscribeOn(ioScheduler)
-        .observeOn(uiScheduler)
+            .concatWith(
+                    mRestImageRepo.getImages(mUserManager.getActiveAccount().getValue(), categoryId)
+                    .toFlowable(BackpressureStrategy.BUFFER)
+                    .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> {
+                        Derivative d;
+                        switch(mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE)){
+                            case "thumb":
+                                d = info.derivatives.thumb;
+                                break;
+                            case "small":
+                                d = info.derivatives.small;
+                                break;
+                            case "xsmall":
+                                d = info.derivatives.xsmall;
+                                break;
+                            case "medium":
+                                d = info.derivatives.medium;
+                                break;
+                            case "large":
+                                d = info.derivatives.large;
+                                break;
+                            case "xlarge":
+                                d = info.derivatives.xlarge;
+                                break;
+                            case "xxlarge":
+                                d = info.derivatives.xxlarge;
+                                break;
+                            case "square":
+                            default:
+                                d = info.derivatives.square;
+                        }
+
+                        Image i = new Image(d.url, d.width, d.height);
+                        i.name = info.name;
+                        i.file = info.file;
+                        i.id = info.id;
+                        i.author = info.author;
+                        i.comment = info.comment;
+                        i.height = info.height;
+                        i.width = info.width;
+                        i.creationDate = info.dateCreation;
+                        i.availableDate = info.dateAvailable;
+                        mCache.imageDao().upsert(i);
+                        List<CacheDBInternals.ImageCategoryMap> join = new ArrayList<>(info.categories.size());
+                        for(ImageInfo.CategoryID c : info.categories){
+                            join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));
+                        }
+                        mCache.imageCategoryMapDao().insert(join);
+     // TODO: delete images in database after they have been deleted on the server
+                        return new PositionedItem<>(counter, i);
+                    })
+            .subscribeOn(ioScheduler)
+            .observeOn(uiScheduler)
+            )
         .toObservable();
-
-    }
+     }
 
     /**
      * store the img

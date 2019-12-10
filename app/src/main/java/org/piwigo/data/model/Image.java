@@ -31,10 +31,6 @@ import java.util.Date;
 @Entity
 public class Image implements Serializable {
 
-    public Image(){
-
-    }
-
     @PrimaryKey
     public int id;
 
@@ -54,8 +50,7 @@ public class Image implements Serializable {
 
     public Date availableDate;
 
-    @Ignore
-    private MutableLiveData<String> elementUrl;
+    public String elementUrl;
 
     @Ignore
     private MutableLiveData<Iterable<Variant>> mLiveVariants;
@@ -70,7 +65,7 @@ public class Image implements Serializable {
     private ArrayList<Variant> mDeadVariants;
 
     public Image(String elementUrl, int width, int height) {
-        this.elementUrl = new MutableLiveData<>(elementUrl);
+        this.elementUrl = elementUrl;
         mDeadVariants = new ArrayList<>(3);
         mDeadVariants.add(new Variant(elementUrl, width, height));
         mLiveVariants = new MutableLiveData<>(mDeadVariants);
@@ -85,13 +80,6 @@ public class Image implements Serializable {
 
     public LiveData<Iterable<Variant>> getVariants() {
         return mLiveVariants;
-    }
-
-    /**
-     * In case a better or updated image is available the URL might change
-     */
-    public LiveData<String> getElementUrl() {
-        return elementUrl;
     }
 
     /**
