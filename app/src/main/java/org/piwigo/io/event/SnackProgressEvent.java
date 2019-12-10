@@ -6,6 +6,8 @@ public class SnackProgressEvent extends SimpleEvent
     private String snackbarDesc;
     private int snackbarId;
     private int snackbarDuration;
+    private int snackbarProgressMax;
+    private int snackbarProgress;
     private SnackbarUpdateAction action;
 
     public SnackProgressEvent()
@@ -30,6 +32,16 @@ public class SnackProgressEvent extends SimpleEvent
         this.snackbarDuration = duration;
     }
 
+    public void setSnackbarProgressMax(int snackbarProgressMax)
+    {
+        this.snackbarProgressMax = snackbarProgressMax;
+    }
+
+    public void setSnackbarProgress(int snackbarProgress)
+    {
+        this.snackbarProgress = snackbarProgress;
+    }
+
     public void setAction(SnackbarUpdateAction action) {
         this.action = action;
     }
@@ -49,6 +61,16 @@ public class SnackProgressEvent extends SimpleEvent
     public int getSnackbarDuration()
     {
         return (snackbarDuration);
+    }
+
+    public int getSnackbarProgressMax()
+    {
+        return (snackbarProgressMax);
+    }
+
+    public int getSnackbarProgress()
+    {
+        return (snackbarProgress);
     }
 
     public SnackbarUpdateAction getAction() {
