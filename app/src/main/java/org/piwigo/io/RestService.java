@@ -84,4 +84,16 @@ public interface RestService {
             @Part MultipartBody.Part filePart
     );
 
+    @Multipart
+    @POST("ws.php?method=pwg.images.upload")
+    Call<ImageUploadResponse> uploadChunkedImage(
+            @Part("image") RequestBody image,
+            @Part("category") Integer category,
+            @Part("name") RequestBody name,
+            @Part("pwg_token") RequestBody token,
+            @Part("chunk") Integer chunk, //The current chunk (starts at 0)
+            @Part("chunks") Integer chunks, //Number of chunks
+            @Part MultipartBody.Part filePart
+    );
+
 }
