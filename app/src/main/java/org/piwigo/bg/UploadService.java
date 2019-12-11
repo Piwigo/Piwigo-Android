@@ -213,7 +213,7 @@ public class UploadService extends IntentService {
      * @return an array of x chunks containing chunks of source
      */
     public static byte[][] splitArray(byte[] source, int chunkSize) {
-        byte[][] newArray = new byte[(int) Math.ceil(source.length / (double) chunkSize)][chunkSize];
+        byte[][] newArray = new byte[(source.length / chunkSize) + 1][chunkSize];
         int start = 0;
 
         for (int i = 0; i < newArray.length; i++) {
