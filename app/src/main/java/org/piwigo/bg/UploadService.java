@@ -132,7 +132,7 @@ public class UploadService extends IntentService {
         //Chunks
         long tmpFileSize = getFileSize(uploadAction.getUploadData().getTargetUri());
         int chunkSize = getChunkSize(); // Chunk max size = 1MB
-        int expectedChunks = tmpFileSize < chunkSize ? 1 : (int) (tmpFileSize / chunkSize) + 1;
+        int expectedChunks = tmpFileSize <= chunkSize ? 1 : (int) (tmpFileSize / chunkSize) + 1;
         //Instances
         MultipartBody.Part fileParts[] = new MultipartBody.Part[expectedChunks];
         UploadPromise promise = new UploadPromise();
