@@ -30,6 +30,8 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.tingyik90.snackprogressbar.SnackProgressBar;
 import com.tingyik90.snackprogressbar.SnackProgressBarManager;
 
@@ -279,7 +281,7 @@ public class UploadService extends IntentService {
 
         call.enqueue(new Callback<ImageUploadResponse>() {
             @Override
-            public void onResponse(Call<ImageUploadResponse> call, Response<ImageUploadResponse> response) {
+            public void onResponse(@NonNull Call<ImageUploadResponse> call, @NonNull Response<ImageUploadResponse> response) {
                 if (response.raw().code() == 200 && ("ok".equals(response.body().up_stat))) {
                     snackProgressEvent.setSnackbarProgressMax(promise.getTotalChunks());
                     snackProgressEvent.setSnackbarProgress(promise.getCurrentChunk());
