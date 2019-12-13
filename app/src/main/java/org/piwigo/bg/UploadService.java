@@ -178,12 +178,13 @@ public class UploadService extends IntentService {
     public int getChunkSize()
     {
         int networkType = NetworkHelper.INSTANCE.getNetworkType(getApplicationContext());
+        int chunkSize = userManager.getChunkSize(userManager.getActiveAccount().getValue());
 
         if (networkType == ConnectivityManager.TYPE_WIFI) {
-            return (1024 * 1024); // 1MB
+            return chunkSize; // 500KB by default
         }
         else {
-            return (256 * 1024); // 256KB
+            return (chunkSize / 2); // 250KB by default
         }
     }
 

@@ -191,6 +191,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                         // TODO: it is crazy to have this code here AND in LauncherActivity
                         userManager.setCookie(account, loginResponse.pwgId);
                         userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
+                        userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
                     }
                 });
                 initStartFragment(viewModel);
