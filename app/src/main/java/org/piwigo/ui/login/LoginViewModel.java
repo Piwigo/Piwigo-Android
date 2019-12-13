@@ -75,6 +75,9 @@ public class LoginViewModel extends ViewModel {
     private final UserManager userManager;
     private Account account = null;
 
+    boolean unitTesting = false;
+    private String testedUrl = "";
+
     LoginViewModel(UserManager userManager, UserRepository userRepository, Resources resources) {
         this.userRepository = userRepository;
         this.resources = resources;
@@ -96,7 +99,7 @@ public class LoginViewModel extends ViewModel {
      * Handles the click event on the login button
      * Check if the URL is valid and get what protocol to use using URLHelper
      * @param fabCircle - FAB on login view (nullable for unit testing purpose..)
-     * //TODO Find a better way to interact with the FAB to avoid Nullable arg
+     *                  //TODO Find a better way to interact with the FAB to avoid Nullable arg
      */
     void onLoginClick(@Nullable FABProgressCircle fabCircle) {
         boolean siteValid = isSiteValid();
@@ -108,13 +111,13 @@ public class LoginViewModel extends ViewModel {
         if (fabCircle != null) {
             fabCircle.show();
         }
-        new URLHelper(newUrl -> {
-            testConnection(loginValid, newUrl);
-            url.set(newUrl);
-        }).execute(url.get());
+
+        //Trying to log in with "HTTPS" protocol first..
+        testConnection(loginValid, URLHelper.INSTANCE.getUrlWithMethod(url.get(), "https"));
     }
 
-    void testConnection(boolean loginValid, String url){
+    void testConnection(boolean loginValid, String url) {
+        testedUrl = url;
         try {
             if (isGuest()) {
                 subscription = userRepository.status(url)
@@ -125,7 +128,7 @@ public class LoginViewModel extends ViewModel {
                         .compose(applySchedulers())
                         .subscribe(new LoginSubscriber());
             }
-        }catch(IllegalArgumentException illArgE){
+        } catch (IllegalArgumentException illArgE) {
             Log.e(TAG, illArgE.getMessage(), illArgE);
             loginError.setValue(illArgE);
         }
@@ -219,20 +222,24 @@ public class LoginViewModel extends ViewModel {
         public void onError(Throwable e) {
             Log.e(TAG, e.getMessage());
             loginError.setValue(e);
+
+            /**
+             *  HTTPS login did fail - retrying with HTTPS
+             *  Checking for 'https' in string to avoid infinite loop..
+             */
+            if (testedUrl != null && testedUrl.contains("https") && !unitTesting)
+                testConnection(true, URLHelper.INSTANCE.getUrlWithMethod(url.get(), "http"));
         }
 
         @Override
         public void onNext(LoginResponse loginResponse) {
-            if (account != null) {
-                try {
-                    String siteUrl = url.get();
-                    userManager.updateAccount(account, siteUrl, username.get(), password.get());
-                    loginSuccess.setValue(loginResponse);
-                } catch (IllegalArgumentException e) {
-                    loginError.setValue(e);
+            try {
+                if (account != null) {
+                    userManager.updateAccount(account, url.get(), username.get(), password.get());
                 }
-            } else {
                 loginSuccess.setValue(loginResponse);
+            } catch (IllegalArgumentException e) {
+                loginError.setValue(e);
             }
         }
     }

@@ -45,15 +45,18 @@
     <string name="nav_drawer_open">Open navigation</string>
     <string name="nav_drawer_close">Close navigation</string>
 
+    <string name="star" translatable="false"> <font color='#ff7700'>*</font></string>
+
     <!-- Login -->
-    <string name="login_url_hint">Server address</string>
-    <string name="login_url_empty">Enter your server address</string>
-    <string name="login_url_invalid">Not a valid server address</string>
+    <string name="login_url_hint">My Piwigo\'s web address</string>
+    <string name="login_url_how_to">\nFill this field with the URL that you use in a web browser to access your piwigo gallery.\n\nIf you are a piwigo.com client, it looks something like: <font color='#ff7700'>example.piwigo.com</font> .\n\nIf you are self-hosted you have your own domain name and maybe a sub-directory like: <font color='#ff7700'>example.com/photos</font> .</string>
+    <string name="login_url_empty">Please enter your Piwigo\'s web address</string>
+    <string name="login_url_invalid">Not a valid Piwigo web address</string>
     <string name="login_username_empty">Enter your username</string>
-    <string name="login_username_hint">Username (empty for guest)</string>
+    <string name="login_username_hint">Username</string>
     <string name="login_button_description">Login</string>
     <string name="login_password_empty">Enter your password</string>
-    <string name="login_password_hint">Password (empty for guest)</string>
+    <string name="login_password_hint">Password</string>
     <string name="login_error">Login failed</string>
     <string name="login_account_error">An account for this server already exists</string>
     <string name="login_ssl_error">Encrypted connection (SSL) to \'%1s\' cannot be established</string>
@@ -62,9 +65,7 @@
     <string name="login_http_404_error">Given path \'%1s\' not found on server</string>
     <string name="login_baseurl_invalid">No Piwigo gallery found at given path \'%1s\'</string>
     <string name="login_invalid_credentials">Login failed for given credentials \'%1s/*****\'</string>
-
-
-
+    <string name="login_as_guest_hint">Leave username and password empty to connect as a guest</string>
     <!-- Account -->
     <string name="account_name" translatable="false">%1$s@%2$s</string>
     <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
@@ -174,7 +175,7 @@
     <string name="upload_success">Upload successful</string>
     <string name="upload_failed">Upload failed</string>
     <string name="upload_error">An error occurred while upload your photo(s). Please try again.</string>
-    <string name="upload_progress_body">Uploaded %1$d / %2$d photos</string>
+    <string name="upload_progress_body">Uploading %1$d / %2$d photos</string>
     <string name="upload_started">Uploading your photos</string>
     <string name="upload_success_body">Uploaded %1$d photo(s) to %2$s</string>
     <string name="storage_permission_title">Missing permissions.</string>
