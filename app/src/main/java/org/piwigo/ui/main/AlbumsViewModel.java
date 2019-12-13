@@ -21,7 +21,6 @@ package org.piwigo.ui.main;
 
 import android.accounts.Account;
 import android.content.res.Resources;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
@@ -222,6 +221,5 @@ public class AlbumsViewModel extends ViewModel {
             ImagesItemViewModel viewModel = new ImagesItemViewModel(image, images.indexOf(image), image.name, images);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
-
     }
 }
