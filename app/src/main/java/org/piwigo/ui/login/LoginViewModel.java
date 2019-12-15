@@ -79,6 +79,7 @@ public class LoginViewModel extends ViewModel {
     private final UserManager userManager;
     private Account account = null;
 
+    boolean unitTesting = false;
     private String testedUrl = "";
 
     LoginViewModel(UserManager userManager, RestUserRepository userRepository, Resources resources) {
@@ -226,7 +227,7 @@ public class LoginViewModel extends ViewModel {
              *  HTTPS login did fail - retrying with HTTPS
              *  Checking for 'https' in string to avoid infinite loop..
              */
-            if (testedUrl != null && testedUrl.contains("https"))
+            if (testedUrl != null && testedUrl.contains("https") && !unitTesting)
                 testConnection(true, URLHelper.INSTANCE.getUrlWithMethod(url.get(), "http"));
         }
 

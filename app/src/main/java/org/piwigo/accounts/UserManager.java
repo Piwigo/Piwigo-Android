@@ -53,6 +53,7 @@ public class UserManager {
     @VisibleForTesting static final String KEY_USERNAME = "username";
     @VisibleForTesting static final String KEY_COOKIE = "cookie";
     @VisibleForTesting static final String KEY_TOKEN  = "token";
+    @VisibleForTesting static final String KEY_CHUNK_SIZE  = "chunk_size";
 
     @VisibleForTesting static final String GUEST_ACCOUNT_NAME = "guest";
 
@@ -159,6 +160,15 @@ public class UserManager {
     // maybe it would be better to just keep it in the RestUserRepository
     public String getToken(Account account) {
         return accountManager.getUserData(account, KEY_TOKEN);
+    }
+
+    public void setChunkSize(Account account, int chunkSize) {
+        accountManager.setUserData(account, KEY_CHUNK_SIZE, String.valueOf(chunkSize));
+    }
+
+    public int getChunkSize(Account account)
+    {
+        return Integer.parseInt(accountManager.getUserData(account, KEY_CHUNK_SIZE));
     }
 
     public boolean isGuest(Account account) {

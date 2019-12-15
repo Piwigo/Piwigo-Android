@@ -74,6 +74,7 @@ public class LauncherActivity extends BaseActivity {
                             Log.i(TAG, "Login succeeded: " + loginResponse.pwgId);
                             userManager.setCookie(a, loginResponse.pwgId);
                             userManager.setToken(a, loginResponse.statusResponse.result.pwgToken);
+                            userManager.setChunkSize(a, loginResponse.statusResponse.result.uploadFormChunkSize);
                         }
                     });
 

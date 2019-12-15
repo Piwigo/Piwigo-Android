@@ -197,6 +197,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                         // TODO: it is crazy to have this code here AND in LauncherActivity
                         userManager.setCookie(account, loginResponse.pwgId);
                         userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
+                        userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
                     }
                 });
                 initStartFragment(viewModel);
@@ -302,6 +303,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
 
             if (bar != null) {
                 bar.setMessage(progressEvent.getSnackbarDesc());
+                snackProgressBarManager.setProgress(progressEvent.getSnackbarProgress());
                 if (progressEvent.getAction() == (SnackProgressEvent.SnackbarUpdateAction.KILL)) {
                     bar.setType(SnackProgressBar.TYPE_NORMAL);
                     bar.setAction(getResources().getString(R.string.button_ok), () -> snackProgressBarManager.dismiss());
@@ -312,7 +314,8 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 if (progressEvent.getAction().equals(SnackProgressEvent.SnackbarUpdateAction.KILL)) {
                     return;
                 }
-                bar = new SnackProgressBar(progressEvent.getSnackbarType(), progressEvent.getSnackbarDesc()).setIsIndeterminate(true);
+                bar = new SnackProgressBar(progressEvent.getSnackbarType(), progressEvent.getSnackbarDesc()).setIsIndeterminate(false);
+                bar.setProgressMax(progressEvent.getSnackbarProgressMax());
                 snackProgressBarManager.put(bar, progressEvent.getSnackbarId());
                 snackProgressBarManager.show(bar, progressEvent.getSnackbarDuration());
             }
