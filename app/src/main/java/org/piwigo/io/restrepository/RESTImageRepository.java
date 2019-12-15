@@ -24,7 +24,7 @@ import androidx.annotation.Nullable;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestService;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.restmodel.ImageInfo;
 import org.piwigo.io.restmodel.ImageListResponse;
 
@@ -38,12 +38,12 @@ public class RESTImageRepository extends RESTBaseRepository {
 
     private static final int PAGE_SIZE = 16;
 
-    @Inject public RESTImageRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
-        super(restServiceFactory, ioScheduler, uiScheduler, userManager);
+    @Inject public RESTImageRepository(WebServiceFactory webServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
+        super(webServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
     public Observable<ImageInfo> getImages(Account account, @Nullable Integer categoryId) {
-        return getPagesStartingAt(account, categoryId, restServiceFactory.createForAccount(account), 0)
+        return getPagesStartingAt(account, categoryId, webServiceFactory.createForAccount(account), 0)
                 .flatMap( imageListResponse -> Observable.fromIterable(imageListResponse.result.images));
     }
 

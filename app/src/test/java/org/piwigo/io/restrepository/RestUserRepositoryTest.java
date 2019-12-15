@@ -24,7 +24,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestService;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.restmodel.LoginResponse;
 import org.piwigo.io.restmodel.StatusResponse;
 import org.piwigo.io.restmodel.SuccessResponse;
@@ -52,7 +52,8 @@ public class RestUserRepositoryTest {
     private static final String STATUS_OK = "ok";
     private static final String STATUS_FAIL = "fail";
 
-    @Mock RestServiceFactory restServiceFactory;
+    @Mock
+    WebServiceFactory webServiceFactory;
     @Mock RestService restService;
     @Mock UserManager userManager;
 
@@ -61,12 +62,12 @@ public class RestUserRepositoryTest {
     @Before public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(restServiceFactory.createForUrl(anyString())).thenReturn(restService);
+        when(webServiceFactory.createForUrl(anyString())).thenReturn(restService);
         when(restService.getStatus()).thenReturn(getStatusResponse(GUEST_USER));
         when(restService.login(USERNAME, PASSWORD)).thenReturn(getLoginSuccessResponse());
         when(restService.login(BAD_CREDENTIAL, BAD_CREDENTIAL)).thenReturn(getLoginFailureResponse());
 
-        userRepository = new RestUserRepository(restServiceFactory, Schedulers.immediate(), Schedulers.immediate(), userManager);
+        userRepository = new RestUserRepository(webServiceFactory, Schedulers.immediate(), Schedulers.immediate(), userManager);
     }
 
     @Test public void login_withValidCredentials_returnsSuccessResponse() {
@@ -78,7 +79,7 @@ public class RestUserRepositoryTest {
 
         subscriber.assertNoErrors();
         LoginResponse loginResponse = subscriber.getOnNextEvents().get(0);
-        verify(restServiceFactory).createForUrl(URL);
+        verify(webServiceFactory).createForUrl(URL);
         assertThat(loginResponse.url).isEqualTo(URL);
         assertThat(loginResponse.username).isEqualTo(USERNAME);
         assertThat(loginResponse.password).isEqualTo(PASSWORD);
@@ -103,7 +104,7 @@ public class RestUserRepositoryTest {
 
         subscriber.assertNoErrors();
         LoginResponse loginResponse = subscriber.getOnNextEvents().get(0);
-        verify(restServiceFactory).createForUrl(URL);
+        verify(webServiceFactory).createForUrl(URL);
         assertThat(loginResponse.url).isEqualTo(URL);
         assertThat(loginResponse.statusResponse.stat).isEqualTo(STATUS_OK);
         assertThat(loginResponse.statusResponse.result.username).isEqualTo(GUEST_USER);

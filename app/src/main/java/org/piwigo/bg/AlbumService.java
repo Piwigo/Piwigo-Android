@@ -11,7 +11,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.greenrobot.eventbus.EventBus;
 import org.piwigo.R;
 import org.piwigo.io.RestService;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.event.RefreshRequestEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
 import org.piwigo.io.restmodel.AddCategoryResponse;
@@ -30,7 +30,7 @@ public class AlbumService extends IntentService {
     public static final String KEY_ACCOUNT = "account";
 
     @Inject
-    RestServiceFactory restServiceFactory;
+    WebServiceFactory webServiceFactory;
 
     public AlbumService() {
         super("AlbumService");
@@ -48,7 +48,7 @@ public class AlbumService extends IntentService {
         Account curAccount = intent.getParcelableExtra(KEY_ACCOUNT);
         int parentId = intent.getIntExtra(KEY_PARENT_CATEGORY_ID, 0);
 
-        RestService restService = restServiceFactory.createForAccount(curAccount);
+        RestService restService = webServiceFactory.createForAccount(curAccount);
 
         Call<AddCategoryResponse> call = restService.addCategory(catName, parentId, null, null, null, null);
 

@@ -24,7 +24,7 @@ import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.CookieHelper;
 import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.RestService;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.restmodel.LoginResponse;
 import org.piwigo.io.restmodel.SuccessResponse;
 
@@ -37,8 +37,8 @@ import io.reactivex.Scheduler;
 public class RestUserRepository extends RESTBaseRepository {
 
     @Inject
-    RestUserRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
-        super(restServiceFactory, ioScheduler, uiScheduler, userManager);
+    RestUserRepository(WebServiceFactory webServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
+        super(webServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
     public Observable<LoginResponse> login(Account account) {
@@ -50,7 +50,7 @@ public class RestUserRepository extends RESTBaseRepository {
     }
 
     public Observable<LoginResponse> login(String url, String username, String password) {
-        RestService restService = restServiceFactory.createForUrl(validateUrl(url));
+        RestService restService = webServiceFactory.createForUrl(validateUrl(url));
 
         final LoginResponse loginResponse = new LoginResponse();
         loginResponse.url = url;
@@ -94,7 +94,7 @@ public class RestUserRepository extends RESTBaseRepository {
         if(!siteUrl.endsWith("/")){
             siteUrl = siteUrl + "/";
         }
-        RestService restService = restServiceFactory.createForUrl(siteUrl);
+        RestService restService = webServiceFactory.createForUrl(siteUrl);
 
         return status(restService, siteUrl)
                 .subscribeOn(ioScheduler)
@@ -104,7 +104,7 @@ public class RestUserRepository extends RESTBaseRepository {
 
     public Observable<LoginResponse> status(Account account) {
         String siteUrl = validateUrl(userManager.getSiteUrl(account));
-        RestService restService = restServiceFactory.createForAccount(account);
+        RestService restService = webServiceFactory.createForAccount(account);
         return status(restService, siteUrl)
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler)
@@ -126,7 +126,7 @@ public class RestUserRepository extends RESTBaseRepository {
     }
 
     public Observable<SuccessResponse> logout(Account account) {
-        RestService restService = restServiceFactory.createForUrl(validateUrl(userManager.getSiteUrl(account)));
+        RestService restService = webServiceFactory.createForUrl(validateUrl(userManager.getSiteUrl(account)));
         final SuccessResponse successResponse = new SuccessResponse();
 
         return restService.logout()

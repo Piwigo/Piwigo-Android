@@ -53,7 +53,7 @@ import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
 import org.piwigo.helper.DialogHelper;
 import org.piwigo.helper.NetworkHelper;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
@@ -103,7 +103,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Inject
     MainViewModelFactory viewModelFactory;
     @Inject
-    RestServiceFactory restServiceFactory;
+    WebServiceFactory webServiceFactory;
     @Inject
     RestUserRepository userRepository;
 

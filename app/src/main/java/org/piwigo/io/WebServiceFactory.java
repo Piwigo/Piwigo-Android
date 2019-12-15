@@ -33,13 +33,13 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RestServiceFactory {
+public class WebServiceFactory {
 
     private final HttpLoggingInterceptor loggingInterceptor;
     private final Gson gson;
     private final UserManager userManager;
 
-    public RestServiceFactory(HttpLoggingInterceptor loggingInterceptor, Gson gson, UserManager userManager) {
+    public WebServiceFactory(HttpLoggingInterceptor loggingInterceptor, Gson gson, UserManager userManager) {
         this.loggingInterceptor = loggingInterceptor;
         this.gson = gson;
         this.userManager = userManager;
@@ -78,6 +78,13 @@ public class RestServiceFactory {
                     return chain.proceed(builder.build());
                 })
                 .build();
+    }
+
+    public DownloadService downloaderForAccount(Account account) {
+        String cookie = userManager.getCookie(account);
+        OkHttpClient client = buildOkHttpClient(cookie);
+        Retrofit retrofit = buildRetrofit(client, userManager.getSiteUrl(account));
+        return retrofit.create(DownloadService.class);
     }
 
     private Retrofit buildRetrofit(OkHttpClient client, String baseUrl) {

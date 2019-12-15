@@ -19,19 +19,19 @@
 package org.piwigo.io.restrepository;
 
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 
 import io.reactivex.Scheduler;
 
 abstract class RESTBaseRepository {
 
-    final RestServiceFactory restServiceFactory;
+    final WebServiceFactory webServiceFactory;
     final Scheduler ioScheduler;
     final Scheduler uiScheduler;
     final UserManager userManager;
 
-    RESTBaseRepository(RestServiceFactory restServiceFactory, Scheduler ioScheduler, Scheduler uiScheduler, UserManager userManager) {
-        this.restServiceFactory = restServiceFactory;
+    RESTBaseRepository(WebServiceFactory webServiceFactory, Scheduler ioScheduler, Scheduler uiScheduler, UserManager userManager) {
+        this.webServiceFactory = webServiceFactory;
         this.ioScheduler = ioScheduler;
         this.uiScheduler = uiScheduler;
         this.userManager = userManager;

@@ -37,7 +37,7 @@ import org.piwigo.accounts.UserManager;
 import org.piwigo.bg.action.UploadAction;
 import org.piwigo.helper.NotificationHelper;
 import org.piwigo.io.RestService;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.event.RefreshRequestEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.restmodel.ImageUploadResponse;
@@ -69,7 +69,7 @@ public class UploadService extends IntentService {
     private SnackProgressEvent snackProgressEvent;
 
     @Inject
-    RestServiceFactory restServiceFactory;
+    WebServiceFactory webServiceFactory;
 
     @Inject
     RestUserRepository userRepository;
@@ -144,7 +144,7 @@ public class UploadService extends IntentService {
             content = new byte[0];
         }
         filePart = MultipartBody.Part.createFormData("file", uploadAction.getFileName(), RequestBody.create(MediaType.parse("image/*"), content));
-        restService = restServiceFactory.createForAccount(userManager.getActiveAccount().getValue());
+        restService = webServiceFactory.createForAccount(userManager.getActiveAccount().getValue());
         requestBodies = createUploadRequest(uploadAction.getFileName(), getPhotoName(uploadAction.getFileName()), userManager.getActiveAccount().getValue());
 
         if (uploadAction.getUploadData().getCategoryId() > 0)

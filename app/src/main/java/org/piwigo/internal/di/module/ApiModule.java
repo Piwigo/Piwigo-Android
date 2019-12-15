@@ -22,7 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -54,7 +54,8 @@ public class ApiModule {
         return AndroidSchedulers.mainThread();
     }
 
-    @Provides @Singleton RestServiceFactory provideRestServiceFactory(HttpLoggingInterceptor loggingInterceptor, Gson gson, UserManager userManager) {
-        return new RestServiceFactory(loggingInterceptor, gson, userManager);
+    @Provides @Singleton
+    WebServiceFactory provideRestServiceFactory(HttpLoggingInterceptor loggingInterceptor, Gson gson, UserManager userManager) {
+        return new WebServiceFactory(loggingInterceptor, gson, userManager);
     }
 }

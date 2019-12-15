@@ -19,6 +19,7 @@
 package org.piwigo.internal.di.module;
 
 import org.piwigo.bg.AlbumService;
+import org.piwigo.bg.DownloadService;
 import org.piwigo.bg.UploadService;
 import org.piwigo.internal.di.scope.PerActivity;
 import org.piwigo.internal.di.scope.PerFragment;
@@ -57,4 +58,5 @@ public abstract class AndroidInjectorModule {
 
     @PerService @ContributesAndroidInjector() abstract AlbumService albumService();
 
+    @PerService @ContributesAndroidInjector() abstract DownloadService downloadService();
 }

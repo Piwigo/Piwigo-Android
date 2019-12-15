@@ -24,7 +24,7 @@ import androidx.annotation.Nullable;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestService;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.restmodel.Category;
 
 import javax.inject.Inject;
@@ -35,12 +35,12 @@ import io.reactivex.Scheduler;
 
 public class RESTCategoriesRepository extends RESTBaseRepository {
 
-    @Inject public RESTCategoriesRepository(RestServiceFactory restServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
-        super(restServiceFactory, ioScheduler, uiScheduler, userManager);
+    @Inject public RESTCategoriesRepository(WebServiceFactory webServiceFactory, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager) {
+        super(webServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
     public Observable<Category> getCategories(Account account, @Nullable Integer categoryId, String thumbnailSize) {
-        RestService restService = restServiceFactory.createForAccount(account);
+        RestService restService = webServiceFactory.createForAccount(account);
         return restService.getCategories(categoryId, thumbnailSize)
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler)
