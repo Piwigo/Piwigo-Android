@@ -23,10 +23,14 @@ import android.accounts.Account;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
+import android.view.View;
 
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.piwigo.BR;
 import org.piwigo.R;
@@ -36,6 +40,7 @@ import org.piwigo.data.model.Image;
 import org.piwigo.data.model.PositionedItem;
 import org.piwigo.data.repository.CategoriesRepository;
 import org.piwigo.data.repository.ImageRepository;
+import org.piwigo.helper.DialogHelper;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 import org.reactivestreams.Subscription;
 
@@ -64,6 +69,8 @@ public class AlbumsViewModel extends ViewModel {
     private Subscription photosSubscription;
 
     private Integer category = null;
+
+    private MainViewModel mMainViewModel;
 
     AlbumsViewModel(UserManager userManager, CategoriesRepository categoriesRepository,
                     ImageRepository imageRepository, Resources resources) {
@@ -111,6 +118,10 @@ public class AlbumsViewModel extends ViewModel {
             category = categoryId;
             forcedLoadAlbums();
         }
+    }
+
+    public void setMainViewModel(MainViewModel vm){
+        mMainViewModel = vm;
     }
 
     public void onRefresh() {
@@ -195,10 +206,11 @@ public class AlbumsViewModel extends ViewModel {
                 Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
 // TODO: #91 tell the user about the network problem
             } else {
-                // NO: NEVER throw an exception here
-                // throw new RuntimeException(e);
                 Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
-                // TODO: #161 highlight problem to the user
+                // TODO: #161 highlight problem to the user (this is alreay here...)
+                if(mMainViewModel != null) {
+                    mMainViewModel.setError(e);
+                }
             }
         }
     }

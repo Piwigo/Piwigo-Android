@@ -21,6 +21,7 @@ package org.piwigo.ui.main;
 
 import android.accounts.Account;
 import android.util.Log;
+import android.widget.TabHost;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -49,14 +50,18 @@ public class MainViewModel extends ViewModel {
     private static final String TAG = MainViewModel.class.getName();
 
     private MutableLiveData<SuccessResponse> logoutSuccess = new MutableLiveData<>();
-    private MutableLiveData<Throwable> logoutError = new MutableLiveData<>();
+    private MutableLiveData<Throwable> mError = new MutableLiveData<>();
 
     LiveData<SuccessResponse> getLogoutSuccess() {
         return logoutSuccess;
     }
 
-    LiveData<Throwable> getLogoutError() {
-        return logoutError;
+    LiveData<Throwable> getError() {
+        return mError;
+    }
+
+    public void setError(Throwable th){
+        mError.setValue(th);
     }
 
     public ObservableField<String> title = new ObservableField<>();
@@ -107,7 +112,7 @@ public class MainViewModel extends ViewModel {
                     .subscribe(new MainViewModel.LogoutSubscriber());
         } else {
             Throwable e = new Throwable(String.valueOf(R.string.account_empty_message));
-            logoutError.setValue(e);
+            mError.setValue(e);
         }
     }
 
@@ -121,7 +126,7 @@ public class MainViewModel extends ViewModel {
         @Override
         public void onError(Throwable e) {
             Log.e(TAG, e.getMessage());
-            logoutError.setValue(e);
+            mError.setValue(e);
         }
 
         @Override
@@ -130,10 +135,5 @@ public class MainViewModel extends ViewModel {
             logoutSuccess.setValue(successResponse);
         }
     }
-/*
-    private <T> rx.Observable.Transformer<T, T> applySchedulers() {
-        return observable -> observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-*/
+
 }

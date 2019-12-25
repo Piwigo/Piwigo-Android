@@ -32,7 +32,7 @@ public class ImageInfo implements Serializable {
 
     @SerializedName("file") public String file;
 
-    @SerializedName("comment") public String comment;
+    @SerializedName("description") public String comment;
 
     @SerializedName("author") public String author;
 

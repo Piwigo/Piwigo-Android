@@ -61,7 +61,7 @@ public interface RestService {
     @POST("ws.php?method=pwg.categories.add") @FormUrlEncoded Call<AddCategoryResponse> addCategory(
             @Field("name") String name,
             @Field("parent") Integer parent,
-            @Field("comment") String comment,
+            @Field("description") String comment,
             @Field("visible") Boolean visible,
             @Field("status") String status,
             @Field("commentable") Boolean commentable

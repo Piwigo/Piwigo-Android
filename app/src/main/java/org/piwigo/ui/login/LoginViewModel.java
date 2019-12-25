@@ -30,6 +30,7 @@ import android.content.res.Resources;
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
 import androidx.annotation.VisibleForTesting;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
 import android.util.Patterns;
@@ -48,12 +49,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
-/*
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-*/
 public class LoginViewModel extends ViewModel {
 
     private static final String TAG = LoginViewModel.class.getName();

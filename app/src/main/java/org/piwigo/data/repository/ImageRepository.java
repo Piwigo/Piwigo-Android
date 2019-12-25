@@ -20,34 +20,38 @@ package org.piwigo.data.repository;
 
 import android.Manifest;
 import android.accounts.Account;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import org.piwigo.PiwigoApplication;
+import org.apache.commons.lang3.StringUtils;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.bg.DownloadService;
 import org.piwigo.data.db.CacheDBInternals;
-import org.piwigo.data.db.ImageCategoryMapDao;
 import org.piwigo.data.model.Image;
+import org.piwigo.data.model.ImageVariant;
 import org.piwigo.data.model.PositionedItem;
+import org.piwigo.helper.PermissionDeniedException;
 import org.piwigo.io.PreferencesRepository;
 import org.piwigo.data.db.CacheDatabase;
 import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.restmodel.Derivative;
 import org.piwigo.io.restmodel.ImageInfo;
 import org.piwigo.io.restrepository.RESTImageRepository;
-import org.reactivestreams.Subscriber;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -56,7 +60,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Single;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import okio.BufferedSink;
@@ -85,8 +89,6 @@ public class ImageRepository {
         mContext = context;
 
         mCache = cache;
-
-
     }
 
     /**
@@ -96,6 +98,8 @@ public class ImageRepository {
      * @return items with their position
      */
     public Observable<PositionedItem<Image>> getImages(@Nullable Integer categoryId) {
+        Single<List<String>> folder = mCache.categoryDao().getCategoryPath(categoryId);
+        AtomicReference<String> folderStr = new AtomicReference<>(null);
 // TODO: #90 implement sorting
     return mCache.imageDao().getImagesInCategory(categoryId)
             .subscribeOn(ioScheduler)
@@ -141,7 +145,7 @@ public class ImageRepository {
                         i.file = info.file;
                         i.id = info.id;
                         i.author = info.author;
-                        i.comment = info.comment;
+                        i.description = info.comment;
                         i.height = info.height;
                         i.width = info.width;
                         i.creationDate = info.dateCreation;
@@ -152,9 +156,47 @@ public class ImageRepository {
                             join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));
                         }
                         mCache.imageCategoryMapDao().insert(join);
-                        downloadURL(i.elementUrl, i.file, i.id);
+                        synchronized (folderStr) {
+                            if (folderStr.get() == null) {
+                                folderStr.set(StringUtils.join(folder.blockingGet(), File.separator ));
+                            }
+                        }
+                        downloadURL(i.elementUrl, folderStr.get(), i.file, i.id).subscribe(new DisposableObserver<String>(){
+                            @Override
+                            public void onNext(String s) {
+                                boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
+                                // TODO: insert variant
+                                Log.i("ImageRepository", "downloaded " + s);
+                                if(expose) {
+                                    // add file to mediastore
+                                    ContentResolver resolver = mContext.getContentResolver();
+                                    ContentValues values = new ContentValues();
+                                    values.put(MediaStore.Images.ImageColumns.DATA, s);
+                                    values.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, i.name);
+                                    if (i.creationDate != null) {
+                                        values.put(MediaStore.Images.ImageColumns.DATE_TAKEN, i.creationDate.getTime());
+                                    }
+                                    if (i.description != null) {
+                                        values.put(MediaStore.Images.ImageColumns.DESCRIPTION, i.description);
+                                    }
 
-     // TODO: delete images in database after they have been deleted on the server
+                                    resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e("ImageRepository", "download failed", e);
+                            }
+
+                            @Override
+                            public void onComplete() {
+                            }
+                        });
+
+
+                        // TODO: delete images in database after they have been deleted on the server
+                        // TODO: move image cache files if parent album was renamed
                         return new PositionedItem<>(counter, i);
                     })
             .subscribeOn(ioScheduler)
@@ -164,70 +206,70 @@ public class ImageRepository {
     }
 
 
-    public void downloadURL(String url, String filePath, int imageId){
+    public Observable<String> downloadURL(String url, String folder, String fileName, int imageId){
         Account a = mUserManager.getActiveAccount().getValue();
         org.piwigo.io.DownloadService downloadService = mWebServiceFactory.downloaderForAccount(a);
 
-        Observable<String> resp = downloadService.downloadFileAtUrl(url)
+        Observable<String> result = downloadService.downloadFileAtUrl(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .flatMap(response -> {
                     try {
+                        boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
+
                         String last_mod = response.headers().get("Last-Modified");
                         String length = response.headers().get("Content-Length");
-//TODO: adjust path
-                        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + "Piwigo"
-                                + File.separator + a.name
-                                + File.separator + filePath;
+
+                        File root;
+                        if(expose) {
+                            root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Piwigo");
+                        }else{
+                            root = mContext.getExternalFilesDir(null);
+                        }
+
+                        String subdir = a.name
+                                + File.separator + folder;
+                        String directory = root + File.separator + subdir;
+                        String fullPath = directory
+                                + File.separator + fileName;
+
 // TODO: store path in DB
-                        File destinationFile = new File(path);
+                        File destinationFile = new File(fullPath);
 
                         int permissionCheck = ContextCompat.checkSelfPermission(mContext,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
+// TODO ask for permission
                         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
 
                             File outputDir = destinationFile.getParentFile();
                             outputDir.mkdirs();
-
                             BufferedSink bufferedSink = Okio.buffer(Okio.sink(destinationFile));
                             bufferedSink.writeAll(response.body().source());
                             bufferedSink.close();
 
-                            return Observable.just("kkk");
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = true;
+                            BitmapFactory.decodeFile(destinationFile.getAbsolutePath(), options);
+                            int h = options.outHeight;
+                            int w = options.outWidth;
+
+                            // TODO: insert only once
+                            ImageVariant iv = new ImageVariant(imageId, w, h, fullPath);
+                            mCache.variantDao().insert(iv);
+
+                            return Observable.just(fullPath);
                         } else {
                             /* no permission, return null */
-                            return Observable.just("no Perm");
+                            return Observable.error(new PermissionDeniedException(Manifest.permission.WRITE_EXTERNAL_STORAGE));
                         }
 
 
                     } catch (IOException e) {
                         e.printStackTrace();
-                        return Observable.just("err");
+                        return Observable.error(e);
                     }
                 });
-
-        resp.subscribe(new DisposableObserver<String>(){
-                    @Override
-                    public void onNext(String s) {
-                        Log.e("ImageRepository", "downloaded " + s);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("ImageRepository", "failed", e);
-                    }
-
-                    /**
-                     * Notifies the Observer that the {@link Observable} has finished sending push-based notifications.
-                     * <p>
-                     * The {@link Observable} will not call this method if it calls {@link #onError}.
-                     */
-                    @Override
-                    public void onComplete() {
-                        Log.e("ImageRepository", "done ");
-                    }
-                });
+        return result;
     }
 
     /**

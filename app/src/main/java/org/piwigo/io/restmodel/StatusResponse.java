@@ -49,7 +49,7 @@ public class StatusResponse {
         @SerializedName("upload_file_types") public String uploadFileTypes;
 // TODO: add "available_sizes":["square","thumb","small","medium","large","xxlarge"]
 
-        @SerializedName("upload_form_chunk_size") public Integer uploadFormChunkSize;
+        @SerializedName("upload_form_chunk_size") public Integer uploadFormChunkSize; // upload_form_chunk_size is returned in kB by piwigo server
     }
 
 }

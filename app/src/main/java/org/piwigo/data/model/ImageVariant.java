@@ -19,44 +19,39 @@
 package org.piwigo.data.model;
 
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
-import java.util.Date;
+
+import static androidx.room.ForeignKey.CASCADE;
 
 @Entity
-public class Image implements Serializable {
+/**
+ * This is basically a derivative, but we store here as variant only those which are locally stored
+ * but it's not guaranteed that they will stay here.
+ */
+public class ImageVariant implements Serializable {
+    public ImageVariant(int imageId, int width, int height, String storageLocation){
+        this.imageId = imageId;
+        this.width = width;
+        this.height = height;
+        this.storageLocation = storageLocation;
+    }
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     public int id;
 
-    public String file;
-
-    public String name;
-
-    public String description;
-
-    public String author;
-
-    public int width;
+    @ForeignKey
+            (entity = Image.class,
+                    parentColumns = "id",
+                    childColumns = "imageId",
+                    onDelete = CASCADE)
+    public int imageId;
 
     public int height;
 
-    public Date creationDate;
+    public int width;
 
-    public Date availableDate;
-
-    public String elementUrl;
-
-    public Image(String elementUrl, int width, int height) {
-        this.elementUrl = elementUrl;
-    }
-
-    @Override public boolean equals(Object o) {
-        if (o instanceof Image) {
-            return id == ((Image) o).id;
-        }
-        return super.equals(o);
-    }
-
+    public String storageLocation;
 }

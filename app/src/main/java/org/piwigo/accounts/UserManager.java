@@ -162,6 +162,9 @@ public class UserManager {
         return accountManager.getUserData(account, KEY_TOKEN);
     }
 
+    /** set the chunk size for upload in bytes
+     * note: piwigo server returns the preferred chunk-size in kB
+     * */
     public void setChunkSize(Account account, int chunkSize) {
         accountManager.setUserData(account, KEY_CHUNK_SIZE, String.valueOf(chunkSize));
     }

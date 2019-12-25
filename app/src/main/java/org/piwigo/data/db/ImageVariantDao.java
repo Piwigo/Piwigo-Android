@@ -18,27 +18,23 @@
 
 package org.piwigo.data.db;
 
-import androidx.room.Database;
-import androidx.room.RoomDatabase;
-import androidx.room.TypeConverters;
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.Query;
 
-import org.piwigo.data.model.Category;
-import org.piwigo.data.model.Image;
 import org.piwigo.data.model.ImageVariant;
 
-@Database(entities =
-        {
-            Image.class,
-            ImageVariant.class,
-            Category.class,
-            CacheDBInternals.ImageCategoryMap.class
-        },
-        version = 1)
+import java.util.List;
 
-@TypeConverters({CacheDBInternals.class})
-public abstract class CacheDatabase extends RoomDatabase {
-    public abstract ImageDao imageDao();
-    public abstract ImageVariantDao variantDao();
-    public abstract CategoryDao categoryDao();
-    public abstract ImageCategoryMapDao imageCategoryMapDao();
+import io.reactivex.Single;
+
+@Dao
+public abstract class ImageVariantDao {
+    @Insert
+    public abstract void insert(ImageVariant variant);
+
+    /* could also use Image.variants */
+    @Query("SELECT * FROM ImageVariant WHERE imageId = :imageId")
+    public abstract Single<List<ImageVariant>> variantsForImage(Integer imageId);
+
 }

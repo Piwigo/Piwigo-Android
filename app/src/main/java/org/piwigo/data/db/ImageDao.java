@@ -52,6 +52,7 @@ abstract public class ImageDao {
         }
     }
 
+    @Transaction
     @Query("SELECT * FROM Image")
     abstract public Single<List<Image>> getImages() throws SQLException;
 

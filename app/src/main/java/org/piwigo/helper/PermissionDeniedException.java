@@ -16,47 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.data.model;
+package org.piwigo.helper;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
+public class PermissionDeniedException extends Exception{
+    private final String mPermission;
 
-import java.io.Serializable;
-import java.util.Date;
-
-@Entity
-public class Image implements Serializable {
-
-    @PrimaryKey
-    public int id;
-
-    public String file;
-
-    public String name;
-
-    public String description;
-
-    public String author;
-
-    public int width;
-
-    public int height;
-
-    public Date creationDate;
-
-    public Date availableDate;
-
-    public String elementUrl;
-
-    public Image(String elementUrl, int width, int height) {
-        this.elementUrl = elementUrl;
+    public PermissionDeniedException(String permission) {
+        super();
+        mPermission = permission;
     }
 
-    @Override public boolean equals(Object o) {
-        if (o instanceof Image) {
-            return id == ((Image) o).id;
-        }
-        return super.equals(o);
+    public String toString(){
+        return super.toString() + " " + mPermission;
     }
-
 }

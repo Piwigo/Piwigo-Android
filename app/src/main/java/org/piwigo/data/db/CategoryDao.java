@@ -61,6 +61,15 @@ public abstract class CategoryDao {
         }
     }
 
+    @Query("WITH RECURSIVE parents(id, name, lvl, parentCatId) AS (" +
+            "SELECT id, name, 0 as lvl, parentCatId FROM Category " +
+            "UNION ALL " +
+            "SELECT CC.id, CP.name, lvl + 1 as lvl, CP.parentCatId FROM parents CC INNER JOIN Category CP ON CP.id = CC.parentCatId" +
+            ")" +
+            "SELECT name from parents WHERE id = :categoryId ORDER BY lvl DESC" +
+            "")
+    public abstract Single<List<String>> getCategoryPath(Integer categoryId) throws SQLException;
+
     // TODO: #90 implement sorting by adding a parameter to give the sorting order
     @Query("SELECT * FROM Category WHERE parentCatId = :categoryId ORDER BY globalRank")
     public abstract Single<List<Category>> getCategoriesRaw(Integer categoryId) throws SQLException;

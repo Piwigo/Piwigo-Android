@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.util.Log;
@@ -133,7 +134,7 @@ public class UploadService extends IntentService {
 
         //Chunks
         long tmpFileSize = getFileSize(uploadAction.getUploadData().getTargetUri());
-        int chunkSize = getChunkSize(); // Chunk max size = 1MB
+        int chunkSize = getChunkSize();
         int expectedChunks = tmpFileSize <= chunkSize ? 1 : (int) (tmpFileSize / chunkSize) + 1;
         //Instances
         MultipartBody.Part fileParts[] = new MultipartBody.Part[expectedChunks];
@@ -172,20 +173,19 @@ public class UploadService extends IntentService {
     }
 
     /**
-     * Pick a chunk size depending of the network mode (if on wifi, 1MB, 256KB for mobile data)
-     * @return chunkSize (1MB, 256KB for mobile data or anything else)
+     * Pick a chunk size depending of the network mode
+     * @return chunkSize in bytes
      */
     public int getChunkSize()
     {
-        int networkType = NetworkHelper.INSTANCE.getNetworkType(getApplicationContext());
+        int upSpeed = NetworkHelper.INSTANCE.getNetworkSpeed(getApplication());
         int chunkSize = userManager.getChunkSize(userManager.getActiveAccount().getValue());
 
-        if (networkType == ConnectivityManager.TYPE_WIFI) {
-            return chunkSize; // 500KB by default
+        if(chunkSize > upSpeed * 1024 / 8){
+            chunkSize = upSpeed * 1024 / 8;
         }
-        else {
-            return (chunkSize / 2); // 250KB by default
-        }
+
+        return chunkSize;
     }
 
     /**
@@ -298,7 +298,7 @@ public class UploadService extends IntentService {
                     }
                     callChunkedUploadResponse(imageUploadQueue, restService, promise);
                 } else {
-                    String add = " (code: " + response.raw().code() + ")";
+                    String add = " (code " + response.raw().code() + ": " + response.raw().message() + ")";
                     // TODO: handle this properly for #161
                     if (response.body() != null) {
                         if (response.body().err != null) {

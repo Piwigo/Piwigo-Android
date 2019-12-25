@@ -43,10 +43,12 @@ public class PreferencesRepository {
     public static final String KEY_PREF_PHOTOS_PER_ROW = "photos_per_row";
     public static final String KEY_PREF_DOWNLOAD_SIZE = "download_size";
     public static final String KEY_PREF_COLOR_PALETTE = "color_palette";
+    public static final String KEY_PREF_EXPOSE_PHOTOS = "expose_photos_to_device";
 
     public static final int DEFAULT_PREF_PHOTOS_PER_ROW = 3;
     public static final String DEFAULT_PREF_DOWNLOAD_SIZE = "medium";
     public static final String DEFAULT_PREF_COLOR_PALETTE = "light";
+    public static final Boolean DEFAULT_PREF_EXPOSE_PHOTOS = false;
 
     private static final Map<String, Object> defaults;
     static {
@@ -54,6 +56,7 @@ public class PreferencesRepository {
         mutableMap.put(KEY_PREF_PHOTOS_PER_ROW, DEFAULT_PREF_PHOTOS_PER_ROW);
         mutableMap.put(KEY_PREF_DOWNLOAD_SIZE, DEFAULT_PREF_DOWNLOAD_SIZE);
         mutableMap.put(KEY_PREF_COLOR_PALETTE, DEFAULT_PREF_COLOR_PALETTE);
+        mutableMap.put(KEY_PREF_EXPOSE_PHOTOS, DEFAULT_PREF_EXPOSE_PHOTOS);
         defaults = Collections.unmodifiableMap(mutableMap);
     }
 
@@ -97,6 +100,16 @@ public class PreferencesRepository {
         } else {
             /* no default int configured */
             return preferences.getInt(key, -1);
+        }
+    }
+
+    public boolean getBool(String key){
+        Object def = defaults.get(key);
+        if(def instanceof Boolean) {
+            return preferences.getBoolean(key, (Boolean) def);
+        } else {
+            /* no default boolean configured */
+            return preferences.getBoolean(key, false);
         }
     }
 }

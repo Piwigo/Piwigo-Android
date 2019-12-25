@@ -206,6 +206,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 viewModel.username.set("");
                 viewModel.url.set("");
             }
+            viewModel.getError().observe(this, this::showError);
         };
         userManager.getActiveAccount().observe(this, accountObserver);
 
@@ -524,7 +525,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
 
     private void logoutUserClick() {
         viewModel.getLogoutSuccess().observe(this, this::logoutSuccess);
-        viewModel.getLogoutError().observe(this, this::logoutError);
         viewModel.onLogoutClick();
     }
 
@@ -536,16 +536,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         startActivity(intent);
         finish();
     }
-
-    private void logoutError(Throwable throwable) {
-        //TODO: #161 Show more failure details
-        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.account_logout_unsuccessfull), throwable.getMessage()), Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-    }
-
 
     private String getNameFromURI(String item, Uri contentUri) {
         if (item.contains("content:"))
@@ -582,5 +572,13 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         }
     }
 
+    private void showError(Throwable throwable) {
+        Snackbar.make(mBinding.getRoot(), throwable.getMessage(), Snackbar.LENGTH_LONG).setAction(R.string.show_details, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogHelper.INSTANCE.showLogDialog(getResources().getString(R.string.gen_error), throwable.getMessage(), throwable, "REASON: MainActivity.showError, LOGIN_STATUS: " + viewModel.loginStatus.get() + ", PIWIGO_VERSION = " + viewModel.piwigoVersion.get() + ", URL = " + viewModel.url.get(), mBinding.getRoot().getContext());
+            }
+        }).show();
+    }
 }
 
