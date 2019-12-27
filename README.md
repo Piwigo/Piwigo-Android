@@ -2,7 +2,7 @@
 
 ![](https://travis-ci.org/Piwigo/Piwigo-Android.svg)
 
-Software is never finished and this APP is still under development by the Piwigo-Mobile team but it is already usable.
+Software is never finished and this APP is still under development by the Piwigo-Mobile team but it is already usable. If you face trouble please check the [FAQs](https://github.com/Piwigo/Piwigo-Android/wiki/FAQ:-Frequently-Asked-Questions) and [create tickets](https://github.com/Piwigo/Piwigo-Android/issues/new/choose) in case you detect a bug.
 
 ## Install
 
