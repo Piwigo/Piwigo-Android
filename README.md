@@ -2,36 +2,30 @@
 
 ![](https://travis-ci.org/Piwigo/Piwigo-Android.svg)
 
-Currently under development by the Piwigo-Mobile team, please get in touch if you're interested in contributing to the project.
+Software is never finished and this APP is still under development by the Piwigo-Mobile team but it is already usable.
 
-If you're considering contributing, a working knowledge of the following would be extremely useful:
-
-* MVVM with Android Data Binding
-* Dependency injection with Dagger 2
-* Unit testing with Mockito and Robolectric
-
-## Progress
-
-### Install
+## Install
 
 <a href="https://f-droid.org/packages/org.piwigo.android/" target="_blank">
 <img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80"/></a>
 <a href="https://play.google.com/store/apps/details?id=org.piwigo.android" target="_blank">
 <img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" height="80"/></a>
 
-### Login
-To show your photos enter the URL of your gallery into the server address field. For a quick try you can enter http://www.piwigo.org/demo. Keep username and password empty for guest login.
+## Login
+
+To show your photos enter the URL of your gallery (the web address you also use in the browser) into the server address field. For a quick try you can enter http://www.piwigo.org/demo. Keep username and password empty for guest login.
 
 <img src="./app/src/main/play/listings/en-US/graphics/phone-screenshots/01_Login.jpg" width="238" />
 
-#### Done
+## Supported features
 
+- Navigation through albums
 - Full screen photo view
 - Upload
-- Guest login (see Settings -> Accounts after successful login)
+- Guest login (by keeping user name and password fields empty)
 - User login (see Settings -> Accounts after successful login)
-- Should scale well on all phone and table screens
-- Animations on most devices
+- Multiple accounts
+- SSL protected galleries but also plain HTTP access (which is recommended only in secured private networks)
 
 ### Main screen
 
@@ -45,3 +39,6 @@ Copyright notices in this project are mostly given with a reference to the year 
 
 ## Privacy
 Piwigo-Android and its authors have a deep interest to respect your privacy. Therefore this app is designed to not track your behaviour and keep your data in your hands. It is recommended to host your Piwigo gallery by yourself and use only encrypted connections via HTTPS. The full <a href="https://piwigo.org/mobile-apps-privacy-policy">privacy policy is available on the website</a> of Piwigo and within he app itself.
+
+## Contributions
+As most free / open source software projects we have happy if are willing to invest some time into this project and contribute. We are always looking for translators, documentators, testers and for sure also programmers. Translations are done on the [platform Crowdin](https://crowdin.com/project/piwigo-android) and documentation mainly here in this README file and the [wiki](https://github.com/Piwigo/Piwigo-Android/wiki). If you consider contributing code best is to choose one of the tickets where you have a personal interest to get it done and comment on it with a proposal hwo you plan to solve the issue. Some where we believe they could be a good starting point are labeled with [help wanted](https://github.com/Piwigo/Piwigo-Android/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22). For coding it would be great to have experience with MVVM, Android Data Binding, Depencency injections with Dagger 2 or Unit testing with Mockito and Robolectric. But even in case you have just a little Java experience and want to support we will help you to ramp up and guide you to learn the things you need for this project.
