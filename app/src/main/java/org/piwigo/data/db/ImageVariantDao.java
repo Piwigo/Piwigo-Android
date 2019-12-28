@@ -20,6 +20,7 @@ package org.piwigo.data.db;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import org.piwigo.data.model.ImageVariant;
@@ -30,11 +31,11 @@ import io.reactivex.Single;
 
 @Dao
 public abstract class ImageVariantDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insert(ImageVariant variant);
 
     /* could also use Image.variants */
-    @Query("SELECT * FROM ImageVariant WHERE imageId = :imageId")
-    public abstract Single<List<ImageVariant>> variantsForImage(Integer imageId);
+    @Query("SELECT * FROM ImageVariant WHERE imageId = :imageId AND url = :url")
+    public abstract Single<List<ImageVariant>> variantsForImage(Integer imageId, String url);
 
 }

@@ -20,23 +20,27 @@ package org.piwigo.data.model;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 
 import static androidx.room.ForeignKey.CASCADE;
 
-@Entity
+@Entity(indices = {@Index(value = {"url"},
+        unique = true)})
 /**
  * This is basically a derivative, but we store here as variant only those which are locally stored
  * but it's not guaranteed that they will stay here.
  */
 public class ImageVariant implements Serializable {
-    public ImageVariant(int imageId, int width, int height, String storageLocation){
+    public ImageVariant(int imageId, int width, int height, String storageLocation, String lastModified, String url){
         this.imageId = imageId;
         this.width = width;
         this.height = height;
         this.storageLocation = storageLocation;
+        this.lastModified = lastModified;
+        this.url = url;
     }
 
     @PrimaryKey(autoGenerate = true)
@@ -50,8 +54,9 @@ public class ImageVariant implements Serializable {
     public int imageId;
 
     public int height;
-
     public int width;
 
     public String storageLocation;
+    public String lastModified;
+    public String url;
 }

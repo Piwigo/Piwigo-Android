@@ -20,10 +20,14 @@ package org.piwigo.io;
 
 import android.accounts.Account;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.Gson;
 
 import org.piwigo.BuildConfig;
 import org.piwigo.accounts.UserManager;
+
+import java.util.Map;
 
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -47,43 +51,54 @@ public class WebServiceFactory {
 
     /* only intended for login, for most use cases consider createForAccount */
     public RestService createForUrl(String url) {
-        OkHttpClient client = buildOkHttpClient(null);
+        OkHttpClient client = buildOkHttpClient(null, true, null);
         Retrofit retrofit = buildRetrofit(client, url);
         return retrofit.create(RestService.class);
     }
 
     public RestService createForAccount(Account account) {
         String cookie = userManager.getCookie(account);
-        OkHttpClient client = buildOkHttpClient(cookie);
+        OkHttpClient client = buildOkHttpClient(cookie, true, null);
         Retrofit retrofit = buildRetrofit(client, userManager.getSiteUrl(account));
         return retrofit.create(RestService.class);
     }
 
-    private OkHttpClient buildOkHttpClient(String cookie) {
+    private OkHttpClient buildOkHttpClient(@Nullable String cookie, boolean queryJson, @Nullable Map<String, String> addHeaders) {
         return new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(chain -> {
                     Request.Builder builder = chain.request().newBuilder();
 
                     HttpUrl.Builder urlBuilder = chain.request().url().newBuilder();
-                    urlBuilder.addQueryParameter("format", "json");
+                    if(queryJson) {
+                        urlBuilder.addQueryParameter("format", "json");
+                    }
                     builder.url(urlBuilder.build());
 
                     if (cookie != null) {
                         builder.addHeader("Cookie", "pwg_id=" + cookie);
                     }
 
-                    /* TODO: adjust hardcoded string by resource app name */
+                    if(addHeaders != null) {
+                        for (String name : addHeaders.keySet()) {
+                            builder.addHeader(name, addHeaders.get(name));
+                        }
+                    }
+
                     builder.header("User-Agent", ("Piwigo-Android " + BuildConfig.VERSION_NAME));
                     return chain.proceed(builder.build());
                 })
                 .build();
     }
 
-    public DownloadService downloaderForAccount(Account account) {
+    public DownloadService downloaderForAccount(Account account, @Nullable Map<String, String> addHeaders) {
         String cookie = userManager.getCookie(account);
-        OkHttpClient client = buildOkHttpClient(cookie);
-        Retrofit retrofit = buildRetrofit(client, userManager.getSiteUrl(account));
+        OkHttpClient client = buildOkHttpClient(cookie, false, addHeaders);
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(client)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .baseUrl(userManager.getSiteUrl(account))
+                .build();
         return retrofit.create(DownloadService.class);
     }
 

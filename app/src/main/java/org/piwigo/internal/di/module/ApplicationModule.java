@@ -49,20 +49,11 @@ public class ApplicationModule {
         return application;
     }
 
-    @Provides @Singleton
-    CacheDatabase provideCacheDatabase() {
-        return Room.databaseBuilder(application,
-                CacheDatabase.class, "piwigo-cache")
-                .fallbackToDestructiveMigration() /* as the complete database is only a cache we'll loose nothing critical if we drop it */
-                .build();
-
-    }
-
     @Provides @Singleton Picasso providePicasso() {
         Picasso p = new Picasso.Builder(application)
-                .indicatorsEnabled(BuildConfig.DEBUG) //We may not want this for production build..
-//                .memoryCache(new PiwigoImageCache(application)) //What about this ?
+                .indicatorsEnabled(BuildConfig.DEBUG) // We may not want this for production build..
                 .build();
+// for extended logging activate this one here, it is normally not active, as it consumes so much CPU
 //        p.setLoggingEnabled(true);
         return p;
     }
@@ -71,8 +62,8 @@ public class ApplicationModule {
         return AccountManager.get(application);
     }
 
-    @Provides @Singleton UserManager provideUserManager(AccountManager accountManager, PreferencesRepository preferencesRepository) {
-        return new UserManager(accountManager, application.getResources(), preferencesRepository);
+    @Provides @Singleton UserManager provideUserManager(AccountManager accountManager, PreferencesRepository preferencesRepository, Context ctx) {
+        return new UserManager(accountManager, application.getResources(), preferencesRepository, ctx);
     }
 
     @Provides @Singleton

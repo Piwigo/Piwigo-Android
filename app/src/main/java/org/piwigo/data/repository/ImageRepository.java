@@ -30,8 +30,10 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.piwigo.accounts.UserManager;
@@ -50,7 +52,11 @@ import org.piwigo.io.restrepository.RESTImageRepository;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
@@ -66,7 +72,7 @@ import io.reactivex.schedulers.Schedulers;
 import okio.BufferedSink;
 import okio.Okio;
 
-public class ImageRepository {
+public class ImageRepository implements Observer<Account> {
 
     private final RESTImageRepository mRestImageRepo;
     private final UserManager mUserManager;
@@ -78,7 +84,7 @@ public class ImageRepository {
     private CacheDatabase mCache;
     private WebServiceFactory mWebServiceFactory;
 
-    @Inject public ImageRepository(RESTImageRepository restImageRepo, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager, PreferencesRepository preferences, CacheDatabase cache,
+    @Inject public ImageRepository(RESTImageRepository restImageRepo, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager, PreferencesRepository preferences,
                                    WebServiceFactory webServiceFactory, Context context) {
         this.ioScheduler = ioScheduler;
         this.uiScheduler = uiScheduler;
@@ -88,7 +94,8 @@ public class ImageRepository {
         mWebServiceFactory = webServiceFactory;
         mContext = context;
 
-        mCache = cache;
+        mUserManager.getActiveAccount().observeForever(this);
+        mCache = mUserManager.getCurrentDatabase();
     }
 
     /**
@@ -98,178 +105,203 @@ public class ImageRepository {
      * @return items with their position
      */
     public Observable<PositionedItem<Image>> getImages(@Nullable Integer categoryId) {
-        Single<List<String>> folder = mCache.categoryDao().getCategoryPath(categoryId);
-        AtomicReference<String> folderStr = new AtomicReference<>(null);
-// TODO: #90 implement sorting
-    return mCache.imageDao().getImagesInCategory(categoryId)
-            .subscribeOn(ioScheduler)
-            .observeOn(uiScheduler)
-            .flattenAsFlowable(s -> s)
-            .zipWith(Flowable.range(0, Integer.MAX_VALUE),
-                    (item, counter) -> new PositionedItem<Image>(counter, item))
+        if(mCache == null){
+            return Observable.empty();
+        }else {
+            Single<List<String>> folder = mCache.categoryDao().getCategoryPath(categoryId);
+            AtomicReference<String> folderStr = new AtomicReference<>(null);
+            // TODO: #90 implement sorting
+            return mCache.imageDao().getImagesInCategory(categoryId)
+                    .subscribeOn(ioScheduler)
+                    .observeOn(uiScheduler)
+                    .flattenAsFlowable(s -> s)
+                    .zipWith(Flowable.range(0, Integer.MAX_VALUE),
+                            (item, counter) -> new PositionedItem<Image>(counter, item))
 
-            .concatWith(
-                    mRestImageRepo.getImages(mUserManager.getActiveAccount().getValue(), categoryId)
-                    .toFlowable(BackpressureStrategy.BUFFER)
-                    .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> {
-                        Derivative d;
-                        switch(mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE)){
-                            case "thumb":
-                                d = info.derivatives.thumb;
-                                break;
-                            case "small":
-                                d = info.derivatives.small;
-                                break;
-                            case "xsmall":
-                                d = info.derivatives.xsmall;
-                                break;
-                            case "medium":
-                                d = info.derivatives.medium;
-                                break;
-                            case "large":
-                                d = info.derivatives.large;
-                                break;
-                            case "xlarge":
-                                d = info.derivatives.xlarge;
-                                break;
-                            case "xxlarge":
-                                d = info.derivatives.xxlarge;
-                                break;
-                            case "square":
-                            default:
-                                d = info.derivatives.square;
-                        }
+                    .concatWith(
+                            mRestImageRepo.getImages(mUserManager.getActiveAccount().getValue(), categoryId)
+                                    .toFlowable(BackpressureStrategy.BUFFER)
+                                    .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> {
+                                        Derivative d;
+                                        switch (mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE)) {
+                                            case "thumb":
+                                                d = info.derivatives.thumb;
+                                                break;
+                                            case "small":
+                                                d = info.derivatives.small;
+                                                break;
+                                            case "xsmall":
+                                                d = info.derivatives.xsmall;
+                                                break;
+                                            case "medium":
+                                                d = info.derivatives.medium;
+                                                break;
+                                            case "large":
+                                                d = info.derivatives.large;
+                                                break;
+                                            case "xlarge":
+                                                d = info.derivatives.xlarge;
+                                                break;
+                                            case "xxlarge":
+                                                d = info.derivatives.xxlarge;
+                                                break;
+                                            case "square":
+                                            default:
+                                                d = info.derivatives.square;
+                                        }
 
-                        Image i = new Image(d.url, d.width, d.height);
-                        i.name = info.name;
-                        i.file = info.file;
-                        i.id = info.id;
-                        i.author = info.author;
-                        i.description = info.comment;
-                        i.height = info.height;
-                        i.width = info.width;
-                        i.creationDate = info.dateCreation;
-                        i.availableDate = info.dateAvailable;
-                        mCache.imageDao().upsert(i);
-                        List<CacheDBInternals.ImageCategoryMap> join = new ArrayList<>(info.categories.size());
-                        for(ImageInfo.CategoryID c : info.categories){
-                            join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));
-                        }
-                        mCache.imageCategoryMapDao().insert(join);
-                        synchronized (folderStr) {
-                            if (folderStr.get() == null) {
-                                folderStr.set(StringUtils.join(folder.blockingGet(), File.separator ));
-                            }
-                        }
-                        downloadURL(i.elementUrl, folderStr.get(), i.file, i.id).subscribe(new DisposableObserver<String>(){
-                            @Override
-                            public void onNext(String s) {
-                                boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
-                                // TODO: insert variant
-                                Log.i("ImageRepository", "downloaded " + s);
-                                if(expose) {
-                                    // add file to mediastore
-                                    ContentResolver resolver = mContext.getContentResolver();
-                                    ContentValues values = new ContentValues();
-                                    values.put(MediaStore.Images.ImageColumns.DATA, s);
-                                    values.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, i.name);
-                                    if (i.creationDate != null) {
-                                        values.put(MediaStore.Images.ImageColumns.DATE_TAKEN, i.creationDate.getTime());
-                                    }
-                                    if (i.description != null) {
-                                        values.put(MediaStore.Images.ImageColumns.DESCRIPTION, i.description);
-                                    }
+                                        Image i = new Image(info.elementUrl, d.width, d.height);
+                                        i.name = info.name;
+                                        i.file = info.file;
+                                        i.id = info.id;
+                                        i.author = info.author;
+                                        i.description = info.comment;
+                                        i.height = info.height;
+                                        i.width = info.width;
+                                        i.creationDate = info.dateCreation;
+                                        i.availableDate = info.dateAvailable;
+                                        mCache.imageDao().upsert(i);
+                                        List<CacheDBInternals.ImageCategoryMap> join = new ArrayList<>(info.categories.size());
+                                        for (ImageInfo.CategoryID c : info.categories) {
+                                            join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));
+                                        }
+                                        mCache.imageCategoryMapDao().insert(join);
+                                        synchronized (folderStr) {
+                                            if (folderStr.get() == null) {
+                                                folderStr.set(StringUtils.join(folder.blockingGet(), File.separator));
+                                            }
+                                        }
 
-                                    resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                                }
-                            }
+                                        List<ImageVariant> all = mCache.variantDao().variantsForImage(i.id, d.url).blockingGet();
+                                        Map<String, String> addHeaders = null;
+                                        if (all.size() == 1) {
+                                            addHeaders = new HashMap<>();
+                                            addHeaders.put("If-Modified-Since", all.get(0).lastModified);
+                                            Log.i("ImageRepository.URLa", d.url + " Last-Modified = " + all.get(0).lastModified);
+                                        } else if (all.size() > 1) {
+                                            throw new RuntimeException("Invalid Cache State: " + all.size() + " variants for URL " + i.elementUrl);
+                                        } else {
+                                            Log.i("ImageRepository.URLa", d.url + " Last-Modified = n/a (not yet in DB)");
 
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e("ImageRepository", "download failed", e);
-                            }
+                                        }
 
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+                                        downloadURL(d.url, folderStr.get(), i.file, i.id, addHeaders).subscribe(new DisposableObserver<String>() {
+                                            @Override
+                                            public void onNext(String s) {
+                                                boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
+                                                // TODO: insert variant
+                                                Log.i("ImageRepository", "downloaded " + s);
+                                                if (expose) {
+                                                    // add file to mediastore
+                                                    ContentResolver resolver = mContext.getContentResolver();
+                                                    ContentValues values = new ContentValues();
+                                                    values.put(MediaStore.Images.ImageColumns.DATA, s);
+                                                    values.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, i.name);
+                                                    if (i.creationDate != null) {
+                                                        values.put(MediaStore.Images.ImageColumns.DATE_TAKEN, i.creationDate.getTime());
+                                                    }
+                                                    if (i.description != null) {
+                                                        values.put(MediaStore.Images.ImageColumns.DESCRIPTION, i.description);
+                                                    }
+
+                                                    resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onError(Throwable e) {
+                                                Log.e("ImageRepository", "download failed", e);
+                                            }
+
+                                            @Override
+                                            public void onComplete() {
+                                            }
+                                        });
 
 
-                        // TODO: delete images in database after they have been deleted on the server
-                        // TODO: move image cache files if parent album was renamed
-                        return new PositionedItem<>(counter, i);
-                    })
-            .subscribeOn(ioScheduler)
-            .observeOn(uiScheduler)
-            )
-        .toObservable();
+                                        // TODO: delete images in database after they have been deleted on the server
+                                        // TODO: move image cache files if parent album was renamed
+                                        return new PositionedItem<>(counter, i);
+                                    })
+                                    .subscribeOn(ioScheduler)
+                                    .observeOn(uiScheduler)
+                    )
+                    .toObservable();
+        }
     }
 
 
-    public Observable<String> downloadURL(String url, String folder, String fileName, int imageId){
-        Account a = mUserManager.getActiveAccount().getValue();
-        org.piwigo.io.DownloadService downloadService = mWebServiceFactory.downloaderForAccount(a);
+    public Observable<String> downloadURL(String url, String folder, String fileName, int imageId, @Nullable Map<String, String> addHeaders){
+        if(mCache == null){
+            return Observable.empty();
+        }else {
 
-        Observable<String> result = downloadService.downloadFileAtUrl(url)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .flatMap(response -> {
-                    try {
-                        boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
+            Account a = mUserManager.getActiveAccount().getValue();
 
-                        String last_mod = response.headers().get("Last-Modified");
-                        String length = response.headers().get("Content-Length");
+            org.piwigo.io.DownloadService downloadService = mWebServiceFactory.downloaderForAccount(a, addHeaders);
 
-                        File root;
-                        if(expose) {
-                            root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Piwigo");
-                        }else{
-                            root = mContext.getExternalFilesDir(null);
+            Observable<String> result = downloadService.downloadFileAtUrl(url)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .flatMap(response -> {
+                        try {
+                            boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
+
+                            String last_mod = response.headers().get("Last-Modified");
+                            Log.i("ImageRepository.URLa", response.code() + " " + url + " Last-Modified = " + last_mod);
+                            if (response.code() == 200) {
+                                File root;
+                                if (expose) {
+                                    root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Piwigo");
+                                } else {
+                                    root = mContext.getExternalFilesDir(null);
+                                }
+
+                                String subdir = a.name
+                                        + File.separator + folder;
+                                String directory = root + File.separator + subdir;
+                                String fullPath = directory
+                                        + File.separator + fileName;
+
+                                // TODO: store path in DB
+                                File destinationFile = new File(fullPath);
+
+                                int permissionCheck = ContextCompat.checkSelfPermission(mContext,
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                                // TODO ask for permission
+                                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+
+                                    File outputDir = destinationFile.getParentFile();
+                                    outputDir.mkdirs();
+                                    BufferedSink bufferedSink = Okio.buffer(Okio.sink(destinationFile));
+                                    bufferedSink.writeAll(response.body().source());
+                                    bufferedSink.close();
+
+                                    BitmapFactory.Options options = new BitmapFactory.Options();
+                                    options.inJustDecodeBounds = true;
+                                    BitmapFactory.decodeFile(destinationFile.getAbsolutePath(), options);
+                                    int h = options.outHeight;
+                                    int w = options.outWidth;
+
+                                    ImageVariant iv = new ImageVariant(imageId, w, h, fullPath, last_mod, url);
+                                    Log.i("ImageRepository.URLa", "Inserting " + url + " Last-Modified = " + last_mod);
+                                    mCache.variantDao().insert(iv);
+
+                                    return Observable.just(fullPath);
+                                } else {
+                                    /* no permission */
+                                    return Observable.error(new PermissionDeniedException(Manifest.permission.WRITE_EXTERNAL_STORAGE));
+                                }
+                            } else {
+                                return Observable.empty();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return Observable.error(e);
                         }
-
-                        String subdir = a.name
-                                + File.separator + folder;
-                        String directory = root + File.separator + subdir;
-                        String fullPath = directory
-                                + File.separator + fileName;
-
-// TODO: store path in DB
-                        File destinationFile = new File(fullPath);
-
-                        int permissionCheck = ContextCompat.checkSelfPermission(mContext,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-// TODO ask for permission
-                        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-
-                            File outputDir = destinationFile.getParentFile();
-                            outputDir.mkdirs();
-                            BufferedSink bufferedSink = Okio.buffer(Okio.sink(destinationFile));
-                            bufferedSink.writeAll(response.body().source());
-                            bufferedSink.close();
-
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inJustDecodeBounds = true;
-                            BitmapFactory.decodeFile(destinationFile.getAbsolutePath(), options);
-                            int h = options.outHeight;
-                            int w = options.outWidth;
-
-                            // TODO: insert only once
-                            ImageVariant iv = new ImageVariant(imageId, w, h, fullPath);
-                            mCache.variantDao().insert(iv);
-
-                            return Observable.just(fullPath);
-                        } else {
-                            /* no permission, return null */
-                            return Observable.error(new PermissionDeniedException(Manifest.permission.WRITE_EXTERNAL_STORAGE));
-                        }
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return Observable.error(e);
-                    }
-                });
-        return result;
+                    });
+            return result;
+        }
     }
 
     /**
@@ -299,6 +331,15 @@ public class ImageRepository {
     }
 
 
+    /**
+     * Called when the account is changed.
+     *
+     * @param account The new data
+     */
+    @Override
+    public void onChanged(Account account) {
+        mCache = mUserManager.getCurrentDatabase();
+    }
 }
 
 
