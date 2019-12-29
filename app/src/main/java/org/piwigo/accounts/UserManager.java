@@ -46,8 +46,10 @@ import org.piwigo.data.db.CacheDatabase;
 import org.piwigo.io.PreferencesRepository;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Note: a token in Android is replacing username/password for different logins,
@@ -72,7 +74,7 @@ public class UserManager {
     private final MutableLiveData<Account> mCurrentAccount;
     private final MutableLiveData<List<Account>> mAllAccounts;
     private final Context mContext;
-    private CacheDatabase mCache;
+    private Map<String, CacheDatabase> databases = new HashMap<String, CacheDatabase>();
 
     public UserManager(AccountManager accountManager, Resources resources, PreferencesRepository preferencesRepository, Context ctx) {
         this.accountManager = accountManager;
@@ -87,8 +89,8 @@ public class UserManager {
     }
 
     public @Nullable
-    CacheDatabase getCurrentDatabase() {
-        return mCache;
+    CacheDatabase getDatabaseForAccount(Account a) {
+        return databases.get(a.name);
     }
 
     /* refresh account list - to be called by activities which are aware
@@ -252,12 +254,11 @@ public class UserManager {
     private void updateDB(){
         Account a = mCurrentAccount.getValue();
         if(a != null) {
-            mCache = Room.databaseBuilder(mContext,
+            CacheDatabase cache = Room.databaseBuilder(mContext,
                     CacheDatabase.class, dbNameFor(a))
                     .fallbackToDestructiveMigration() /* as the complete database is only a cache we'll loose nothing critical if we drop it */
                     .build();
-        }else{
-            mCache = null;
+            databases.put(a.name, cache); // TODO: should we use here a Map with WeakReferences to the database to free the memory once all threads are finished accessing the DB?
         }
     }
 
@@ -316,7 +317,7 @@ public class UserManager {
             accountManager.removeAccount(account, future -> refreshAccounts(), null);
         }
 
-        mCache.close();
+        databases.get(account.name).close();
 
         File databases = new File(mContext.getApplicationInfo().dataDir + "/databases");
         File db = new File(databases, dbName);

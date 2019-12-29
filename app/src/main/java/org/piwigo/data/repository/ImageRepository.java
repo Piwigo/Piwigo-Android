@@ -81,8 +81,11 @@ public class ImageRepository implements Observer<Account> {
     private final PreferencesRepository mPreferences;
     private final Context mContext;
 
-    private CacheDatabase mCache;
     private WebServiceFactory mWebServiceFactory;
+
+    private Object dbAccountLock = new Object();
+    private CacheDatabase mCache;
+    private Account mAccount;
 
     @Inject public ImageRepository(RESTImageRepository restImageRepo, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager, PreferencesRepository preferences,
                                    WebServiceFactory webServiceFactory, Context context) {
@@ -95,7 +98,10 @@ public class ImageRepository implements Observer<Account> {
         mContext = context;
 
         mUserManager.getActiveAccount().observeForever(this);
-        mCache = mUserManager.getCurrentDatabase();
+        synchronized (dbAccountLock) {
+            mAccount = mUserManager.getActiveAccount().getValue();
+            mCache = mUserManager.getDatabaseForAccount(mAccount);
+        }
     }
 
     /**
@@ -105,13 +111,19 @@ public class ImageRepository implements Observer<Account> {
      * @return items with their position
      */
     public Observable<PositionedItem<Image>> getImages(@Nullable Integer categoryId) {
-        if(mCache == null){
+        CacheDatabase db;
+        Account a;
+        synchronized (dbAccountLock) {
+            db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
+            a = mAccount;
+        }
+        if(db == null){
             return Observable.empty();
         }else {
-            Single<List<String>> folder = mCache.categoryDao().getCategoryPath(categoryId);
+            Single<List<String>> folder = db.categoryDao().getCategoryPath(categoryId);
             AtomicReference<String> folderStr = new AtomicReference<>(null);
             // TODO: #90 implement sorting
-            return mCache.imageDao().getImagesInCategory(categoryId)
+            return db.imageDao().getImagesInCategory(categoryId)
                     .subscribeOn(ioScheduler)
                     .observeOn(uiScheduler)
                     .flattenAsFlowable(s -> s)
@@ -119,7 +131,7 @@ public class ImageRepository implements Observer<Account> {
                             (item, counter) -> new PositionedItem<Image>(counter, item))
 
                     .concatWith(
-                            mRestImageRepo.getImages(mUserManager.getActiveAccount().getValue(), categoryId)
+                            mRestImageRepo.getImages(a, categoryId)
                                     .toFlowable(BackpressureStrategy.BUFFER)
                                     .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> {
                                         Derivative d;
@@ -160,19 +172,18 @@ public class ImageRepository implements Observer<Account> {
                                         i.width = info.width;
                                         i.creationDate = info.dateCreation;
                                         i.availableDate = info.dateAvailable;
-                                        mCache.imageDao().upsert(i);
+                                        db.imageDao().upsert(i);
                                         List<CacheDBInternals.ImageCategoryMap> join = new ArrayList<>(info.categories.size());
                                         for (ImageInfo.CategoryID c : info.categories) {
                                             join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));
                                         }
-                                        mCache.imageCategoryMapDao().insert(join);
-                                        synchronized (folderStr) {
+                                        db.imageCategoryMapDao().insert(join);                                        synchronized (folderStr) {
                                             if (folderStr.get() == null) {
                                                 folderStr.set(StringUtils.join(folder.blockingGet(), File.separator));
                                             }
                                         }
 
-                                        List<ImageVariant> all = mCache.variantDao().variantsForImage(i.id, d.url).blockingGet();
+                                        List<ImageVariant> all = db.variantDao().variantsForImage(i.id, d.url).blockingGet();
                                         Map<String, String> addHeaders = null;
                                         if (all.size() == 1) {
                                             addHeaders = new HashMap<>();
@@ -185,7 +196,7 @@ public class ImageRepository implements Observer<Account> {
 
                                         }
 
-                                        downloadURL(d.url, folderStr.get(), i.file, i.id, addHeaders).subscribe(new DisposableObserver<String>() {
+                                        downloadURL(d.url, folderStr.get(), i.file, i.id, addHeaders, db, a).subscribe(new DisposableObserver<String>() {
                                             @Override
                                             public void onNext(String s) {
                                                 boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
@@ -231,12 +242,10 @@ public class ImageRepository implements Observer<Account> {
     }
 
 
-    public Observable<String> downloadURL(String url, String folder, String fileName, int imageId, @Nullable Map<String, String> addHeaders){
-        if(mCache == null){
+    private Observable<String> downloadURL(String url, String folder, String fileName, int imageId, @Nullable Map<String, String> addHeaders, CacheDatabase db, Account a){
+        if(db == null){
             return Observable.empty();
         }else {
-
-            Account a = mUserManager.getActiveAccount().getValue();
 
             org.piwigo.io.DownloadService downloadService = mWebServiceFactory.downloaderForAccount(a, addHeaders);
 
@@ -285,7 +294,7 @@ public class ImageRepository implements Observer<Account> {
 
                                     ImageVariant iv = new ImageVariant(imageId, w, h, fullPath, last_mod, url);
                                     Log.i("ImageRepository.URLa", "Inserting " + url + " Last-Modified = " + last_mod);
-                                    mCache.variantDao().insert(iv);
+                                    db.variantDao().insert(iv);
 
                                     return Observable.just(fullPath);
                                 } else {
@@ -330,7 +339,6 @@ public class ImageRepository implements Observer<Account> {
         return false;
     }
 
-
     /**
      * Called when the account is changed.
      *
@@ -338,7 +346,10 @@ public class ImageRepository implements Observer<Account> {
      */
     @Override
     public void onChanged(Account account) {
-        mCache = mUserManager.getCurrentDatabase();
+        synchronized (dbAccountLock) {
+            mAccount = mUserManager.getActiveAccount().getValue();
+            mCache = mUserManager.getDatabaseForAccount(mAccount);
+        }
     }
 }
 

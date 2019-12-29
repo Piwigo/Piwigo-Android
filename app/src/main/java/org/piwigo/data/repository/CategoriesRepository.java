@@ -47,7 +47,9 @@ public class CategoriesRepository implements Observer<Account> {
     private final Scheduler ioScheduler;
     private final Scheduler uiScheduler;
 
+    private Object dbAccountLock = new Object();
     private CacheDatabase mCache;
+    private Account mAccount;
 
     @Inject public CategoriesRepository(RESTCategoriesRepository restCategoryRepo, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager, PreferencesRepository preferences) {
         mRestCategoryRepo = restCategoryRepo;
@@ -56,21 +58,30 @@ public class CategoriesRepository implements Observer<Account> {
         this.ioScheduler = ioScheduler;
         this.uiScheduler = uiScheduler;
         mUserManager.getActiveAccount().observeForever(this);
-        mCache = mUserManager.getCurrentDatabase();
+        synchronized (dbAccountLock) {
+            mAccount = mUserManager.getActiveAccount().getValue();
+            mCache = mUserManager.getDatabaseForAccount(mAccount);
+        }
     }
 
     public Observable<PositionedItem<Category>> getCategories(@Nullable Integer categoryId) {
-        if(mCache == null){
+        CacheDatabase db;
+        Account a;
+        synchronized (dbAccountLock) {
+            db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
+            a = mAccount;
+        }
+        if(db == null){
             return Observable.empty();
         }else {
-            return mCache.categoryDao().getCategoriesIn(categoryId)
+            return db.categoryDao().getCategoriesIn(categoryId)
                     .subscribeOn(ioScheduler)
                     .observeOn(uiScheduler)
                     .flattenAsFlowable(s -> s)
                     .zipWith(Flowable.range(0, Integer.MAX_VALUE),
                             (item, counter) -> new PositionedItem<Category>(counter, item))
                     .concatWith(
-                            mRestCategoryRepo.getCategories(mUserManager.getActiveAccount().getValue(),
+                            mRestCategoryRepo.getCategories(a,
                                     categoryId,
                                     mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
                                     .toFlowable(BackpressureStrategy.BUFFER)
@@ -91,7 +102,7 @@ public class CategoriesRepository implements Observer<Account> {
                                         c.nbCategories = restCat.nbCategories;
                                         c.representativePictureId = restCat.representativePictureId;
                                         c.totalNbImages = restCat.totalNbImages;
-                                        mCache.categoryDao().upsert(c);
+                                        db.categoryDao().upsert(c);
                                         return new PositionedItem<Category>(counter, c);
                                     })
                                     // TODO: delete categories in database after they have been deleted on the server
@@ -111,7 +122,10 @@ public class CategoriesRepository implements Observer<Account> {
      */
     @Override
     public void onChanged(Account account) {
-        mCache = mUserManager.getCurrentDatabase();
+        synchronized (dbAccountLock) {
+            mAccount = mUserManager.getActiveAccount().getValue();
+            mCache = mUserManager.getDatabaseForAccount(mAccount);
+        }
     }
 
 }
