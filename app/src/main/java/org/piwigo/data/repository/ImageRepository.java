@@ -38,9 +38,11 @@ import androidx.lifecycle.Observer;
 import org.apache.commons.lang3.StringUtils;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.data.db.CacheDBInternals;
+import org.piwigo.data.db.ImageVariantDao;
 import org.piwigo.data.model.Image;
 import org.piwigo.data.model.ImageVariant;
 import org.piwigo.data.model.PositionedItem;
+import org.piwigo.data.model.VariantWithImage;
 import org.piwigo.helper.PermissionDeniedException;
 import org.piwigo.io.PreferencesRepository;
 import org.piwigo.data.db.CacheDatabase;
@@ -110,7 +112,7 @@ public class ImageRepository implements Observer<Account> {
      * @param categoryId
      * @return items with their position
      */
-    public Observable<PositionedItem<Image>> getImages(@Nullable Integer categoryId) {
+    public Observable<PositionedItem<VariantWithImage>> getImages(@Nullable Integer categoryId) {
         CacheDatabase db;
         Account a;
         synchronized (dbAccountLock) {
@@ -120,15 +122,38 @@ public class ImageRepository implements Observer<Account> {
         if(db == null){
             return Observable.empty();
         }else {
+            Single<List<ImageVariantDao.VariantInfo>> variants = db.variantDao().variantsInCategory(categoryId).subscribeOn(ioScheduler);
+            AtomicReference<Map<Integer, List<ImageVariantDao.VariantInfo>>> variantList = new AtomicReference<>();
+
+/* TODO remove
+            variants.subscribeWith(new  DisposableObserver<List<ImageVariantDao.VariantInfo>>(){
+                @Override
+                public void onNext(List<ImageVariantDao.VariantInfo> variantInfos) {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            })
+*/
             Single<List<String>> folder = db.categoryDao().getCategoryPath(categoryId);
             AtomicReference<String> folderStr = new AtomicReference<>(null);
+
             // TODO: #90 implement sorting
-            return db.imageDao().getImagesInCategory(categoryId)
+//            return db.imageDao().getImagesInCategory(categoryId)
+            return db.variantDao().getVariantsWithImageInCategory(categoryId)
                     .subscribeOn(ioScheduler)
                     .observeOn(uiScheduler)
                     .flattenAsFlowable(s -> s)
                     .zipWith(Flowable.range(0, Integer.MAX_VALUE),
-                            (item, counter) -> new PositionedItem<Image>(counter, item))
+                            (item, counter) -> new PositionedItem<VariantWithImage>(counter, item))
 
                     .concatWith(
                             mRestImageRepo.getImages(a, categoryId)
@@ -177,30 +202,53 @@ public class ImageRepository implements Observer<Account> {
                                         for (ImageInfo.CategoryID c : info.categories) {
                                             join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));
                                         }
-                                        db.imageCategoryMapDao().insert(join);                                        synchronized (folderStr) {
+                                        synchronized (variantList) {
+                                            if (variantList.get() == null) {
+                                                variantList.set(new HashMap<>());
+                                                List<ImageVariantDao.VariantInfo> ab = variants.blockingGet();
+                                                for(ImageVariantDao.VariantInfo item :ab) {
+                                                    List<ImageVariantDao.VariantInfo> varsForImage = variantList.get().get(item.imageId);
+                                                    if(varsForImage == null){
+                                                        varsForImage = new ArrayList<>(5);
+                                                        variantList.get().put(item.imageId, varsForImage);
+                                                    }
+                                                    varsForImage.add(item);
+                                                }
+                                            }
+                                        }
+
+                                        db.imageCategoryMapDao().insert(join);
+                                        synchronized (folderStr) {
                                             if (folderStr.get() == null) {
                                                 folderStr.set(StringUtils.join(folder.blockingGet(), File.separator));
                                             }
                                         }
-
-                                        List<ImageVariant> all = db.variantDao().variantsForImage(i.id, d.url).blockingGet();
+                                        VariantWithImage existingVariant = null;
                                         Map<String, String> addHeaders = null;
-                                        if (all.size() == 1) {
-                                            addHeaders = new HashMap<>();
-                                            addHeaders.put("If-Modified-Since", all.get(0).lastModified);
-                                            Log.i("ImageRepository.URLa", d.url + " Last-Modified = " + all.get(0).lastModified);
-                                        } else if (all.size() > 1) {
-                                            throw new RuntimeException("Invalid Cache State: " + all.size() + " variants for URL " + i.elementUrl);
-                                        } else {
-                                            Log.i("ImageRepository.URLa", d.url + " Last-Modified = n/a (not yet in DB)");
-
+                                        if(variantList.get() != null) {
+                                            List<ImageVariantDao.VariantInfo> all = variantList.get().get(i.id);
+                                            if (all != null) {
+                                                for (ImageVariantDao.VariantInfo inf : all) {
+                                                    if (inf.url.equals(d.url)) {
+                                                        existingVariant = db.variantDao().getVariantsWithImage(inf.imageId).get(0);
+                                                        File f = new File(inf.storageLocation);
+                                                        if (f.exists()) {
+                                                            // redownload if - for whatever reason - the cached file doesn't exist anymore
+                                                            addHeaders = new HashMap<>();
+                                                            addHeaders.put("If-Modified-Since", all.get(0).lastModified);
+                                                        }
+                                                        break;
+                                                    }
+                                                }
+                                            }
                                         }
 
-                                        downloadURL(d.url, folderStr.get(), i.file, i.id, addHeaders, db, a).subscribe(new DisposableObserver<String>() {
+                                        Observable<String> dnl = downloadURL(d.url, folderStr.get(), i.file, i.id, addHeaders, db, a);
+/*                                        dnl.subscribe(new DisposableObserver<String>() {
                                             @Override
                                             public void onNext(String s) {
+                                                /* TODO: #222
                                                 boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
-                                                // TODO: insert variant
                                                 Log.i("ImageRepository", "downloaded " + s);
                                                 if (expose) {
                                                     // add file to mediastore
@@ -217,6 +265,7 @@ public class ImageRepository implements Observer<Account> {
 
                                                     resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                                                 }
+                                                * /
                                             }
 
                                             @Override
@@ -228,12 +277,22 @@ public class ImageRepository implements Observer<Account> {
                                             public void onComplete() {
                                             }
                                         });
-
-
+*/
                                         // TODO: delete images in database after they have been deleted on the server
                                         // TODO: move image cache files if parent album was renamed
-                                        return new PositionedItem<>(counter, i);
+                                        String location = dnl.blockingFirst(null);
+
+                                        if(location != null) {
+                                            VariantWithImage vwi = new VariantWithImage();
+                                            vwi.image = i;
+                                            vwi.variant = new ImageVariant(i.id, i.width, i.height, location, null, d.url);
+                                            return new PositionedItem<>(counter, vwi);
+                                        }else{
+                                            return new PositionedItem<>(counter, existingVariant);
+                                        }
+
                                     })
+// TODO remove                                    .filter(x -> x.getPosition() >= 0)
                                     .subscribeOn(ioScheduler)
                                     .observeOn(uiScheduler)
                     )
@@ -242,31 +301,33 @@ public class ImageRepository implements Observer<Account> {
     }
 
 
-    private Observable<String> downloadURL(String url, String folder, String fileName, int imageId, @Nullable Map<String, String> addHeaders, CacheDatabase db, Account a){
+    private Observable<String> downloadURL(String url, String folder, String fileName, int imageId, @Nullable Map<String, String> addHeaders, CacheDatabase db, Account account){
         if(db == null){
             return Observable.empty();
         }else {
 
-            org.piwigo.io.DownloadService downloadService = mWebServiceFactory.downloaderForAccount(a, addHeaders);
+            org.piwigo.io.DownloadService downloadService = mWebServiceFactory.downloaderForAccount(account, addHeaders);
 
             Observable<String> result = downloadService.downloadFileAtUrl(url)
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())
                     .flatMap(response -> {
                         try {
-                            boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
+//TODO: #222                            boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
 
                             String last_mod = response.headers().get("Last-Modified");
                             Log.i("ImageRepository.URLa", response.code() + " " + url + " Last-Modified = " + last_mod);
                             if (response.code() == 200) {
                                 File root;
+/* TODO: #222
                                 if (expose) {
                                     root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Piwigo");
                                 } else {
+*/
                                     root = mContext.getExternalFilesDir(null);
-                                }
+// TODO: #222                                }
 
-                                String subdir = a.name
+                                String subdir = account.name
                                         + File.separator + folder;
                                 String directory = root + File.separator + subdir;
                                 String fullPath = directory

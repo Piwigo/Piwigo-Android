@@ -18,11 +18,8 @@
  */
 package org.piwigo.ui.settings;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import org.piwigo.PiwigoApplication;
 import org.piwigo.R;
@@ -31,12 +28,9 @@ import org.piwigo.io.PreferencesRepository;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
-import androidx.preference.SwitchPreferenceCompat;
 
 public class SettingsActivity extends AppCompatActivity {
     @Override
@@ -62,7 +56,7 @@ public class SettingsActivity extends AppCompatActivity {
         private ListPreference mPreferenceThumbnailSize;
         private SeekBarPreference mPreferencePhotosPerRow;
         private ListPreference mPreferenceDarkTheme;
-        private SwitchPreferenceCompat mPreferenceExposePhotos;
+// TODO: #222 private SwitchPreferenceCompat mPreferenceExposePhotos;
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -73,7 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
             mPreferencePhotosPerRow = findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
             mPreferenceThumbnailSize = findPreference(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE);
             mPreferenceDarkTheme = findPreference(PreferencesRepository.KEY_PREF_COLOR_PALETTE);
-            mPreferenceExposePhotos = findPreference(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
+// TODO: #222             mPreferenceExposePhotos = findPreference(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
 
             mPreferencePhotosPerRow.setOnPreferenceChangeListener((preference, value) -> true);
 
@@ -91,7 +85,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                 return true;
             }));
-
+/* TODO: #222
             mPreferenceExposePhotos.setOnPreferenceChangeListener((preference, value) -> {
                 boolean set = Boolean.parseBoolean(value.toString());
                 mPreferenceExposePhotos.setSummary(getString(set ? R.string.settings_expose_to_device_summary_pos :R.string.settings_expose_to_device_summary_neg));
@@ -112,6 +106,7 @@ public class SettingsActivity extends AppCompatActivity {
                 }
                 return true;
             });
+ */
         }
     }
 

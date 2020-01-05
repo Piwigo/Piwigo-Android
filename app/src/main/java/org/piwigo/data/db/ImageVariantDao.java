@@ -22,10 +22,13 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 
 import org.piwigo.data.model.ImageVariant;
+import org.piwigo.data.model.VariantWithImage;
 
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Single;
 
@@ -38,4 +41,21 @@ public abstract class ImageVariantDao {
     @Query("SELECT * FROM ImageVariant WHERE imageId = :imageId AND url = :url")
     public abstract Single<List<ImageVariant>> variantsForImage(Integer imageId, String url);
 
+    @Query("SELECT ImageVariant.imageId imageId, imageVariant.url url, ImageVariant.lastModified lastModified, imageVariant.storageLocation storageLocation FROM ImageVariant INNER JOIN ImageCategoryMap ON ImageCategoryMap.imageId = ImageVariant.imageId WHERE categoryId = :categoryId")
+    public abstract Single<List<VariantInfo>> variantsInCategory(Integer categoryId);
+
+    @Transaction
+    @Query("SELECT * FROM ImageVariant WHERE imageId = :imageId")
+    public abstract List<VariantWithImage> getVariantsWithImage(Integer imageId);
+
+    @Transaction
+    @Query("SELECT * FROM ImageVariant INNER JOIN ImageCategoryMap ON ImageCategoryMap.imageId = ImageVariant.imageId WHERE categoryId = :categoryId")
+    public abstract Single<List<VariantWithImage>> getVariantsWithImageInCategory(Integer categoryId);
+
+    public class VariantInfo{
+        public int imageId;
+        public String url;
+        public String lastModified;
+        public String storageLocation;
+    }
 }

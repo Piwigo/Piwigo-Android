@@ -18,10 +18,12 @@
 
 package org.piwigo.data.model;
 
+import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+import androidx.room.Relation;
 
 import java.io.Serializable;
 
@@ -60,3 +62,4 @@ public class ImageVariant implements Serializable {
     public String lastModified;
     public String url;
 }
+

@@ -24,7 +24,7 @@
             android:cropToPadding="false"
             android:onClick="@{viewModel::onClickDo}"
             android:scaleType="centerCrop"
-            android:src="@{viewModel.url}"
+            android:src="@{viewModel.image.variant.url}"
             app:heightRatio="@{1}" />
 
     </androidx.cardview.widget.CardView>

@@ -37,10 +37,11 @@ import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.data.model.Category;
 import org.piwigo.data.model.Image;
+import org.piwigo.data.model.ImageVariant;
 import org.piwigo.data.model.PositionedItem;
+import org.piwigo.data.model.VariantWithImage;
 import org.piwigo.data.repository.CategoriesRepository;
 import org.piwigo.data.repository.ImageRepository;
-import org.piwigo.helper.DialogHelper;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 import org.reactivestreams.Subscription;
 
@@ -54,10 +55,10 @@ public class AlbumsViewModel extends ViewModel {
 
     public ObservableBoolean isLoading = new ObservableBoolean();
 
-    public ObservableArrayList<Image> images = new ObservableArrayList<>();
+    public ObservableArrayList<VariantWithImage> images = new ObservableArrayList<>();
     public ObservableArrayList<Category> albums = new ObservableArrayList<>();
     public BindingRecyclerViewAdapter.ViewBinder<Category> albumsViewBinder = new CategoryViewBinder();
-    public BindingRecyclerViewAdapter.ViewBinder<Image> photoViewBinder = new ImagesViewBinder();
+    public BindingRecyclerViewAdapter.ViewBinder<VariantWithImage> photoViewBinder = new ImagesViewBinder();
 
     private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
@@ -186,13 +187,14 @@ public class AlbumsViewModel extends ViewModel {
         }
     }
 
-    private class ImageSubscriber extends DisposableObserver<PositionedItem<Image>>{
+    private class ImageSubscriber extends DisposableObserver<PositionedItem<VariantWithImage>>{
         @Override
-        public void onNext(PositionedItem<Image> item) {
+        public void onNext(PositionedItem<VariantWithImage> item) {
             while(images.size() <= item.getPosition()) {
                 images.add(null);
             }
             images.set(item.getPosition(), item.getItem());
+            Log.i("ImageSubscriber", "image in viewModel " + item.getItem().image.name);
         }
 
         @Override
@@ -215,10 +217,10 @@ public class AlbumsViewModel extends ViewModel {
         }
     }
 
-    private class ImagesViewBinder implements BindingRecyclerViewAdapter.ViewBinder<Image> {
+    private class ImagesViewBinder implements BindingRecyclerViewAdapter.ViewBinder<VariantWithImage> {
 
         @Override
-        public int getViewType(Image image) {
+        public int getViewType(VariantWithImage image) {
             return 0;
         }
 
@@ -228,9 +230,9 @@ public class AlbumsViewModel extends ViewModel {
         }
 
         @Override
-        public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, Image image) {
+        public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, VariantWithImage image) {
             // TODO: make configurable to also show the photo name here
-            ImagesItemViewModel viewModel = new ImagesItemViewModel(image, images.indexOf(image), image.name, images);
+            ImagesItemViewModel viewModel = new ImagesItemViewModel(image, images.indexOf(image), images);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
     }

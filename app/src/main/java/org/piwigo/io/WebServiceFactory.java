@@ -43,6 +43,9 @@ public class WebServiceFactory {
     private final Gson gson;
     private final UserManager userManager;
 
+    private RestService lastRestService;
+    private Account lastAccount;
+
     public WebServiceFactory(HttpLoggingInterceptor loggingInterceptor, Gson gson, UserManager userManager) {
         this.loggingInterceptor = loggingInterceptor;
         this.gson = gson;
@@ -56,11 +59,16 @@ public class WebServiceFactory {
         return retrofit.create(RestService.class);
     }
 
-    public RestService createForAccount(Account account) {
-        String cookie = userManager.getCookie(account);
-        OkHttpClient client = buildOkHttpClient(cookie, true, null);
-        Retrofit retrofit = buildRetrofit(client, userManager.getSiteUrl(account));
-        return retrofit.create(RestService.class);
+    public synchronized RestService createForAccount(Account account) {
+        if(account != null) {
+            String cookie = userManager.getCookie(account);
+            OkHttpClient client = buildOkHttpClient(cookie, true, null);
+            Retrofit retrofit = buildRetrofit(client, userManager.getSiteUrl(account));
+            lastRestService = retrofit.create(RestService.class);
+            lastAccount = account;
+        }
+
+        return lastRestService;
     }
 
     private OkHttpClient buildOkHttpClient(@Nullable String cookie, boolean queryJson, @Nullable Map<String, String> addHeaders) {

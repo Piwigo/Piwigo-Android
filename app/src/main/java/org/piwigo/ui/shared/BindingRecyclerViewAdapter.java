@@ -115,6 +115,14 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
 
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            T o = oldItems.get(oldItemPosition);
+            T n = newItems.get(newItemPosition);
+            if(o == n){
+                return true;
+            }
+            if (o == null || n == null){
+                return false;
+            }
             return oldItems.get(oldItemPosition).equals(newItems.get(newItemPosition));
         }
     }

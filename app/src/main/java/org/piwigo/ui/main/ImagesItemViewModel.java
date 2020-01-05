@@ -23,6 +23,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import org.piwigo.data.model.Image;
+import org.piwigo.data.model.ImageVariant;
+import org.piwigo.data.model.VariantWithImage;
 import org.piwigo.ui.photoviewer.PhotoViewerDialogFragment;
 
 import java.util.ArrayList;
@@ -34,27 +36,30 @@ import androidx.lifecycle.ViewModel;
 
 public class ImagesItemViewModel extends ViewModel {
 
-    private final Image image;
+    private final VariantWithImage image;
     private final int imageId;
-    private final String title;
+//    private final String title;
 
-    private final ArrayList<Image> images;
+    private final ArrayList<VariantWithImage> images;
 
-    public ImagesItemViewModel(Image img, int imageId, String title, ArrayList<Image> images) {
+    public ImagesItemViewModel(VariantWithImage img, int imageId, ArrayList<VariantWithImage> images) {
         // TODO: images should be removed, it is just there to pass it to the PhotoViewerDialogFragment
         // for this we should better refer to the parent album
         this.image = img;
         this.imageId = imageId;
-        this.title = title;
+//        this.title = title;
         this.images = images;
     }
 
+    public VariantWithImage getImage(){
+        return image;
+    }
     public String getUrl() {
-        return image.elementUrl;
+        return image.variant.storageLocation;
     }
 
     public String getTitle() {
-        return title;
+        return image.image.description;
     }
 
     public int getImageId()
