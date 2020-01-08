@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.InputType;
@@ -68,6 +69,7 @@ import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.settings.SettingsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -91,6 +93,7 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
+import rx.Subscriber;
 
 public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private static final String TAG = MainActivity.class.getName();
@@ -106,6 +109,8 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Inject
     UserRepository userRepository;
 
+    private final Handler handler = new Handler();
+
     private MainViewModel viewModel;
 
     private Account currentAccount = null;
@@ -117,6 +122,15 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private ActionBarDrawerToggle mDrawerToggle;
     private Observable.OnPropertyChangedCallback mDrawerCallBack;
     private ActivityMainBinding mBinding;
+
+    private boolean checkLoginRequired() {
+       if (!userManager.hasAccounts()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            return true;
+       }
+       return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +168,11 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
 
         snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
 
+        if (checkLoginRequired()) {
+            finish();
+            return;
+        }
+
         if (!NetworkHelper.INSTANCE.hasInternet(this)) {
             EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
         }
@@ -188,7 +207,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                     @Override
                     public void onNext(LoginResponse loginResponse) {
                         Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
-                        // TODO: it is crazy to have this code here AND in LauncherActivity
                         userManager.setCookie(account, loginResponse.pwgId);
                         userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
                         userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
