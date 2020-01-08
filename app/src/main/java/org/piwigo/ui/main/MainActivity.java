@@ -243,7 +243,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
 
     @Override
     public void onBackPressed() {
-        if (mDrawerToggle.isDrawerIndicatorEnabled()) {
+        if (getCurrentCategoryId() != 0 && mDrawerToggle.isDrawerIndicatorEnabled()) {
             MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
             viewModel.drawerState.set(false);
         } else {
