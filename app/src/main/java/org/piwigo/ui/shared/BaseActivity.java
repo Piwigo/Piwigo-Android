@@ -27,7 +27,6 @@ import javax.inject.Inject;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    @Inject protected Navigator navigator;
     @Inject protected UserManager userManager;
     @Inject protected PreferencesRepository preferencesRepository;
 }

@@ -19,18 +19,25 @@
 package org.piwigo.ui.launcher;
 
 import android.accounts.Account;
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import androidx.databinding.DataBindingUtil;
+
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLauncherBinding;
 import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.repository.UserRepository;
+import org.piwigo.ui.login.LoginActivity;
+import org.piwigo.ui.main.MainActivity;
 import org.piwigo.ui.shared.BaseActivity;
-import org.piwigo.ui.shared.Navigator;
 
 import javax.inject.Inject;
 
@@ -38,6 +45,8 @@ import dagger.android.AndroidInjection;
 import rx.Subscriber;
 
 public class LauncherActivity extends BaseActivity {
+
+    public static final int REQUEST_CODE_LOGIN = 1;
 
     private static final String TAG = LauncherActivity.class.getName();
     private final Handler handler = new Handler();
@@ -82,25 +91,32 @@ public class LauncherActivity extends BaseActivity {
         }
     }
 
-    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Navigator.REQUEST_CODE_LOGIN && resultCode == RESULT_OK) {
-            handler.postDelayed(this::startMain, 1000);
-        } else {
-            finish();
-        }
-    }
-
     private void startMain() {
-        navigator.startMain(this);
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
         finish();
     }
 
     private void startLogin() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            navigator.startLogin(this, binding.logo, getString(R.string.logo_transition_name));
+            startLoginActivity(this, binding.logo, getString(R.string.logo_transition_name));
         } else {
-            navigator.startLogin(this);
+            startLoginActivity(this);
         }
+        // do not call finish here as the animation is using elements
     }
+
+    private void startLoginActivity(Activity activity) {
+        Intent intent = new Intent(activity, LoginActivity.class);
+        activity.startActivityForResult(intent, REQUEST_CODE_LOGIN);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void startLoginActivity(Activity activity, View sharedElement, String sharedElementName) {
+        Intent intent = new Intent(activity, LoginActivity.class);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(activity, sharedElement, sharedElementName);
+        activity.startActivityForResult(intent, REQUEST_CODE_LOGIN, options.toBundle());
+    }
+
 }
