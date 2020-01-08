@@ -95,6 +95,8 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 import rx.Subscriber;
 
+import static org.piwigo.ui.main.MainViewModel.STAT_STATUS_FETCHED;
+
 public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private static final String TAG = MainActivity.class.getName();
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 184;
@@ -183,50 +185,47 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         setFABListener();
         refreshFAB(0);
 
+        viewModel.loginStatus.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                Log.d("MainActivity", "login status changed to " + viewModel.loginStatus.get());
+                if (viewModel.loginStatus.get() == STAT_STATUS_FETCHED) {
+
+                    Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
+                    Log.d("MainActivity", "fragment " + f.toString());
+                    if (f instanceof AlbumsFragment) {
+                        Integer cat = ((AlbumsFragment) f).getViewModel().getCategory();
+                        Log.d("MainActivity", "category " + cat);
+                        if (cat != null) {
+                            ((AlbumsFragment) f).getViewModel().loadAlbums(cat);
+                        } else {
+                            ((AlbumsFragment) f).getViewModel().loadAlbums(0);
+                        }
+                        ((AlbumsFragment) f).getViewModel().onRefresh();
+
+                    }
+                }
+            }
+        });
+
         final Observer<Account> accountObserver = account -> {
+            Log.d("MainActivity", "accounts changed " + currentAccount.toString());
             // reload the albums on account changes
             if (account != null && !account.equals(currentAccount)) {
                 currentAccount = account;
-                viewModel.username.set(userManager.getUsername(account));
-                viewModel.url.set(userManager.getSiteUrl(account));
-                viewModel.displayFab.set(!userManager.isGuest(currentAccount));
-                /* Login to the new site after account changes.
-                 * It seems quite unclean to do that here -> TODO: FIXME*/
-                rx.Observable<LoginResponse> a = userRepository.login(account);
-                a.subscribe(new rx.Observer<LoginResponse>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, "Login failed: " + e.getMessage());
-                        // TODO: notify loginfailure
-                    }
-
-                    @Override
-                    public void onNext(LoginResponse loginResponse) {
-                        Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
-                        userManager.setCookie(account, loginResponse.pwgId);
-                        userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
-                        userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
-                    }
-                });
-                initStartFragment(viewModel);
+                viewModel.changeAccount(account);
             }
             if (account == null) {
                 viewModel.username.set("");
                 viewModel.url.set("");
             }
         };
+        initStartFragment();
         userManager.getActiveAccount().observe(this, accountObserver);
-
-        if (savedInstanceState == null) {
-            initStartFragment(viewModel);
-        }
     }
 
-    private void initStartFragment(MainViewModel viewModel) {
+    private void initStartFragment() {
+        Log.d("mainActivity", "initStartFragment");
         Bundle bndl = new Bundle();
         // TODO: make configurable which is the root album (See #44 option to select Default Album)
         bndl.putInt("Category", 0);
@@ -488,7 +487,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         catId = getCurrentCategoryId();
         intent = new Intent(this, AlbumService.class);
         intent.putExtra(AlbumService.KEY_CATEGORY_NAME, catName);
-        intent.putExtra(AlbumService.KEY_ACCOUNT, userManager.getActiveAccount().getValue());
         intent.putExtra(AlbumService.KEY_PARENT_CATEGORY_ID, catId);
 
         startService(intent);

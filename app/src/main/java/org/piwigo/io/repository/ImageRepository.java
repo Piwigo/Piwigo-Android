@@ -41,8 +41,8 @@ public class ImageRepository extends BaseRepository {
         super(restServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
-    public Observable<List<ImageInfo>> getImages(Account account, @Nullable Integer categoryId) {
-        RestService restService = restServiceFactory.createForAccount(account);
+    public Observable<List<ImageInfo>> getImages(@Nullable Integer categoryId) {
+        RestService restService = restServiceFactory.create();
 
         return restService
                 .getImages(categoryId)

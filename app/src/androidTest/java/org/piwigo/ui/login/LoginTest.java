@@ -32,8 +32,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 public class LoginTest {
 
     @Rule
-    public ActivityScenarioRule<LauncherActivity> activityScenarioRule =
-            new ActivityScenarioRule<LauncherActivity>(LauncherActivity.class);
+    public ActivityScenarioRule<LoginActivity> activityScenarioRule =
+            new ActivityScenarioRule<LoginActivity>(LoginActivity.class);
 
     @Test
     public void loginTwoAccounts() throws InterruptedException {

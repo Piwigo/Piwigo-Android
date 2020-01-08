@@ -21,6 +21,7 @@ package org.piwigo.ui.main;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,10 +117,12 @@ public class AlbumsFragment extends BaseFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        Log.d("AlbumsFragment", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
         AlbumsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AlbumsViewModel.class);
         binding.setViewModel(viewModel);
-        binding.getViewModel().loadAlbums(categoryID);
+        if (userManager.sessionCookie() != null)
+            binding.getViewModel().loadAlbums(categoryID);
     }
 
     private int calculateColumnCount() {

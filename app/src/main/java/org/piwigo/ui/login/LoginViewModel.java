@@ -40,14 +40,13 @@ import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.URLHelper;
 import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.model.StatusResponse;
 import org.piwigo.io.repository.UserRepository;
 
 import java.util.regex.Pattern;
 
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class LoginViewModel extends ViewModel {
 
@@ -76,7 +75,6 @@ public class LoginViewModel extends ViewModel {
     private Account account = null;
 
     boolean unitTesting = false;
-    private String testedUrl = "";
 
     LoginViewModel(UserManager userManager, UserRepository userRepository, Resources resources) {
         this.userRepository = userRepository;
@@ -105,6 +103,8 @@ public class LoginViewModel extends ViewModel {
         boolean siteValid = isSiteValid();
         boolean loginValid = isGuest() || isLoginValid();
 
+        url.set(userManager.validateUrl(url.get()));
+
         if (!siteValid) {
             return;
         }
@@ -113,23 +113,20 @@ public class LoginViewModel extends ViewModel {
         }
 
         //Trying to log in with "HTTPS" protocol first..
-        testConnection(loginValid, URLHelper.INSTANCE.getUrlWithMethod(url.get(), "https"));
+        testConnection(loginValid, url.get());
     }
 
     void testConnection(boolean loginValid, String url) {
-        testedUrl = url;
-        try {
+         try {
             if (isGuest()) {
                 subscription = userRepository.status(url)
-                        .compose(applySchedulers())
-                        .subscribe(new LoginSubscriber());
+                        .subscribe(new StatusSubscriber());
             } else if (loginValid) {
                 subscription = userRepository.login(url, username.get(), password.get())
-                        .compose(applySchedulers())
                         .subscribe(new LoginSubscriber());
             }
         } catch (IllegalArgumentException illArgE) {
-            Log.e(TAG, illArgE.getMessage(), illArgE);
+            Log.e(TAG, illArgE.getMessage() + illArgE);
             loginError.setValue(illArgE);
         }
     }
@@ -219,32 +216,48 @@ public class LoginViewModel extends ViewModel {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(Throwable e)  {
             Log.e(TAG, e.getMessage());
+            e.printStackTrace();
             loginError.setValue(e);
-
-            /**
-             *  HTTPS login did fail - retrying with HTTPS
-             *  Checking for 'https' in string to avoid infinite loop..
-             */
-            if (testedUrl != null && testedUrl.contains("https") && !unitTesting)
-                testConnection(true, URLHelper.INSTANCE.getUrlWithMethod(url.get(), "http"));
-        }
+         }
 
         @Override
         public void onNext(LoginResponse loginResponse) {
+            Log.d(TAG, "login was success " + loginResponse.url);
+            if (account != null) {
+                userManager.updateAccount(account, url.get(), username.get(), password.get());
+            }
+            loginSuccess.setValue(loginResponse);
+        }
+    }
+
+    private class StatusSubscriber extends Subscriber<StatusResponse> {
+
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, e.getMessage());
+            loginError.setValue(e);
+        }
+
+        @Override
+        public void onNext(StatusResponse response) {
             try {
                 if (account != null) {
                     userManager.updateAccount(account, url.get(), username.get(), password.get());
                 }
+                // fake login response
+                LoginResponse loginResponse = new LoginResponse();
+                loginResponse.url = url.get();
+                loginResponse.username = username.get();
+                loginResponse.password = password.get();
                 loginSuccess.setValue(loginResponse);
             } catch (IllegalArgumentException e) {
                 loginError.setValue(e);
             }
         }
-    }
-    <T> rx.Observable.Transformer<T, T> applySchedulers() {
-        return observable -> observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
     }
 }

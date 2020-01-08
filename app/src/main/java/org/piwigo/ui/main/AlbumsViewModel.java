@@ -19,7 +19,6 @@
 
 package org.piwigo.ui.main;
 
-import android.accounts.Account;
 import android.content.res.Resources;
 import android.util.Log;
 
@@ -90,7 +89,6 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     private void forcedLoadAlbums(){
-        Account account = userManager.getActiveAccount().getValue();
         if (albumsSubscription != null) {
             // cleanup, just in case
             albumsSubscription.unsubscribe();
@@ -101,13 +99,11 @@ public class AlbumsViewModel extends ViewModel {
             photosSubscription.unsubscribe();
             photosSubscription = null;
         }
-        if (account != null) {
-            albumsSubscription = categoriesRepository.getCategories(account, category,
-                    preferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
-                    .subscribe(new CategoriesSubscriber());
-            photosSubscription = imageRepository.getImages(account, category)
-                    .subscribe(new ImagesSubscriber());
-        }
+        albumsSubscription = categoriesRepository.getCategories(category,
+                preferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
+                .subscribe(new CategoriesSubscriber());
+        photosSubscription = imageRepository.getImages(category)
+                .subscribe(new ImagesSubscriber());
     }
 
     void loadAlbums(Integer categoryId) {

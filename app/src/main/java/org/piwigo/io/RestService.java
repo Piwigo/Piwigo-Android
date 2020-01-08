@@ -23,6 +23,7 @@ import org.piwigo.io.model.CategoryListResponse;
 import org.piwigo.io.model.GetImageInfoResponse;
 import org.piwigo.io.model.ImageListResponse;
 import org.piwigo.io.model.ImageUploadResponse;
+import org.piwigo.io.model.LoginResponse;
 import org.piwigo.io.model.StatusResponse;
 import org.piwigo.io.model.SuccessResponse;
 
@@ -42,14 +43,12 @@ import rx.Observable;
 
 public interface RestService {
 
-    @POST("ws.php?method=pwg.session.login") @FormUrlEncoded Observable<Response<SuccessResponse>> login(
+    @POST("ws.php?method=pwg.session.login") @FormUrlEncoded Observable<LoginResponse> login(
             @Field("username") String username,
             @Field("password") String password
     );
 
     @GET("ws.php?method=pwg.session.getStatus") Observable<StatusResponse> getStatus();
-
-    @GET("ws.php?method=pwg.session.getStatus") Observable<StatusResponse> getStatus(@Header("Cookie") String pwgIdCookie);
 
     @GET("ws.php?method=pwg.session.logout") Observable<SuccessResponse> logout();
 

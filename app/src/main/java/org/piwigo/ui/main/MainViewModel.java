@@ -35,6 +35,8 @@ import rx.schedulers.Schedulers;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
+import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.model.StatusResponse;
 import org.piwigo.io.model.SuccessResponse;
 import org.piwigo.io.repository.UserRepository;
 
@@ -44,6 +46,7 @@ public class MainViewModel extends ViewModel {
     public static int STAT_LOGGED_IN = 1;
     public static int STAT_LOGGED_OFF = 2;
     public static int STAT_AUTH_FAILED = 3;
+    public static int STAT_STATUS_FETCHED = 4;
 
     private static final String TAG = MainViewModel.class.getName();
 
@@ -77,12 +80,21 @@ public class MainViewModel extends ViewModel {
     MainViewModel(UserManager userManager, UserRepository userRepository) {
         Account account = userManager.getActiveAccount().getValue();
         this.userManager = userManager;
-        if (account != null) {
-            username.set(userManager.getUsername(account));
-            url.set(userManager.getSiteUrl(account));
-            displayFab.set(!userManager.isGuest(account));
-        }
         mUserRepository = userRepository;
+
+        loginStatus.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                Log.d("Mainviewmodel", "login status changed to " + loginStatus.get());
+                if (loginStatus.get() == STAT_LOGGED_IN) {
+                    mUserRepository.status().compose(applySchedulers()).subscribe(new StatusSubscriber());
+                }
+            }
+        });
+
+        if (account != null) {
+            changeAccount(account);
+        }
 
         navigationItemId.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
 
@@ -92,6 +104,57 @@ public class MainViewModel extends ViewModel {
                 drawerState.set(false);
             }
         });
+    }
+
+    public void changeAccount(Account account) {
+        username.set(userManager.getUsername(account));
+        url.set(userManager.getSiteUrl(account));
+        displayFab.set(!userManager.isGuest(account));
+        Log.d("MainViewModel", "login " + username.get() + " on " + url.get());
+        LoginSubscriber loginSubscriber = new LoginSubscriber();
+        if (userManager.isGuest(account)) {
+            // fake login
+            loginSubscriber.onNext(new LoginResponse());
+        } else {
+            mUserRepository.login(account).compose(applySchedulers()).subscribe(loginSubscriber);
+        }
+    }
+
+    private class LoginSubscriber extends Subscriber<LoginResponse> {
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+          // TODO
+            loginStatus.set(STAT_AUTH_FAILED);
+        }
+
+        @Override
+        public void onNext(LoginResponse loginResponse) {
+            Log.d("mainViewModel", "onNext " + userManager.sessionCookie());
+            loginStatus.set(STAT_LOGGED_IN);
+        }
+    }
+
+    private class StatusSubscriber extends Subscriber<StatusResponse> {
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            // TODO
+            loginStatus.set(STAT_AUTH_FAILED);
+        }
+
+        @Override
+        public void onNext(StatusResponse statusResponse) {
+            Log.d("mainViewModel", "status response" + statusResponse.toString());
+            //apiStatus = statusResponse;
+            loginStatus.set(STAT_STATUS_FETCHED);
+        }
     }
 
     LiveData<Integer> getSelectedNavigationItemId() {

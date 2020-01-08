@@ -38,17 +38,6 @@ abstract class BaseRepository {
         this.userManager = userManager;
     }
 
-    String validateUrl(String url) {
-        String result = url;
-        if (!result.endsWith("/")) {
-            result = result + "/";
-        }
-        if (!result.startsWith("http://") && !result.startsWith("https://")) {
-            result = "https://" + result;
-        }
-        return result;
-    }
-
     <T> Observable.Transformer<T, T> applySchedulers() {
         return observable -> observable.subscribeOn(ioScheduler)
                 .observeOn(uiScheduler);

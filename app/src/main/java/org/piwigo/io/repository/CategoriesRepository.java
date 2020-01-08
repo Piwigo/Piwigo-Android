@@ -19,6 +19,7 @@
 package org.piwigo.io.repository;
 
 import android.accounts.Account;
+import android.util.Log;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.NaturalOrderComparator;
@@ -41,8 +42,12 @@ public class CategoriesRepository extends BaseRepository {
         super(restServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
-    public Observable<List<Category>> getCategories(Account account, @Nullable Integer categoryId, String thumbnailSize) {
-        RestService restService = restServiceFactory.createForAccount(account);
+    public Observable<List<Category>> getCategories(@Nullable Integer categoryId, String thumbnailSize) {
+        Log.d("CategoriesRepository", "getCategories");
+        if (userManager.sessionCookie() == null) {
+            throw new ArithmeticException("no cookie");
+        }
+        RestService restService = restServiceFactory.create();
         /* TODO: make thumbnail Size configurable, also check for ImageRepository, whether it can reduce the amount of REST/JSON traffic */
         return restService.getCategories(categoryId, thumbnailSize)
 //                .flatMap(response -> Observable.from(response.result.categories))

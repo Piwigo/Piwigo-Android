@@ -28,6 +28,4 @@ public class LoginResponse {
 
     public String pwgId;
 
-    public StatusResponse statusResponse;
-
 }

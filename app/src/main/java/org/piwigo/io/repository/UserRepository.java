@@ -19,13 +19,13 @@
 package org.piwigo.io.repository;
 
 import android.accounts.Account;
+import android.util.Log;
 
 import org.piwigo.accounts.UserManager;
-import org.piwigo.helper.CookieHelper;
-import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.RestService;
 import org.piwigo.io.RestServiceFactory;
 import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.model.StatusResponse;
 import org.piwigo.io.model.SuccessResponse;
 
 import javax.inject.Inject;
@@ -44,72 +44,40 @@ public class UserRepository extends BaseRepository {
         String url = userManager.getSiteUrl(account);
         String username = userManager.getUsername(account);
         String password = userManager.getPassword(account);
-        Observable<LoginResponse> result = login(url, username, password);
-        return result;
+        return login(url, username, password);
     }
 
     public Observable<LoginResponse> login(String url, String username, String password) {
-        RestService restService = restServiceFactory.createForUrl(validateUrl(url));
+        RestService restService = restServiceFactory.createForUrl(url);
 
         final LoginResponse loginResponse = new LoginResponse();
         loginResponse.url = url;
         loginResponse.username = username;
         loginResponse.password = password;
 
+        Log.d("UserRepository", "login " + username + ":" + password);
         return restService.login(username, password)
-                .compose(applySchedulers())
-                .flatMap(response -> {
-                    if (response.body() != null && response.body().result) {
-                        // TODO: check: should we set the cookie in the UserManager here?
-                        loginResponse.pwgId = CookieHelper.extract("pwg_id", response.headers());
-                        return Observable.just(response.body()).compose(applySchedulers());
-                    }
-                    // TODO:
-//            return Observable.error(new Throwable("Login failed"));
-                    if (response.body() == null) {
-                        return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with null response body"));
-                    }
-                    return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with code " + response.body().err + ": " + response.body().message));
-                })
-                .flatMap(successResponse -> restService.getStatus("pwg_id=" + loginResponse.pwgId).compose(applySchedulers()))
-                .map(statusResponse -> {
-                    loginResponse.statusResponse = statusResponse;
-                    return loginResponse;
-                })
-                ;
+                .compose(applySchedulers()).map(response -> loginResponse);
     }
 
     /* intended only for Login view, otherwise consider status(Account account) */
-    public Observable<LoginResponse> status(String siteUrl) {
-        if(!siteUrl.endsWith("/")){
-            siteUrl = siteUrl + "/";
-        }
+    public Observable<StatusResponse> status(String siteUrl) {
         RestService restService = restServiceFactory.createForUrl(siteUrl);
-
-        return status(restService, siteUrl).compose(applySchedulers());
+        return status(restService).compose(applySchedulers());
     }
 
-    public Observable<LoginResponse> status(Account account) {
-        String siteUrl = validateUrl(userManager.getSiteUrl(account));
-        RestService restService = restServiceFactory.createForAccount(account);
-        return status(restService, siteUrl).compose(applySchedulers());
+    public Observable<StatusResponse> status() {
+        RestService restService = restServiceFactory.create();
+        return status(restService).compose(applySchedulers());
     }
 
-    private Observable<LoginResponse> status(RestService restService, String url) {
-        final LoginResponse loginResponse = new LoginResponse();
-        loginResponse.url = url;
-
+    private Observable<StatusResponse> status(RestService restService) {
         return restService.getStatus()
-                .compose(applySchedulers())
-                .map(statusResponse -> {
-                    loginResponse.statusResponse = statusResponse;
-                    return loginResponse;
-                })
-                ;
+                .compose(applySchedulers());
     }
 
     public Observable<SuccessResponse> logout(Account account) {
-        RestService restService = restServiceFactory.createForUrl(validateUrl(userManager.getSiteUrl(account)));
+        RestService restService = restServiceFactory.createForUrl(userManager.getSiteUrl(account));
         final SuccessResponse successResponse = new SuccessResponse();
 
         return restService.logout()
