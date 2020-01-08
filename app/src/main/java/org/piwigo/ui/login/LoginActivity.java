@@ -145,10 +145,16 @@ public class LoginActivity extends BaseActivity {
         super.finish();
     }
 
+    private void startMainActivity() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
     private void loginSuccess(LoginResponse response) {
         fabProgressCircle.hide();
         if (viewModel.isEditExisting()) {
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            startMainActivity();
             finish();
         } else if (userManager.userExists(response.url, response.username)) {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
@@ -157,7 +163,7 @@ public class LoginActivity extends BaseActivity {
             Account account = userManager.createUser(response.url, response.statusResponse.result.username, response.password, response.pwgId, response.statusResponse.result.pwgToken);
             userManager.setActiveAccount(account);
             setResultIntent(account);
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            startMainActivity();
             finish();
         }
     }
