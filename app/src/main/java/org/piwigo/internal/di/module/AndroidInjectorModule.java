@@ -24,7 +24,6 @@ import org.piwigo.internal.di.scope.PerActivity;
 import org.piwigo.internal.di.scope.PerFragment;
 import org.piwigo.internal.di.scope.PerService;
 import org.piwigo.ui.account.ManageAccountsActivity;
-import org.piwigo.ui.launcher.LauncherActivity;
 import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.login.LoginActivityModule;
 import org.piwigo.ui.main.AlbumsFragment;
@@ -40,8 +39,6 @@ import dagger.android.support.AndroidSupportInjectionModule;
 
 @Module(includes = AndroidSupportInjectionModule.class)
 public abstract class AndroidInjectorModule {
-
-    @PerActivity @ContributesAndroidInjector() abstract LauncherActivity launcherActivity();
 
     @PerActivity @ContributesAndroidInjector(modules = LoginActivityModule.class) abstract LoginActivity loginActivity();
 

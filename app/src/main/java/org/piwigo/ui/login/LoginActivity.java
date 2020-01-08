@@ -45,6 +45,7 @@ import org.piwigo.databinding.ActivityLoginBinding;
 import org.piwigo.helper.DialogHelper;
 import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.model.LoginResponse;
+import org.piwigo.ui.main.MainActivity;
 import org.piwigo.ui.shared.BaseActivity;
 
 import java.net.URI;
@@ -140,12 +141,20 @@ public class LoginActivity extends BaseActivity {
             }
             authenticatorResponse = null;
         }
+
         super.finish();
+    }
+
+    private void startMainActivity() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     private void loginSuccess(LoginResponse response) {
         fabProgressCircle.hide();
         if (viewModel.isEditExisting()) {
+            startMainActivity();
             finish();
         } else if (userManager.userExists(response.url, response.username)) {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
@@ -154,6 +163,7 @@ public class LoginActivity extends BaseActivity {
             Account account = userManager.createUser(response.url, response.statusResponse.result.username, response.password, response.pwgId, response.statusResponse.result.pwgToken);
             userManager.setActiveAccount(account);
             setResultIntent(account);
+            startMainActivity();
             finish();
         }
     }
