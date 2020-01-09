@@ -47,17 +47,6 @@ public class MainViewModel extends ViewModel {
 
     private static final String TAG = MainViewModel.class.getName();
 
-    private MutableLiveData<SuccessResponse> logoutSuccess = new MutableLiveData<>();
-    private MutableLiveData<Throwable> logoutError = new MutableLiveData<>();
-
-    LiveData<SuccessResponse> getLogoutSuccess() {
-        return logoutSuccess;
-    }
-
-    LiveData<Throwable> getLogoutError() {
-        return logoutError;
-    }
-
     public ObservableField<String> title = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
@@ -96,37 +85,6 @@ public class MainViewModel extends ViewModel {
 
     LiveData<Integer> getSelectedNavigationItemId() {
         return selectedNavigationItemId;
-    }
-
-    public void onLogoutClick() {
-        if (userManager.getActiveAccount().getValue() != null) {
-            mUserRepository.logout(userManager.getActiveAccount().getValue())
-                    .compose(applySchedulers())
-                    .subscribe(new MainViewModel.LogoutSubscriber());
-        } else {
-            Throwable e = new Throwable(String.valueOf(R.string.account_empty_message));
-            logoutError.setValue(e);
-        }
-    }
-
-
-    private class LogoutSubscriber extends Subscriber<SuccessResponse> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            Log.e(TAG, e.getMessage());
-            logoutError.setValue(e);
-        }
-
-        @Override
-        public void onNext(SuccessResponse successResponse) {
-            Log.i(TAG, successResponse.toString());
-            logoutSuccess.setValue(successResponse);
-        }
     }
 
     private <T> rx.Observable.Transformer<T, T> applySchedulers() {

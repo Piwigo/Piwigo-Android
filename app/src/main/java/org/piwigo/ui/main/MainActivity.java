@@ -359,9 +359,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
             case R.id.nav_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 break;
-            case R.id.nav_logout:
-                logoutUserClick();
-                break;
 
             default:
                 DialogHelper.INSTANCE.showErrorDialog(R.string.not_implemented_title, R.string.not_implemented_msg, this);
@@ -533,31 +530,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
             }
         }
     }
-
-    private void logoutUserClick() {
-        viewModel.getLogoutSuccess().observe(this, this::logoutSuccess);
-        viewModel.getLogoutError().observe(this, this::logoutError);
-        viewModel.onLogoutClick();
-    }
-
-    private void logoutSuccess(SuccessResponse response) {
-        //TODO: #161 Show more failure details
-        Toast.makeText(getApplicationContext(), R.string.account_logout_successful, Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-    private void logoutError(Throwable throwable) {
-        //TODO: #161 Show more failure details
-        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.account_logout_unsuccessfull), throwable.getMessage()), Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-    }
-
 
     private String getNameFromURI(String item, Uri contentUri) {
         if (item.contains("content:"))
