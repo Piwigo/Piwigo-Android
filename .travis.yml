@@ -28,9 +28,9 @@ env:
     # fix gradle output
     - TERM=dumb
   matrix:
-   - API=21
-   - API=28
-   - API=29
+   - API=21 # Android 5.0
+   - API=26 # Android 8.0
+   - API=29 # Android 10.0
 
 before_install:
   # This section may run on all platforms, and may run for unit tests or for coverage finalization
