@@ -35,10 +35,5 @@
             android:checkable="true"
             android:icon="@drawable/ic_action_privacy"
             android:title="@string/nav_privacy" />
-        <item
-            android:id="@+id/nav_logout"
-            android:checkable="true"
-            android:icon="@drawable/logout_icon"
-            android:title="@string/nav_logout" />
     </group>
 </menu>

@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.InputType;
@@ -68,6 +69,7 @@ import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.settings.SettingsActivity;
 import org.piwigo.ui.shared.BaseActivity;
 
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -107,6 +109,8 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Inject
     RestUserRepository userRepository;
 
+    private final Handler handler = new Handler();
+
     private MainViewModel viewModel;
 
     private Account currentAccount = null;
@@ -118,6 +122,15 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private ActionBarDrawerToggle mDrawerToggle;
     private Observable.OnPropertyChangedCallback mDrawerCallBack;
     private ActivityMainBinding mBinding;
+
+    private boolean checkLoginRequired() {
+       if (!userManager.hasAccounts()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            return true;
+       }
+       return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +167,11 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         viewModel.showingRootAlbum.addOnPropertyChangedCallback(mDrawerCallBack);
 
         snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
+
+        if (checkLoginRequired()) {
+            finish();
+            return;
+        }
 
         if (!NetworkHelper.INSTANCE.hasInternet(this)) {
             EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
@@ -194,7 +212,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                     @Override
                     public void onNext(LoginResponse loginResponse) {
                         Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
-                        // TODO: it is crazy to have this code here AND in LauncherActivity
                         userManager.setCookie(account, loginResponse.pwgId);
                         userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
                         userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
@@ -232,7 +249,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
 
     @Override
     public void onBackPressed() {
-        if (mDrawerToggle.isDrawerIndicatorEnabled()) {
+        if (getCurrentCategoryId() != 0 && mDrawerToggle.isDrawerIndicatorEnabled()) {
             MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
             viewModel.drawerState.set(false);
         } else {
@@ -347,9 +364,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 break;
             case R.id.nav_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-                break;
-            case R.id.nav_logout:
-                logoutUserClick();
                 break;
 
             default:
@@ -521,20 +535,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 startService(intent);
             }
         }
-    }
-
-    private void logoutUserClick() {
-        viewModel.getLogoutSuccess().observe(this, this::logoutSuccess);
-        viewModel.onLogoutClick();
-    }
-
-    private void logoutSuccess(SuccessResponse response) {
-        //TODO: #161 Show more failure details
-        Toast.makeText(getApplicationContext(), R.string.account_logout_successful, Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
     }
 
     private String getNameFromURI(String item, Uri contentUri) {

@@ -49,21 +49,6 @@ public class MainViewModel extends ViewModel {
 
     private static final String TAG = MainViewModel.class.getName();
 
-    private MutableLiveData<SuccessResponse> logoutSuccess = new MutableLiveData<>();
-    private MutableLiveData<Throwable> mError = new MutableLiveData<>();
-
-    LiveData<SuccessResponse> getLogoutSuccess() {
-        return logoutSuccess;
-    }
-
-    LiveData<Throwable> getError() {
-        return mError;
-    }
-
-    public void setError(Throwable th){
-        mError.setValue(th);
-    }
-
     public ObservableField<String> title = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
@@ -104,36 +89,5 @@ public class MainViewModel extends ViewModel {
         return selectedNavigationItemId;
     }
 
-    public void onLogoutClick() {
-        if (userManager.getActiveAccount().getValue() != null) {
-            mUserRepository.logout(userManager.getActiveAccount().getValue())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new MainViewModel.LogoutSubscriber());
-        } else {
-            Throwable e = new Throwable(String.valueOf(R.string.account_empty_message));
-            mError.setValue(e);
-        }
-    }
-
-
-    private class LogoutSubscriber extends DisposableObserver<SuccessResponse> {
-        @Override
-        public void onComplete() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            Log.e(TAG, e.getMessage());
-            mError.setValue(e);
-        }
-
-        @Override
-        public void onNext(SuccessResponse successResponse) {
-            Log.i(TAG, successResponse.toString());
-            logoutSuccess.setValue(successResponse);
-        }
-    }
 
 }
