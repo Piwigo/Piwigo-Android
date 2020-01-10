@@ -214,7 +214,9 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                         Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
                         userManager.setCookie(account, loginResponse.pwgId);
                         userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
-                        userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
+                        if(loginResponse.statusResponse.result.uploadFormChunkSize != null) {
+                            userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
+                        }
                     }
                 });
                 initStartFragment(viewModel);

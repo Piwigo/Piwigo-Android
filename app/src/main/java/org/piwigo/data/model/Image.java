@@ -48,7 +48,7 @@ public class Image implements Serializable {
 
     public String elementUrl;
 
-    public Image(String elementUrl, int width, int height) {
+    public Image(String elementUrl) {
         this.elementUrl = elementUrl;
     }
 

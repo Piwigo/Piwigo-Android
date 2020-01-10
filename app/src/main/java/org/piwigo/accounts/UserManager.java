@@ -189,7 +189,11 @@ public class UserManager {
 
     public int getChunkSize(Account account)
     {
-        return Integer.parseInt(accountManager.getUserData(account, KEY_CHUNK_SIZE));
+        String junksize = accountManager.getUserData(account, KEY_CHUNK_SIZE);
+        if(junksize == null){
+            return 128;
+        }
+        return Integer.parseInt(junksize);
     }
 
     public boolean isGuest(Account account) {

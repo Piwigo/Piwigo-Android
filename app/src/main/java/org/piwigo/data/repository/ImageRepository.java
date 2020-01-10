@@ -187,7 +187,7 @@ public class ImageRepository implements Observer<Account> {
                                                 d = info.derivatives.square;
                                         }
 
-                                        Image i = new Image(info.elementUrl, d.width, d.height);
+                                        Image i = new Image(info.elementUrl);
                                         i.name = info.name;
                                         i.file = info.file;
                                         i.id = info.id;
