@@ -32,7 +32,6 @@
     <string name="nav_albums">Album</string>
     <string name="nav_upload">Last opp</string>
     <string name="nav_settings">Innstillinger</string>
-    <string name="nav_logout">Logg ut</string>
     <string name="nav_add_account">Legg til konto</string>
     <string name="nav_delete_account">Fjern konto</string>
     <string name="nav_edit_account">Endre konto</string>
@@ -61,8 +60,6 @@
     <string name="account_image_description">Snarvei-ikon for galleriet (favicon)</string>
     <string name="account_not_selected">Velg en konto som skal slettes først</string>
     <string name="account_empty_message">Tom konto!</string>
-    <string name="account_logout_successful">Utlogging var vellykket!</string>
-    <string name="account_logout_unsuccessfull">Utlogging feilet: %1$s</string>
     <!-- About -->
     <string name="about_text_version">versjon <b>%1$s</b></string>
     <string name="about_text_intro"> - få tilgang til Piwigo-gallerier fra Android-enheten din.</string>
