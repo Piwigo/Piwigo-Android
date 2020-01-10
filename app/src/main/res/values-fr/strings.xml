@@ -32,7 +32,6 @@
     <string name="nav_albums">Albums</string>
     <string name="nav_upload">Téléverser</string>
     <string name="nav_settings">Préférences</string>
-    <string name="nav_logout">Déconnexion</string>
     <string name="nav_add_account">Ajoutez un compte</string>
     <string name="nav_delete_account">Supprimer le compte</string>
     <string name="nav_edit_account">Modifier le compte</string>
@@ -61,8 +60,6 @@
     <string name="account_image_description">Icône de raccourci de la galerie (favicon)</string>
     <string name="account_not_selected">Sélectionnez d’abord un compte pour la suppression</string>
     <string name="account_empty_message">Compte vide !</string>
-    <string name="account_logout_successful">Déconnexion réussie !</string>
-    <string name="account_logout_unsuccessfull">Échec de la déconnexion: %1$s</string>
     <!-- About -->
     <string name="about_text_version">version <b>%1$s</b></string>
     <string name="about_text_intro"> - accédez aux galeries Piwigo depuis votre téléphone Android.</string>
