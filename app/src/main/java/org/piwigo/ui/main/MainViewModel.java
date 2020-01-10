@@ -49,6 +49,8 @@ public class MainViewModel extends ViewModel {
 
     private static final String TAG = MainViewModel.class.getName();
 
+    private MutableLiveData<Throwable> mError = new MutableLiveData<>();
+
     public ObservableField<String> title = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
@@ -89,5 +91,12 @@ public class MainViewModel extends ViewModel {
         return selectedNavigationItemId;
     }
 
+    LiveData<Throwable> getError() {
+        return mError;
+    }
+
+    public void setError(Throwable th){
+        mError.setValue(th);
+    }
 
 }
