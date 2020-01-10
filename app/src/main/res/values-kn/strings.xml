@@ -32,7 +32,6 @@
     <string name="nav_albums">ಚಿತ್ರಸಂಪುಟಗಳು</string>
     <string name="nav_upload">ಅಪ್ಲೋಡ್</string>
     <string name="nav_settings">ಸಂಯೋಜನೆಗಳು</string>
-    <string name="nav_logout">Logout</string>
     <string name="nav_add_account">ಖಾತೆಯನ್ನು ಸೇರಿಸು</string>
     <string name="nav_delete_account">ಖಾತೆಯನ್ನು ತೆಗೆದುಹಾಕು</string>
     <string name="nav_edit_account">ಖಾತೆಯನ್ನು ಸಂಪಾದಿಸು</string>
@@ -61,8 +60,6 @@
     <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
     <string name="account_not_selected">ಮೊದಲು ಅಳಿಸಲು ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
     <string name="account_empty_message">Empty account!</string>
-    <string name="account_logout_successful">Logout Successful!</string>
-    <string name="account_logout_unsuccessfull">Logout failed: %1$s</string>
     <!-- About -->
     <string name="about_text_version">version <b>%1$s</b></string>
     <string name="about_text_intro"> - access Piwigo galleries from your Android phone.</string>
