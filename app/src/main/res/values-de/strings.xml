@@ -32,7 +32,6 @@
     <string name="nav_albums">Alben</string>
     <string name="nav_upload">Hochladen</string>
     <string name="nav_settings">Einstellungen</string>
-    <string name="nav_logout">Logout</string>
     <string name="nav_add_account">Konto Hinzufügen</string>
     <string name="nav_delete_account">Konto entfernen</string>
     <string name="nav_edit_account">Konto bearbeiten</string>
@@ -61,8 +60,6 @@
     <string name="account_image_description">Symbol der Galerie (Favicon)</string>
     <string name="account_not_selected">Zum Löschen erst ein Konto auswählen</string>
     <string name="account_empty_message">Empty account!</string>
-    <string name="account_logout_successful">Logout Successful!</string>
-    <string name="account_logout_unsuccessfull">Logout failed: %1$s</string>
     <!-- About -->
     <string name="about_text_version">Version <b>%1$s</b></string>
     <string name="about_text_intro"> - auf Piwigo Galerien von Ihrem Android-Telefon zugreifen.</string>
