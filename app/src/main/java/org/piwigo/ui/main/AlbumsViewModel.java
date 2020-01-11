@@ -104,11 +104,11 @@ public class AlbumsViewModel extends ViewModel {
         }
         if (account != null) {
             categoriesRepository.getCategories(category)
-                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new CategoriesSubscriber());
 
             imageRepository.getImages(category)
-                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new ImageSubscriber());
         }
     }
