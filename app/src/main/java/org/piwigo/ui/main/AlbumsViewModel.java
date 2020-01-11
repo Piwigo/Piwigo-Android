@@ -233,6 +233,7 @@ public class AlbumsViewModel extends ViewModel {
                     mMainViewModel.setError(e);
                 }
             }
+            e.printStackTrace();
         }
     }
 
