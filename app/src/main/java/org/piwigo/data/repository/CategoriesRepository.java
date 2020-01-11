@@ -71,47 +71,44 @@ public class CategoriesRepository implements Observer<Account> {
             db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
             a = mAccount;
         }
+        Flowable<PositionedItem<Category>> remotes = mRestCategoryRepo.getCategories(a,
+                categoryId,
+                mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
+                .subscribeOn(ioScheduler)
+                .observeOn(ioScheduler)
+                .toFlowable(BackpressureStrategy.BUFFER)
+
+                .zipWith(Flowable.range(0, Integer.MAX_VALUE), (restCat, counter) -> {
+                    Category c = new Category();
+                    c.name = restCat.name;
+                    c.id = restCat.id;
+                    if (restCat.idUppercat != 0) {
+                        c.parentCatId = restCat.idUppercat;
+                    }
+                    c.nbImages = restCat.nbImages;
+                    c.thumbnailUrl = restCat.thumbnailUrl;
+                    c.globalRank = restCat.globalRank;
+                    c.comment = restCat.comment;
+                    c.nbCategories = restCat.nbCategories;
+                    c.representativePictureId = restCat.representativePictureId;
+                    c.totalNbImages = restCat.totalNbImages;
+                    db.categoryDao().upsert(c);
+                    return new PositionedItem<Category>(counter, c);
+                })
+                // TODO: delete categories in database after they have been deleted on the server
+                // TODO: #90 generalize sorting
+                .sorted((categoryItem1, categoryItem2) -> NaturalOrderComparator.compare(categoryItem1.getItem().globalRank, categoryItem2.getItem().globalRank));
+
         if(db == null){
-            return Observable.empty();
+            return remotes.toObservable();
         }else {
             return db.categoryDao().getCategoriesIn(categoryId)
                     .subscribeOn(ioScheduler)
-                    .observeOn(uiScheduler)
+                    .observeOn(ioScheduler)
                     .flattenAsFlowable(s -> s)
                     .zipWith(Flowable.range(0, Integer.MAX_VALUE),
                             (item, counter) -> new PositionedItem<Category>(counter, item))
-                    .concatWith(
-                            mRestCategoryRepo.getCategories(a,
-                                    categoryId,
-                                    mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
-                                    .toFlowable(BackpressureStrategy.BUFFER)
-                                    .subscribeOn(ioScheduler)
-                                    .observeOn(ioScheduler)
-
-                                    .zipWith(Flowable.range(0, Integer.MAX_VALUE), (restCat, counter) -> {
-                                        Category c = new Category();
-                                        c.name = restCat.name;
-                                        c.id = restCat.id;
-                                        if (restCat.idUppercat != 0) {
-                                            c.parentCatId = restCat.idUppercat;
-                                        }
-                                        c.nbImages = restCat.nbImages;
-                                        c.thumbnailUrl = restCat.thumbnailUrl;
-                                        c.globalRank = restCat.globalRank;
-                                        c.comment = restCat.comment;
-                                        c.nbCategories = restCat.nbCategories;
-                                        c.representativePictureId = restCat.representativePictureId;
-                                        c.totalNbImages = restCat.totalNbImages;
-                                        db.categoryDao().upsert(c);
-                                        return new PositionedItem<Category>(counter, c);
-                                    })
-                                    // TODO: delete categories in database after they have been deleted on the server
-                                    // TODO: #90 generalize sorting
-                                    .sorted((categoryItem1, categoryItem2) -> NaturalOrderComparator.compare(categoryItem1.getItem().globalRank, categoryItem2.getItem().globalRank))
-                                    .subscribeOn(ioScheduler)
-                                    .observeOn(uiScheduler)
-
-                    )
+                    .concatWith(remotes)
                     .toObservable();
         }
     }

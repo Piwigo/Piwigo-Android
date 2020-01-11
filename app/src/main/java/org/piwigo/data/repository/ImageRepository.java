@@ -69,6 +69,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import okio.BufferedSink;
@@ -119,131 +120,102 @@ public class ImageRepository implements Observer<Account> {
             db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
             a = mAccount;
         }
-        if(db == null){
-            return Observable.empty();
-        }else {
-            Single<List<ImageVariantDao.VariantInfo>> variants = db.variantDao().variantsInCategory(categoryId).subscribeOn(ioScheduler);
-            AtomicReference<Map<Integer, List<ImageVariantDao.VariantInfo>>> variantList = new AtomicReference<>();
+        Single<List<ImageVariantDao.VariantInfo>> variants = db.variantDao().variantsInCategory(categoryId).subscribeOn(ioScheduler);
+        AtomicReference<Map<Integer, List<ImageVariantDao.VariantInfo>>> variantList = new AtomicReference<>();
 
-/* TODO remove
-            variants.subscribeWith(new  DisposableObserver<List<ImageVariantDao.VariantInfo>>(){
-                @Override
-                public void onNext(List<ImageVariantDao.VariantInfo> variantInfos) {
+        Single<List<String>> folder = db.categoryDao().getCategoryPath(categoryId);
+        AtomicReference<String> folderStr = new AtomicReference<>(null);
 
-                }
+        Flowable<PositionedItem<VariantWithImage>> remotes = mRestImageRepo.getImages(a, categoryId)
+                .subscribeOn(ioScheduler)
+                .observeOn(ioScheduler)
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> {
+                    Derivative d;
+                    switch (mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE)) {
+                        case "thumb":
+                            d = info.derivatives.thumb;
+                            break;
+                        case "small":
+                            d = info.derivatives.small;
+                            break;
+                        case "xsmall":
+                            d = info.derivatives.xsmall;
+                            break;
+                        case "medium":
+                            d = info.derivatives.medium;
+                            break;
+                        case "large":
+                            d = info.derivatives.large;
+                            break;
+                        case "xlarge":
+                            d = info.derivatives.xlarge;
+                            break;
+                        case "xxlarge":
+                            d = info.derivatives.xxlarge;
+                            break;
+                        case "square":
+                        default:
+                            d = info.derivatives.square;
+                    }
 
-                @Override
-                public void onError(Throwable e) {
+                    Image i = new Image(info.elementUrl);
+                    i.name = info.name;
+                    i.file = info.file;
+                    i.id = info.id;
+                    i.author = info.author;
+                    i.description = info.comment;
+                    i.height = info.height;
+                    i.width = info.width;
+                    i.creationDate = info.dateCreation;
+                    i.availableDate = info.dateAvailable;
+                    db.imageDao().upsert(i);
+                    List<CacheDBInternals.ImageCategoryMap> join = new ArrayList<>(info.categories.size());
+                    for (ImageInfo.CategoryID c : info.categories) {
+                        join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));
+                    }
+                    synchronized (variantList) {
+                        if (variantList.get() == null) {
+                            variantList.set(new HashMap<>());
+                            List<ImageVariantDao.VariantInfo> ab = variants.blockingGet();
+                            for (ImageVariantDao.VariantInfo item : ab) {
+                                List<ImageVariantDao.VariantInfo> varsForImage = variantList.get().get(item.imageId);
+                                if (varsForImage == null) {
+                                    varsForImage = new ArrayList<>(5);
+                                    variantList.get().put(item.imageId, varsForImage);
+                                }
+                                varsForImage.add(item);
+                            }
+                        }
+                    }
 
-                }
+                    db.imageCategoryMapDao().insert(join);
+                    synchronized (folderStr) {
+                        if (folderStr.get() == null) {
+                            folderStr.set(StringUtils.join(folder.blockingGet(), File.separator));
+                        }
+                    }
+                    VariantWithImage existingVariant = null;
+                    Map<String, String> addHeaders = null;
+                    if (variantList.get() != null) {
+                        List<ImageVariantDao.VariantInfo> all = variantList.get().get(i.id);
+                        if (all != null) {
+                            for (ImageVariantDao.VariantInfo inf : all) {
+                                if (inf.url.equals(d.url)) {
+                                    existingVariant = db.variantDao().getVariantsWithImage(inf.imageId).get(0);
+                                    File f = new File(inf.storageLocation);
+                                    if (f.exists()) {
+                                        // redownload if - for whatever reason - the cached file doesn't exist anymore
+                                        addHeaders = new HashMap<>();
+                                        addHeaders.put("If-Modified-Since", all.get(0).lastModified);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
-                @Override
-                public void onComplete() {
-
-                }
-            })
-*/
-            Single<List<String>> folder = db.categoryDao().getCategoryPath(categoryId);
-            AtomicReference<String> folderStr = new AtomicReference<>(null);
-
-            // TODO: #90 implement sorting
-//            return db.imageDao().getImagesInCategory(categoryId)
-            return db.variantDao().getVariantsWithImageInCategory(categoryId)
-                    .subscribeOn(ioScheduler)
-                    .observeOn(uiScheduler)
-                    .flattenAsFlowable(s -> s)
-                    .zipWith(Flowable.range(0, Integer.MAX_VALUE),
-                            (item, counter) -> new PositionedItem<VariantWithImage>(counter, item))
-
-                    .concatWith(
-                            mRestImageRepo.getImages(a, categoryId)
-                                    .toFlowable(BackpressureStrategy.BUFFER)
-                                    .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> {
-                                        Derivative d;
-                                        switch (mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE)) {
-                                            case "thumb":
-                                                d = info.derivatives.thumb;
-                                                break;
-                                            case "small":
-                                                d = info.derivatives.small;
-                                                break;
-                                            case "xsmall":
-                                                d = info.derivatives.xsmall;
-                                                break;
-                                            case "medium":
-                                                d = info.derivatives.medium;
-                                                break;
-                                            case "large":
-                                                d = info.derivatives.large;
-                                                break;
-                                            case "xlarge":
-                                                d = info.derivatives.xlarge;
-                                                break;
-                                            case "xxlarge":
-                                                d = info.derivatives.xxlarge;
-                                                break;
-                                            case "square":
-                                            default:
-                                                d = info.derivatives.square;
-                                        }
-
-                                        Image i = new Image(info.elementUrl);
-                                        i.name = info.name;
-                                        i.file = info.file;
-                                        i.id = info.id;
-                                        i.author = info.author;
-                                        i.description = info.comment;
-                                        i.height = info.height;
-                                        i.width = info.width;
-                                        i.creationDate = info.dateCreation;
-                                        i.availableDate = info.dateAvailable;
-                                        db.imageDao().upsert(i);
-                                        List<CacheDBInternals.ImageCategoryMap> join = new ArrayList<>(info.categories.size());
-                                        for (ImageInfo.CategoryID c : info.categories) {
-                                            join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));
-                                        }
-                                        synchronized (variantList) {
-                                            if (variantList.get() == null) {
-                                                variantList.set(new HashMap<>());
-                                                List<ImageVariantDao.VariantInfo> ab = variants.blockingGet();
-                                                for(ImageVariantDao.VariantInfo item :ab) {
-                                                    List<ImageVariantDao.VariantInfo> varsForImage = variantList.get().get(item.imageId);
-                                                    if(varsForImage == null){
-                                                        varsForImage = new ArrayList<>(5);
-                                                        variantList.get().put(item.imageId, varsForImage);
-                                                    }
-                                                    varsForImage.add(item);
-                                                }
-                                            }
-                                        }
-
-                                        db.imageCategoryMapDao().insert(join);
-                                        synchronized (folderStr) {
-                                            if (folderStr.get() == null) {
-                                                folderStr.set(StringUtils.join(folder.blockingGet(), File.separator));
-                                            }
-                                        }
-                                        VariantWithImage existingVariant = null;
-                                        Map<String, String> addHeaders = null;
-                                        if(variantList.get() != null) {
-                                            List<ImageVariantDao.VariantInfo> all = variantList.get().get(i.id);
-                                            if (all != null) {
-                                                for (ImageVariantDao.VariantInfo inf : all) {
-                                                    if (inf.url.equals(d.url)) {
-                                                        existingVariant = db.variantDao().getVariantsWithImage(inf.imageId).get(0);
-                                                        File f = new File(inf.storageLocation);
-                                                        if (f.exists()) {
-                                                            // redownload if - for whatever reason - the cached file doesn't exist anymore
-                                                            addHeaders = new HashMap<>();
-                                                            addHeaders.put("If-Modified-Since", all.get(0).lastModified);
-                                                        }
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        Observable<String> dnl = downloadURL(d.url, folderStr.get(), i.file, i.id, addHeaders, db, a);
+                    Observable<String> dnl = downloadURL(d.url, folderStr.get(), i.file, i.id, addHeaders, db, a);
 /*                                        dnl.subscribe(new DisposableObserver<String>() {
                                             @Override
                                             public void onNext(String s) {
@@ -278,24 +250,35 @@ public class ImageRepository implements Observer<Account> {
                                             }
                                         });
 */
-                                        // TODO: delete images in database after they have been deleted on the server
-                                        // TODO: move image cache files if parent album was renamed
-                                        String location = dnl.blockingFirst(null);
+                    // TODO: delete images in database after they have been deleted on the server
+                    // TODO: move image cache files if parent album was renamed
+                    String location = dnl.blockingFirst(null);
 
-                                        if(location != null) {
-                                            VariantWithImage vwi = new VariantWithImage();
-                                            vwi.image = i;
-                                            vwi.variant = new ImageVariant(i.id, i.width, i.height, location, null, d.url);
-                                            return new PositionedItem<>(counter, vwi);
-                                        }else{
-                                            return new PositionedItem<>(counter, existingVariant);
-                                        }
+                    if (location != null) {
+                        VariantWithImage vwi = new VariantWithImage();
+                        vwi.image = i;
+                        vwi.variant = new ImageVariant(i.id, i.width, i.height, location, null, d.url);
+                        return new PositionedItem<>(counter, vwi);
+                    } else {
+                        return new PositionedItem<>(counter, existingVariant);
+                    }
 
-                                    })
+                })
 // TODO remove                                    .filter(x -> x.getPosition() >= 0)
-                                    .subscribeOn(ioScheduler)
-                                    .observeOn(uiScheduler)
-                    )
+                ;
+        if(db == null){
+            return remotes.toObservable();
+        }else {
+            // TODO: #90 implement sorting
+//            return db.imageDao().getImagesInCategory(categoryId)
+            return db.variantDao().getVariantsWithImageInCategory(categoryId)
+                    .subscribeOn(ioScheduler)
+                    .observeOn(ioScheduler)
+                    .flattenAsFlowable(s -> s)
+                    .zipWith(Flowable.range(0, Integer.MAX_VALUE),
+                            (item, counter) -> new PositionedItem<VariantWithImage>(counter, item))
+
+                    .concatWith(remotes)
                     .toObservable();
         }
     }
@@ -309,8 +292,6 @@ public class ImageRepository implements Observer<Account> {
             org.piwigo.io.DownloadService downloadService = mWebServiceFactory.downloaderForAccount(account, addHeaders);
 
             Observable<String> result = downloadService.downloadFileAtUrl(url)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
                     .flatMap(response -> {
                         try {
 //TODO: #222                            boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);

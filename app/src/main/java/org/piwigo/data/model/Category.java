@@ -44,7 +44,7 @@ public class Category {
 
     public String comment;
 
-    public String globalRank; /* TODO: change from String to int */
+    public String globalRank;
 
     public int nbImages;
 
@@ -57,7 +57,7 @@ public class Category {
 
     public int nbCategories;
 
-    public String thumbnailUrl; /* TODO: remove */
+    public String thumbnailUrl;
 
     @Override public boolean equals(Object o) {
         if (o instanceof Category) {

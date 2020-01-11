@@ -23,21 +23,15 @@ import android.accounts.Account;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
-import android.view.View;
 
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProviders;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import org.piwigo.BR;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.data.model.Category;
-import org.piwigo.data.model.Image;
-import org.piwigo.data.model.ImageVariant;
 import org.piwigo.data.model.PositionedItem;
 import org.piwigo.data.model.VariantWithImage;
 import org.piwigo.data.repository.CategoriesRepository;
@@ -47,12 +41,15 @@ import org.reactivestreams.Subscription;
 
 import java.io.IOException;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 
 public class AlbumsViewModel extends ViewModel {
 
     private static final String TAG = AlbumsViewModel.class.getName();
 
+    private boolean isLoadingCategories = false;
+    private boolean isLoadingImages = false;
     public ObservableBoolean isLoading = new ObservableBoolean();
 
     public ObservableArrayList<VariantWithImage> images = new ObservableArrayList<>();
@@ -107,9 +104,11 @@ public class AlbumsViewModel extends ViewModel {
         }
         if (account != null) {
             categoriesRepository.getCategories(category)
+                    .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe(new CategoriesSubscriber());
 
             imageRepository.getImages(category)
+                    .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe(new ImageSubscriber());
         }
     }
@@ -126,19 +125,31 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     public void onRefresh() {
-        isLoading.set(true);
         forcedLoadAlbums();
     }
 
+    private void updateLoading() {
+        isLoading.set(isLoadingCategories || isLoadingImages);
+    }
+
     private class CategoriesSubscriber extends DisposableObserver<PositionedItem<Category>> {
+        public CategoriesSubscriber(){
+            super();
+            isLoadingCategories = true;
+            updateLoading();
+        }
 
         @Override
         public void onComplete() {
-
+            isLoadingCategories = false;
+            updateLoading();
         }
 
         @Override
         public void onError(Throwable e) {
+            isLoadingCategories = false;
+            updateLoading();
+
             if (e instanceof SQLiteException){
                 // TODO: check whether this is really what we want here
                 Log.e(TAG, "CategoriesSubscriber.onError(): " + e.getMessage());
@@ -188,6 +199,11 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     private class ImageSubscriber extends DisposableObserver<PositionedItem<VariantWithImage>>{
+        public ImageSubscriber(){
+            super();
+            isLoadingImages = true;
+            updateLoading();
+        }
         @Override
         public void onNext(PositionedItem<VariantWithImage> item) {
             while(images.size() <= item.getPosition()) {
@@ -199,11 +215,14 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override
         public void onComplete() {
-
+            isLoadingImages = false;
+            updateLoading();
         }
 
         @Override
         public void onError(Throwable e) {
+            isLoadingImages = false;
+            updateLoading();
             if (e instanceof IOException) {
                 Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
 // TODO: #91 tell the user about the network problem

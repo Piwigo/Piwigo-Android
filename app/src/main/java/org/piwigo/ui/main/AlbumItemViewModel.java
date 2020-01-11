@@ -18,6 +18,7 @@
 
 package org.piwigo.ui.main;
 
+import androidx.databinding.ObservableField;
 import androidx.lifecycle.ViewModel;
 
 import android.content.Context;
@@ -29,21 +30,16 @@ import android.view.View;
 import org.piwigo.R;
 
 public class AlbumItemViewModel extends ViewModel {
-// TODO: adjust Album model similar to Image model
-    private final String url;
+    public final ObservableField<String> url = new ObservableField<String>();
     private final String title;
     private final String photos;
     private final Integer catId;
 
     AlbumItemViewModel(String url, String title, String photos, Integer categoryId) {
-        this.url = url;
+        this.url.set(url);
         this.title = title;
         this.photos = photos;
         this.catId = categoryId;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     public String getTitle() {

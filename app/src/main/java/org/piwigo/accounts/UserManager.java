@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Room;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
@@ -66,6 +67,7 @@ public class UserManager {
     @VisibleForTesting static final String KEY_CHUNK_SIZE  = "chunk_size";
 
     @VisibleForTesting static final String GUEST_ACCOUNT_NAME = "guest";
+    private static final String TAG = UserManager.class.getName();
 
     private final AccountManager accountManager;
     private final Resources resources;
@@ -84,13 +86,17 @@ public class UserManager {
         this.mAllAccounts = new MutableLiveData<>();
         this.mContext = ctx;
 
-        refreshAccounts();
         setActiveAccount(preferencesRepository.getActiveAccountName());
+        refreshAccounts();
     }
 
-    public @Nullable
-    CacheDatabase getDatabaseForAccount(Account a) {
-        return databases.get(a.name);
+    public CacheDatabase getDatabaseForAccount(Account a) {
+        CacheDatabase result = databases.get(a.name);
+        if (result == null){
+            updateDB();
+            result = databases.get(a.name);
+        }
+        return result;
     }
 
     /* refresh account list - to be called by activities which are aware
@@ -263,7 +269,10 @@ public class UserManager {
                     .fallbackToDestructiveMigration() /* as the complete database is only a cache we'll loose nothing critical if we drop it */
                     .build();
             databases.put(a.name, cache); // TODO: should we use here a Map with WeakReferences to the database to free the memory once all threads are finished accessing the DB?
+        }else{
+            Log.e(TAG, "no account set");
         }
+        
     }
 
     public void setActiveAccount(String activeAccount) {
