@@ -301,6 +301,7 @@ public class ImageRepository implements Observer<Account> {
                             Log.i("ImageRepository.URLa", response.code() + " " + url + " Last-Modified = " + last_mod);
                             if (response.code() == 200) {
                                 File root;
+/* TODO: #222
                                 if (expose) {
                                     root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Piwigo");
                                 } else {
