@@ -1,9 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
         android:id="@+id/nav_group_features"
-        android:checkableBehavior="single">
+        android:checkableBehavior="none">
         <item
             android:id="@+id/nav_albums"
+            android:checkable="false"
             android:icon="@drawable/ic_action_folder"
             android:title="@string/nav_albums" />
     </group>
@@ -13,26 +14,26 @@
         android:visible="true">
         <item
             android:id="@+id/nav_manage_accounts"
-            android:checkable="true"
+            android:checkable="false"
             android:icon="@drawable/ic_action_account_manage"
-            android:title="@string/nav_manage_accounts"/>
+            android:title="@string/nav_manage_accounts" />
     </group>
     <group
         android:id="@+id/nav_group_settings"
         android:checkableBehavior="single">
-       <item
+        <item
             android:id="@+id/nav_settings"
-            android:checkable="true"
+            android:checkable="false"
             android:icon="@drawable/ic_action_settings"
             android:title="@string/nav_settings" />
         <item
             android:id="@+id/nav_about"
-            android:checkable="true"
+            android:checkable="false"
             android:icon="@drawable/ic_action_help"
             android:title="@string/nav_about" />
         <item
             android:id="@+id/nav_privacy"
-            android:checkable="true"
+            android:checkable="false"
             android:icon="@drawable/ic_action_privacy"
             android:title="@string/nav_privacy" />
     </group>
