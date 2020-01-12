@@ -90,7 +90,8 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(base);
-        ACRA.init(this);
+        if (!BuildConfig.DEBUG)
+            ACRA.init(this);
     }
 
     private void initializeDependencyInjection() {
