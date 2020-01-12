@@ -36,8 +36,8 @@ import org.piwigo.io.restrepository.RestUserRepository;
 
 import java.util.regex.Pattern;
 
-import rx.Observable;
-import rx.android.plugins.RxAndroidPlugins;
+import io.reactivex.Observable;
+import io.reactivex.android.plugins.RxAndroidPlugins;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -81,7 +81,7 @@ public class LoginViewModelTest {
     }
     @After
     public void tearDown() {
-        RxAndroidPlugins.getInstance().reset();
+        RxAndroidPlugins.reset();
     }
 
     @Test public void clearUrlErrorOnTextChange() {
