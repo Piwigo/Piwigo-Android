@@ -285,9 +285,9 @@ public class ImageRepository implements Observer<Account> {
 
 
     private Observable<String> downloadURL(String url, String folder, String fileName, int imageId, @Nullable Map<String, String> addHeaders, CacheDatabase db, Account account){
-        if(db == null){
+        if (db == null) {
             return Observable.empty();
-        }else {
+        } else {
 
             org.piwigo.io.DownloadService downloadService = mWebServiceFactory.downloaderForAccount(account, addHeaders);
 
@@ -295,18 +295,17 @@ public class ImageRepository implements Observer<Account> {
                     .flatMap(response -> {
                         try {
 //TODO: #222                            boolean expose = mPreferences.getBool(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
+                            boolean expose = false;
 
                             String last_mod = response.headers().get("Last-Modified");
                             Log.i("ImageRepository.URLa", response.code() + " " + url + " Last-Modified = " + last_mod);
                             if (response.code() == 200) {
                                 File root;
-/* TODO: #222
                                 if (expose) {
                                     root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Piwigo");
                                 } else {
-*/
                                     root = mContext.getExternalFilesDir(null);
-// TODO: #222                                }
+                                }
 
                                 String subdir = account.name
                                         + File.separator + folder;
@@ -316,6 +315,9 @@ public class ImageRepository implements Observer<Account> {
 
                                 // TODO: store path in DB
                                 File destinationFile = new File(fullPath);
+
+                                if (!expose)
+                                    return Observable.just(fullPath);
 
                                 int permissionCheck = ContextCompat.checkSelfPermission(mContext,
                                         Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -340,7 +342,7 @@ public class ImageRepository implements Observer<Account> {
 
                                     return Observable.just(fullPath);
                                 } else {
-                                    /* no permission */
+                                    // no permission
                                     return Observable.error(new PermissionDeniedException(Manifest.permission.WRITE_EXTERNAL_STORAGE));
                                 }
                             } else {
