@@ -29,11 +29,13 @@ import org.piwigo.io.restmodel.LoginResponse;
 import org.piwigo.io.restmodel.StatusResponse;
 import org.piwigo.io.restmodel.SuccessResponse;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableTransformer;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.TestSubscriber;
 import okhttp3.Headers;
 import retrofit2.Response;
-import rx.Observable;
-import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -67,31 +69,30 @@ public class RestUserRepositoryTest {
         when(restService.login(USERNAME, PASSWORD)).thenReturn(getLoginSuccessResponse());
         when(restService.login(BAD_CREDENTIAL, BAD_CREDENTIAL)).thenReturn(getLoginFailureResponse());
 
-        userRepository = new RestUserRepository(webServiceFactory, Schedulers.immediate(), Schedulers.immediate(), userManager);
+        userRepository = new RestUserRepository(webServiceFactory, Schedulers.trampoline(), Schedulers.trampoline(), userManager);
     }
 
     @Test public void login_withValidCredentials_returnsSuccessResponse() {
         when(restService.getStatus("pwg_id=" + COOKIE_PWG_ID)).thenReturn(getStatusResponse(USERNAME));
 
         Observable<LoginResponse> observable = userRepository.login(URL, USERNAME, PASSWORD);
-        TestSubscriber<LoginResponse> subscriber = new TestSubscriber<>();
-        observable.subscribe(subscriber);
+        TestObserver<LoginResponse> observer = new TestObserver<>();
+        observable.subscribe(observer);
 
-        subscriber.assertNoErrors();
-        LoginResponse loginResponse = subscriber.getOnNextEvents().get(0);
+        observer.assertNoErrors();
+        LoginResponse loginResponse = observer.values().get(0);
         verify(webServiceFactory).createForUrl(URL);
         assertThat(loginResponse.url).isEqualTo(URL);
         assertThat(loginResponse.username).isEqualTo(USERNAME);
         assertThat(loginResponse.password).isEqualTo(PASSWORD);
         assertThat(loginResponse.pwgId).isEqualTo(COOKIE_PWG_ID);
         assertThat(loginResponse.statusResponse.stat).isEqualTo(STATUS_OK);
-        assertThat(loginResponse.statusResponse.result.pwgToken).isEqualTo(TOKEN);
         assertThat(loginResponse.statusResponse.result.username).isEqualTo(USERNAME);
     }
 
     @Test public void login_withInvalidCredentials_returnsErrorResponse() {
         Observable<LoginResponse> observable = userRepository.login(URL, BAD_CREDENTIAL, BAD_CREDENTIAL);
-        TestSubscriber<LoginResponse> subscriber = new TestSubscriber<>();
+        TestObserver<LoginResponse> subscriber = new TestObserver<>();
         observable.subscribe(subscriber);
 
         subscriber.assertError(Throwable.class);
@@ -99,11 +100,11 @@ public class RestUserRepositoryTest {
 
     @Test public void status_returnsStatusResponse() {
         Observable<LoginResponse> observable = userRepository.status(URL);
-        TestSubscriber<LoginResponse> subscriber = new TestSubscriber<>();
+        TestObserver<LoginResponse> subscriber = new TestObserver<>();
         observable.subscribe(subscriber);
 
         subscriber.assertNoErrors();
-        LoginResponse loginResponse = subscriber.getOnNextEvents().get(0);
+        LoginResponse loginResponse = subscriber.values().get(0);
         verify(webServiceFactory).createForUrl(URL);
         assertThat(loginResponse.url).isEqualTo(URL);
         assertThat(loginResponse.statusResponse.stat).isEqualTo(STATUS_OK);

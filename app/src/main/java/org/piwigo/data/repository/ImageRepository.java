@@ -304,8 +304,9 @@ public class ImageRepository implements Observer<Account> {
                                 if (expose) {
                                     root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Piwigo");
                                 } else {
-                                    root = mContext.getExternalFilesDir(null);
-                                }
+*/
+                                root = mContext.getExternalCacheDir();
+// TODO: #222                                }
 
                                 String subdir = account.name
                                         + File.separator + folder;
@@ -316,35 +317,23 @@ public class ImageRepository implements Observer<Account> {
                                 // TODO: store path in DB
                                 File destinationFile = new File(fullPath);
 
-                                if (!expose)
-                                    return Observable.just(fullPath);
+                                File outputDir = destinationFile.getParentFile();
+                                outputDir.mkdirs();
+                                BufferedSink bufferedSink = Okio.buffer(Okio.sink(destinationFile));
+                                bufferedSink.writeAll(response.body().source());
+                                bufferedSink.close();
 
-                                int permissionCheck = ContextCompat.checkSelfPermission(mContext,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                                // TODO ask for permission
-                                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.inJustDecodeBounds = true;
+                                BitmapFactory.decodeFile(destinationFile.getAbsolutePath(), options);
+                                int h = options.outHeight;
+                                int w = options.outWidth;
 
-                                    File outputDir = destinationFile.getParentFile();
-                                    outputDir.mkdirs();
-                                    BufferedSink bufferedSink = Okio.buffer(Okio.sink(destinationFile));
-                                    bufferedSink.writeAll(response.body().source());
-                                    bufferedSink.close();
+                                ImageVariant iv = new ImageVariant(imageId, w, h, fullPath, last_mod, url);
+                                Log.i("ImageRepository.URLa", "Inserting " + url + " Last-Modified = " + last_mod);
+                                db.variantDao().insert(iv);
 
-                                    BitmapFactory.Options options = new BitmapFactory.Options();
-                                    options.inJustDecodeBounds = true;
-                                    BitmapFactory.decodeFile(destinationFile.getAbsolutePath(), options);
-                                    int h = options.outHeight;
-                                    int w = options.outWidth;
-
-                                    ImageVariant iv = new ImageVariant(imageId, w, h, fullPath, last_mod, url);
-                                    Log.i("ImageRepository.URLa", "Inserting " + url + " Last-Modified = " + last_mod);
-                                    db.variantDao().insert(iv);
-
-                                    return Observable.just(fullPath);
-                                } else {
-                                    // no permission
-                                    return Observable.error(new PermissionDeniedException(Manifest.permission.WRITE_EXTERNAL_STORAGE));
-                                }
+                                return Observable.just(fullPath);
                             } else {
                                 return Observable.empty();
                             }

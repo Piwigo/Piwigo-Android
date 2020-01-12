@@ -61,7 +61,6 @@ public class RestUserRepository extends RESTBaseRepository {
         return restService.login(username, password)
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler)
-//                .compose(applySchedulers())
                 .flatMap(response -> {
                     if (response.body() != null && response.body().result) {
                         // TODO: check: should we set the cookie in the UserManager here?
@@ -71,8 +70,6 @@ public class RestUserRepository extends RESTBaseRepository {
                                 .observeOn(uiScheduler)
                                 ;
                     }
-                    // TODO:
-//            return Observable.error(new Throwable("Login failed"));
                     if (response.body() == null) {
                         return Observable.error(new PiwigoLoginException("Login for user '" + username + "' failed with null response body"));
                     }

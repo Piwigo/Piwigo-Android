@@ -34,8 +34,10 @@ import org.piwigo.R;
 import org.piwigo.TestPiwigoApplication;
 import org.piwigo.io.PreferencesRepository;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import static android.os.Looper.getMainLooper;
 import static org.assertj.android.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -43,6 +45,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(application = TestPiwigoApplication.class, sdk = Build.VERSION_CODES.P)
@@ -68,7 +71,7 @@ public class UserManagerTest {
         when(resources.getString(R.string.account_type)).thenReturn(ACCOUNT_TYPE);
         when(resources.getString(eq(R.string.account_name), anyString(), anyString())).thenReturn(ACCOUNT_NAME);
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {});
-        userManager = new UserManager(accountManager, resources, preferencesRepository);
+        userManager = new UserManager(accountManager, resources, preferencesRepository, RuntimeEnvironment.systemContext);
     }
 
     @Test public void isLoggedIn_accountsExist_returnsTrue() {
@@ -150,10 +153,12 @@ public class UserManagerTest {
     @Test public void getActiveAccount_withNoActiveAccount_returnsFirstAccount() {
         Account firstAccount = mock(Account.class);
         Account secondAccount = mock(Account.class);
+        when(firstAccount.name).thenReturn("First");
+        when(secondAccount.name).thenReturn("Second");
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {firstAccount, secondAccount});
         when(preferencesRepository.getActiveAccountName()).thenReturn(null);
 
-        userManager = new UserManager(accountManager, resources, preferencesRepository);
+        userManager = new UserManager(accountManager, resources, preferencesRepository, RuntimeEnvironment.systemContext);
 
         assertThat(userManager.getActiveAccount().getValue()).isEqualTo(firstAccount);
     }
@@ -164,7 +169,7 @@ public class UserManagerTest {
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {firstAccount, secondAccount});
         when(preferencesRepository.getActiveAccountName()).thenReturn(ACCOUNT_NAME);
 
-        userManager = new UserManager(accountManager, resources, preferencesRepository);
+        userManager = new UserManager(accountManager, resources, preferencesRepository, RuntimeEnvironment.systemContext);
 
         assertThat(userManager.getActiveAccount().getValue()).isEqualTo(secondAccount);
     }
@@ -175,7 +180,7 @@ public class UserManagerTest {
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {firstAccount, secondAccount});
         when(preferencesRepository.getActiveAccountName()).thenReturn(ACCOUNT_NAME);
 
-        userManager = new UserManager(accountManager, resources, preferencesRepository);
+        userManager = new UserManager(accountManager, resources, preferencesRepository, RuntimeEnvironment.systemContext);
 
         assertThat(userManager.getActiveAccount().getValue()).isEqualTo(firstAccount);
     }
