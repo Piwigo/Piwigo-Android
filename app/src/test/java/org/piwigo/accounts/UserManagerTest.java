@@ -151,10 +151,8 @@ public class UserManagerTest {
     }
 
     @Test public void getActiveAccount_withNoActiveAccount_returnsFirstAccount() {
-        Account firstAccount = mock(Account.class);
-        Account secondAccount = mock(Account.class);
-        when(firstAccount.name).thenReturn("First");
-        when(secondAccount.name).thenReturn("Second");
+        Account firstAccount = new Account("first_account", ACCOUNT_TYPE);
+        Account secondAccount = new Account("second_account", ACCOUNT_TYPE);
         when(accountManager.getAccountsByType(ACCOUNT_TYPE)).thenReturn(new Account[] {firstAccount, secondAccount});
         when(preferencesRepository.getActiveAccountName()).thenReturn(null);
 

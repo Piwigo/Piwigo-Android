@@ -91,6 +91,8 @@ public class UserManager {
     }
 
     public CacheDatabase getDatabaseForAccount(Account a) {
+        if (a == null)
+            return null;
         CacheDatabase result = databases.get(a.name);
         if (result == null){
             updateDB();
@@ -109,8 +111,12 @@ public class UserManager {
         setActiveAccount(a == null ? "" : a.name);
     }
 
+    public int countOfAcounts() {
+        return accountManager.getAccountsByType(resources.getString(R.string.account_type)).length;
+    }
+
     public boolean hasAccounts() {
-        return accountManager.getAccountsByType(resources.getString(R.string.account_type)).length > 0;
+        return countOfAcounts() > 0;
     }
 
     /* get account for username@siteUrl, null if no such account exists */
