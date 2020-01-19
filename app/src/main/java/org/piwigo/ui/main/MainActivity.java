@@ -36,6 +36,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
@@ -89,6 +90,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
@@ -141,8 +143,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, mBinding.navigationView, false);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
-        viewModel.getSelectedNavigationItemId().observe(this, this::itemSelected);
-
         mBinding.setViewModel(viewModel);
         headerBinding.setViewModel(viewModel);
         mBinding.navigationView.addHeaderView(headerBinding.getRoot());
@@ -155,7 +155,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 R.string.nav_drawer_close
         );
         mBinding.drawerLayout.addDrawerListener(mDrawerToggle);
-
         mDrawerToggle.setDrawerIndicatorEnabled(viewModel.showingRootAlbum.get());
 
         mDrawerCallBack = new Observable.OnPropertyChangedCallback() {
@@ -224,6 +223,14 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         if (savedInstanceState == null) {
             initStartFragment(viewModel);
         }
+
+        NavigationView nav = findViewById(R.id.navigation_view);
+        nav.getMenu().getItem(0).setChecked(true);
+        nav.setNavigationItemSelectedListener(menuItem -> {
+            viewModel.drawerState.set(false);
+            itemSelected(menuItem.getItemId());
+            return true;
+        });
     }
 
     private void initStartFragment(MainViewModel viewModel) {
@@ -284,7 +291,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     protected void onResume() {
         super.onResume();
         MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
-        viewModel.navigationItemId.set(R.id.nav_albums);
         speedDialView.setVisibility(viewModel.displayFab.get() ? View.VISIBLE : View.INVISIBLE);
         EventBus.getDefault().register(this);
     }
@@ -365,6 +371,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 break;
         }
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

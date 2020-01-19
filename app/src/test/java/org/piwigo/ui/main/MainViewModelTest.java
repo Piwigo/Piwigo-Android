@@ -58,13 +58,4 @@ public class MainViewModelTest {
         viewModel = new MainViewModel(userManager, userRepository);
     }
 
-    @Test @SuppressWarnings("unchecked") public void getSelectedMenuItem_observerReceivesSelectedMenuItem() {
-        int itemId = 1;
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        viewModel.getSelectedNavigationItemId().observeForever(observer);
-
-        viewModel.navigationItemId.set(itemId);
-
-        verify(observer).onChanged(itemId);
-    }
 }
