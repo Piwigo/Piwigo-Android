@@ -206,11 +206,14 @@ public class AlbumsViewModel extends ViewModel {
         }
         @Override
         public void onNext(PositionedItem<VariantWithImage> item) {
-            while(images.size() <= item.getPosition()) {
-                images.add(null);
+            if(images.size() == item.getPosition()){
+                images.add(item.getItem());
+            }else {
+                while (images.size() <= item.getPosition()) {
+                    images.add(null);
+                }
+                images.set(item.getPosition(), item.getItem());
             }
-            images.set(item.getPosition(), item.getItem());
-            Log.i("ImageSubscriber", "image in viewModel " + item.getItem().image.name);
         }
 
         @Override

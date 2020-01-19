@@ -93,7 +93,7 @@ public class CategoriesRepository implements Observer<Account> {
                     c.representativePictureId = restCat.representativePictureId;
                     c.totalNbImages = restCat.totalNbImages;
                     db.categoryDao().upsert(c);
-                    return new PositionedItem<Category>(counter, c);
+                    return new PositionedItem<Category>(counter, c, true);
                 })
                 // TODO: delete categories in database after they have been deleted on the server
                 // TODO: #90 generalize sorting
@@ -107,7 +107,7 @@ public class CategoriesRepository implements Observer<Account> {
                     .observeOn(ioScheduler)
                     .flattenAsFlowable(s -> s)
                     .zipWith(Flowable.range(0, Integer.MAX_VALUE),
-                            (item, counter) -> new PositionedItem<Category>(counter, item))
+                            (item, counter) -> new PositionedItem<Category>(counter, item, true))
                     .concatWith(remotes)
                     .toObservable();
         }

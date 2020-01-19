@@ -24,10 +24,12 @@ package org.piwigo.data.model;
 public class PositionedItem<T> {
     private final int position;
     private final T item;
+    private boolean updateNeeded;
 
-    public PositionedItem(int position, T item){
+    public PositionedItem(int position, T item, boolean updateNeeded){
         this.position = position;
         this.item = item;
+        this.updateNeeded = updateNeeded;
     }
 
     public int getPosition() {
@@ -36,5 +38,9 @@ public class PositionedItem<T> {
 
     public T getItem() {
         return item;
+    }
+
+    public boolean isUpdateNeeded(){
+        return updateNeeded;
     }
 }

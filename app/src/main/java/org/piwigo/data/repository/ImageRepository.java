@@ -18,21 +18,13 @@
 
 package org.piwigo.data.repository;
 
-import android.Manifest;
 import android.accounts.Account;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.media.MediaScannerConnection;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +35,6 @@ import org.piwigo.data.model.Image;
 import org.piwigo.data.model.ImageVariant;
 import org.piwigo.data.model.PositionedItem;
 import org.piwigo.data.model.VariantWithImage;
-import org.piwigo.helper.PermissionDeniedException;
 import org.piwigo.io.PreferencesRepository;
 import org.piwigo.data.db.CacheDatabase;
 import org.piwigo.io.WebServiceFactory;
@@ -54,11 +45,9 @@ import org.piwigo.io.restrepository.RESTImageRepository;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
@@ -69,9 +58,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 import okio.BufferedSink;
 import okio.Okio;
 
@@ -258,12 +244,13 @@ public class ImageRepository implements Observer<Account> {
                         VariantWithImage vwi = new VariantWithImage();
                         vwi.image = i;
                         vwi.variant = new ImageVariant(i.id, i.width, i.height, location, null, d.url);
-                        return new PositionedItem<>(counter, vwi);
+                        return new PositionedItem<>(counter, vwi, true);
                     } else {
-                        return new PositionedItem<>(counter, existingVariant);
+                        return new PositionedItem<>(counter, existingVariant, false);
                     }
 
                 })
+                .filter(x -> x.isUpdateNeeded())
 // TODO remove                                    .filter(x -> x.getPosition() >= 0)
                 ;
         if(db == null){
@@ -276,7 +263,7 @@ public class ImageRepository implements Observer<Account> {
                     .observeOn(ioScheduler)
                     .flattenAsFlowable(s -> s)
                     .zipWith(Flowable.range(0, Integer.MAX_VALUE),
-                            (item, counter) -> new PositionedItem<VariantWithImage>(counter, item))
+                            (item, counter) -> new PositionedItem<VariantWithImage>(counter, item, true))
 
                     .concatWith(remotes)
                     .toObservable();
