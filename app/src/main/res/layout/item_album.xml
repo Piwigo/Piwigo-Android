@@ -9,25 +9,28 @@
 
     </data>
 
-
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cardview_background"
         android:layout_width="match_parent"
         android:layout_height="160dp"
         android:layout_marginTop="4dp"
+        android:theme="@style/Theme.Piwigo.ItemAlbum"
         >
 
         <com.vipulasri.ticketview.TicketView
+            android:id="@+id/ticketView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/ticketView"
-            app:ticketOrientation="vertical"
-            app:ticketScallopRadius="10dp"
-            app:ticketCornerType="rounded"
+            android:theme="@style/Theme.Piwigo.ItemAlbum"
+            app:ticketBackgroundColor="@color/card_background"
+            android:outlineAmbientShadowColor="@color/card_shadow"
+            android:outlineSpotShadowColor="@color/card_shadow"
             app:ticketCornerRadius="12dp"
-            app:ticketScallopPositionPercent="40"
-            app:ticketElevation="14dp"/>
+            app:ticketCornerType="rounded"
+            app:ticketElevation="14dp"
+            app:ticketOrientation="vertical"
+            app:ticketScallopPositionPercent="45"
+            app:ticketScallopRadius="10dp" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/first_card"
@@ -39,7 +42,6 @@
             android:layout_marginStart="13dp"
             android:layout_marginTop="9dp"
             android:layout_marginBottom="15dp"
-            app:cardBackgroundColor="@color/colorAccent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/guideline"
@@ -66,6 +68,9 @@
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:theme="@style/Theme.Piwigo.ItemAlbumCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/guideline"
             >
@@ -75,9 +80,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.title}"
-                android:layout_marginTop="15dp"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/piwigo_orange"
+                android:background="@color/card_background"
                 tools:text="Album Title"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -89,12 +94,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:paddingBottom="20dp"
                 android:singleLine="false"
                 android:text="@{viewModel.photos}"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 tools:text="Description of content"
-                android:textColor="@color/piwigo_fab_text_color"
+                android:theme="@style/Theme.Piwigo.ItemAlbumCard"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -108,7 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.40" />
+            app:layout_constraintGuide_percent="0.45" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

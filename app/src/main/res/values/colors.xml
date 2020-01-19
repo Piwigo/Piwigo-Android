@@ -5,6 +5,9 @@
     <color name="piwigo_light_background_color">#F9F9F9</color>
     <color name="piwigo_light_error_red">#f55f5a</color>
 
+    <color name="card_background">@color/piwigo_light_background_color</color>
+    <color name="card_shadow">@color/piwigo_light_dark_text_color</color>
+
     <!-- Constant colors -->
     <color name="piwigo_brown">#4e4e4e</color>
     <color name="piwigo_orange">#ff7700</color> <!-- This gives some warnings about readability of orange text on white background because of low contrast - see #165 but it's better to keep this as it is piwigo-styling orange -->
