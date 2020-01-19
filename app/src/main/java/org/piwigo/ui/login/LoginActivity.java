@@ -44,7 +44,7 @@ import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
 import org.piwigo.helper.DialogHelper;
 import org.piwigo.io.PiwigoLoginException;
-import org.piwigo.io.model.LoginResponse;
+import org.piwigo.io.restmodel.LoginResponse;
 import org.piwigo.ui.main.MainActivity;
 import org.piwigo.ui.shared.BaseActivity;
 

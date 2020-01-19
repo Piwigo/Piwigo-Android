@@ -10,18 +10,19 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.R;
-import org.piwigo.io.model.ImageInfo;
+import org.piwigo.data.model.Image;
+import org.piwigo.data.model.VariantWithImage;
 
 import java.util.List;
 
 public class PhotoViewerPagerAdapter extends PagerAdapter {
 
     private Context context;
-    private List<ImageInfo> images;
+    private List<VariantWithImage> images;
     private LayoutInflater inflater;
     private Picasso picasso;
 
-    public PhotoViewerPagerAdapter(Context context, List<ImageInfo> images)
+    public PhotoViewerPagerAdapter(Context context, List<VariantWithImage> images)
     {
         this.context = context;
         this.images = images;
@@ -34,9 +35,12 @@ public class PhotoViewerPagerAdapter extends PagerAdapter {
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.item_fullscreen_image, container, false);
         TouchImageView imageViewPreview = view.findViewById(R.id.imgDisplay);
-        ImageInfo image = images.get(position);
+        VariantWithImage image = images.get(position);
 
-        picasso.load(image.derivatives.medium.url).noFade().into(imageViewPreview);
+        // TODO: trigger URL updates to get needed resolution and handle LiveData updates
+        // TODO: #232 load image from cache (if available)
+        picasso.load(image.image.elementUrl)
+                .into(imageViewPreview);
         container.addView(view);
         return view;
     }

@@ -18,16 +18,18 @@
 
 package org.piwigo.io;
 
-import org.piwigo.io.model.AddCategoryResponse;
-import org.piwigo.io.model.CategoryListResponse;
-import org.piwigo.io.model.GetImageInfoResponse;
-import org.piwigo.io.model.ImageListResponse;
-import org.piwigo.io.model.ImageUploadResponse;
-import org.piwigo.io.model.StatusResponse;
-import org.piwigo.io.model.SuccessResponse;
+import org.piwigo.io.restmodel.AddCategoryResponse;
+import org.piwigo.io.restmodel.CategoryListResponse;
+import org.piwigo.io.restmodel.GetImageInfoResponse;
+import org.piwigo.io.restmodel.ImageListResponse;
+import org.piwigo.io.restmodel.ImageUploadResponse;
+import org.piwigo.io.restmodel.StatusResponse;
+import org.piwigo.io.restmodel.SuccessResponse;
 
+import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.http.Field;
@@ -38,11 +40,14 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
-import rx.Observable;
+import retrofit2.http.Streaming;
+import retrofit2.http.Url;
+//import rx.Observable;
 
 public interface RestService {
 
-    @POST("ws.php?method=pwg.session.login") @FormUrlEncoded Observable<Response<SuccessResponse>> login(
+    @POST("ws.php?method=pwg.session.login") @FormUrlEncoded
+    Observable<Response<SuccessResponse>> login(
             @Field("username") String username,
             @Field("password") String password
     );
@@ -56,7 +61,7 @@ public interface RestService {
     @POST("ws.php?method=pwg.categories.add") @FormUrlEncoded Call<AddCategoryResponse> addCategory(
             @Field("name") String name,
             @Field("parent") Integer parent,
-            @Field("comment") String comment,
+            @Field("description") String comment,
             @Field("visible") Boolean visible,
             @Field("status") String status,
             @Field("commentable") Boolean commentable
@@ -72,17 +77,7 @@ public interface RestService {
     );
 
     @GET("ws.php?method=pwg.categories.getImages")
-    Observable<ImageListResponse> getImages(@Query("cat_id") int categoryId);
-
-    @Multipart
-    @POST("ws.php?method=pwg.images.upload")
-    Call<ImageUploadResponse> uploadImage(
-            @Part("image") RequestBody image,
-            @Part("category") Integer category,
-            @Part("name") RequestBody name,
-            @Part("pwg_token") RequestBody token,
-            @Part MultipartBody.Part filePart
-    );
+    Observable<ImageListResponse> getImages(@Query("cat_id") int categoryId, @Query("page") int page, @Query("per_page") int pageSize);
 
     @Multipart
     @POST("ws.php?method=pwg.images.upload")

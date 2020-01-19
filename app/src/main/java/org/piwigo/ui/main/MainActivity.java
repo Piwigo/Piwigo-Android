@@ -55,14 +55,14 @@ import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
 import org.piwigo.helper.DialogHelper;
 import org.piwigo.helper.NetworkHelper;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
-import org.piwigo.io.model.ImageUploadItem;
-import org.piwigo.io.model.LoginResponse;
-import org.piwigo.io.model.SuccessResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.data.model.ImageUploadItem;
+import org.piwigo.io.restmodel.LoginResponse;
+import org.piwigo.io.restmodel.SuccessResponse;
+import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
@@ -95,7 +95,7 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
-import rx.Subscriber;
+import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private static final String TAG = MainActivity.class.getName();
@@ -107,9 +107,9 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Inject
     MainViewModelFactory viewModelFactory;
     @Inject
-    RestServiceFactory restServiceFactory;
+    WebServiceFactory webServiceFactory;
     @Inject
-    UserRepository userRepository;
+    RestUserRepository userRepository;
 
     private final Handler handler = new Handler();
 
@@ -191,10 +191,11 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 viewModel.displayFab.set(!userManager.isGuest(currentAccount));
                 /* Login to the new site after account changes.
                  * It seems quite unclean to do that here -> TODO: FIXME*/
-                rx.Observable<LoginResponse> a = userRepository.login(account);
-                a.subscribe(new rx.Observer<LoginResponse>() {
+                io.reactivex.Observable<LoginResponse> a = userRepository.login(account);
+                a.subscribe(new io.reactivex.Observer<LoginResponse>() {
                     @Override
-                    public void onCompleted() {
+                    public void onComplete() {
+
                     }
 
                     @Override
@@ -203,12 +204,18 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                         // TODO: notify loginfailure
                     }
 
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
                     @Override
                     public void onNext(LoginResponse loginResponse) {
                         Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
                         userManager.setCookie(account, loginResponse.pwgId);
                         userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
-                        userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
+                        if(loginResponse.statusResponse.result.uploadFormChunkSize != null) {
+                            userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
+                        }
                     }
                 });
                 initStartFragment(viewModel);
@@ -217,6 +224,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 viewModel.username.set("");
                 viewModel.url.set("");
             }
+            viewModel.getError().observe(this, this::showError);
         };
         userManager.getActiveAccount().observe(this, accountObserver);
 
@@ -573,5 +581,13 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         }
     }
 
+    private void showError(Throwable throwable) {
+        Snackbar.make(mBinding.getRoot(), throwable.getMessage(), Snackbar.LENGTH_LONG).setAction(R.string.show_details, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogHelper.INSTANCE.showLogDialog(getResources().getString(R.string.gen_error), throwable.getMessage(), throwable, "REASON: MainActivity.showError, LOGIN_STATUS: " + viewModel.loginStatus.get() + ", PIWIGO_VERSION = " + viewModel.piwigoVersion.get() + ", URL = " + viewModel.url.get(), mBinding.getRoot().getContext());
+            }
+        }).show();
+    }
 }
 

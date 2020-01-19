@@ -21,6 +21,7 @@ package org.piwigo.ui.main;
 
 import android.accounts.Account;
 import android.util.Log;
+import android.widget.TabHost;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -29,14 +30,15 @@ import androidx.databinding.Observable;
 import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.model.SuccessResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restrepository.RestUserRepository;
+import org.piwigo.io.restmodel.SuccessResponse;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends ViewModel {
     // TODO: cleanup here...
@@ -46,6 +48,8 @@ public class MainViewModel extends ViewModel {
     public static int STAT_AUTH_FAILED = 3;
 
     private static final String TAG = MainViewModel.class.getName();
+
+    private MutableLiveData<Throwable> mError = new MutableLiveData<>();
 
     public ObservableField<String> title = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
@@ -58,10 +62,10 @@ public class MainViewModel extends ViewModel {
     public ObservableInt loginStatus = new ObservableInt(STAT_OFFLINE);
     public ObservableField<String> piwigoVersion = new ObservableField<>("");
 
-    private UserRepository mUserRepository;
+    private RestUserRepository mUserRepository;
     private UserManager userManager;
 
-    MainViewModel(UserManager userManager, UserRepository userRepository) {
+    MainViewModel(UserManager userManager, RestUserRepository userRepository) {
         Account account = userManager.getActiveAccount().getValue();
         this.userManager = userManager;
         if (account != null) {
@@ -72,9 +76,12 @@ public class MainViewModel extends ViewModel {
         mUserRepository = userRepository;
     }
 
-    private <T> rx.Observable.Transformer<T, T> applySchedulers() {
-        return observable -> observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+    LiveData<Throwable> getError() {
+        return mError;
+    }
+
+    public void setError(Throwable th){
+        mError.setValue(th);
     }
 
 }

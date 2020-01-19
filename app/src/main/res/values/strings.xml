@@ -19,8 +19,11 @@
   -->
 
 <resources>
-
+    <!-- General strings -->
     <string name="app_name">Piwigo</string>
+    <string name="gen_error">Failure</string>
+
+    <!-- titles -->
     <string name="title_activity_main" translatable="false">@string/app_name</string>
     <string name="title_activity_login">Login</string>
     <string name="title_activity_accounts">Manage Accounts</string>
@@ -115,7 +118,7 @@
         <p><a href="https://github.com/tingyik90/snackprogressbar/">tingyik90/SnackProgressBar</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p><a href="https://github.com/greenrobot/EventBus/">greenrobot/EventBus</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         <p><a href="https://commons.apache.org/proper/commons-lang/">Apache Commons Lang</a>, license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
-        <p>appcompat, support-annotations, cardview, design, constraint-layout, recyclerview, design, preference, exifinterface, guava, dagger license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
+        <p>appcompat, support-annotations, cardview, design, constraint-layout, recyclerview, design, preference, exifinterface, guava, dagger, room license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         ]]></string>
     <!-- Albums -->
     <plurals name="album_photos">
@@ -167,6 +170,11 @@
     <string name="settings_colors">Colors</string>
     <string name="settings_color_palette">Color Palette</string>
     <string name="settings_color_palette_summary">%1$s</string>
+    <string name="settings_expose_to_device">Expose Photos</string>
+    <string name="settings_expose_to_device_summary_pos">The Photos from Piwigo galleries are made available to other Apps on your device.</string>
+    <string name="settings_expose_to_device_summary_neg">The Photos from Piwigo galleries are not made available to other Apps on your device.</string>
+
+    <string name="perm_write_external_storage_xplain">To store the photos in a location accessible by other locations write permissions for external storage are required.</string>
 
     <!-- Upload -->
     <string name="upload_success">Upload successful</string>

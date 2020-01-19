@@ -26,7 +26,6 @@ import android.os.Build;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
 import androidx.multidex.MultiDex;
-import androidx.preference.PreferenceManager;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -43,7 +42,7 @@ import org.piwigo.internal.di.component.BindingComponent;
 import org.piwigo.internal.di.component.DaggerApplicationComponent;
 import org.piwigo.internal.di.component.DaggerBindingComponent;
 import org.piwigo.internal.di.module.ApplicationModule;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.io.PreferencesRepository;
 
 import javax.inject.Inject;
 
@@ -67,10 +66,13 @@ import dagger.android.HasAndroidInjector;
 )
 @AcraMailSender(mailTo = "android@piwigo.org")
 @AcraDialog(resCommentPrompt = R.string.crash_dialog_comment_prompt,
-        resText = R.string.crash_dialog_text)
+        resText = R.string.crash_dialog_text,
+        resTitle = R.string.app_name,
+        resIcon = R.mipmap.ic_launcher)
 public class PiwigoApplication extends Application implements HasAndroidInjector {
 
     @Inject DispatchingAndroidInjector<Object> androidInjector;
+    @Inject PreferencesRepository preferencesRepository;
 
     private ApplicationComponent applicationComponent;
 
@@ -83,7 +85,8 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
         new URLHelper();
         initializeDependencyInjection();
 
-        applyColorPalette();
+        applyColorPalette(preferencesRepository.getString(PreferencesRepository.KEY_PREF_COLOR_PALETTE));
+
     }
 
     @Override
@@ -106,9 +109,9 @@ public class PiwigoApplication extends Application implements HasAndroidInjector
         DataBindingUtil.setDefaultComponent(bindingComponent);
     }
 
-    private void applyColorPalette()
+    public void applyColorPalette(String colorPalette)
     {
-        switch (PreferenceManager.getDefaultSharedPreferences(this).getString(PreferencesRepository.KEY_PREF_COLOR_PALETTE, PreferencesRepository.DEFAULT_PREF_COLOR_PALETTE)) {
+        switch (colorPalette) {
             case "light":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;

@@ -21,6 +21,7 @@ package org.piwigo.ui.main;
 
 import android.accounts.Account;
 import android.content.res.Resources;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import androidx.databinding.ObservableArrayList;
@@ -30,36 +31,35 @@ import androidx.lifecycle.ViewModel;
 import org.piwigo.BR;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.model.Category;
-import org.piwigo.io.model.ImageInfo;
-import org.piwigo.io.repository.CategoriesRepository;
-import org.piwigo.io.repository.ImageRepository;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.data.model.Category;
+import org.piwigo.data.model.PositionedItem;
+import org.piwigo.data.model.VariantWithImage;
+import org.piwigo.data.repository.CategoriesRepository;
+import org.piwigo.data.repository.ImageRepository;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
+import org.reactivestreams.Subscription;
 
 import java.io.IOException;
-import java.util.List;
 
-
-import rx.Subscriber;
-import rx.Subscription;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
 
 public class AlbumsViewModel extends ViewModel {
 
-
     private static final String TAG = AlbumsViewModel.class.getName();
 
+    private boolean isLoadingCategories = false;
+    private boolean isLoadingImages = false;
     public ObservableBoolean isLoading = new ObservableBoolean();
 
-    public ObservableArrayList<ImageInfo> images = new ObservableArrayList<>();
+    public ObservableArrayList<VariantWithImage> images = new ObservableArrayList<>();
     public ObservableArrayList<Category> albums = new ObservableArrayList<>();
     public BindingRecyclerViewAdapter.ViewBinder<Category> albumsViewBinder = new CategoryViewBinder();
-    public BindingRecyclerViewAdapter.ViewBinder<ImageInfo> photoViewBinder = new ImagesViewBinder();
+    public BindingRecyclerViewAdapter.ViewBinder<VariantWithImage> photoViewBinder = new ImagesViewBinder();
 
     private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
     private final ImageRepository imageRepository;
-    private final PreferencesRepository preferences;
 
     private final Resources resources;
 
@@ -68,19 +68,20 @@ public class AlbumsViewModel extends ViewModel {
 
     private Integer category = null;
 
+    private MainViewModel mMainViewModel;
+
     AlbumsViewModel(UserManager userManager, CategoriesRepository categoriesRepository,
-                    ImageRepository imageRepository, Resources resources, PreferencesRepository preferences) {
+                    ImageRepository imageRepository, Resources resources) {
         this.userManager = userManager;
         this.categoriesRepository = categoriesRepository;
         this.imageRepository = imageRepository;
         this.resources = resources;
-        this.preferences = preferences;
     }
 
     @Override
     protected void onCleared() {
         if (albumsSubscription != null) {
-            albumsSubscription.unsubscribe();
+            albumsSubscription.cancel();
         }
     }
 
@@ -93,20 +94,22 @@ public class AlbumsViewModel extends ViewModel {
         Account account = userManager.getActiveAccount().getValue();
         if (albumsSubscription != null) {
             // cleanup, just in case
-            albumsSubscription.unsubscribe();
+            albumsSubscription.cancel();
             albumsSubscription = null;
         }
         if (photosSubscription != null) {
             // cleanup, just in case
-            photosSubscription.unsubscribe();
+            photosSubscription.cancel();
             photosSubscription = null;
         }
         if (account != null) {
-            albumsSubscription = categoriesRepository.getCategories(account, category,
-                    preferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
+            categoriesRepository.getCategories(category)
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new CategoriesSubscriber());
-            photosSubscription = imageRepository.getImages(account, category)
-                    .subscribe(new ImagesSubscriber());
+
+            imageRepository.getImages(category)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new ImageSubscriber());
         }
     }
 
@@ -117,34 +120,57 @@ public class AlbumsViewModel extends ViewModel {
         }
     }
 
+    public void setMainViewModel(MainViewModel vm){
+        mMainViewModel = vm;
+    }
+
     public void onRefresh() {
-        isLoading.set(true);
         forcedLoadAlbums();
     }
 
-    private class CategoriesSubscriber extends Subscriber<List<Category>> {
+    private void updateLoading() {
+        isLoading.set(isLoadingCategories || isLoadingImages);
+    }
+
+    private class CategoriesSubscriber extends DisposableObserver<PositionedItem<Category>> {
+        public CategoriesSubscriber(){
+            super();
+            isLoadingCategories = true;
+            updateLoading();
+        }
 
         @Override
-        public void onCompleted() {
+        public void onComplete() {
+            isLoadingCategories = false;
+            updateLoading();
         }
 
         @Override
         public void onError(Throwable e) {
-            if (e instanceof IOException) {
-                Log.e(TAG, "CategoriesSubscriber: " + e.getMessage());
+            isLoadingCategories = false;
+            updateLoading();
+
+            if (e instanceof SQLiteException){
+                // TODO: check whether this is really what we want here
+                Log.e(TAG, "CategoriesSubscriber.onError(): " + e.getMessage());
+                throw new RuntimeException(e);
+            } else if (e instanceof IOException) {
+                Log.e(TAG, "CategoriesSubscriber.onError(): " + e.getMessage());
                 // TODO: #91 tell the user about the network problem
             } else {
                 // NO: NEVER throw an exception here
                 // throw new RuntimeException(e);
-                Log.e(TAG, "CategoriesSubscriber: " + e.getMessage());
+                Log.e(TAG, "CategoriesSubscriber.onError(): " + e.getMessage());
                 // TODO: #161 highlight problem to the user
             }
         }
 
         @Override
-        public void onNext(List<Category> categories) {
-            albums.clear();
-            albums.addAll(categories);
+        public void onNext(PositionedItem<Category> category) {
+            while(albums.size() <= category.getPosition()) {
+                albums.add(null);
+            }
+            albums.set(category.getPosition(), category.getItem());
         }
     }
 
@@ -172,37 +198,52 @@ public class AlbumsViewModel extends ViewModel {
         }
     }
 
-    private class ImagesSubscriber extends Subscriber<List<ImageInfo>> {
-
-        @Override
-        public void onCompleted() {
-            isLoading.set(false);
+    private class ImageSubscriber extends DisposableObserver<PositionedItem<VariantWithImage>>{
+        public ImageSubscriber(){
+            super();
+            isLoadingImages = true;
+            updateLoading();
         }
-
         @Override
-        public void onError(Throwable e) {
-            if (e instanceof IOException) {
-                Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
-// TODO: #91 tell the user about the network problem
-            } else {
-                // NO: NEVER throw an exception here
-                // throw new RuntimeException(e);
-                Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
-                // TODO: #161 highlight problem to the user
+        public void onNext(PositionedItem<VariantWithImage> item) {
+            if(images.size() == item.getPosition()){
+                images.add(item.getItem());
+            }else {
+                while (images.size() <= item.getPosition()) {
+                    images.add(null);
+                }
+                images.set(item.getPosition(), item.getItem());
             }
         }
 
         @Override
-        public void onNext(List<ImageInfo> imageList) {
-            images.clear();
-            images.addAll(imageList);
+        public void onComplete() {
+            isLoadingImages = false;
+            updateLoading();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            isLoadingImages = false;
+            updateLoading();
+            if (e instanceof IOException) {
+                Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
+// TODO: #91 tell the user about the network problem
+            } else {
+                Log.e(TAG, "ImagesSubscriber: " + e.getMessage());
+                // TODO: #161 highlight problem to the user (this is alreay here...)
+                if(mMainViewModel != null) {
+                    mMainViewModel.setError(e);
+                }
+            }
+            e.printStackTrace();
         }
     }
 
-    private class ImagesViewBinder implements BindingRecyclerViewAdapter.ViewBinder<ImageInfo> {
+    private class ImagesViewBinder implements BindingRecyclerViewAdapter.ViewBinder<VariantWithImage> {
 
         @Override
-        public int getViewType(ImageInfo image) {
+        public int getViewType(VariantWithImage image) {
             return 0;
         }
 
@@ -212,13 +253,10 @@ public class AlbumsViewModel extends ViewModel {
         }
 
         @Override
-        public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, ImageInfo image) {
-            // TODO: make image size selectable via settings (jca)
+        public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, VariantWithImage image) {
             // TODO: make configurable to also show the photo name here
-            ImagesItemViewModel viewModel = new ImagesItemViewModel(image.derivatives.medium.url, images.indexOf(image), image.name, images);
+            ImagesItemViewModel viewModel = new ImagesItemViewModel(image, images.indexOf(image), images);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
-
     }
-
 }

@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.util.Log;
@@ -42,11 +43,11 @@ import org.piwigo.bg.action.UploadAction;
 import org.piwigo.helper.NetworkHelper;
 import org.piwigo.helper.NotificationHelper;
 import org.piwigo.io.RestService;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.event.RefreshRequestEvent;
 import org.piwigo.io.event.SnackProgressEvent;
-import org.piwigo.io.model.ImageUploadResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restmodel.ImageUploadResponse;
+import org.piwigo.io.restrepository.RestUserRepository;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -75,10 +76,10 @@ public class UploadService extends IntentService {
     private SnackProgressEvent snackProgressEvent;
 
     @Inject
-    RestServiceFactory restServiceFactory;
+    WebServiceFactory webServiceFactory;
 
     @Inject
-    UserRepository userRepository;
+    RestUserRepository userRepository;
 
     @Inject
     UserManager userManager;
@@ -133,7 +134,7 @@ public class UploadService extends IntentService {
 
         //Chunks
         long tmpFileSize = getFileSize(uploadAction.getUploadData().getTargetUri());
-        int chunkSize = getChunkSize(); // Chunk max size = 1MB
+        int chunkSize = getChunkSize();
         int expectedChunks = tmpFileSize <= chunkSize ? 1 : (int) (tmpFileSize / chunkSize) + 1;
         //Instances
         MultipartBody.Part fileParts[] = new MultipartBody.Part[expectedChunks];
@@ -158,7 +159,7 @@ public class UploadService extends IntentService {
         for (int i = 0; i < splittedContent.length; i++) {
             fileParts[i] = MultipartBody.Part.createFormData("file", uploadAction.getFileName(), RequestBody.create(MediaType.parse("image/*"), splittedContent[i]));
         }
-        restService = restServiceFactory.createForAccount(userManager.getActiveAccount().getValue());
+        restService = webServiceFactory.createForAccount(userManager.getActiveAccount().getValue());
         requestBodies = createUploadRequest(uploadAction.getFileName(), getPhotoName(uploadAction.getFileName()), userManager.getActiveAccount().getValue());
 
         //Promise building
@@ -172,20 +173,19 @@ public class UploadService extends IntentService {
     }
 
     /**
-     * Pick a chunk size depending of the network mode (if on wifi, 1MB, 256KB for mobile data)
-     * @return chunkSize (1MB, 256KB for mobile data or anything else)
+     * Pick a chunk size depending of the network mode
+     * @return chunkSize in bytes
      */
     public int getChunkSize()
     {
-        int networkType = NetworkHelper.INSTANCE.getNetworkType(getApplicationContext());
+        int upSpeed = NetworkHelper.INSTANCE.getNetworkSpeed(getApplication());
         int chunkSize = userManager.getChunkSize(userManager.getActiveAccount().getValue());
 
-        if (networkType == ConnectivityManager.TYPE_WIFI) {
-            return chunkSize; // 500KB by default
+        if(chunkSize > upSpeed * 1024 / 8){
+            chunkSize = upSpeed * 1024 / 8;
         }
-        else {
-            return (chunkSize / 2); // 250KB by default
-        }
+
+        return chunkSize;
     }
 
     /**
@@ -298,7 +298,7 @@ public class UploadService extends IntentService {
                     }
                     callChunkedUploadResponse(imageUploadQueue, restService, promise);
                 } else {
-                    String add = " (code: " + response.raw().code() + ")";
+                    String add = " (code " + response.raw().code() + ": " + response.raw().message() + ")";
                     // TODO: handle this properly for #161
                     if (response.body() != null) {
                         if (response.body().err != null) {

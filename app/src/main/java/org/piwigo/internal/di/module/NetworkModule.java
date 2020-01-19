@@ -24,7 +24,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 @Module
@@ -32,6 +34,7 @@ public class NetworkModule {
 
     @Provides @Singleton HttpLoggingInterceptor provideHttpLoggingInterceptor() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+//        loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BASIC : HttpLoggingInterceptor.Level.NONE);
         loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         return loggingInterceptor;
     }
@@ -39,6 +42,13 @@ public class NetworkModule {
     @Provides @Singleton OkHttpClient provideOkHttpClient(HttpLoggingInterceptor loggingInterceptor) {
         return new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
+                .addInterceptor(chain -> {
+                    Request.Builder builder = chain.request().newBuilder();
+
+                    builder.header("User-Agent", ("Piwigo-Android " + BuildConfig.VERSION_NAME));
+                    return chain.proceed(builder.build());
+                })
+
                 .build();
     }
 }

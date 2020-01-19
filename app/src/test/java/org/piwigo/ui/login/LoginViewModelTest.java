@@ -31,18 +31,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.model.LoginResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restmodel.LoginResponse;
+import org.piwigo.io.restrepository.RestUserRepository;
 
 import java.util.regex.Pattern;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Scheduler;
-import rx.android.plugins.RxAndroidPlugins;
-import rx.android.plugins.RxAndroidSchedulersHook;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.plugins.RxAndroidPlugins;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -60,7 +55,8 @@ public class LoginViewModelTest {
     private static final String ERROR_USERNAME = "Enter your username";
     private static final String ERROR_PASSWORD = "Enter your password";
 
-    @Mock UserRepository userRepository;
+    @Mock
+    RestUserRepository userRepository;
 
     @Mock Resources resources;
 
@@ -85,7 +81,7 @@ public class LoginViewModelTest {
     }
     @After
     public void tearDown() {
-        RxAndroidPlugins.getInstance().reset();
+        RxAndroidPlugins.reset();
     }
 
     @Test public void clearUrlErrorOnTextChange() {

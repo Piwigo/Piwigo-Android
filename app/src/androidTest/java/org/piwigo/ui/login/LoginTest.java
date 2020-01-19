@@ -1,4 +1,4 @@
-package org.piwigo.ui.launcher;
+package org.piwigo.ui.login;
 
 import android.view.View;
 
@@ -153,10 +153,16 @@ public class LoginTest {
         Thread.sleep(3000);
 
         onView(allOf(withContentDescription("More options"), isDisplayed())).perform(click());
-        onView(allOf(withText("Remove account"), isDisplayed())).perform(click());
+        ViewInteraction viewInteraction = onView(allOf(withText("Remove account"), isDisplayed()));
+        viewInteraction.check(matches(isDisplayed()));
+        viewInteraction.perform(click());
 
-        // maximum 2 accounts - TODO: after the removal of the last account, we actually should be on login
-        onView(allOf(withContentDescription("More options"), isDisplayed())).perform(click());
-        onView(allOf(withText("Remove account"), isDisplayed())).perform(click());
+        // maximum 2 accounts
+        try {
+            onView(allOf(withContentDescription("More options"), isDisplayed())).perform(click());
+            onView(allOf(withText("Remove account"), isDisplayed())).perform(click());
+        } catch (NoMatchingViewException e) {
+            // no crash teardown if there were less accounts
+        }
     }
 }

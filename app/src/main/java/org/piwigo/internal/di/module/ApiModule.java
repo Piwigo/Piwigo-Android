@@ -22,17 +22,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.logging.HttpLoggingInterceptor;
-import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @Module
 public class ApiModule {
@@ -43,15 +44,18 @@ public class ApiModule {
                 .create();
     }
 
-    @Provides @Singleton @Named("IoScheduler") Scheduler provideIoScheduler() {
+    @Provides @Singleton @Named("IoScheduler")
+    Scheduler provideIoScheduler() {
         return Schedulers.io();
     }
 
-    @Provides @Singleton @Named("UiScheduler") Scheduler provideUiScheduler() {
+    @Provides @Singleton @Named("UiScheduler")
+    Scheduler provideUiScheduler() {
         return AndroidSchedulers.mainThread();
     }
 
-    @Provides @Singleton RestServiceFactory provideRestServiceFactory(HttpLoggingInterceptor loggingInterceptor, Gson gson, UserManager userManager) {
-        return new RestServiceFactory(loggingInterceptor, gson, userManager);
+    @Provides @Singleton
+    WebServiceFactory provideRestServiceFactory(HttpLoggingInterceptor loggingInterceptor, Gson gson, UserManager userManager) {
+        return new WebServiceFactory(loggingInterceptor, gson, userManager);
     }
 }
