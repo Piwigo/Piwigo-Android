@@ -20,7 +20,10 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <resources>
+    <!-- General strings -->
     <string name="app_name">Piwigo</string>
+    <string name="gen_error">Failure</string>
+    <!-- titles -->
     <string name="title_activity_login">ಲಾಗಿನ್</string>
     <string name="title_activity_accounts">ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸು</string>
     <string name="title_activity_about">ಅಪ್ಲಿಕೇಶನ್ ಬಗ್ಗೆ</string>
@@ -126,6 +129,10 @@
     <string name="settings_colors">Colors</string>
     <string name="settings_color_palette">Color Palette</string>
     <string name="settings_color_palette_summary">%1$s</string>
+    <string name="settings_expose_to_device">Expose Photos</string>
+    <string name="settings_expose_to_device_summary_pos">The Photos from Piwigo galleries are made available to other Apps on your device.</string>
+    <string name="settings_expose_to_device_summary_neg">The Photos from Piwigo galleries are not made available to other Apps on your device.</string>
+    <string name="perm_write_external_storage_xplain">To store the photos in a location accessible by other locations write permissions for external storage are required.</string>
     <!-- Upload -->
     <string name="upload_success">Upload successful</string>
     <string name="upload_failed">Upload failed</string>
