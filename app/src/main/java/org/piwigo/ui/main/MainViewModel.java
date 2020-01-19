@@ -57,13 +57,11 @@ public class MainViewModel extends ViewModel {
     public ObservableBoolean drawerState = new ObservableBoolean(false);
     public ObservableBoolean showingRootAlbum = new ObservableBoolean(true);
     public ObservableBoolean displayFab = new ObservableBoolean(false);
-    public ObservableInt navigationItemId = new ObservableInt(R.id.nav_albums);
 
     // TODO: finish loginstatus
     public ObservableInt loginStatus = new ObservableInt(STAT_OFFLINE);
     public ObservableField<String> piwigoVersion = new ObservableField<>("");
 
-    private MutableLiveData<Integer> selectedNavigationItemId = new MutableLiveData<>();
     private RestUserRepository mUserRepository;
     private UserManager userManager;
 
@@ -76,19 +74,6 @@ public class MainViewModel extends ViewModel {
             displayFab.set(!userManager.isGuest(account));
         }
         mUserRepository = userRepository;
-
-        navigationItemId.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-
-            @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
-                selectedNavigationItemId.setValue(navigationItemId.get());
-                drawerState.set(false);
-            }
-        });
-    }
-
-    LiveData<Integer> getSelectedNavigationItemId() {
-        return selectedNavigationItemId;
     }
 
     LiveData<Throwable> getError() {
