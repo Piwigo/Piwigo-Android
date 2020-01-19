@@ -285,7 +285,6 @@ public class ImageRepository implements Observer<Account> {
                             boolean expose = false;
 
                             String last_mod = response.headers().get("Last-Modified");
-                            Log.i("ImageRepository.URLa", response.code() + " " + url + " Last-Modified = " + last_mod);
                             if (response.code() == 200) {
                                 File root;
 /* TODO: #222
@@ -318,7 +317,6 @@ public class ImageRepository implements Observer<Account> {
                                 int w = options.outWidth;
 
                                 ImageVariant iv = new ImageVariant(imageId, w, h, fullPath, last_mod, url);
-                                Log.i("ImageRepository.URLa", "Inserting " + url + " Last-Modified = " + last_mod);
                                 db.variantDao().insert(iv);
 
                                 return Observable.just(fullPath);
