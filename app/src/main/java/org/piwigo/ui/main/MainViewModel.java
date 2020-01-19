@@ -21,6 +21,7 @@ package org.piwigo.ui.main;
 
 import android.accounts.Account;
 import android.util.Log;
+import android.widget.TabHost;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -29,14 +30,15 @@ import androidx.databinding.Observable;
 import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.model.SuccessResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restrepository.RestUserRepository;
+import org.piwigo.io.restmodel.SuccessResponse;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends ViewModel {
     // TODO: cleanup here...
@@ -47,16 +49,7 @@ public class MainViewModel extends ViewModel {
 
     private static final String TAG = MainViewModel.class.getName();
 
-    private MutableLiveData<SuccessResponse> logoutSuccess = new MutableLiveData<>();
-    private MutableLiveData<Throwable> logoutError = new MutableLiveData<>();
-
-    LiveData<SuccessResponse> getLogoutSuccess() {
-        return logoutSuccess;
-    }
-
-    LiveData<Throwable> getLogoutError() {
-        return logoutError;
-    }
+    private MutableLiveData<Throwable> mError = new MutableLiveData<>();
 
     public ObservableField<String> title = new ObservableField<>();
     public ObservableField<String> username = new ObservableField<>();
@@ -64,17 +57,15 @@ public class MainViewModel extends ViewModel {
     public ObservableBoolean drawerState = new ObservableBoolean(false);
     public ObservableBoolean showingRootAlbum = new ObservableBoolean(true);
     public ObservableBoolean displayFab = new ObservableBoolean(false);
-    public ObservableInt navigationItemId = new ObservableInt(R.id.nav_albums);
 
     // TODO: finish loginstatus
     public ObservableInt loginStatus = new ObservableInt(STAT_OFFLINE);
     public ObservableField<String> piwigoVersion = new ObservableField<>("");
 
-    private MutableLiveData<Integer> selectedNavigationItemId = new MutableLiveData<>();
-    private UserRepository mUserRepository;
+    private RestUserRepository mUserRepository;
     private UserManager userManager;
 
-    MainViewModel(UserManager userManager, UserRepository userRepository) {
+    MainViewModel(UserManager userManager, RestUserRepository userRepository) {
         Account account = userManager.getActiveAccount().getValue();
         this.userManager = userManager;
         if (account != null) {
@@ -83,55 +74,14 @@ public class MainViewModel extends ViewModel {
             displayFab.set(!userManager.isGuest(account));
         }
         mUserRepository = userRepository;
-
-        navigationItemId.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-
-            @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
-                selectedNavigationItemId.setValue(navigationItemId.get());
-                drawerState.set(false);
-            }
-        });
     }
 
-    LiveData<Integer> getSelectedNavigationItemId() {
-        return selectedNavigationItemId;
+    LiveData<Throwable> getError() {
+        return mError;
     }
 
-    public void onLogoutClick() {
-        if (userManager.getActiveAccount().getValue() != null) {
-            mUserRepository.logout(userManager.getActiveAccount().getValue())
-                    .compose(applySchedulers())
-                    .subscribe(new MainViewModel.LogoutSubscriber());
-        } else {
-            Throwable e = new Throwable(String.valueOf(R.string.account_empty_message));
-            logoutError.setValue(e);
-        }
-    }
-
-
-    private class LogoutSubscriber extends Subscriber<SuccessResponse> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            Log.e(TAG, e.getMessage());
-            logoutError.setValue(e);
-        }
-
-        @Override
-        public void onNext(SuccessResponse successResponse) {
-            Log.i(TAG, successResponse.toString());
-            logoutSuccess.setValue(successResponse);
-        }
-    }
-
-    private <T> rx.Observable.Transformer<T, T> applySchedulers() {
-        return observable -> observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+    public void setError(Throwable th){
+        mError.setValue(th);
     }
 
 }

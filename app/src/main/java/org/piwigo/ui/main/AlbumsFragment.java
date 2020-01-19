@@ -30,7 +30,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.piwigo.R;
 import org.piwigo.databinding.FragmentAlbumsBinding;
 import org.piwigo.io.event.RefreshRequestEvent;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.io.PreferencesRepository;
 import org.piwigo.ui.shared.BaseFragment;
 
 import javax.inject.Inject;
@@ -91,6 +91,7 @@ public class AlbumsFragment extends BaseFragment {
     @Override
     public void onResume() {
         MainViewModel vm = ViewModelProviders.of(this.getActivity(), viewModelFactory).get(MainViewModel.class);
+        binding.getViewModel().setMainViewModel(vm);
         vm.title.set(categoryName);
         vm.showingRootAlbum.set(categoryID == 0);
         EventBus.getDefault().register(this);

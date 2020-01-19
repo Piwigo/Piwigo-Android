@@ -30,7 +30,7 @@ import org.junit.rules.TestRule;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restrepository.RestUserRepository;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -40,7 +40,8 @@ public class MainViewModelTest {
 
     @Mock UserManager userManager;
     @Mock Account account;
-    @Mock UserRepository userRepository;
+    @Mock
+    RestUserRepository userRepository;
 
     private MainViewModel viewModel;
 
@@ -58,13 +59,4 @@ public class MainViewModelTest {
         viewModel = new MainViewModel(userManager, userRepository);
     }
 
-    @Test @SuppressWarnings("unchecked") public void getSelectedMenuItem_observerReceivesSelectedMenuItem() {
-        int itemId = 1;
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        viewModel.getSelectedNavigationItemId().observeForever(observer);
-
-        viewModel.navigationItemId.set(itemId);
-
-        verify(observer).onChanged(itemId);
-    }
 }

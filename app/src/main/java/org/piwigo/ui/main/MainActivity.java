@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.InputType;
@@ -35,6 +36,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
@@ -53,20 +55,21 @@ import org.piwigo.databinding.ActivityMainBinding;
 import org.piwigo.databinding.DrawerHeaderBinding;
 import org.piwigo.helper.DialogHelper;
 import org.piwigo.helper.NetworkHelper;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
-import org.piwigo.io.model.ImageUploadItem;
-import org.piwigo.io.model.LoginResponse;
-import org.piwigo.io.model.SuccessResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.data.model.ImageUploadItem;
+import org.piwigo.io.restmodel.LoginResponse;
+import org.piwigo.io.restmodel.SuccessResponse;
+import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.settings.SettingsActivity;
 import org.piwigo.ui.shared.BaseActivity;
+
 
 import java.io.File;
 import java.util.ArrayList;
@@ -87,10 +90,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
+import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private static final String TAG = MainActivity.class.getName();
@@ -102,9 +107,11 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Inject
     MainViewModelFactory viewModelFactory;
     @Inject
-    RestServiceFactory restServiceFactory;
+    WebServiceFactory webServiceFactory;
     @Inject
-    UserRepository userRepository;
+    RestUserRepository userRepository;
+
+    private final Handler handler = new Handler();
 
     private MainViewModel viewModel;
 
@@ -118,6 +125,15 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private Observable.OnPropertyChangedCallback mDrawerCallBack;
     private ActivityMainBinding mBinding;
 
+    private boolean checkLoginRequired() {
+       if (!userManager.hasAccounts()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            return true;
+       }
+       return false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
@@ -127,8 +143,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, mBinding.navigationView, false);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
-        viewModel.getSelectedNavigationItemId().observe(this, this::itemSelected);
-
         mBinding.setViewModel(viewModel);
         headerBinding.setViewModel(viewModel);
         mBinding.navigationView.addHeaderView(headerBinding.getRoot());
@@ -141,7 +155,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 R.string.nav_drawer_close
         );
         mBinding.drawerLayout.addDrawerListener(mDrawerToggle);
-
         mDrawerToggle.setDrawerIndicatorEnabled(viewModel.showingRootAlbum.get());
 
         mDrawerCallBack = new Observable.OnPropertyChangedCallback() {
@@ -153,6 +166,11 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         viewModel.showingRootAlbum.addOnPropertyChangedCallback(mDrawerCallBack);
 
         snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
+
+        if (checkLoginRequired()) {
+            finish();
+            return;
+        }
 
         if (!NetworkHelper.INSTANCE.hasInternet(this)) {
             EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
@@ -173,10 +191,11 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 viewModel.displayFab.set(!userManager.isGuest(currentAccount));
                 /* Login to the new site after account changes.
                  * It seems quite unclean to do that here -> TODO: FIXME*/
-                rx.Observable<LoginResponse> a = userRepository.login(account);
-                a.subscribe(new rx.Observer<LoginResponse>() {
+                io.reactivex.Observable<LoginResponse> a = userRepository.login(account);
+                a.subscribe(new io.reactivex.Observer<LoginResponse>() {
                     @Override
-                    public void onCompleted() {
+                    public void onComplete() {
+
                     }
 
                     @Override
@@ -185,12 +204,18 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                         // TODO: notify loginfailure
                     }
 
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
                     @Override
                     public void onNext(LoginResponse loginResponse) {
                         Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
-                        // TODO: it is crazy to have this code here AND in LauncherActivity
                         userManager.setCookie(account, loginResponse.pwgId);
                         userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
+                        if(loginResponse.statusResponse.result.uploadFormChunkSize != null) {
+                            userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
+                        }
                     }
                 });
                 initStartFragment(viewModel);
@@ -199,12 +224,21 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 viewModel.username.set("");
                 viewModel.url.set("");
             }
+            viewModel.getError().observe(this, this::showError);
         };
         userManager.getActiveAccount().observe(this, accountObserver);
 
         if (savedInstanceState == null) {
             initStartFragment(viewModel);
         }
+
+        NavigationView nav = findViewById(R.id.navigation_view);
+        nav.getMenu().getItem(0).setChecked(true);
+        nav.setNavigationItemSelectedListener(menuItem -> {
+            viewModel.drawerState.set(false);
+            itemSelected(menuItem.getItemId());
+            return true;
+        });
     }
 
     private void initStartFragment(MainViewModel viewModel) {
@@ -224,7 +258,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
 
     @Override
     public void onBackPressed() {
-        if (mDrawerToggle.isDrawerIndicatorEnabled()) {
+        if (getCurrentCategoryId() != 0 && mDrawerToggle.isDrawerIndicatorEnabled()) {
             MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
             viewModel.drawerState.set(false);
         } else {
@@ -265,7 +299,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     protected void onResume() {
         super.onResume();
         MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
-        viewModel.navigationItemId.set(R.id.nav_albums);
         speedDialView.setVisibility(viewModel.displayFab.get() ? View.VISIBLE : View.INVISIBLE);
         EventBus.getDefault().register(this);
     }
@@ -296,6 +329,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
 
             if (bar != null) {
                 bar.setMessage(progressEvent.getSnackbarDesc());
+                snackProgressBarManager.setProgress(progressEvent.getSnackbarProgress());
                 if (progressEvent.getAction() == (SnackProgressEvent.SnackbarUpdateAction.KILL)) {
                     bar.setType(SnackProgressBar.TYPE_NORMAL);
                     bar.setAction(getResources().getString(R.string.button_ok), () -> snackProgressBarManager.dismiss());
@@ -306,7 +340,8 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 if (progressEvent.getAction().equals(SnackProgressEvent.SnackbarUpdateAction.KILL)) {
                     return;
                 }
-                bar = new SnackProgressBar(progressEvent.getSnackbarType(), progressEvent.getSnackbarDesc()).setIsIndeterminate(true);
+                bar = new SnackProgressBar(progressEvent.getSnackbarType(), progressEvent.getSnackbarDesc()).setIsIndeterminate(false);
+                bar.setProgressMax(progressEvent.getSnackbarProgressMax());
                 snackProgressBarManager.put(bar, progressEvent.getSnackbarId());
                 snackProgressBarManager.show(bar, progressEvent.getSnackbarDuration());
             }
@@ -338,15 +373,13 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
             case R.id.nav_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 break;
-            case R.id.nav_logout:
-                logoutUserClick();
-                break;
 
             default:
                 DialogHelper.INSTANCE.showErrorDialog(R.string.not_implemented_title, R.string.not_implemented_msg, this);
                 break;
         }
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -513,31 +546,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         }
     }
 
-    private void logoutUserClick() {
-        viewModel.getLogoutSuccess().observe(this, this::logoutSuccess);
-        viewModel.getLogoutError().observe(this, this::logoutError);
-        viewModel.onLogoutClick();
-    }
-
-    private void logoutSuccess(SuccessResponse response) {
-        //TODO: #161 Show more failure details
-        Toast.makeText(getApplicationContext(), R.string.account_logout_successful, Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-    private void logoutError(Throwable throwable) {
-        //TODO: #161 Show more failure details
-        Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.account_logout_unsuccessfull), throwable.getMessage()), Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-
     private String getNameFromURI(String item, Uri contentUri) {
         if (item.contains("content:"))
             return (getRealPathFromURI(contentUri));
@@ -573,5 +581,13 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         }
     }
 
+    private void showError(Throwable throwable) {
+        Snackbar.make(mBinding.getRoot(), throwable.getMessage(), Snackbar.LENGTH_LONG).setAction(R.string.show_details, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogHelper.INSTANCE.showLogDialog(getResources().getString(R.string.gen_error), throwable.getMessage(), throwable, "REASON: MainActivity.showError, LOGIN_STATUS: " + viewModel.loginStatus.get() + ", PIWIGO_VERSION = " + viewModel.piwigoVersion.get() + ", URL = " + viewModel.url.get(), mBinding.getRoot().getContext());
+            }
+        }).show();
+    }
 }
 

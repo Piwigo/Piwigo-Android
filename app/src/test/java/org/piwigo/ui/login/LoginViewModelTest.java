@@ -31,18 +31,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.model.LoginResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restmodel.LoginResponse;
+import org.piwigo.io.restrepository.RestUserRepository;
 
 import java.util.regex.Pattern;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Scheduler;
-import rx.android.plugins.RxAndroidPlugins;
-import rx.android.plugins.RxAndroidSchedulersHook;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.plugins.RxAndroidPlugins;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -60,7 +55,8 @@ public class LoginViewModelTest {
     private static final String ERROR_USERNAME = "Enter your username";
     private static final String ERROR_PASSWORD = "Enter your password";
 
-    @Mock UserRepository userRepository;
+    @Mock
+    RestUserRepository userRepository;
 
     @Mock Resources resources;
 
@@ -85,7 +81,7 @@ public class LoginViewModelTest {
     }
     @After
     public void tearDown() {
-        RxAndroidPlugins.getInstance().reset();
+        RxAndroidPlugins.reset();
     }
 
     @Test public void clearUrlErrorOnTextChange() {
@@ -146,7 +142,8 @@ public class LoginViewModelTest {
         assertThat(viewModel.passwordError.get()).isEqualTo(ERROR_PASSWORD);
     }
 
-    @Test public void callloginIfUrlValid() {
+    @Test public void callLoginIfUrlValid() {
+        viewModel.unitTesting = true;
         viewModel.url.set(URL);
         viewModel.username.set(USERNAME);
         viewModel.password.set(PASSWORD);
@@ -157,6 +154,7 @@ public class LoginViewModelTest {
     }
 
     @Test public void callGetStatusIfUrlValid() {
+        viewModel.unitTesting = true;
         viewModel.url.set(URL);
 
         viewModel.testConnection(true, URL);
@@ -165,6 +163,7 @@ public class LoginViewModelTest {
     }
 
     @Test @SuppressWarnings("unchecked") public void loginSuccessObserverReceivesLoginResponse() {
+        viewModel.unitTesting = true;
         LoginResponse loginResponse = new LoginResponse();
         when(userRepository.login(URL, USERNAME, PASSWORD)).thenReturn(Observable.just(loginResponse));
         Observer<LoginResponse> observer = (Observer<LoginResponse>) mock(Observer.class);
@@ -179,6 +178,7 @@ public class LoginViewModelTest {
     }
 
     @Test @SuppressWarnings("unchecked") public void loginErrorObserverReceivesLoginError() {
+        viewModel.unitTesting = true;
         Throwable throwable = new Throwable();
         when(userRepository.login(URL, USERNAME, PASSWORD)).thenReturn(Observable.error(throwable));
         Observer<Throwable> observer = (Observer<Throwable>) mock(Observer.class);
@@ -194,6 +194,7 @@ public class LoginViewModelTest {
     }
 
     @Test @SuppressWarnings("unchecked") public void animationFinishedObserverReceivesTrue() {
+        viewModel.unitTesting = true;
         Observer<Boolean> observer = (Observer<Boolean>) mock(Observer.class);
         viewModel.getAnimationFinished().observeForever(observer);
 

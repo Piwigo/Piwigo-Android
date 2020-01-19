@@ -24,7 +24,7 @@ import android.os.Bundle;
 import org.piwigo.PiwigoApplication;
 import org.piwigo.R;
 import org.piwigo.helper.DialogHelper;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.io.PreferencesRepository;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,11 +50,13 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
 
+        private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 815;
         PiwigoApplication piwigo;
 
         private ListPreference mPreferenceThumbnailSize;
         private SeekBarPreference mPreferencePhotosPerRow;
         private ListPreference mPreferenceDarkTheme;
+// TODO: #222 private SwitchPreferenceCompat mPreferenceExposePhotos;
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -65,6 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
             mPreferencePhotosPerRow = findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
             mPreferenceThumbnailSize = findPreference(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE);
             mPreferenceDarkTheme = findPreference(PreferencesRepository.KEY_PREF_COLOR_PALETTE);
+// TODO: #222             mPreferenceExposePhotos = findPreference(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
 
             mPreferencePhotosPerRow.setOnPreferenceChangeListener((preference, value) -> true);
 
@@ -82,6 +85,30 @@ public class SettingsActivity extends AppCompatActivity {
 
                 return true;
             }));
+/* TODO: #222
+            mPreferenceExposePhotos.setOnPreferenceChangeListener((preference, value) -> {
+                boolean set = Boolean.parseBoolean(value.toString());
+                mPreferenceExposePhotos.setSummary(getString(set ? R.string.settings_expose_to_device_summary_pos :R.string.settings_expose_to_device_summary_neg));
+                if(set){
+                    int permissionCheck = ContextCompat.checkSelfPermission(this.getContext(),
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                    if(permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(this.getActivity(),
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                            Toast.makeText(this.getContext(), R.string.perm_write_external_storage_xplain, Toast.LENGTH_LONG).show();
+                        }
+                        ActivityCompat.requestPermissions(this.getActivity(),
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                    }
+                }
+                return true;
+            });
+ */
         }
     }
+
+
 }

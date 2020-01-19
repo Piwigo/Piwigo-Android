@@ -23,9 +23,9 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Context;
 
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.repository.CategoriesRepository;
-import org.piwigo.io.repository.ImageRepository;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.data.repository.CategoriesRepository;
+import org.piwigo.data.repository.ImageRepository;
+import org.piwigo.io.PreferencesRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -52,7 +52,7 @@ public class AlbumsViewModelFactory implements ViewModelProvider.Factory {
         if (viewModelClass.isAssignableFrom(AlbumsViewModel.class)) {
             //noinspection unchecked
             return (T) new AlbumsViewModel(userManager, categoriesRepository,
-                    imagesRepository, context.getResources(), preferences);
+                    imagesRepository, context.getResources());
         }
         throw new IllegalStateException("Unable to create " + viewModelClass.getName());
     }

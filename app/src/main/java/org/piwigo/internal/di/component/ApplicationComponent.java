@@ -26,7 +26,7 @@ import org.piwigo.internal.di.module.ApiModule;
 import org.piwigo.internal.di.module.ApplicationModule;
 import org.piwigo.internal.di.module.AndroidInjectorModule;
 import org.piwigo.internal.di.module.NetworkModule;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.io.PreferencesRepository;
 
 import javax.inject.Singleton;
 

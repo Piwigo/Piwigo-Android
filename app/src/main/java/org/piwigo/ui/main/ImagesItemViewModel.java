@@ -22,7 +22,7 @@ import android.content.ContextWrapper;
 import android.os.Bundle;
 import android.view.View;
 
-import org.piwigo.io.model.ImageInfo;
+import org.piwigo.data.model.VariantWithImage;
 import org.piwigo.ui.photoviewer.PhotoViewerDialogFragment;
 
 import java.util.ArrayList;
@@ -33,30 +33,35 @@ import androidx.lifecycle.ViewModel;
 
 public class ImagesItemViewModel extends ViewModel {
 
-    private final String url;
-    private final int imageId;
-    private final String title;
+    private final VariantWithImage image;
+    private final int imagePosition;
+//    private final String title;
 
-    private final ArrayList<ImageInfo> images;
+    private final ArrayList<VariantWithImage> images;
 
-    public ImagesItemViewModel(String url, int imageId, String title, ArrayList<ImageInfo> images) {
-        this.url = url;
-        this.imageId = imageId;
-        this.title = title;
+    public ImagesItemViewModel(VariantWithImage img, int imagePosition, ArrayList<VariantWithImage> images) {
+        // TODO: images should be removed, it is just there to pass it to the PhotoViewerDialogFragment
+        // for this we should better refer to the parent album
+        this.image = img;
+        this.imagePosition = imagePosition;
+//        this.title = title;
         this.images = images;
     }
 
+    public VariantWithImage getImage(){
+        return image;
+    }
     public String getUrl() {
-        return url;
+        return image.variant.storageLocation;
     }
 
     public String getTitle() {
-        return title;
+        return image.image.description;
     }
 
-    public int getImageId()
+    public int getImagePosition()
     {
-        return (imageId);
+        return (imagePosition);
     }
 
     public void onClickDo(View v)
@@ -72,8 +77,9 @@ public class ImagesItemViewModel extends ViewModel {
         if(mainActivity != null)
         {
             Bundle bundle = new Bundle();
+            // TODO: don't put the list of images here, but only the imageID
             bundle.putSerializable("images", images);
-            bundle.putInt("position", getImageId());
+            bundle.putInt("position", getImagePosition());
 
             FragmentTransaction ft = mainActivity.getSupportFragmentManager().beginTransaction();
             PhotoViewerDialogFragment newFragment = PhotoViewerDialogFragment.newInstance();

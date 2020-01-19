@@ -62,8 +62,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
                 android:fitsSystemWindows="true"
-                app:menu="@menu/drawer_main"
-                app:selectedItemId="@={viewModel.navigationItemId}" />
+                app:menu="@menu/drawer_main" />
         </androidx.drawerlayout.widget.DrawerLayout>
 
         <com.leinardi.android.speeddial.SpeedDialView

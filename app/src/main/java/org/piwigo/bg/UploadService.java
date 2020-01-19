@@ -24,6 +24,11 @@ import android.app.IntentService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.Uri;
+import android.provider.OpenableColumns;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -35,19 +40,21 @@ import org.greenrobot.eventbus.EventBus;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.bg.action.UploadAction;
+import org.piwigo.helper.NetworkHelper;
 import org.piwigo.helper.NotificationHelper;
 import org.piwigo.io.RestService;
-import org.piwigo.io.RestServiceFactory;
+import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.event.RefreshRequestEvent;
 import org.piwigo.io.event.SnackProgressEvent;
-import org.piwigo.io.model.ImageUploadResponse;
-import org.piwigo.io.repository.UserRepository;
+import org.piwigo.io.restmodel.ImageUploadResponse;
+import org.piwigo.io.restrepository.RestUserRepository;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -69,10 +76,10 @@ public class UploadService extends IntentService {
     private SnackProgressEvent snackProgressEvent;
 
     @Inject
-    RestServiceFactory restServiceFactory;
+    WebServiceFactory webServiceFactory;
 
     @Inject
-    UserRepository userRepository;
+    RestUserRepository userRepository;
 
     @Inject
     UserManager userManager;
@@ -104,9 +111,8 @@ public class UploadService extends IntentService {
      *               for details.
      */
     @Override
-    protected void onHandleIntent(Intent intent)
-    {
-        ImageUploadQueue<UploadAction> imageUploadQueue = (ImageUploadQueue<UploadAction>)intent.getSerializableExtra(KEY_UPLOAD_QUEUE);
+    protected void onHandleIntent(Intent intent) {
+        ImageUploadQueue<UploadAction> imageUploadQueue = (ImageUploadQueue<UploadAction>) intent.getSerializableExtra(KEY_UPLOAD_QUEUE);
         if (imageUploadQueue == null)
             return;
         totalImagesCount = imageUploadQueue.size();
@@ -118,16 +124,21 @@ public class UploadService extends IntentService {
         snackProgressEvent.setSnackbarDuration(SnackProgressBarManager.LENGTH_INDEFINITE);
         snackProgressEvent.setAction(SnackProgressEvent.SnackbarUpdateAction.REFRESH);
         snackProgressEvent.setSnackbarDesc(getResources().getString(R.string.upload_started));
-        onUploadStarted(imageUploadQueue);
+        onChunkedUploadStarted(imageUploadQueue);
     }
 
-    protected void onUploadStarted(ImageUploadQueue<UploadAction> imageUploadQueue)
-    {
+    protected void onChunkedUploadStarted(ImageUploadQueue<UploadAction> imageUploadQueue) {
         final UploadAction uploadAction;
         if ((uploadAction = imageUploadQueue.poll()) == null)
             return;
+
+        //Chunks
+        long tmpFileSize = getFileSize(uploadAction.getUploadData().getTargetUri());
+        int chunkSize = getChunkSize();
+        int expectedChunks = tmpFileSize <= chunkSize ? 1 : (int) (tmpFileSize / chunkSize) + 1;
         //Instances
-        MultipartBody.Part filePart;
+        MultipartBody.Part fileParts[] = new MultipartBody.Part[expectedChunks];
+        UploadPromise promise = new UploadPromise();
         RestService restService;
         //Local variables
         ArrayList<RequestBody> requestBodies;
@@ -143,12 +154,74 @@ public class UploadService extends IntentService {
             Log.e("UploadService", "IOException", e.getCause());
             content = new byte[0];
         }
-        filePart = MultipartBody.Part.createFormData("file", uploadAction.getFileName(), RequestBody.create(MediaType.parse("image/*"), content));
-        restService = restServiceFactory.createForAccount(userManager.getActiveAccount().getValue());
+
+        byte[][] splittedContent = splitArray(content, chunkSize);
+        for (int i = 0; i < splittedContent.length; i++) {
+            fileParts[i] = MultipartBody.Part.createFormData("file", uploadAction.getFileName(), RequestBody.create(MediaType.parse("image/*"), splittedContent[i]));
+        }
+        restService = webServiceFactory.createForAccount(userManager.getActiveAccount().getValue());
         requestBodies = createUploadRequest(uploadAction.getFileName(), getPhotoName(uploadAction.getFileName()), userManager.getActiveAccount().getValue());
 
+        //Promise building
+        promise.setFileParts(fileParts);
+        promise.setRequestBodies(requestBodies);
+        promise.setCatId(uploadAction.getUploadData().getCategoryId());
+        promise.setCurrentChunk(0);
+        promise.setTotalChunks(expectedChunks);
         if (uploadAction.getUploadData().getCategoryId() > 0)
-            callUploadResponse(imageUploadQueue, restService, requestBodies, uploadAction.getUploadData().getCategoryId(), filePart);
+            callChunkedUploadResponse(imageUploadQueue, restService, promise);
+    }
+
+    /**
+     * Pick a chunk size depending of the network mode
+     * @return chunkSize in bytes
+     */
+    public int getChunkSize()
+    {
+        int upSpeed = NetworkHelper.INSTANCE.getNetworkSpeed(getApplication());
+        int chunkSize = userManager.getChunkSize(userManager.getActiveAccount().getValue());
+
+        if(chunkSize > upSpeed * 1024 / 8){
+            chunkSize = upSpeed * 1024 / 8;
+        }
+
+        return chunkSize;
+    }
+
+    /**
+     * Get the file size from the given file URI (getting as a File does not work because of Android's way to manage temp content)
+     *
+     * @param fileUri (file path on the device)
+     * @return fileSize (as long)
+     */
+    public long getFileSize(Uri fileUri) {
+        Cursor cursor = getContentResolver().query(fileUri, null, null, null, null);
+        long size = 0;
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+            cursor.close();
+        }
+        return size;
+    }
+
+    /**
+     * Split the file in parts to send multiple Multipart.Parts
+     *
+     * @param source    byte array containing the whole image
+     * @param chunkSize size of the chunks (1024 * 1024 = 1MB for instance)
+     * @return an array of x chunks containing chunks of source
+     */
+    public static byte[][] splitArray(byte[] source, int chunkSize) {
+        byte[][] newArray = new byte[(source.length / chunkSize) + 1][chunkSize];
+        int start = 0;
+
+        for (int i = 0; i < newArray.length; i++) {
+            newArray[i] = Arrays.copyOfRange(source, start, start + chunkSize);
+            start += chunkSize;
+        }
+        return newArray;
     }
 
     /**
@@ -169,6 +242,7 @@ public class UploadService extends IntentService {
             photoName = imageName;
         return (photoName);
     }
+
     /**
      * Create the request bodies for the upload form
      *
@@ -187,33 +261,49 @@ public class UploadService extends IntentService {
         return (requestBodies);
     }
 
-    private void callUploadResponse(ImageUploadQueue<UploadAction> imageUploadQueue, RestService restService, ArrayList<RequestBody> requestBodies,
-                                    int catId, MultipartBody.Part filePart) {
-        Call<ImageUploadResponse> call = restService.uploadImage(requestBodies.get(0), catId, requestBodies.get(1), requestBodies.get(2), filePart);
-        RefreshRequestEvent refreshEvent = new RefreshRequestEvent(catId);
+    private void callChunkedUploadResponse(ImageUploadQueue<UploadAction> imageUploadQueue, RestService restService, UploadPromise promise) {
+
+        RefreshRequestEvent refreshEvent = new RefreshRequestEvent(promise.getCatId());
+
+        //We have uploaded every chunk, let's jump to the next image
+        if (promise.getCurrentChunk() > promise.getTotalChunks() - 1) {
+            uploadedImages++;
+            onChunkedUploadStarted(imageUploadQueue);
+            return;
+        }
+        Call<ImageUploadResponse> call = restService.uploadChunkedImage(
+                promise.getRequestBodies().get(0),
+                promise.getCatId(),
+                promise.getRequestBodies().get(1),
+                promise.getRequestBodies().get(2),
+                promise.getCurrentChunk(),
+                promise.getTotalChunks(),
+                promise.getFileParts()[promise.getCurrentChunk()]);
 
         call.enqueue(new Callback<ImageUploadResponse>() {
             @Override
             public void onResponse(@NonNull Call<ImageUploadResponse> call, @NonNull Response<ImageUploadResponse> response) {
                 if (response.raw().code() == 200 && ("ok".equals(response.body().up_stat))) {
+                    snackProgressEvent.setSnackbarProgressMax(promise.getTotalChunks());
+                    snackProgressEvent.setSnackbarProgress(promise.getCurrentChunk());
                     snackProgressEvent.setSnackbarDesc(String.format(getResources().getString(R.string.upload_progress_body), uploadedImages, totalImagesCount));
                     EventBus.getDefault().post(snackProgressEvent);
-                    uploadedImages++;
-                    if (imageUploadQueue.size() <= 0) {
+                    promise.setCurrentChunk(promise.getCurrentChunk() + 1);
+                    if (imageUploadQueue.size() <= 0 && promise.getCurrentChunk() == promise.getTotalChunks()) {
                         NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_success), String.format(getResources().getString(R.string.upload_success_body), totalImagesCount, response.body().up_result.up_category.catlabel), getApplicationContext());
                         snackProgressEvent.setSnackbarDesc(String.format(getResources().getString(R.string.upload_success_body), totalImagesCount, response.body().up_result.up_category.catlabel));
                         snackProgressEvent.setAction(SnackProgressEvent.SnackbarUpdateAction.KILL);
                         EventBus.getDefault().post(snackProgressEvent);
                         EventBus.getDefault().post(refreshEvent);
                     }
-                    onUploadStarted(imageUploadQueue);
+                    callChunkedUploadResponse(imageUploadQueue, restService, promise);
                 } else {
-                    String add = " (code: " + response.raw().code() + ")";
+                    String add = " (code " + response.raw().code() + ": " + response.raw().message() + ")";
                     // TODO: handle this properly for #161
                     if (response.body() != null) {
-                        if(response.body().err != null) {
+                        if (response.body().err != null) {
                             add = " (" + response.body().err.message + ")";
-                        }else{
+                        } else {
                             add = " (unknown)"; // this should be quite abnormal to happen but who knows...
                         }
                     }
@@ -226,7 +316,7 @@ public class UploadService extends IntentService {
             }
 
             @Override
-            public void onFailure(@NonNull Call<ImageUploadResponse> call, @NonNull Throwable t) {
+            public void onFailure(Call<ImageUploadResponse> call, Throwable t) {
                 // TODO: handle this properly for #161
                 NotificationHelper.INSTANCE.sendNotification(getResources().getString(R.string.upload_failed), getResources().getString(R.string.upload_error), getApplicationContext());
                 snackProgressEvent.setSnackbarDesc(getResources().getString(R.string.upload_failed));
@@ -248,6 +338,52 @@ public class UploadService extends IntentService {
             byteBuffer.write(buffer, 0, len);
         }
         return byteBuffer.toByteArray();
+    }
+
+    public class UploadPromise {
+        MultipartBody.Part[] fileParts;
+        ArrayList<RequestBody> requestBodies;
+        int catId, currentChunk, totalChunks;
+
+        public void setFileParts(MultipartBody.Part[] fileParts) {
+            this.fileParts = fileParts;
+        }
+
+        public void setRequestBodies(ArrayList<RequestBody> requestBodies) {
+            this.requestBodies = requestBodies;
+        }
+
+        public void setCatId(int catId) {
+            this.catId = catId;
+        }
+
+        public void setCurrentChunk(int currentChunk) {
+            this.currentChunk = currentChunk;
+        }
+
+        public void setTotalChunks(int totalChunks) {
+            this.totalChunks = totalChunks;
+        }
+
+        public MultipartBody.Part[] getFileParts() {
+            return fileParts;
+        }
+
+        public ArrayList<RequestBody> getRequestBodies() {
+            return requestBodies;
+        }
+
+        public int getCatId() {
+            return catId;
+        }
+
+        public int getCurrentChunk() {
+            return currentChunk;
+        }
+
+        public int getTotalChunks() {
+            return totalChunks;
+        }
     }
 
 }

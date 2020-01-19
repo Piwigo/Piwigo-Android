@@ -32,6 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.core.app.NavUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.appcompat.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -139,11 +140,20 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
                 startActivity(editIntent);
                 break;
             case R.id.action_del_account:
+                int count = userManager.countOfAcounts();
+                Account account = userManager.getActiveAccount().getValue();
+                if (account != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                        accountManager.removeAccount(userManager.getActiveAccount().getValue(), this, future -> userManager.refreshAccounts(), null);
+                        accountManager.removeAccount(account, this, future -> userManager.refreshAccounts(), null);
                     } else {
-                        accountManager.removeAccount(userManager.getActiveAccount().getValue(), future -> userManager.refreshAccounts(), null);
+                        accountManager.removeAccount(account, future -> userManager.refreshAccounts(), null);
                     }
+                }
+                if (count <= 1) {
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    finish();
+                }
+
                 break;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);

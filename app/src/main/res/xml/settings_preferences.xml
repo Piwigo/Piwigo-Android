@@ -17,7 +17,6 @@
             android:title="@string/settings_photos_per_row" />
     </PreferenceCategory>
 
-
     <PreferenceCategory
         android:title="@string/settings_images"
         app:iconSpaceReserved="false">
@@ -29,6 +28,14 @@
             app:iconSpaceReserved="false"
             app:summary="@string/settings_download_size_summary"
             app:title="@string/settings_download_size" />
+<!-- TODO: #222
+        <SwitchPreferenceCompat
+            android:key="expose_photos_to_device"
+            app:defaultValue="false"
+            app:iconSpaceReserved="false"
+            app:summary="@string/settings_expose_to_device_summary_neg"
+            app:title="@string/settings_expose_to_device" />
+-->
     </PreferenceCategory>
 
     <PreferenceCategory

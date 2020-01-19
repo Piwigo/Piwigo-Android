@@ -21,25 +21,36 @@ package org.piwigo.accounts;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.room.Room;
+
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 
 import org.apache.commons.lang3.StringUtils;
+import org.piwigo.PiwigoApplication;
 import org.piwigo.R;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.data.db.CacheDatabase;
+import org.piwigo.io.PreferencesRepository;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Note: a token in Android is replacing username/password for different logins,
@@ -53,8 +64,10 @@ public class UserManager {
     @VisibleForTesting static final String KEY_USERNAME = "username";
     @VisibleForTesting static final String KEY_COOKIE = "cookie";
     @VisibleForTesting static final String KEY_TOKEN  = "token";
+    @VisibleForTesting static final String KEY_CHUNK_SIZE  = "chunk_size";
 
     @VisibleForTesting static final String GUEST_ACCOUNT_NAME = "guest";
+    private static final String TAG = UserManager.class.getName();
 
     private final AccountManager accountManager;
     private final Resources resources;
@@ -62,16 +75,30 @@ public class UserManager {
 
     private final MutableLiveData<Account> mCurrentAccount;
     private final MutableLiveData<List<Account>> mAllAccounts;
+    private final Context mContext;
+    private Map<String, CacheDatabase> databases = new HashMap<String, CacheDatabase>();
 
-    public UserManager(AccountManager accountManager, Resources resources, PreferencesRepository preferencesRepository) {
+    public UserManager(AccountManager accountManager, Resources resources, PreferencesRepository preferencesRepository, Context ctx) {
         this.accountManager = accountManager;
         this.resources = resources;
         this.preferencesRepository = preferencesRepository;
         this.mCurrentAccount = new MutableLiveData<>();
         this.mAllAccounts = new MutableLiveData<>();
+        this.mContext = ctx;
 
-        refreshAccounts();
         setActiveAccount(preferencesRepository.getActiveAccountName());
+        refreshAccounts();
+    }
+
+    public CacheDatabase getDatabaseForAccount(Account a) {
+        if (a == null)
+            return null;
+        CacheDatabase result = databases.get(a.name);
+        if (result == null){
+            updateDB();
+            result = databases.get(a.name);
+        }
+        return result;
     }
 
     /* refresh account list - to be called by activities which are aware
@@ -84,8 +111,12 @@ public class UserManager {
         setActiveAccount(a == null ? "" : a.name);
     }
 
+    public int countOfAcounts() {
+        return accountManager.getAccountsByType(resources.getString(R.string.account_type)).length;
+    }
+
     public boolean hasAccounts() {
-        return accountManager.getAccountsByType(resources.getString(R.string.account_type)).length > 0;
+        return countOfAcounts() > 0;
     }
 
     /* get account for username@siteUrl, null if no such account exists */
@@ -156,9 +187,25 @@ public class UserManager {
     }
 
     // TODO: rmk, 2018-11-24: not sure whether it is a good idea to store the token in the account at all
-    // maybe it would be better to just keep it in the UserRepository
+    // maybe it would be better to just keep it in the RestUserRepository
     public String getToken(Account account) {
         return accountManager.getUserData(account, KEY_TOKEN);
+    }
+
+    /** set the chunk size for upload in bytes
+     * note: piwigo server returns the preferred chunk-size in kB
+     * */
+    public void setChunkSize(Account account, int chunkSize) {
+        accountManager.setUserData(account, KEY_CHUNK_SIZE, String.valueOf(chunkSize));
+    }
+
+    public int getChunkSize(Account account)
+    {
+        String junksize = accountManager.getUserData(account, KEY_CHUNK_SIZE);
+        if(junksize == null){
+            return 128;
+        }
+        return Integer.parseInt(junksize);
     }
 
     public boolean isGuest(Account account) {
@@ -210,11 +257,28 @@ public class UserManager {
                 return account;
             }
         }
+
         return null;
     }
 
     public void setActiveAccount(Account activeAccount) {
+        preferencesRepository.setActiveAccount(activeAccount.name);
         mCurrentAccount.setValue(activeAccount);
+        updateDB();
+    }
+
+    private void updateDB(){
+        Account a = mCurrentAccount.getValue();
+        if(a != null) {
+            CacheDatabase cache = Room.databaseBuilder(mContext,
+                    CacheDatabase.class, dbNameFor(a))
+                    .fallbackToDestructiveMigration() /* as the complete database is only a cache we'll loose nothing critical if we drop it */
+                    .build();
+            databases.put(a.name, cache); // TODO: should we use here a Map with WeakReferences to the database to free the memory once all threads are finished accessing the DB?
+        }else{
+            Log.e(TAG, "no account set");
+        }
+        
     }
 
     public void setActiveAccount(String activeAccount) {
@@ -225,6 +289,7 @@ public class UserManager {
                 if (account.name.equals(activeAccount)) {
                     preferencesRepository.setActiveAccount(activeAccount);
                     mCurrentAccount.setValue(account);
+                    updateDB();
                     return;
                 }
             }
@@ -236,6 +301,11 @@ public class UserManager {
         }else{
             mCurrentAccount.setValue(null);
         }
+        updateDB();
+    }
+
+    private String dbNameFor(Account account) {
+        return "cache-" + account.name.replace("/", "-");
     }
 
     /* throws IllegalArgumentException if the rename is not allowed because there is already an account with those properties. */
@@ -254,6 +324,42 @@ public class UserManager {
             String newname = getAccountName(url, username);
             if(!newname.equals(account.name)) {
                 accountManager.renameAccount(account, newname, null, null);
+            }
+        }
+    }
+
+    public void removeAccount(Account account) {
+        String dbName = dbNameFor(account);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            accountManager.removeAccount(account, null, future -> refreshAccounts(), null);
+        } else {
+            accountManager.removeAccount(account, future -> refreshAccounts(), null);
+        }
+
+        databases.get(account.name).close();
+
+        File databases = new File(mContext.getApplicationInfo().dataDir + "/databases");
+        File db = new File(databases, dbName);
+        if (!db.delete()) {
+            throw new RuntimeException("Failed to delete database " + dbName);
+        }
+
+        File journal = new File(databases, dbName + "-journal");
+        if (journal.exists()) {
+            if (!journal.delete()) {
+                throw new RuntimeException("Failed to delete database journal " + dbName);
+            }
+        }
+        File shm = new File(databases, dbName + "-shm");
+        if (shm.exists()) {
+            if (!shm.delete()) {
+                throw new RuntimeException("Failed to delete database shm " + dbName);
+            }
+        }
+        File wal = new File(databases, dbName + "-wal");
+        if (wal.exists()) {
+            if (!wal.delete()) {
+                throw new RuntimeException("Failed to delete database wal " + dbName);
             }
         }
     }

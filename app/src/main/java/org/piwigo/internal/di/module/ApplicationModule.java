@@ -21,13 +21,15 @@ package org.piwigo.internal.di.module;
 import android.accounts.AccountManager;
 import android.content.Context;
 
+import androidx.room.Room;
+
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.BuildConfig;
 import org.piwigo.PiwigoApplication;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.internal.cache.PiwigoImageCache;
-import org.piwigo.io.repository.PreferencesRepository;
+import org.piwigo.io.PreferencesRepository;
+import org.piwigo.data.db.CacheDatabase;
 
 import javax.inject.Singleton;
 
@@ -48,18 +50,20 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton Picasso providePicasso() {
-        return new Picasso.Builder(application)
-                .indicatorsEnabled(BuildConfig.DEBUG) //We may not want this for production build..
-                .memoryCache(new PiwigoImageCache(application)) //What about this ?
+        Picasso p = new Picasso.Builder(application)
+                .indicatorsEnabled(BuildConfig.DEBUG) // We may not want this for production build..
                 .build();
+// for extended logging activate this one here, it is normally not active, as it consumes so much CPU
+//        p.setLoggingEnabled(true);
+        return p;
     }
 
     @Provides @Singleton AccountManager provideAccountManager() {
         return AccountManager.get(application);
     }
 
-    @Provides @Singleton UserManager provideUserManager(AccountManager accountManager, PreferencesRepository preferencesRepository) {
-        return new UserManager(accountManager, application.getResources(), preferencesRepository);
+    @Provides @Singleton UserManager provideUserManager(AccountManager accountManager, PreferencesRepository preferencesRepository, Context ctx) {
+        return new UserManager(accountManager, application.getResources(), preferencesRepository, ctx);
     }
 
     @Provides @Singleton
