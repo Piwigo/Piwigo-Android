@@ -159,7 +159,7 @@ public class UploadService extends IntentService {
         for (int i = 0; i < splittedContent.length; i++) {
             fileParts[i] = MultipartBody.Part.createFormData("file", uploadAction.getFileName(), RequestBody.create(MediaType.parse("image/*"), splittedContent[i]));
         }
-        restService = webServiceFactory.createForAccount(userManager.getActiveAccount().getValue());
+        restService = webServiceFactory.create();
         requestBodies = createUploadRequest(uploadAction.getFileName(), getPhotoName(uploadAction.getFileName()), userManager.getActiveAccount().getValue());
 
         //Promise building

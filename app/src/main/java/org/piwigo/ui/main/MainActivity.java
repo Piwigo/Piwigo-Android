@@ -500,7 +500,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         catId = getCurrentCategoryId();
         intent = new Intent(this, AlbumService.class);
         intent.putExtra(AlbumService.KEY_CATEGORY_NAME, catName);
-        intent.putExtra(AlbumService.KEY_ACCOUNT, userManager.getActiveAccount().getValue());
         intent.putExtra(AlbumService.KEY_PARENT_CATEGORY_ID, catId);
 
         startService(intent);

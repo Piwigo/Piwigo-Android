@@ -27,7 +27,6 @@ public class AlbumService extends IntentService {
 
     public static final String KEY_CATEGORY_NAME = "category_name";
     public static final String KEY_PARENT_CATEGORY_ID = "category_id";
-    public static final String KEY_ACCOUNT = "account";
 
     @Inject
     WebServiceFactory webServiceFactory;
@@ -45,10 +44,9 @@ public class AlbumService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String catName = intent.getStringExtra(KEY_CATEGORY_NAME);
-        Account curAccount = intent.getParcelableExtra(KEY_ACCOUNT);
         int parentId = intent.getIntExtra(KEY_PARENT_CATEGORY_ID, 0);
 
-        RestService restService = webServiceFactory.createForAccount(curAccount);
+        RestService restService = webServiceFactory.create();
 
         Call<AddCategoryResponse> call = restService.addCategory(catName, parentId, null, null, null, null);
 

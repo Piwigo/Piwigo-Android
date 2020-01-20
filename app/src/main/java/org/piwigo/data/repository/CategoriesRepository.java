@@ -66,12 +66,10 @@ public class CategoriesRepository implements Observer<Account> {
 
     public Observable<PositionedItem<Category>> getCategories(@Nullable Integer categoryId) {
         CacheDatabase db;
-        Account a;
         synchronized (dbAccountLock) {
             db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
-            a = mAccount;
         }
-        Flowable<PositionedItem<Category>> remotes = mRestCategoryRepo.getCategories(a,
+        Flowable<PositionedItem<Category>> remotes = mRestCategoryRepo.getCategories(
                 categoryId,
                 mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
                 .subscribeOn(ioScheduler)
