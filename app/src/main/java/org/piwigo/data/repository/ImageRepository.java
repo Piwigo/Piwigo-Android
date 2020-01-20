@@ -112,7 +112,7 @@ public class ImageRepository implements Observer<Account> {
         Single<List<String>> folder = db.categoryDao().getCategoryPath(categoryId);
         AtomicReference<String> folderStr = new AtomicReference<>(null);
 
-        Flowable<PositionedItem<VariantWithImage>> remotes = mRestImageRepo.getImages(a, categoryId)
+        Flowable<PositionedItem<VariantWithImage>> remotes = mRestImageRepo.getImages(categoryId)
                 .subscribeOn(ioScheduler)
                 .observeOn(ioScheduler)
                 .toFlowable(BackpressureStrategy.BUFFER)

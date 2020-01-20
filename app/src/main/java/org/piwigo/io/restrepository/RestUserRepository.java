@@ -86,31 +86,29 @@ public class RestUserRepository extends RESTBaseRepository {
                 ;
     }
 
-    /* intended only for Login view, otherwise consider status(Account account) */
+    /* intended only for Login view, otherwise consider status() */
     public Observable<LoginResponse> status(String siteUrl) {
         if(!siteUrl.endsWith("/")){
             siteUrl = siteUrl + "/";
         }
         RestService restService = webServiceFactory.createForUrl(siteUrl);
 
-        return status(restService, siteUrl)
+        return status(restService)
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler);
 
     }
 
-    public Observable<LoginResponse> status(Account account) {
-        String siteUrl = validateUrl(userManager.getSiteUrl(account));
-        RestService restService = webServiceFactory.createForAccount(account);
-        return status(restService, siteUrl)
+    public Observable<LoginResponse> status() {
+        RestService restService = webServiceFactory.create();
+        return status(restService)
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler)
                 ;
     }
 
-    private Observable<LoginResponse> status(RestService restService, String url) {
+    private Observable<LoginResponse> status(RestService restService) {
         final LoginResponse loginResponse = new LoginResponse();
-        loginResponse.url = url;
 
         return restService.getStatus()
                 .subscribeOn(ioScheduler)

@@ -39,8 +39,8 @@ public class RESTCategoriesRepository extends RESTBaseRepository {
         super(webServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
-    public Observable<Category> getCategories(Account account, @Nullable Integer categoryId, String thumbnailSize) {
-        RestService restService = webServiceFactory.createForAccount(account);
+    public Observable<Category> getCategories(@Nullable Integer categoryId, String thumbnailSize) {
+        RestService restService = webServiceFactory.create();
         return restService.getCategories(categoryId, thumbnailSize)
                 .subscribeOn(ioScheduler)
                 .observeOn(uiScheduler)

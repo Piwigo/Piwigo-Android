@@ -42,12 +42,12 @@ public class RESTImageRepository extends RESTBaseRepository {
         super(webServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
-    public Observable<ImageInfo> getImages(Account account, @Nullable Integer categoryId) {
-        return getPagesStartingAt(account, categoryId, webServiceFactory.createForAccount(account), 0)
+    public Observable<ImageInfo> getImages(@Nullable Integer categoryId) {
+        return getPagesStartingAt(categoryId, webServiceFactory.create(), 0)
                 .flatMap( imageListResponse -> Observable.fromIterable(imageListResponse.result.images));
     }
 
-    private Observable<ImageListResponse> getPagesStartingAt(Account account, @Nullable Integer categoryId, RestService restService, int page) {
+    private Observable<ImageListResponse> getPagesStartingAt(@Nullable Integer categoryId, RestService restService, int page) {
         Observable<ImageListResponse> a = restService
                 .getImages(categoryId, page, PAGE_SIZE);
 
@@ -59,7 +59,7 @@ public class RESTImageRepository extends RESTBaseRepository {
                 return Observable.just(response);
             } else {
                 return Observable.just(response)
-                        .concatWith(getPagesStartingAt(account, categoryId, restService, page + 1));
+                        .concatWith(getPagesStartingAt(categoryId, restService, page + 1));
             }
 
         });

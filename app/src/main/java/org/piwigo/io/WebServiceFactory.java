@@ -52,22 +52,22 @@ public class WebServiceFactory {
         this.userManager = userManager;
     }
 
-    /* only intended for login, for most use cases consider createForAccount */
+    /* only intended for login, for most use cases consider create */
     public RestService createForUrl(String url) {
         OkHttpClient client = buildOkHttpClient(null, true, null);
         Retrofit retrofit = buildRetrofit(client, url);
         return retrofit.create(RestService.class);
     }
 
-    public synchronized RestService createForAccount(Account account) {
-        if(account != null) {
+    public synchronized RestService create() {
+        Account account = userManager.getActiveAccount().getValue();
+        if (account != null) {
             String cookie = userManager.getCookie(account);
             OkHttpClient client = buildOkHttpClient(cookie, true, null);
             Retrofit retrofit = buildRetrofit(client, userManager.getSiteUrl(account));
             lastRestService = retrofit.create(RestService.class);
             lastAccount = account;
         }
-
         return lastRestService;
     }
 
