@@ -156,11 +156,11 @@ public class LoginActivity extends BaseActivity {
         if (viewModel.isEditExisting()) {
             startMainActivity();
             finish();
-        } else if (userManager.userExists(response.url, response.username)) {
+        } else if (userManager.userExists(viewModel.url.get(), viewModel.username.get())) {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
         } else {
-            Account account = userManager.createUser(response.url, response.statusResponse.result.username, response.password, response.pwgId, response.statusResponse.result.pwgToken);
+            Account account = userManager.createUser(viewModel.url.get(), viewModel.username.get(), viewModel.password.get(), response.pwgId, response.statusResponse.result.pwgToken);
             userManager.setActiveAccount(account);
             setResultIntent(account);
             startMainActivity();

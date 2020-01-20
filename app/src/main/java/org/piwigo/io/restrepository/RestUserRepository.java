@@ -53,10 +53,6 @@ public class RestUserRepository extends RESTBaseRepository {
         RestService restService = webServiceFactory.createForUrl(validateUrl(url));
 
         final LoginResponse loginResponse = new LoginResponse();
-        loginResponse.url = url;
-        loginResponse.username = username;
-        loginResponse.password = password;
-
 
         return restService.login(username, password)
                 .subscribeOn(ioScheduler)

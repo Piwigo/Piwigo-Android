@@ -82,9 +82,6 @@ public class RestUserRepositoryTest {
         observer.assertNoErrors();
         LoginResponse loginResponse = observer.values().get(0);
         verify(webServiceFactory).createForUrl(URL);
-        assertThat(loginResponse.url).isEqualTo(URL);
-        assertThat(loginResponse.username).isEqualTo(USERNAME);
-        assertThat(loginResponse.password).isEqualTo(PASSWORD);
         assertThat(loginResponse.pwgId).isEqualTo(COOKIE_PWG_ID);
         assertThat(loginResponse.statusResponse.stat).isEqualTo(STATUS_OK);
         assertThat(loginResponse.statusResponse.result.username).isEqualTo(USERNAME);
@@ -106,7 +103,6 @@ public class RestUserRepositoryTest {
         subscriber.assertNoErrors();
         LoginResponse loginResponse = subscriber.values().get(0);
         verify(webServiceFactory).createForUrl(URL);
-        assertThat(loginResponse.url).isEqualTo(URL);
         assertThat(loginResponse.statusResponse.stat).isEqualTo(STATUS_OK);
         assertThat(loginResponse.statusResponse.result.username).isEqualTo(GUEST_USER);
     }
