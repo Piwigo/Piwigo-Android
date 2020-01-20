@@ -211,8 +211,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                     @Override
                     public void onNext(LoginResponse loginResponse) {
                         Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
-                        userManager.setCookie(account, loginResponse.pwgId);
-                        userManager.setToken(account, loginResponse.statusResponse.result.pwgToken);
                         if(loginResponse.statusResponse.result.uploadFormChunkSize != null) {
                             userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
                         }

@@ -27,8 +27,12 @@ import com.google.gson.Gson;
 import org.piwigo.BuildConfig;
 import org.piwigo.accounts.UserManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -38,6 +42,26 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WebServiceFactory {
+
+    public class SessionCookieJar implements CookieJar {
+
+        @Override
+        public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+            for (Cookie cookie : cookies) {
+                if (cookie.name().equals("pwg_id"))
+                    userManager.setSessionCookie(cookie);
+            }
+        }
+
+        @Override
+        public List<Cookie> loadForRequest(HttpUrl url) {
+            ArrayList<Cookie> cookies = new ArrayList<Cookie>();
+            Cookie cookie = userManager.sessionCookie();
+            if (cookie != null)
+                cookies.add(cookie);
+            return cookies;
+        }
+    }
 
     private final HttpLoggingInterceptor loggingInterceptor;
     private final Gson gson;
@@ -54,7 +78,7 @@ public class WebServiceFactory {
 
     /* only intended for login, for most use cases consider create */
     public RestService createForUrl(String url) {
-        OkHttpClient client = buildOkHttpClient(null, true, null);
+        OkHttpClient client = buildOkHttpClient(true, null);
         Retrofit retrofit = buildRetrofit(client, url);
         return retrofit.create(RestService.class);
     }
@@ -62,8 +86,7 @@ public class WebServiceFactory {
     public synchronized RestService create() {
         Account account = userManager.getActiveAccount().getValue();
         if (account != null) {
-            String cookie = userManager.getCookie(account);
-            OkHttpClient client = buildOkHttpClient(cookie, true, null);
+            OkHttpClient client = buildOkHttpClient(true, null);
             Retrofit retrofit = buildRetrofit(client, userManager.getSiteUrl(account));
             lastRestService = retrofit.create(RestService.class);
             lastAccount = account;
@@ -71,8 +94,9 @@ public class WebServiceFactory {
         return lastRestService;
     }
 
-    private OkHttpClient buildOkHttpClient(@Nullable String cookie, boolean queryJson, @Nullable Map<String, String> addHeaders) {
+    private OkHttpClient buildOkHttpClient(boolean queryJson, @Nullable Map<String, String> addHeaders) {
         return new OkHttpClient.Builder()
+                .cookieJar(new SessionCookieJar())
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(chain -> {
                     Request.Builder builder = chain.request().newBuilder();
@@ -82,10 +106,6 @@ public class WebServiceFactory {
                         urlBuilder.addQueryParameter("format", "json");
                     }
                     builder.url(urlBuilder.build());
-
-                    if (cookie != null) {
-                        builder.addHeader("Cookie", "pwg_id=" + cookie);
-                    }
 
                     if(addHeaders != null) {
                         for (String name : addHeaders.keySet()) {
@@ -100,8 +120,7 @@ public class WebServiceFactory {
     }
 
     public DownloadService downloaderForAccount(Account account, @Nullable Map<String, String> addHeaders) {
-        String cookie = userManager.getCookie(account);
-        OkHttpClient client = buildOkHttpClient(cookie, false, addHeaders);
+        OkHttpClient client = buildOkHttpClient(false, addHeaders);
         Retrofit retrofit = new Retrofit.Builder()
                 .client(client)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

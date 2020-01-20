@@ -160,7 +160,7 @@ public class UploadService extends IntentService {
             fileParts[i] = MultipartBody.Part.createFormData("file", uploadAction.getFileName(), RequestBody.create(MediaType.parse("image/*"), splittedContent[i]));
         }
         restService = webServiceFactory.create();
-        requestBodies = createUploadRequest(uploadAction.getFileName(), getPhotoName(uploadAction.getFileName()), userManager.getActiveAccount().getValue());
+        requestBodies = createUploadRequest(uploadAction.getFileName(), getPhotoName(uploadAction.getFileName()));
 
         //Promise building
         promise.setFileParts(fileParts);
@@ -248,16 +248,14 @@ public class UploadService extends IntentService {
      *
      * @param imageName  (filename with the extension)
      * @param photoName  (filename without the extension - used for display)
-     * @param curAccount (current account used to upload - used to get the token account, needed in API call)
      * @return an array of RequestBody with the same "get" order than the parameters
      */
-    private ArrayList<RequestBody> createUploadRequest(String imageName, String photoName,
-                                                       Account curAccount) {
+    private ArrayList<RequestBody> createUploadRequest(String imageName, String photoName) {
         ArrayList<RequestBody> requestBodies = new ArrayList<RequestBody>();
 
         requestBodies.add(0, RequestBody.create(MediaType.parse("text/plain"), imageName));
         requestBodies.add(1, RequestBody.create(MediaType.parse("text/plain"), photoName));
-        requestBodies.add(2, RequestBody.create(MediaType.parse("text/plain"), userManager.getToken(curAccount)));
+        requestBodies.add(2, RequestBody.create(MediaType.parse("text/plain"), userManager.sessionToken()));
         return (requestBodies);
     }
 

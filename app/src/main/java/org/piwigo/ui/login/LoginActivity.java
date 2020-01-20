@@ -160,7 +160,7 @@ public class LoginActivity extends BaseActivity {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
         } else {
-            Account account = userManager.createUser(viewModel.url.get(), viewModel.username.get(), viewModel.password.get(), response.pwgId, response.statusResponse.result.pwgToken);
+            Account account = userManager.createUser(viewModel.url.get(), viewModel.username.get(), viewModel.password.get());
             userManager.setActiveAccount(account);
             setResultIntent(account);
             startMainActivity();
