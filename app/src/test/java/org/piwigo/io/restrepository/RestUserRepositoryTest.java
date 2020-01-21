@@ -25,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.RestService;
 import org.piwigo.io.WebServiceFactory;
-import org.piwigo.io.restmodel.LoginResponse;
 import org.piwigo.io.restmodel.StatusResponse;
 import org.piwigo.io.restmodel.SuccessResponse;
 
@@ -72,39 +71,16 @@ public class RestUserRepositoryTest {
         userRepository = new RestUserRepository(webServiceFactory, Schedulers.trampoline(), Schedulers.trampoline(), userManager);
     }
 
-    @Test public void login_withValidCredentials_returnsSuccessResponse() {
-        when(restService.getStatus("pwg_id=" + COOKIE_PWG_ID)).thenReturn(getStatusResponse(USERNAME));
-
-        Observable<LoginResponse> observable = userRepository.login(URL, USERNAME, PASSWORD);
-        TestObserver<LoginResponse> observer = new TestObserver<>();
-        observable.subscribe(observer);
-
-        observer.assertNoErrors();
-        LoginResponse loginResponse = observer.values().get(0);
-        verify(webServiceFactory).createForUrl(URL);
-        assertThat(loginResponse.pwgId).isEqualTo(COOKIE_PWG_ID);
-        assertThat(loginResponse.statusResponse.stat).isEqualTo(STATUS_OK);
-        assertThat(loginResponse.statusResponse.result.username).isEqualTo(USERNAME);
-    }
-
-    @Test public void login_withInvalidCredentials_returnsErrorResponse() {
-        Observable<LoginResponse> observable = userRepository.login(URL, BAD_CREDENTIAL, BAD_CREDENTIAL);
-        TestObserver<LoginResponse> subscriber = new TestObserver<>();
-        observable.subscribe(subscriber);
-
-        subscriber.assertError(Throwable.class);
-    }
-
     @Test public void status_returnsStatusResponse() {
-        Observable<LoginResponse> observable = userRepository.status(URL);
-        TestObserver<LoginResponse> subscriber = new TestObserver<>();
+        Observable<StatusResponse> observable = userRepository.status(URL);
+        TestObserver<StatusResponse> subscriber = new TestObserver<>();
         observable.subscribe(subscriber);
 
         subscriber.assertNoErrors();
-        LoginResponse loginResponse = subscriber.values().get(0);
+        StatusResponse statusResponse = subscriber.values().get(0);
         verify(webServiceFactory).createForUrl(URL);
-        assertThat(loginResponse.statusResponse.stat).isEqualTo(STATUS_OK);
-        assertThat(loginResponse.statusResponse.result.username).isEqualTo(GUEST_USER);
+        assertThat(statusResponse.stat).isEqualTo(STATUS_OK);
+        assertThat(statusResponse.result.username).isEqualTo(GUEST_USER);
     }
 
     private Observable<StatusResponse> getStatusResponse(String user) {
@@ -116,18 +92,16 @@ public class RestUserRepositoryTest {
         return Observable.just(statusResponse);
     }
 
-    private Observable<Response<SuccessResponse>> getLoginSuccessResponse() {
+    private Observable<SuccessResponse> getLoginSuccessResponse() {
         SuccessResponse successResponse = new SuccessResponse();
         successResponse.stat = STATUS_OK;
         successResponse.result = true;
-        Response<SuccessResponse> response = Response.success(successResponse, Headers.of("Set-Cookie", "pwg_id=" + COOKIE_PWG_ID));
-        return Observable.just(response);
+        return Observable.just(successResponse);
     }
 
-    private Observable<Response<SuccessResponse>> getLoginFailureResponse() {
+    private Observable<SuccessResponse> getLoginFailureResponse() {
         SuccessResponse successResponse = new SuccessResponse();
         successResponse.stat = STATUS_FAIL;
-        Response<SuccessResponse> response = Response.success(successResponse);
-        return Observable.just(response);
+        return Observable.just(successResponse);
     }
 }

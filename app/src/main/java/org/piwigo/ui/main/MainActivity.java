@@ -60,7 +60,6 @@ import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
 import org.piwigo.data.model.ImageUploadItem;
-import org.piwigo.io.restmodel.LoginResponse;
 import org.piwigo.io.restmodel.SuccessResponse;
 import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.ui.about.AboutActivity;
@@ -189,33 +188,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 viewModel.username.set(userManager.getUsername(account));
                 viewModel.url.set(userManager.getSiteUrl(account));
                 viewModel.displayFab.set(!userManager.isGuest(currentAccount));
-                /* Login to the new site after account changes.
-                 * It seems quite unclean to do that here -> TODO: FIXME*/
-                io.reactivex.Observable<LoginResponse> a = userRepository.login(account);
-                a.subscribe(new io.reactivex.Observer<LoginResponse>() {
-                    @Override
-                    public void onComplete() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, "Login failed: " + e.getMessage());
-                        // TODO: notify loginfailure
-                    }
-
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(LoginResponse loginResponse) {
-                        Log.i(TAG, "Login succeeded: " + loginResponse.pwgId + " token: " + loginResponse.statusResponse.result.pwgToken);
-                        if(loginResponse.statusResponse.result.uploadFormChunkSize != null) {
-                            userManager.setChunkSize(account, loginResponse.statusResponse.result.uploadFormChunkSize);
-                        }
-                    }
-                });
                 initStartFragment(viewModel);
             }
             if (account == null) {

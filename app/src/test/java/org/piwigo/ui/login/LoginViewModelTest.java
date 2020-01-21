@@ -31,7 +31,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.io.restmodel.LoginResponse;
+import org.piwigo.io.restmodel.SuccessResponse;
 import org.piwigo.io.restrepository.RestUserRepository;
 
 import java.util.regex.Pattern;
@@ -164,9 +164,9 @@ public class LoginViewModelTest {
 
     @Test @SuppressWarnings("unchecked") public void loginSuccessObserverReceivesLoginResponse() {
         viewModel.unitTesting = true;
-        LoginResponse loginResponse = new LoginResponse();
+        SuccessResponse loginResponse = new SuccessResponse();
         when(userRepository.login(URL, USERNAME, PASSWORD)).thenReturn(Observable.just(loginResponse));
-        Observer<LoginResponse> observer = (Observer<LoginResponse>) mock(Observer.class);
+        Observer<SuccessResponse> observer = (Observer<SuccessResponse>) mock(Observer.class);
         viewModel.getLoginSuccess().observeForever(observer);
         viewModel.url.set(URL);
         viewModel.username.set(USERNAME);
