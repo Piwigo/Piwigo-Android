@@ -40,8 +40,10 @@ import com.github.jorgecastilloprz.FABProgressCircle;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.helper.URLHelper;
+import org.piwigo.io.PiwigoLoginException;
+import org.piwigo.io.restmodel.StatusResponse;
+import org.piwigo.io.restmodel.SuccessResponse;
 import org.piwigo.io.restrepository.RestUserRepository;
-import org.piwigo.io.restmodel.LoginResponse;
 
 import java.util.regex.Pattern;
 
@@ -67,7 +69,7 @@ public class LoginViewModel extends ViewModel {
     private final RestUserRepository userRepository;
     private final Resources resources;
 
-    private MutableLiveData<LoginResponse> loginSuccess = new MutableLiveData<>();
+    private MutableLiveData<SuccessResponse> loginSuccess = new MutableLiveData<>();
     private MutableLiveData<Throwable> loginError = new MutableLiveData<>();
     private MutableLiveData<Boolean> animationFinished = new MutableLiveData<>();
 
@@ -115,7 +117,7 @@ public class LoginViewModel extends ViewModel {
                 userRepository.status(url)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new LoginSubscriber());
+                        .subscribe(new StatusSubscriber());
             } else if (loginValid) {
                 userRepository.login(url, username.get(), password.get())
                         .subscribeOn(Schedulers.io())
@@ -123,7 +125,7 @@ public class LoginViewModel extends ViewModel {
                         .subscribe(new LoginSubscriber());
             }
         } catch (IllegalArgumentException illArgE) {
-            Log.e(TAG, illArgE.getMessage(), illArgE);
+            Log.e(TAG, illArgE.getMessage() + illArgE);
             loginError.setValue(illArgE);
         }
     }
@@ -132,7 +134,7 @@ public class LoginViewModel extends ViewModel {
         animationFinished.setValue(true);
     }
 
-    LiveData<LoginResponse> getLoginSuccess() {
+    LiveData<SuccessResponse> getLoginSuccess() {
         return loginSuccess;
     }
 
@@ -206,7 +208,7 @@ public class LoginViewModel extends ViewModel {
         this.account = account;
     }
 
-    private class LoginSubscriber extends DisposableObserver<LoginResponse> {
+    private class LoginSubscriber extends DisposableObserver<SuccessResponse> {
 
         @Override
         public void onComplete() {
@@ -227,11 +229,43 @@ public class LoginViewModel extends ViewModel {
         }
 
         @Override
-        public void onNext(LoginResponse loginResponse) {
+        public void onNext(SuccessResponse loginResponse) {
+            Log.d(TAG, "login was successfull '" + loginResponse.stat + "'");
+            if (loginResponse.stat.equals("fail")) {
+                onError(new PiwigoLoginException("Login for user '" + username.get() + "' failed with: " + loginResponse.message));
+                return;
+            }
             try {
                 if (account != null) {
                     userManager.updateAccount(account, url.get(), username.get(), password.get());
                 }
+                loginSuccess.setValue(loginResponse);
+            } catch (IllegalArgumentException e) {
+                loginError.setValue(e);
+            }
+        }
+    }
+
+    private class StatusSubscriber extends DisposableObserver<StatusResponse> {
+
+        public void onComplete() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, e.getMessage());
+            loginError.setValue(e);
+        }
+
+        @Override
+        public void onNext(StatusResponse response) {
+            Log.d(TAG, "status was successful");
+            try {
+                if (account != null) {
+                    userManager.updateAccount(account, url.get(), username.get(), password.get());
+                }
+                // fake login response
+                SuccessResponse loginResponse = new SuccessResponse();
                 loginSuccess.setValue(loginResponse);
             } catch (IllegalArgumentException e) {
                 loginError.setValue(e);

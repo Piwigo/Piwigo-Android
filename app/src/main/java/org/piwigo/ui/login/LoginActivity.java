@@ -44,7 +44,7 @@ import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
 import org.piwigo.helper.DialogHelper;
 import org.piwigo.io.PiwigoLoginException;
-import org.piwigo.io.restmodel.LoginResponse;
+import org.piwigo.io.restmodel.SuccessResponse;
 import org.piwigo.ui.main.MainActivity;
 import org.piwigo.ui.shared.BaseActivity;
 
@@ -151,7 +151,7 @@ public class LoginActivity extends BaseActivity {
         startActivity(intent);
     }
 
-    private void loginSuccess(LoginResponse response) {
+    private void loginSuccess(SuccessResponse response) {
         fabProgressCircle.hide();
         if (viewModel.isEditExisting()) {
             startMainActivity();
@@ -160,7 +160,7 @@ public class LoginActivity extends BaseActivity {
             Snackbar.make(binding.getRoot(), R.string.login_account_error, Snackbar.LENGTH_LONG)
                     .show();
         } else {
-            Account account = userManager.createUser(viewModel.url.get(), viewModel.username.get(), viewModel.password.get(), response.pwgId, response.statusResponse.result.pwgToken);
+            Account account = userManager.createUser(viewModel.url.get(), viewModel.username.get(), viewModel.password.get());
             userManager.setActiveAccount(account);
             setResultIntent(account);
             startMainActivity();

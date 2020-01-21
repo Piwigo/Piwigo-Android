@@ -92,6 +92,15 @@ public class LoginTest {
         onView(withText("Manage Accounts")).check(matches(isDisplayed()));
     }
 
+    @Test
+    public void invalidPasswordFails() throws InterruptedException {
+        addAccount("https://tg1.kulow.org", "seessmall", "invalid");
+        waitForElement(R.id.snackbar_text, 3000);
+        // the details will be 'This method requires HTTP POST', which is BS due
+        // the automatic retry on http (TODO to remove)
+        onView(withText("Show details")).check(matches(isDisplayed()));
+    }
+
     public void addAccount(String url, String user, String password) {
         ViewInteraction editUser = waitForElement(R.id.username, 5000);
         editUser.check(matches(withText("")));

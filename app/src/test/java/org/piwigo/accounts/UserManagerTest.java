@@ -104,7 +104,7 @@ public class UserManagerTest {
         ArgumentCaptor<Account> accountCaptor = ArgumentCaptor.forClass(Account.class);
         ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
 
-        userManager.createUser(SITE_URL, null, null, null, null);
+        userManager.createUser(SITE_URL, null, null);
 
         verify(accountManager).addAccountExplicitly(accountCaptor.capture(), eq(null), bundleCaptor.capture());
         Account account = accountCaptor.getValue();
@@ -124,24 +124,20 @@ public class UserManagerTest {
         ArgumentCaptor<Account> accountCaptor = ArgumentCaptor.forClass(Account.class);
         ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
 
-        userManager.createUser(SITE_URL, USERNAME, PASSWORD, COOKIE, TOKEN);
+        userManager.createUser(SITE_URL, USERNAME, PASSWORD);
 
         verify(accountManager).addAccountExplicitly(accountCaptor.capture(), eq(PASSWORD), bundleCaptor.capture());
         Account account = accountCaptor.getValue();
         Bundle bundle = bundleCaptor.getValue();
         assertThat(account).hasName(ACCOUNT_NAME);
         assertThat(account).hasType(ACCOUNT_TYPE);
-        assertThat(bundle).hasSize(5);
+        assertThat(bundle).hasSize(3);
         assertThat(bundle).hasKey(UserManager.KEY_IS_GUEST);
         assertThat(bundle.getString(UserManager.KEY_IS_GUEST)).isEqualTo(Boolean.toString(false));
         assertThat(bundle).hasKey(UserManager.KEY_SITE_URL);
         assertThat(bundle.getString(UserManager.KEY_SITE_URL)).isEqualTo(SITE_URL);
         assertThat(bundle).hasKey(UserManager.KEY_USERNAME);
         assertThat(bundle.getString(UserManager.KEY_USERNAME)).isEqualTo(USERNAME);
-        assertThat(bundle).hasKey(UserManager.KEY_COOKIE);
-        assertThat(bundle.getString(UserManager.KEY_COOKIE)).isEqualTo(COOKIE);
-        assertThat(bundle).hasKey(UserManager.KEY_TOKEN);
-        assertThat(bundle.getString(UserManager.KEY_TOKEN)).isEqualTo(TOKEN);
     }
 
     @Test public void getActiveAccount_withNoAccounts_returnsAbsent() {
@@ -199,19 +195,4 @@ public class UserManagerTest {
         verify(accountManager).getUserData(account, UserManager.KEY_USERNAME);
     }
 
-    @Test public void getCookie_callsAccountManager() {
-        Account account = mock(Account.class);
-
-        userManager.getCookie(account);
-
-        verify(accountManager).getUserData(account, UserManager.KEY_COOKIE);
-    }
-
-    @Test public void getToken_callsAccountManager() {
-        Account account = mock(Account.class);
-
-        userManager.getToken(account);
-
-        verify(accountManager).getUserData(account, UserManager.KEY_TOKEN);
-    }
 }

@@ -52,6 +52,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import okhttp3.Cookie;
+
 /**
  * Note: a token in Android is replacing username/password for different logins,
  * while the token in piwigo is only valid during one session.
@@ -62,8 +64,6 @@ public class UserManager {
     @VisibleForTesting static final String KEY_IS_GUEST = "is_guest";
     @VisibleForTesting static final String KEY_SITE_URL = "url";
     @VisibleForTesting static final String KEY_USERNAME = "username";
-    @VisibleForTesting static final String KEY_COOKIE = "cookie";
-    @VisibleForTesting static final String KEY_TOKEN  = "token";
     @VisibleForTesting static final String KEY_CHUNK_SIZE  = "chunk_size";
 
     @VisibleForTesting static final String GUEST_ACCOUNT_NAME = "guest";
@@ -77,6 +77,8 @@ public class UserManager {
     private final MutableLiveData<List<Account>> mAllAccounts;
     private final Context mContext;
     private Map<String, CacheDatabase> databases = new HashMap<String, CacheDatabase>();
+    private Cookie mSessionCookie;
+    private String mSessionToken;
 
     public UserManager(AccountManager accountManager, Resources resources, PreferencesRepository preferencesRepository, Context ctx) {
         this.accountManager = accountManager;
@@ -134,15 +136,13 @@ public class UserManager {
         return getAccountForUser(siteUrl, username) != null;
     }
 
-    public Account createUser(String siteUrl, String username, String password, String cookie, String token) {
+    public Account createUser(String siteUrl, String username, String password) {
         Account result;
         if (TextUtils.isEmpty(username) && TextUtils.isEmpty(password)) {
             result = createGuestUser(siteUrl);
         } else {
-            result = createNormalUser(siteUrl, username, password, cookie, token);
+            result = createNormalUser(siteUrl, username, password);
         }
-        accountManager.setUserData(result, KEY_TOKEN, token);
-
         return result;
     }
 
@@ -174,23 +174,26 @@ public class UserManager {
         return isGuest(account) ? "" : accountManager.getPassword(account);
     }
 
-    public String getCookie(Account account) {
-        return accountManager.getUserData(account, KEY_COOKIE);
+    public Cookie sessionCookie() {
+        Log.d("UserManager", "sessionCookie: " + mSessionCookie);
+        return mSessionCookie;
+
     }
 
-    public void setCookie(Account account, String cookie) {
-        accountManager.setUserData(account, KEY_COOKIE, cookie);
+    public void setSessionCookie(Cookie cookie) {
+        mSessionCookie = cookie;
+        Log.d("UserManager", "setSessionCookie: " + cookie);
     }
 
-    public void setToken(Account account, String token) {
-        accountManager.setUserData(account, KEY_TOKEN, token);
+    public String sessionToken() {
+        Log.d("UserManager", "sessionToken: " + mSessionToken);
+        return mSessionToken;
     }
 
-    // TODO: rmk, 2018-11-24: not sure whether it is a good idea to store the token in the account at all
-    // maybe it would be better to just keep it in the RestUserRepository
-    public String getToken(Account account) {
-        return accountManager.getUserData(account, KEY_TOKEN);
+    public void setSessionToken(String token) {
+        mSessionToken = token;
     }
+
 
     /** set the chunk size for upload in bytes
      * note: piwigo server returns the preferred chunk-size in kB
@@ -212,10 +215,6 @@ public class UserManager {
         return GUEST_ACCOUNT_NAME.equals(getUsername(account));
     }
 
-    public String getAccountName(Account account){
-        return getAccountName(getSiteUrl(account), getUsername(account));
-    }
-
     private String getAccountName(String siteUrl, String username) {
         Uri uri = Uri.parse(siteUrl);
         String sitename = uri.getHost() + uri.getPath();
@@ -225,15 +224,13 @@ public class UserManager {
         return resources.getString(R.string.account_name, username, sitename.toLowerCase(Locale.ROOT));
     }
 
-    private Account createNormalUser(String siteUrl, String username, String password, String cookie, String token) {
+    private Account createNormalUser(String siteUrl, String username, String password) {
         String accountName = getAccountName(siteUrl, username);
         Account account = new Account(accountName, resources.getString(R.string.account_type));
         Bundle userdata = new Bundle();
         userdata.putString(KEY_IS_GUEST, Boolean.toString(false));
         userdata.putString(KEY_SITE_URL, siteUrl);
         userdata.putString(KEY_USERNAME, username);
-        userdata.putString(KEY_COOKIE, cookie);
-        userdata.putString(KEY_TOKEN, token);
         accountManager.addAccountExplicitly(account, password, userdata);
         return account;
     }
@@ -249,20 +246,9 @@ public class UserManager {
         return account;
     }
 
-    public Account getAccountWithName(String accountName){
-        Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
-
-        for (Account account : accounts) {
-            if (account.name.equals(accountName)) {
-                return account;
-            }
-        }
-
-        return null;
-    }
-
     public void setActiveAccount(Account activeAccount) {
-        preferencesRepository.setActiveAccount(activeAccount.name);
+        if (activeAccount != null)
+            preferencesRepository.setActiveAccount(activeAccount.name);
         mCurrentAccount.setValue(activeAccount);
         updateDB();
     }
@@ -282,14 +268,14 @@ public class UserManager {
     }
 
     public void setActiveAccount(String activeAccount) {
+        setSessionCookie(null);
+        setSessionToken(null);
         Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
 
         if (!TextUtils.isEmpty(activeAccount)) {
             for (Account account : accounts) {
                 if (account.name.equals(activeAccount)) {
-                    preferencesRepository.setActiveAccount(activeAccount);
-                    mCurrentAccount.setValue(account);
-                    updateDB();
+                    setActiveAccount(account);
                     return;
                 }
             }
@@ -297,11 +283,10 @@ public class UserManager {
 
         /* the selected account is not available select default */
         if(accounts.length > 0) {
-            mCurrentAccount.setValue(accounts[0]);
-        }else{
-            mCurrentAccount.setValue(null);
-        }
-        updateDB();
+            setActiveAccount(accounts[0]);
+        } else {
+            setActiveAccount((Account)null);
+         }
     }
 
     private String dbNameFor(Account account) {
