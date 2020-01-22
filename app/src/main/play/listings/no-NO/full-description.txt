@@ -1,0 +1,5 @@
+Piwigo er en Android-app laget for den frie og åpen-kildekode bildetjeneren Piwigo. Med denne appen kan du utforske den lokale bildetjeneren din og laste opp bilder fra enheten din.
+
+Piwigo er bygget av et aktiv samfunn av brukere og utviklere.
+
+Piwigo motiverer deg til å lage dine egne bildegallerier på det nettet og inkluderer mange nyttige funksjoner som album, merknader, geolokasjon, mange nivåer av tilpasning, opplasting fra besøkende, personvern, kalendere og statistikker.

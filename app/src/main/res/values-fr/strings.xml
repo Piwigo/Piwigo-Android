@@ -3,7 +3,7 @@
 <!--
   ~ Piwigo for Android
   ~ Copyright (C) 2019-2019 Valentin Baizeau https://voriondev.fr
-  ~ Copyright (C) 2018-2019 Raphael Mack http://www.raphael-mack.de
+  ~ Copyright (C) 2018-2020 Raphael Mack http://www.raphael-mack.de
   ~ Copyright (C) 2016-2018 Piwigo Team http://piwigo.org
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -20,10 +20,14 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <resources>
+    <!-- General strings -->
     <string name="app_name">Piwigo</string>
+    <string name="gen_error">Failure</string>
+    <!-- titles -->
     <string name="title_activity_login">Connexion</string>
     <string name="title_activity_accounts">Gestion des comptes</string>
     <string name="title_activity_about">À propos</string>
+    <string name="title_activity_settings">Préférences</string>
     <string name="title_select_image">Sélectionner une image</string>
     <!-- Navigation drawer menu items -->
     <string name="nav_icon_description">Logo de Piwigo</string>
@@ -38,13 +42,11 @@
     <string name="nav_drawer_close">Fermer la navigation</string>
     <!-- Login -->
     <string name="login_url_hint">Adresse du serveur</string>
-    <string name="login_url_description">URL de la galerie Piwigo pour ouvrir une session</string>
+    <string name="login_url_how_to">\nRemplissez ce champ avec l\'URL que vous utilisez dans un navigateur web pour accéder à votre galerie Piwigo.\n\nSi vous êtes un client piwigo.com, cela devrait ressemblait à quelque chose comme: &lt;font color=#ff7700"&gt;exemple.piwigo.com&lt;/font&gt; .\n\nSi vous hébergez vous-même votre Piwigo, vous avez votre propre nom de domaine et peut-être un sous-répertoire comme: &lt;font color="#ff7700"&gt;exemple.com/photos&lt;/font&gt; .</string>
     <string name="login_url_empty">Entrez l\'adresse de votre serveur</string>
     <string name="login_url_invalid">Adresse de serveur non valide</string>
-    <string name="login_username_description">Nom d’utilisateur pour vous connecter à la galerie Piwigo</string>
     <string name="login_username_empty">Saisissez votre nom d\'utilisateur</string>
     <string name="login_username_hint">Nom d\'utilisateur (vide pour invité)</string>
-    <string name="login_password_description">Mot de passe pour vous connecter à la galerie Piwigo</string>
     <string name="login_button_description">Connexion</string>
     <string name="login_password_empty">Entrez votre mot de passe</string>
     <string name="login_password_hint">Mot de passe (vide pour invité)</string>
@@ -56,9 +58,11 @@
     <string name="login_http_404_error">Adresse \'%1s\' introuvable sur le serveur</string>
     <string name="login_baseurl_invalid">Aucune galerie Piwigo trouvée à l\'adresse \'%1s\'</string>
     <string name="login_invalid_credentials">Échec de la connexion avec les identifiants \'%1s/*****\'</string>
+    <string name="login_as_guest_hint">Laissez le nom d\'utilisateur et le mot de passe vide pour vous connecter en tant qu\'invité</string>
     <!-- Account -->
     <string name="account_image_description">Icône de raccourci de la galerie (favicon)</string>
     <string name="account_not_selected">Sélectionnez d’abord un compte pour la suppression</string>
+    <string name="account_empty_message">Compte vide !</string>
     <!-- About -->
     <string name="about_text_version">version <b>%1$s</b></string>
     <string name="about_text_intro"> - accédez aux galeries Piwigo depuis votre téléphone Android.</string>
@@ -116,6 +120,19 @@
     <string name="privacy_contact_title">Contactez-nous</string>
     <string name="privacy_contact_text">Si vous avez des questions ou des commentaires concernant cette politique de confidentialité, veuillez nous contacter à l\'adresse suivante:</string>
     <string name="privacy_contact_address">Piwigo, 42 rue des Vignes, 21800 Quetigny (France)</string>
+    <!-- Settings -->
+    <string name="settings_albums_title">Albums</string>
+    <string name="settings_download_size">Taille de l\'image</string>
+    <string name="settings_images">Images</string>
+    <string name="settings_photos_per_row">Photos par ligne</string>
+    <string name="settings_download_size_summary">La taille de la photo \'%1$s\' sera utilisée pour le téléchargement</string>
+    <string name="settings_colors">Couleurs</string>
+    <string name="settings_color_palette">Palette de couleurs</string>
+    <string name="settings_color_palette_summary">%1$s</string>
+    <string name="settings_expose_to_device">Expose Photos</string>
+    <string name="settings_expose_to_device_summary_pos">The Photos from Piwigo galleries are made available to other Apps on your device.</string>
+    <string name="settings_expose_to_device_summary_neg">The Photos from Piwigo galleries are not made available to other Apps on your device.</string>
+    <string name="perm_write_external_storage_xplain">To store the photos in a location accessible by other locations write permissions for external storage are required.</string>
     <!-- Upload -->
     <string name="upload_success">Téléversement réussi</string>
     <string name="upload_failed">Échec du téléversement</string>
@@ -148,4 +165,23 @@
     <string name="not_admin_explanation">Vous devez être connecté pour faire ça.</string>
     <string name="no_internet">Oups ! Il semble que vous n\'ayez pas de connexion internet. Veuillez vous connecter et réessayer.</string>
     <string name="show_details">Voir les détails</string>
+    <string name="restart_needed">Redémarrage nécessaire</string>
+    <string name="restart_needed_explaination">Pour que le changement de thème prenne effet, veuillez redémarrer votre application.</string>
+    <!-- Spinner Download Size array-->
+    <string-array name="download_size_array">
+        <item>Carrée</item>
+        <item>Miniature</item>
+        <item>Petite</item>
+        <item>Moyenne</item>
+        <item>Large</item>
+        <item>Extra Large</item>
+    </string-array>
+    <!-- Spinner Download Size array (should stay untranslated) -->
+    <!-- Color palette array -->
+    <string-array name="colors_array">
+        <item>Clair</item>
+        <item>Sombre</item>
+        <item>Automatique</item>
+    </string-array>
+    <!-- Color palette array  (should stay untranslated) -->
 </resources>
