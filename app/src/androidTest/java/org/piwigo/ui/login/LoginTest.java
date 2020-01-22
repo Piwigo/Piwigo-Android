@@ -44,14 +44,14 @@ public class LoginTest {
             new ActivityScenarioRule<LoginActivity>(LoginActivity.class);
 
     @Test
-    public void loginTwoAccounts() throws InterruptedException {
+    public void loginTwoAccounts() {
 
         addAccount("https://tg1.kulow.org", "seessmall", "seessmall");
         waitForElement(R.id.fab, 5000);
 
         // TODO: the current app renders an empty main view and blocks while
         // loading the actual infos
-        Thread.sleep(5000);
+        sleepUninterrupted(5000);
 
         // make sure we only see the galleries we are supposed to
         // TODO does not work on travis reliably (most likely due to do broken login code)
@@ -67,7 +67,7 @@ public class LoginTest {
         waitForElement(R.id.fab, 5000);
 
         // TODO: see above
-        Thread.sleep(5000);
+        sleepUninterrupted((5000));
 
         // only sees large (and public)
         // TODO does not work on travis reliably onView(withText("Large")).check(matches(isDisplayed()));
@@ -81,7 +81,7 @@ public class LoginTest {
     }
 
     @Test
-    public void backBringsUsToAccountManager() throws InterruptedException {
+    public void backBringsUsToAccountManager() {
         addAccount("https://tg1.kulow.org", "seessmall", "seessmall");
         waitForElement(R.id.fab, 5000);
         manageAccounts();
@@ -94,14 +94,14 @@ public class LoginTest {
     }
 
     @Test
-    public void invalidPasswordFails() throws InterruptedException {
+    public void invalidPasswordFails() {
         addAccount("https://tg1.kulow.org", "seessmall", "invalid");
         waitForElement(R.id.snackbar_text, 3000);
         onView(withId(R.id.snackbar_text)).check(matches(withText("Login failed for given username 'seessmall'")));
     }
 
     @Test
-    public void urlIsExpanded() throws InterruptedException {
+    public void urlIsExpanded() {
         addAccount("tg1.kulow.org", "seessmall", "invalid");
         waitForElement(R.id.snackbar_text, 3000);
         onView(withId(R.id.url)).check(matches(withText("https://tg1.kulow.org/")));
@@ -122,7 +122,32 @@ public class LoginTest {
         onView(withText("Public")).check(matches(isDisplayed()));
     }
 
-    public void addAccount(String url, String user, String password) {
+    @Test
+    public void changeGuestToLogin() {
+        addAccount("https://tg1.kulow.org", "", "");
+        waitForElement(R.id.albumRecycler, 8000);
+        //sleepUninterrupted(300000);
+        manageAccounts();
+
+        onView(allOf(withContentDescription("More options"), isDisplayed())).perform(click());
+        onView(allOf(withText("Edit account"), isDisplayed())).perform(click());
+
+        // only editing here
+        addAccount("https://tg1.kulow.org", "seessmall", "seessmall");
+        waitForElement(R.id.fab, 5000);
+        sleepUninterrupted(5000);
+        onView(withText("Small")).check(matches(isDisplayed()));
+    }
+
+    private void sleepUninterrupted(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+
+        }
+    }
+
+    private void addAccount(String url, String user, String password) {
         ViewInteraction editUser = waitForElement(R.id.username, 5000);
         editUser.check(matches(withText("")));
 
@@ -144,6 +169,7 @@ public class LoginTest {
         onView(withId(R.id.drawer_layout)).perform(open());
         ViewInteraction navigation = onView(allOf(withText("Manage Accounts"), isDisplayed()));
         navigation.perform(click());
+        waitForElement(R.id.account_recycler, 3000);
     }
 
     public ViewInteraction waitForElement(final int viewId, final long millis) {
@@ -159,12 +185,7 @@ public class LoginTest {
                 return va;
             } catch (NoMatchingViewException e) {
             }
-
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-
-            }
+            sleepUninterrupted((100));
         }
         while (System.currentTimeMillis() < endTime);
 
@@ -177,10 +198,10 @@ public class LoginTest {
 
 
     @After
-    public void tearDown() throws InterruptedException {
+    public void tearDown() {
         // do not use manageAccounts here as we do not know where we are
         activityScenarioRule.getScenario().launch(ManageAccountsActivity.class);
-        Thread.sleep(3000);
+        waitForElement(R.id.account_recycler, 3000);
 
         onView(allOf(withContentDescription("More options"), isDisplayed())).perform(click());
         ViewInteraction viewInteraction = onView(allOf(withText("Remove account"), isDisplayed()));
