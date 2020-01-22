@@ -47,7 +47,7 @@ public class RestUserRepository extends RESTBaseRepository {
     }
 
     public Observable<SuccessResponse> login(String url, String username, String password) {
-        RestService restService = webServiceFactory.createForUrl(validateUrl(url));
+        RestService restService = webServiceFactory.createForUrl(url);
         return restService.login(username, password);
     }
 
@@ -77,7 +77,7 @@ public class RestUserRepository extends RESTBaseRepository {
     }
 
     public Observable<SuccessResponse> logout(Account account) {
-        RestService restService = webServiceFactory.createForUrl(validateUrl(userManager.getSiteUrl(account)));
+        RestService restService = webServiceFactory.createForUrl(userManager.getSiteUrl(account));
         final SuccessResponse successResponse = new SuccessResponse();
 
         return restService.logout()

@@ -96,9 +96,14 @@ public class LoginTest {
     public void invalidPasswordFails() throws InterruptedException {
         addAccount("https://tg1.kulow.org", "seessmall", "invalid");
         waitForElement(R.id.snackbar_text, 3000);
-        // the details will be 'This method requires HTTP POST', which is BS due
-        // the automatic retry on http (TODO to remove)
-        onView(withText("Show details")).check(matches(isDisplayed()));
+        onView(withId(R.id.snackbar_text)).check(matches(withText("Login failed for given credentials 'seessmall/*****'")));
+    }
+
+    @Test
+    public void urlIsExpanded() throws InterruptedException {
+        addAccount("tg1.kulow.org", "seessmall", "invalid");
+        waitForElement(R.id.snackbar_text, 3000);
+        onView(withId(R.id.url)).check(matches(withText("https://tg1.kulow.org/")));
     }
 
     public void addAccount(String url, String user, String password) {

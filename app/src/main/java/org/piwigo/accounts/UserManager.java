@@ -22,7 +22,6 @@ package org.piwigo.accounts;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -41,7 +40,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 
 import org.apache.commons.lang3.StringUtils;
-import org.piwigo.PiwigoApplication;
 import org.piwigo.R;
 import org.piwigo.data.db.CacheDatabase;
 import org.piwigo.io.PreferencesRepository;
@@ -156,14 +154,7 @@ public class UserManager {
     }
 
     public String getSiteUrl(Account account) {
-        String url = accountManager.getUserData(account, KEY_SITE_URL);
-        if(url == null){
-            url = "/";
-        }else if(!url.endsWith("/")){
-            /* Retrofit requires the url to have a trailing / */
-            url += "/";
-        }
-        return url;
+        return validateUrl(accountManager.getUserData(account, KEY_SITE_URL));
     }
 
     public String getUsername(Account account) {
@@ -348,4 +339,17 @@ public class UserManager {
             }
         }
     }
+
+    public String validateUrl(String url) {
+        if (url == null)
+            url = "/";
+        if (!url.endsWith("/")) {
+            url = url + "/";
+        }
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "https://" + url;
+        }
+        return url;
+    }
+
 }
