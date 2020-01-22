@@ -96,7 +96,7 @@ public class LoginTest {
     public void invalidPasswordFails() throws InterruptedException {
         addAccount("https://tg1.kulow.org", "seessmall", "invalid");
         waitForElement(R.id.snackbar_text, 3000);
-        onView(withId(R.id.snackbar_text)).check(matches(withText("Login failed for given credentials 'seessmall/*****'")));
+        onView(withId(R.id.snackbar_text)).check(matches(withText("Login failed for given username 'seessmall'")));
     }
 
     @Test
@@ -104,6 +104,17 @@ public class LoginTest {
         addAccount("tg1.kulow.org", "seessmall", "invalid");
         waitForElement(R.id.snackbar_text, 3000);
         onView(withId(R.id.url)).check(matches(withText("https://tg1.kulow.org/")));
+    }
+
+    @Test
+    public void httpsUrlShowsRedirect() throws InterruptedException {
+        addAccount("tg1.kulow.org:81", "", "");
+        waitForElement(R.id.snackbar_text, 3000);
+        onView(withId(R.id.snackbar_text)).check(matches(withText("Encrypted connection (SSL) to 'tg1.kulow.org' cannot be established")));
+        onView(allOf(withText("Use insecure http?"), isDisplayed())).perform((click()));
+        waitForElement(R.id.cardview_background, 3000);
+        // we're in
+        onView(withText("Public")).check(matches(isDisplayed()));
     }
 
     public void addAccount(String url, String user, String password) {

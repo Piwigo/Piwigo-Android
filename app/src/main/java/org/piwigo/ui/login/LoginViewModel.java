@@ -86,20 +86,8 @@ public class LoginViewModel extends ViewModel {
         clearOnPropertyChange(password, passwordError);
     }
 
-    /**
-     * Handles the click event on the login button
-     * @param fabCircle - FAB on login view (nullable for unit testing purpose..)
-     *                  //TODO Find a better way to interact with the FAB to avoid Nullable arg
-     */
-    void onLoginClick(@Nullable FABProgressCircle fabCircle) {
-        if (!isSiteValid()) {
-            return;
-        }
-
-        if (fabCircle != null) {
-            fabCircle.show();
-        }
-
+    // also used from the activity
+    void triggerLogin() {
         try {
             if (isGuest()) {
                 userRepository.status(url.get())
@@ -116,6 +104,22 @@ public class LoginViewModel extends ViewModel {
             Log.e(TAG, illArgE.getMessage() + illArgE);
             loginError.setValue(illArgE);
         }
+    }
+
+    /**
+     * Handles the click event on the login button
+     * @param fabCircle - FAB on login view (nullable for unit testing purpose..)
+     *                  //TODO Find a better way to interact with the FAB to avoid Nullable arg
+     */
+    void onLoginClick(@Nullable FABProgressCircle fabCircle) {
+        if (!isSiteValid()) {
+            return;
+        }
+
+        if (fabCircle != null) {
+            fabCircle.show();
+        }
+        triggerLogin();
     }
 
     void onProgressAnimationEnd() {
@@ -143,11 +147,11 @@ public class LoginViewModel extends ViewModel {
             urlError.set(resources.getString(R.string.login_url_empty));
             return false;
         }
-        url.set(userManager.validateUrl(url.get()));
         if (!WEB_URL.matcher(url.get()).matches()) {
             urlError.set(resources.getString(R.string.login_url_invalid));
             return false;
         }
+        url.set(userManager.validateUrl(url.get()));
         return true;
     }
 
@@ -207,7 +211,6 @@ public class LoginViewModel extends ViewModel {
 
         @Override
         public void onError(Throwable e) {
-            Log.e(TAG, e.getMessage());
             loginError.setValue(e);
         }
 
