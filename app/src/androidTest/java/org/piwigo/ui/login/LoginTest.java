@@ -1,6 +1,7 @@
 package org.piwigo.ui.login;
 
 import android.view.View;
+import android.os.Build;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -111,6 +112,10 @@ public class LoginTest {
         addAccount("tg1.kulow.org:81", "", "");
         waitForElement(R.id.snackbar_text, 3000);
         onView(withId(R.id.snackbar_text)).check(matches(withText("Encrypted connection (SSL) to 'tg1.kulow.org' cannot be established")));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+          // snackbar actions are not supported in 5.0
+          return;
+        }
         onView(allOf(withText("Use insecure http?"), isDisplayed())).perform((click()));
         waitForElement(R.id.cardview_background, 3000);
         // we're in
