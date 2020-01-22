@@ -98,6 +98,10 @@ install:
     
     echo "Emulator is ready"
   - adb shell input keyevent 82 &
+  # disable animations for more reliable tests
+  - adb shell settings put global window_animation_scale 0
+  - adb shell settings put global transition_animation_scale 0
+  - adb shell settings put global animator_duration_scale 0
 
   # Switch back to our target JDK version to build and run tests
   - JDK="${TARGET_JDK}"
