@@ -22,12 +22,12 @@
 <resources>
     <!-- General strings -->
     <string name="app_name">Piwigo</string>
-    <string name="gen_error">Failure</string>
+    <string name="gen_error">Fehler</string>
     <!-- titles -->
     <string name="title_activity_login">Anmeldung</string>
     <string name="title_activity_accounts">Konten verwalten</string>
     <string name="title_activity_about">Über</string>
-    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_settings">Einstellungen</string>
     <string name="title_select_image">Bild auswählen</string>
     <!-- Navigation drawer menu items -->
     <string name="nav_icon_description">Piwigo Logo</string>
@@ -59,6 +59,7 @@
     <string name="login_baseurl_invalid">Keine Piwigo-Galerie im angegebenen Pfad \'%1s\' gefunden</string>
     <string name="login_invalid_credentials">Login mit den Zugangsdaten \'%1s/*****\' fehlgeschlagen</string>
     <string name="login_as_guest_hint">Leave username and password empty to connect as a guest</string>
+    <string name="login_retry_with_http">Use insecure http?</string>
     <!-- Account -->
     <string name="account_image_description">Symbol der Galerie (Favicon)</string>
     <string name="account_not_selected">Zum Löschen erst ein Konto auswählen</string>
@@ -121,13 +122,13 @@
     <string name="privacy_contact_text">Bei Fragen oder Anmerkungen zu dieser Datenschutzerklärung kontaktieren Sie uns bitte über:</string>
     <string name="privacy_contact_address">Piwigo, 42 rue des Vignes, 21800 Quetigny (Frankreich)</string>
     <!-- Settings -->
-    <string name="settings_albums_title">Albums</string>
-    <string name="settings_download_size">Download Size</string>
-    <string name="settings_images">Images</string>
-    <string name="settings_photos_per_row">Photos per Row</string>
+    <string name="settings_albums_title">Alben</string>
+    <string name="settings_download_size">Downloadgröße</string>
+    <string name="settings_images">Bilder</string>
+    <string name="settings_photos_per_row">Fotos pro Zeile: %d</string>
     <string name="settings_download_size_summary">Photo size \'%1$s\' will be used for download</string>
-    <string name="settings_colors">Colors</string>
-    <string name="settings_color_palette">Color Palette</string>
+    <string name="settings_colors">Farben</string>
+    <string name="settings_color_palette">Farbpalette</string>
     <string name="settings_color_palette_summary">%1$s</string>
     <string name="settings_expose_to_device">Expose Photos</string>
     <string name="settings_expose_to_device_summary_pos">The Photos from Piwigo galleries are made available to other Apps on your device.</string>
@@ -165,23 +166,23 @@
     <string name="not_admin_explanation">Sie müssen angemeldet sein, um dies zu tun.</string>
     <string name="no_internet">Hoppla! Es scheint, als bestünde keine Internetverbindung. Bitte Verbindung herstellen und erneut versuchen.</string>
     <string name="show_details">Details anzeigen</string>
-    <string name="restart_needed">Restart needed</string>
+    <string name="restart_needed">Neustart erforderlich</string>
     <string name="restart_needed_explaination">In order for the theme change to take effect, please restart your application.</string>
     <!-- Spinner Download Size array-->
     <string-array name="download_size_array">
-        <item>Square</item>
-        <item>Thumbnail</item>
-        <item>Small</item>
-        <item>Medium</item>
-        <item>Large</item>
-        <item>Extra Large</item>
+        <item>Quadratisch</item>
+        <item>Vorschaubild</item>
+        <item>Klein</item>
+        <item>Mittel</item>
+        <item>Groß</item>
+        <item>Extra Groß</item>
     </string-array>
     <!-- Spinner Download Size array (should stay untranslated) -->
     <!-- Color palette array -->
     <string-array name="colors_array">
-        <item>Light</item>
-        <item>Dark</item>
-        <item>Auto</item>
+        <item>Hell</item>
+        <item>Dunkel</item>
+        <item>Automatisch</item>
     </string-array>
     <!-- Color palette array  (should stay untranslated) -->
 </resources>
