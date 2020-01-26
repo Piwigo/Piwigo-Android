@@ -59,7 +59,7 @@
     <string name="login_baseurl_invalid">Keine Piwigo-Galerie im angegebenen Pfad \'%1s\' gefunden</string>
     <string name="login_invalid_credentials">Login mit den Zugangsdaten \'%1s/*****\' fehlgeschlagen</string>
     <string name="login_as_guest_hint">Leave username and password empty to connect as a guest</string>
-    <string name="login_retry_with_http">Use insecure http?</string>
+    <string name="login_retry_with_http">HTTP (unsicher) verwenden?</string>
     <!-- Account -->
     <string name="account_image_description">Symbol der Galerie (Favicon)</string>
     <string name="account_not_selected">Zum Löschen erst ein Konto auswählen</string>
