@@ -59,6 +59,7 @@
     <string name="login_baseurl_invalid">Aucune galerie Piwigo trouvée à l\'adresse \'%1s\'</string>
     <string name="login_invalid_credentials">Échec de la connexion avec les identifiants \'%1s/*****\'</string>
     <string name="login_as_guest_hint">Laissez le nom d\'utilisateur et le mot de passe vide pour vous connecter en tant qu\'invité</string>
+    <string name="login_retry_with_http">Use insecure http?</string>
     <!-- Account -->
     <string name="account_image_description">Icône de raccourci de la galerie (favicon)</string>
     <string name="account_not_selected">Sélectionnez d’abord un compte pour la suppression</string>
