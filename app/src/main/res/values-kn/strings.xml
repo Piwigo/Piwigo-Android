@@ -57,8 +57,9 @@
     <string name="login_http_error">Server returned unexpected response \'%1s\'</string>
     <string name="login_http_404_error">Given path \'%1s\' not found on server</string>
     <string name="login_baseurl_invalid">No Piwigo gallery found at given path \'%1s\'</string>
-    <string name="login_invalid_credentials">Login failed for given credentials \'%1s/*****\'</string>
+    <string name="login_invalid_credentials">Login failed for given username \'%1s\'</string>
     <string name="login_as_guest_hint">Leave username and password empty to connect as a guest</string>
+    <string name="login_retry_with_http">Use insecure http?</string>
     <!-- Account -->
     <string name="account_image_description">Shortcut icon of the gallery (favicon)</string>
     <string name="account_not_selected">ಮೊದಲು ಅಳಿಸಲು ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
