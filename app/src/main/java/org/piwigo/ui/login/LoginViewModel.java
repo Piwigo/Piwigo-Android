@@ -30,7 +30,6 @@ import android.content.res.Resources;
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
 import androidx.annotation.VisibleForTesting;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
 import android.util.Patterns;
@@ -39,7 +38,6 @@ import com.github.jorgecastilloprz.FABProgressCircle;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.helper.URLHelper;
 import org.piwigo.io.PiwigoLoginException;
 import org.piwigo.io.restmodel.StatusResponse;
 import org.piwigo.io.restmodel.SuccessResponse;
@@ -77,7 +75,6 @@ public class LoginViewModel extends ViewModel {
     private Account account = null;
 
     boolean unitTesting = false;
-    private String testedUrl = "";
 
     LoginViewModel(UserManager userManager, RestUserRepository userRepository, Resources resources) {
         this.userRepository = userRepository;
@@ -89,37 +86,16 @@ public class LoginViewModel extends ViewModel {
         clearOnPropertyChange(password, passwordError);
     }
 
-    /**
-     * Handles the click event on the login button
-     * Check if the URL is valid and get what protocol to use using URLHelper
-     * @param fabCircle - FAB on login view (nullable for unit testing purpose..)
-     *                  //TODO Find a better way to interact with the FAB to avoid Nullable arg
-     */
-    void onLoginClick(@Nullable FABProgressCircle fabCircle) {
-        boolean siteValid = isSiteValid();
-        boolean loginValid = isGuest() || isLoginValid();
-
-        if (!siteValid) {
-            return;
-        }
-        if (fabCircle != null) {
-            fabCircle.show();
-        }
-
-        //Trying to log in with "HTTPS" protocol first..
-        testConnection(loginValid, URLHelper.INSTANCE.getUrlWithMethod(url.get(), "https"));
-    }
-
-    void testConnection(boolean loginValid, String url) {
-        testedUrl = url;
+    // also used from the activity
+    void triggerLogin() {
         try {
             if (isGuest()) {
-                userRepository.status(url)
+                userRepository.status(url.get())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new StatusSubscriber());
-            } else if (loginValid) {
-                userRepository.login(url, username.get(), password.get())
+            } else if (isLoginValid()) {
+                userRepository.login(url.get(), username.get(), password.get())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new LoginSubscriber());
@@ -128,6 +104,22 @@ public class LoginViewModel extends ViewModel {
             Log.e(TAG, illArgE.getMessage() + illArgE);
             loginError.setValue(illArgE);
         }
+    }
+
+    /**
+     * Handles the click event on the login button
+     * @param fabCircle - FAB on login view (nullable for unit testing purpose..)
+     *                  //TODO Find a better way to interact with the FAB to avoid Nullable arg
+     */
+    void onLoginClick(@Nullable FABProgressCircle fabCircle) {
+        if (!isSiteValid()) {
+            return;
+        }
+
+        if (fabCircle != null) {
+            fabCircle.show();
+        }
+        triggerLogin();
     }
 
     void onProgressAnimationEnd() {
@@ -154,10 +146,12 @@ public class LoginViewModel extends ViewModel {
         if (url.get() == null || url.get().isEmpty()) {
             urlError.set(resources.getString(R.string.login_url_empty));
             return false;
-        } else if (!WEB_URL.matcher(url.get()).matches()) {
+        }
+        if (!WEB_URL.matcher(url.get()).matches()) {
             urlError.set(resources.getString(R.string.login_url_invalid));
             return false;
         }
+        url.set(userManager.validateUrl(url.get()));
         return true;
     }
 
@@ -217,15 +211,7 @@ public class LoginViewModel extends ViewModel {
 
         @Override
         public void onError(Throwable e) {
-            Log.e(TAG, e.getMessage());
             loginError.setValue(e);
-
-            /**
-             *  HTTPS login did fail - retrying with HTTPS
-             *  Checking for 'https' in string to avoid infinite loop..
-             */
-            if (testedUrl != null && testedUrl.contains("https") && !unitTesting)
-                testConnection(true, URLHelper.INSTANCE.getUrlWithMethod(url.get(), "http"));
         }
 
         @Override

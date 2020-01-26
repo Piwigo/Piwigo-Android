@@ -127,6 +127,7 @@ public class LoginViewModelTest {
     @Test public void setUsernameErrorIfEmpty() {
         viewModel.username.set(null);
         viewModel.password.set(PASSWORD);
+        viewModel.url.set(URL);
 
         viewModel.onLoginClick(null);
 
@@ -136,6 +137,7 @@ public class LoginViewModelTest {
     @Test public void setPasswordErrorIfEmpty() {
         viewModel.username.set(USERNAME);
         viewModel.password.set(null);
+        viewModel.url.set(URL);
 
         viewModel.onLoginClick(null);
 
@@ -148,7 +150,7 @@ public class LoginViewModelTest {
         viewModel.username.set(USERNAME);
         viewModel.password.set(PASSWORD);
 
-        viewModel.testConnection(true, URL);
+        viewModel.triggerLogin();
 
         verify(userRepository).login(URL, USERNAME, PASSWORD);
     }
@@ -157,49 +159,9 @@ public class LoginViewModelTest {
         viewModel.unitTesting = true;
         viewModel.url.set(URL);
 
-        viewModel.testConnection(true, URL);
+        viewModel.triggerLogin();
 
         verify(userRepository).status(URL);
     }
 
-    @Test @SuppressWarnings("unchecked") public void loginSuccessObserverReceivesLoginResponse() {
-        viewModel.unitTesting = true;
-        SuccessResponse loginResponse = new SuccessResponse();
-        when(userRepository.login(URL, USERNAME, PASSWORD)).thenReturn(Observable.just(loginResponse));
-        Observer<SuccessResponse> observer = (Observer<SuccessResponse>) mock(Observer.class);
-        viewModel.getLoginSuccess().observeForever(observer);
-        viewModel.url.set(URL);
-        viewModel.username.set(USERNAME);
-        viewModel.password.set(PASSWORD);
-
-        viewModel.testConnection(true, URL);
-// TODO: ioScheduler is doing the job, so we should wait here
-//  verify(observer).onChanged(loginResponse);
-    }
-
-    @Test @SuppressWarnings("unchecked") public void loginErrorObserverReceivesLoginError() {
-        viewModel.unitTesting = true;
-        Throwable throwable = new Throwable();
-        when(userRepository.login(URL, USERNAME, PASSWORD)).thenReturn(Observable.error(throwable));
-        Observer<Throwable> observer = (Observer<Throwable>) mock(Observer.class);
-        viewModel.getLoginError().observeForever(observer);
-        viewModel.url.set(URL);
-        viewModel.username.set(USERNAME);
-        viewModel.password.set(PASSWORD);
-
-        viewModel.testConnection(true, URL);
-
-// TODO: ioScheduler is doing the job, so we should wait here
-//        verify(observer).onChanged(throwable);
-    }
-
-    @Test @SuppressWarnings("unchecked") public void animationFinishedObserverReceivesTrue() {
-        viewModel.unitTesting = true;
-        Observer<Boolean> observer = (Observer<Boolean>) mock(Observer.class);
-        viewModel.getAnimationFinished().observeForever(observer);
-
-        viewModel.onProgressAnimationEnd();
-
-        verify(observer).onChanged(true);
-    }
 }

@@ -55,7 +55,7 @@
     <string name="login_http_error">Server hat das unerwartete Resultat \'%1s\' zurückgegeben</string>
     <string name="login_http_404_error">Angegebener Pfad \'%1s\' wurde auf dem Server nicht gefunden</string>
     <string name="login_baseurl_invalid">Keine Piwigo-Galerie im angegebenen Pfad \'%1s\' gefunden</string>
-    <string name="login_invalid_credentials">Login mit den Zugangsdaten \'%1s/*****\' fehlgeschlagen</string>
+    <string name="login_invalid_credentials">Login mit den Benutzernamen \'%1s/\' fehlgeschlagen</string>
     <!-- Account -->
     <string name="account_image_description">Symbol der Galerie (Favicon)</string>
     <string name="account_not_selected">Zum Löschen erst ein Konto auswählen</string>
