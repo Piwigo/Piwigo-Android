@@ -91,7 +91,8 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     private void forcedLoadAlbums(){
-        Account account = userManager.getActiveAccount().getValue();
+
+        Log.d("AlbumsViewMmodel", "forceAlbums");
         if (albumsSubscription != null) {
             // cleanup, just in case
             albumsSubscription.cancel();
@@ -102,7 +103,10 @@ public class AlbumsViewModel extends ViewModel {
             photosSubscription.cancel();
             photosSubscription = null;
         }
-        if (account != null) {
+        Account account = userManager.getActiveAccount().getValue();
+        if (account == null)
+            return;
+        if (userManager.isGuest(account) || userManager.sessionCookie() != null) {
             categoriesRepository.getCategories(category)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new CategoriesSubscriber());

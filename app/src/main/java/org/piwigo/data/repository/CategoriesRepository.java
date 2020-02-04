@@ -65,9 +65,6 @@ public class CategoriesRepository implements Observer<Account> {
 
     public Observable<PositionedItem<Category>> getCategories(@Nullable Integer categoryId) {
         Log.d("CategoriesRepository", "getCategories");
-        if (mUserManager.sessionCookie() == null) {
-            throw new ArithmeticException("no cookie");
-        }
         CacheDatabase db;
         synchronized (dbAccountLock) {
             db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now

@@ -86,7 +86,7 @@ public class LoginViewModel extends ViewModel {
 
     // also used from the activity
     void triggerLogin() {
-        Log.e(TAG, "triggerLoing");
+        Log.d(TAG, "triggerLogin");
         try {
             if (isGuest()) {
                 userRepository.status(url.get())
