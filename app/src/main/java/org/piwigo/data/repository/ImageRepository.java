@@ -88,8 +88,7 @@ public class ImageRepository implements Observer<Account> {
 
         mUserManager.getActiveAccount().observeForever(this);
         synchronized (dbAccountLock) {
-            mAccount = mUserManager.getActiveAccount().getValue();
-            mCache = mUserManager.getDatabaseForAccount(mAccount);
+            mCache = mUserManager.getDatabaseForCurrent();
         }
     }
 
@@ -101,10 +100,8 @@ public class ImageRepository implements Observer<Account> {
      */
     public Observable<PositionedItem<VariantWithImage>> getImages(@Nullable Integer categoryId) {
         CacheDatabase db;
-        Account a;
         synchronized (dbAccountLock) {
             db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
-            a = mAccount;
         }
         Single<List<ImageVariantDao.VariantInfo>> variants = db.variantDao().variantsInCategory(categoryId).subscribeOn(ioScheduler);
         AtomicReference<Map<Integer, List<ImageVariantDao.VariantInfo>>> variantList = new AtomicReference<>();
@@ -201,7 +198,7 @@ public class ImageRepository implements Observer<Account> {
                         }
                     }
 
-                    Observable<String> dnl = downloadURL(d.url, folderStr.get(), i.file, i.id, addHeaders, db, a);
+                    Observable<String> dnl = downloadURL(d.url, folderStr.get(), i.file, i.id, addHeaders, db);
 /*                                        dnl.subscribe(new DisposableObserver<String>() {
                                             @Override
                                             public void onNext(String s) {
@@ -271,11 +268,12 @@ public class ImageRepository implements Observer<Account> {
     }
 
 
-    private Observable<String> downloadURL(String url, String folder, String fileName, int imageId, @Nullable Map<String, String> addHeaders, CacheDatabase db, Account account){
+    private Observable<String> downloadURL(String url, String folder, String fileName, int imageId, @Nullable Map<String, String> addHeaders, CacheDatabase db){
         if (db == null) {
             return Observable.empty();
         } else {
 
+            Account account = mUserManager.getActiveAccount().getValue();
             org.piwigo.io.DownloadService downloadService = mWebServiceFactory.downloaderForAccount(account, addHeaders);
 
             Observable<String> result = downloadService.downloadFileAtUrl(url)
@@ -366,8 +364,7 @@ public class ImageRepository implements Observer<Account> {
     @Override
     public void onChanged(Account account) {
         synchronized (dbAccountLock) {
-            mAccount = mUserManager.getActiveAccount().getValue();
-            mCache = mUserManager.getDatabaseForAccount(mAccount);
+            mCache = mUserManager.getDatabaseForCurrent();
         }
     }
 }

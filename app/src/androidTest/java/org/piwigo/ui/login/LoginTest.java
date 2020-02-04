@@ -54,8 +54,7 @@ public class LoginTest {
         sleepUninterrupted(5000);
 
         // make sure we only see the galleries we are supposed to
-        // TODO does not work on travis reliably (most likely due to do broken login code)
-        //  onView(withText("Small")).check(matches(isDisplayed()));
+        onView(withText("Small")).check(matches(isDisplayed()));
         onView(withText("Large")).check(doesNotExist());
 
         manageAccounts();
@@ -70,7 +69,7 @@ public class LoginTest {
         sleepUninterrupted((5000));
 
         // only sees large (and public)
-        // TODO does not work on travis reliably onView(withText("Large")).check(matches(isDisplayed()));
+        onView(withText("Large")).check(matches(isDisplayed()));
         onView(withText("Small")).check(doesNotExist());
     }
 

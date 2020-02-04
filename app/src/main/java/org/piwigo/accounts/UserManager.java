@@ -90,9 +90,11 @@ public class UserManager {
         refreshAccounts();
     }
 
-    public CacheDatabase getDatabaseForAccount(Account a) {
-        if (a == null)
+    public CacheDatabase getDatabaseForCurrent() {
+        if (mCurrentAccount == null)
             return null;
+
+        Account a = mCurrentAccount.getValue();
         CacheDatabase result = databases.get(a.name);
         if (result == null){
             updateDB();
