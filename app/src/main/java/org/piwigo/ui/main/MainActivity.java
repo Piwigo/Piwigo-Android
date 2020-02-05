@@ -112,8 +112,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
 
     private MainViewModel viewModel;
 
-    private Account currentAccount = null;
-
     private SpeedDialView speedDialView;
 
     private SnackProgressBarManager snackProgressBarManager;
@@ -173,7 +171,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
             EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
         }
 
-        currentAccount = userManager.getActiveAccount().getValue();
         speedDialView = mBinding.fab;
 
         setFABListener();
@@ -203,12 +200,9 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         });
 
         final Observer<Account> accountObserver = account -> {
-            Log.d("MainActivity", "accounts changed " + currentAccount.toString());
+            Log.d("MainActivity", "accounts changed " + account.toString());
             // reload the albums on account changes
-            if (account != null && !account.equals(currentAccount)) {
-                currentAccount = account;
-                initStartFragment();
-            }
+            initStartFragment();
             viewModel.changeAccount(account);
             viewModel.getError().observe(this, this::showError);
         };
@@ -386,14 +380,14 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
             switch (speedDialActionItem.getId()) {
                 case R.id.fab_create_album:
                 case R.id.fab_create_subalbum:
-                    if (!hasAdminRights()) {
+                    if (isGuest()) {
                         DialogHelper.INSTANCE.showErrorDialog(R.string.not_admin, R.string.not_admin_explanation, this);
                         return (false);
                     }
                     promptAlbumCreation();
                     return (false);
                 case R.id.fab_upload_photos:
-                    if (!hasAdminRights()) {
+                    if (isGuest()) {
                         DialogHelper.INSTANCE.showErrorDialog(R.string.not_admin, R.string.not_admin_explanation, this);
                         return (false);
                     }
@@ -429,8 +423,9 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         }
     }
 
-    private boolean hasAdminRights() {
-        return (!userManager.isGuest(currentAccount));
+    private boolean isGuest() {
+        Account account = userManager.getActiveAccount().getValue();
+        return userManager.isGuest(account);
     }
 
     @Override

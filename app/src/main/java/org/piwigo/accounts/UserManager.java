@@ -240,6 +240,11 @@ public class UserManager {
     }
 
     public void setActiveAccount(Account activeAccount) {
+        if (activeAccount != null && activeAccount.equals(mCurrentAccount.getValue())) {
+            return;
+        }
+        setSessionCookie(null);
+        setSessionToken(null);
         if (activeAccount != null)
             preferencesRepository.setActiveAccount(activeAccount.name);
         mCurrentAccount.setValue(activeAccount);
@@ -261,8 +266,6 @@ public class UserManager {
     }
 
     public void setActiveAccount(String activeAccount) {
-        setSessionCookie(null);
-        setSessionToken(null);
         Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
 
         if (!TextUtils.isEmpty(activeAccount)) {
