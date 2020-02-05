@@ -33,8 +33,10 @@ import androidx.databinding.ObservableInt;
 
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
+import org.piwigo.io.restmodel.StatusResponse;
 import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.io.restmodel.SuccessResponse;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
@@ -46,6 +48,7 @@ public class MainViewModel extends ViewModel {
     public static int STAT_LOGGED_IN = 1;
     public static int STAT_LOGGED_OFF = 2;
     public static int STAT_AUTH_FAILED = 3;
+    public static int STAT_STATUS_FETCHED = 4;
 
     private static final String TAG = MainViewModel.class.getName();
 
@@ -74,6 +77,15 @@ public class MainViewModel extends ViewModel {
             displayFab.set(!userManager.isGuest(account));
         }
         mUserRepository = userRepository;
+        loginStatus.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                Log.d("Mainviewmodel", "login status changed to " + loginStatus.get());
+                if (loginStatus.get() == STAT_LOGGED_IN) {
+                    mUserRepository.status().subscribe(new StatusSubscriber());
+                }
+            }
+        });
     }
 
     LiveData<Throwable> getError() {
@@ -82,6 +94,61 @@ public class MainViewModel extends ViewModel {
 
     public void setError(Throwable th){
         mError.setValue(th);
+    }
+
+    public void changeAccount(Account account) {
+        userManager.setSessionCookie(null);
+        userManager.setSessionToken(null);
+        username.set(userManager.getUsername(account));
+        url.set(userManager.getSiteUrl(account));
+        displayFab.set(!userManager.isGuest(account));
+        Log.d("MainViewModel", "login " + username.get() + " on " + url.get());
+        LoginSubscriber loginSubscriber = new LoginSubscriber();
+        if (userManager.isGuest(account)) {
+            // fake login
+            loginSubscriber.onNext(new SuccessResponse());
+        } else {
+            mUserRepository.login(account).subscribe(loginSubscriber);
+        }
+    }
+
+    private class LoginSubscriber extends DisposableObserver<SuccessResponse> {
+        @Override
+        public void onComplete() {
+            Log.d("LoginSubscriber", "onComplete");
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            // TODO
+            loginStatus.set(STAT_AUTH_FAILED);
+        }
+
+        @Override
+        public void onNext(SuccessResponse loginResponse) {
+            Log.d("mainViewModel", "onNext " + userManager.sessionCookie());
+            loginStatus.set(STAT_LOGGED_IN);
+        }
+    }
+
+    private class StatusSubscriber extends DisposableObserver<StatusResponse> {
+        @Override
+        public void onComplete() {
+            Log.d("StatusSubscriber", "onComplete");
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            // TODO
+            loginStatus.set(STAT_AUTH_FAILED);
+        }
+
+        @Override
+        public void onNext(StatusResponse statusResponse) {
+            Log.d("mainViewModel", "status response" + statusResponse.toString());
+            //apiStatus = statusResponse;
+            loginStatus.set(STAT_STATUS_FETCHED);
+        }
     }
 
 }

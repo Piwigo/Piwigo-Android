@@ -48,7 +48,7 @@ public class RestUserRepository extends RESTBaseRepository {
 
     public Observable<SuccessResponse> login(String url, String username, String password) {
         RestService restService = webServiceFactory.createForUrl(url);
-        return restService.login(username, password);
+        return restService.login(username, password).subscribeOn(ioScheduler).observeOn(uiScheduler);
     }
 
     /* intended only for Login view, otherwise consider status() */

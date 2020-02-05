@@ -19,6 +19,7 @@
 package org.piwigo.data.repository;
 
 import android.accounts.Account;
+import android.util.Log;
 
 import org.piwigo.accounts.UserManager;
 import org.piwigo.data.db.CacheDatabase;
@@ -49,7 +50,6 @@ public class CategoriesRepository implements Observer<Account> {
 
     private Object dbAccountLock = new Object();
     private CacheDatabase mCache;
-    private Account mAccount;
 
     @Inject public CategoriesRepository(RESTCategoriesRepository restCategoryRepo, @Named("IoScheduler") Scheduler ioScheduler, @Named("UiScheduler") Scheduler uiScheduler, UserManager userManager, PreferencesRepository preferences) {
         mRestCategoryRepo = restCategoryRepo;
@@ -59,12 +59,12 @@ public class CategoriesRepository implements Observer<Account> {
         this.uiScheduler = uiScheduler;
         mUserManager.getActiveAccount().observeForever(this);
         synchronized (dbAccountLock) {
-            mAccount = mUserManager.getActiveAccount().getValue();
-            mCache = mUserManager.getDatabaseForAccount(mAccount);
+           mCache = mUserManager.getDatabaseForCurrent();
         }
     }
 
     public Observable<PositionedItem<Category>> getCategories(@Nullable Integer categoryId) {
+        Log.d("CategoriesRepository", "getCategories");
         CacheDatabase db;
         synchronized (dbAccountLock) {
             db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
@@ -118,8 +118,7 @@ public class CategoriesRepository implements Observer<Account> {
     @Override
     public void onChanged(Account account) {
         synchronized (dbAccountLock) {
-            mAccount = mUserManager.getActiveAccount().getValue();
-            mCache = mUserManager.getDatabaseForAccount(mAccount);
+            mCache = mUserManager.getDatabaseForCurrent();
         }
     }
 

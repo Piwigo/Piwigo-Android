@@ -60,7 +60,6 @@ import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
 import org.piwigo.data.model.ImageUploadItem;
-import org.piwigo.io.restmodel.SuccessResponse;
 import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
@@ -68,7 +67,7 @@ import org.piwigo.ui.account.ManageAccountsActivity;
 import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.settings.SettingsActivity;
 import org.piwigo.ui.shared.BaseActivity;
-
+import static org.piwigo.ui.main.MainViewModel.STAT_STATUS_FETCHED;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -94,7 +93,6 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
-import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private static final String TAG = MainActivity.class.getName();
@@ -113,8 +111,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     private final Handler handler = new Handler();
 
     private MainViewModel viewModel;
-
-    private Account currentAccount = null;
 
     private SpeedDialView speedDialView;
 
@@ -175,31 +171,45 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
             EventBus.getDefault().post(new SnackbarShowEvent(getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE));
         }
 
-        currentAccount = userManager.getActiveAccount().getValue();
         speedDialView = mBinding.fab;
 
         setFABListener();
         refreshFAB(0);
 
+        viewModel.loginStatus.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                Log.d("MainActivity", "login status changed to " + viewModel.loginStatus.get());
+                if (viewModel.loginStatus.get() == STAT_STATUS_FETCHED) {
+
+                    Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
+                    Log.d("MainActivity", "fragment " + f.toString());
+                    if (f instanceof AlbumsFragment) {
+                        Integer cat = ((AlbumsFragment) f).getViewModel().getCategory();
+                        Log.d("MainActivity", "category " + cat);
+                        if (cat != null) {
+                            ((AlbumsFragment) f).getViewModel().loadAlbums(cat);
+                        } else {
+                            ((AlbumsFragment) f).getViewModel().loadAlbums(0);
+                        }
+                        ((AlbumsFragment) f).getViewModel().onRefresh();
+
+                    }
+                }
+            }
+        });
+
         final Observer<Account> accountObserver = account -> {
+            Log.d("MainActivity", "accounts changed " + account.toString());
             // reload the albums on account changes
-            if (account != null && !account.equals(currentAccount)) {
-                currentAccount = account;
-                viewModel.username.set(userManager.getUsername(account));
-                viewModel.url.set(userManager.getSiteUrl(account));
-                viewModel.displayFab.set(!userManager.isGuest(currentAccount));
-                initStartFragment(viewModel);
-            }
-            if (account == null) {
-                viewModel.username.set("");
-                viewModel.url.set("");
-            }
+            initStartFragment();
+            viewModel.changeAccount(account);
             viewModel.getError().observe(this, this::showError);
         };
         userManager.getActiveAccount().observe(this, accountObserver);
 
         if (savedInstanceState == null) {
-            initStartFragment(viewModel);
+            initStartFragment();
         }
 
         NavigationView nav = findViewById(R.id.navigation_view);
@@ -211,7 +221,8 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         });
     }
 
-    private void initStartFragment(MainViewModel viewModel) {
+    private void initStartFragment() {
+        Log.d("mainActivity", "initStartFragment");
         Bundle bndl = new Bundle();
         // TODO: make configurable which is the root album (See #44 option to select Default Album)
         bndl.putInt("Category", 0);
@@ -369,14 +380,14 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
             switch (speedDialActionItem.getId()) {
                 case R.id.fab_create_album:
                 case R.id.fab_create_subalbum:
-                    if (!hasAdminRights()) {
+                    if (isGuest()) {
                         DialogHelper.INSTANCE.showErrorDialog(R.string.not_admin, R.string.not_admin_explanation, this);
                         return (false);
                     }
                     promptAlbumCreation();
                     return (false);
                 case R.id.fab_upload_photos:
-                    if (!hasAdminRights()) {
+                    if (isGuest()) {
                         DialogHelper.INSTANCE.showErrorDialog(R.string.not_admin, R.string.not_admin_explanation, this);
                         return (false);
                     }
@@ -412,8 +423,9 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         }
     }
 
-    private boolean hasAdminRights() {
-        return (!userManager.isGuest(currentAccount));
+    private boolean isGuest() {
+        Account account = userManager.getActiveAccount().getValue();
+        return userManager.isGuest(account);
     }
 
     @Override

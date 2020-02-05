@@ -90,7 +90,8 @@ public class UserManager {
         refreshAccounts();
     }
 
-    public CacheDatabase getDatabaseForAccount(Account a) {
+    public CacheDatabase getDatabaseForCurrent() {
+        Account a = mCurrentAccount.getValue();
         if (a == null)
             return null;
         CacheDatabase result = databases.get(a.name);
@@ -168,7 +169,6 @@ public class UserManager {
     public Cookie sessionCookie() {
         Log.d("UserManager", "sessionCookie: " + mSessionCookie);
         return mSessionCookie;
-
     }
 
     public void setSessionCookie(Cookie cookie) {
@@ -238,13 +238,18 @@ public class UserManager {
     }
 
     public void setActiveAccount(Account activeAccount) {
+        if (activeAccount != null && activeAccount.equals(mCurrentAccount.getValue())) {
+            return;
+        }
+        setSessionCookie(null);
+        setSessionToken(null);
         if (activeAccount != null)
             preferencesRepository.setActiveAccount(activeAccount.name);
         mCurrentAccount.setValue(activeAccount);
         updateDB();
     }
 
-    private void updateDB(){
+    private void updateDB() {
         Account a = mCurrentAccount.getValue();
         if(a != null) {
             CacheDatabase cache = Room.databaseBuilder(mContext,
@@ -259,8 +264,6 @@ public class UserManager {
     }
 
     public void setActiveAccount(String activeAccount) {
-        setSessionCookie(null);
-        setSessionToken(null);
         Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
 
         if (!TextUtils.isEmpty(activeAccount)) {
@@ -285,23 +288,15 @@ public class UserManager {
     }
 
     /* throws IllegalArgumentException if the rename is not allowed because there is already an account with those properties. */
-    public void updateAccount(@NonNull Account account, @NonNull String url, String username, String password) throws IllegalArgumentException{
-        boolean isGuest = GUEST_ACCOUNT_NAME.equals(username);
-        if(username == null || username.length() == 0){
-            isGuest = true;
-            username = GUEST_ACCOUNT_NAME;
-        }
+    public void replaceAccount(@NonNull Account account, @NonNull String url, String username, String password) throws IllegalArgumentException {
 
-        accountManager.setUserData(account, KEY_IS_GUEST, Boolean.toString(isGuest));
-        accountManager.setUserData(account, KEY_SITE_URL, url);
-        accountManager.setUserData(account, KEY_USERNAME, username);
-        accountManager.setPassword(account, isGuest ? "" : password);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            String newname = getAccountName(url, username);
-            if(!newname.equals(account.name)) {
-                accountManager.renameAccount(account, newname, null, null);
-            }
-        }
+        boolean isGuest = GUEST_ACCOUNT_NAME.equals(username);
+        removeAccount(account);
+        if (isGuest)
+            account = createGuestUser(url);
+        else
+            account = createNormalUser(url, username, password);
+        setActiveAccount(account);
     }
 
     public void removeAccount(Account account) {

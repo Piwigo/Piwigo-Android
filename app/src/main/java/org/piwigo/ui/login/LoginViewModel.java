@@ -74,8 +74,6 @@ public class LoginViewModel extends ViewModel {
     private final UserManager userManager;
     private Account account = null;
 
-    boolean unitTesting = false;
-
     LoginViewModel(UserManager userManager, RestUserRepository userRepository, Resources resources) {
         this.userRepository = userRepository;
         this.resources = resources;
@@ -88,6 +86,7 @@ public class LoginViewModel extends ViewModel {
 
     // also used from the activity
     void triggerLogin() {
+        Log.d(TAG, "triggerLogin");
         try {
             if (isGuest()) {
                 userRepository.status(url.get())
@@ -223,7 +222,7 @@ public class LoginViewModel extends ViewModel {
             }
             try {
                 if (account != null) {
-                    userManager.updateAccount(account, url.get(), username.get(), password.get());
+                    userManager.replaceAccount(account, url.get(), username.get(), password.get());
                 }
                 loginSuccess.setValue(loginResponse);
             } catch (IllegalArgumentException e) {
@@ -248,7 +247,7 @@ public class LoginViewModel extends ViewModel {
             Log.d(TAG, "status was successful");
             try {
                 if (account != null) {
-                    userManager.updateAccount(account, url.get(), username.get(), password.get());
+                    userManager.replaceAccount(account, url.get(), username.get(), password.get());
                 }
                 // fake login response
                 SuccessResponse loginResponse = new SuccessResponse();
