@@ -91,10 +91,9 @@ public class UserManager {
     }
 
     public CacheDatabase getDatabaseForCurrent() {
-        if (mCurrentAccount == null)
-            return null;
-
         Account a = mCurrentAccount.getValue();
+        if (a == null)
+            return null;
         CacheDatabase result = databases.get(a.name);
         if (result == null){
             updateDB();
@@ -170,7 +169,6 @@ public class UserManager {
     public Cookie sessionCookie() {
         Log.d("UserManager", "sessionCookie: " + mSessionCookie);
         return mSessionCookie;
-
     }
 
     public void setSessionCookie(Cookie cookie) {

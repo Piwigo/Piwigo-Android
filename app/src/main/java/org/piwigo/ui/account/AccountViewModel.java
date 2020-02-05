@@ -43,6 +43,6 @@ public class AccountViewModel extends ViewModel {
     }
 
     public boolean isActive(){
-        return userManager.getActiveAccount().getValue().name.equals(account.name);
+        return account.equals(userManager.getActiveAccount().getValue());
     }
 }

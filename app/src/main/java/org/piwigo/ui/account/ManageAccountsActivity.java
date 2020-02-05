@@ -21,7 +21,6 @@ package org.piwigo.ui.account;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.OnAccountsUpdateListener;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import androidx.databinding.DataBindingUtil;
@@ -33,6 +32,7 @@ import androidx.core.app.NavUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -42,13 +42,16 @@ import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.shared.BaseActivity;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 import dagger.android.DispatchingAndroidInjector;
 
-public class ManageAccountsActivity extends BaseActivity implements OnAccountsUpdateListener {
+public class ManageAccountsActivity extends BaseActivity {
 
+    private static final String TAG = ManageAccountsActivity.class.getName();
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentInjector;
 
@@ -59,22 +62,12 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
 
     private ManageAccountsViewModel viewModel;
 
-    /**
-     * This invoked when the AccountManager starts up and whenever the account
-     * set changes.
-     *
-     * @param accounts the current accounts
-     */
-    @Override
-    public void onAccountsUpdated(Account[] accounts) {
-        userManager.refreshAccounts();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
 
+        userManager.refreshAccounts();
         ActivityManageAccountsBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_manage_accounts);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ManageAccountsViewModel.class);
@@ -84,39 +77,23 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
         setSupportActionBar(toolbar);
         viewModel.title.set(getString(R.string.title_activity_accounts));
 
-        userManager.getAccounts().observe(this, newItems -> {
-            BindingRecyclerViewAdapter<Account> a = (BindingRecyclerViewAdapter<Account>) binding.accountRecycler.getAdapter();
 
-            if (a != null) {
-                a.update(newItems);
-            }
-        });
         userManager.getActiveAccount().observe(this, account -> {
-            BindingRecyclerViewAdapter<Account> a = (BindingRecyclerViewAdapter<Account>) binding.accountRecycler.getAdapter();
+             BindingRecyclerViewAdapter<Account> a = (BindingRecyclerViewAdapter<Account>) binding.accountRecycler.getAdapter();
 
             if (a != null) {
                 a.notifyDataSetChanged();
             }
         });
 
-        viewModel.selectedAccount.observe(this, account -> {
-            BindingRecyclerViewAdapter<Account> a = (BindingRecyclerViewAdapter<Account>) binding.accountRecycler.getAdapter();
-
-            if (a != null) {
-                finish();
-            }
-        });
-
         binding.accountRecycler.setLayoutManager(new LinearLayoutManager(this));
+  }
 
-        accountManager.addOnAccountsUpdatedListener(this, null, true);
-    }
-
-    public void onDestroy() {
-        /* cleanup the account update listener */
-        accountManager.removeOnAccountsUpdatedListener(this);
-        super.onDestroy();
-    }
+  @Override
+  public void onResume() {
+      super.onResume();
+      userManager.refreshAccounts();
+   }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -140,20 +117,14 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
                 startActivity(editIntent);
                 break;
             case R.id.action_del_account:
-                int count = userManager.countOfAcounts();
                 Account account = userManager.getActiveAccount().getValue();
                 if (account != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                        accountManager.removeAccount(account, this, future -> userManager.refreshAccounts(), null);
+                        accountManager.removeAccount(account, this, future -> removedAccount(), null);
                     } else {
-                        accountManager.removeAccount(account, future -> userManager.refreshAccounts(), null);
+                        accountManager.removeAccount(account, future -> removedAccount(), null);
                     }
                 }
-                if (count <= 1) {
-                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                    finish();
-                }
-
                 break;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
@@ -162,6 +133,19 @@ public class ManageAccountsActivity extends BaseActivity implements OnAccountsUp
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    void removedAccount() {
+        userManager.refreshAccounts();
+        List<Account> currentAccounts = userManager.getAccounts().getValue();
+        Log.d(TAG, currentAccounts.toString());
+        if (currentAccounts.isEmpty()) {
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            finish();
+         } else {
+            viewModel.items.clear();
+            viewModel.items.addAll(currentAccounts);
+         }
     }
 
 }

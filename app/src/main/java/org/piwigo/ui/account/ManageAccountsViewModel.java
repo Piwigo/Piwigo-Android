@@ -20,10 +20,13 @@
 package org.piwigo.ui.account;
 
 import android.accounts.Account;
-import androidx.lifecycle.LiveData;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.ObservableArrayList;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import android.content.Intent;
+
 import androidx.databinding.ObservableField;
 
 import org.piwigo.BR;
@@ -32,33 +35,25 @@ import org.piwigo.accounts.UserManager;
 import org.piwigo.ui.login.LoginActivity;
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 
-import java.util.List;
-
-
 public class ManageAccountsViewModel extends ViewModel {
     public final ObservableField<String> title = new ObservableField<>();
+    public final ObservableArrayList<Account> items = new ObservableArrayList<>();
 
-    public final LiveData<List<Account>> accounts;
+
     MutableLiveData<Account> selectedAccount = new MutableLiveData<>();
 
-    private List<Account> items;
     public final BindingRecyclerViewAdapter.ViewBinder<Account> viewBinder = new AccountViewBinder();
 
     private final UserManager userManager;
 
-    public ManageAccountsViewModel(UserManager userManager) {
+    public ManageAccountsViewModel(@NonNull UserManager userManager) {
         this.userManager = userManager;
-        accounts = userManager.getAccounts();
-        items = accounts.getValue();
         selectedAccount.setValue(userManager.getActiveAccount().getValue());
+        items.addAll(userManager.getAccounts().getValue());
     }
 
     public Account getSelectedAccount(){
         return selectedAccount.getValue();
-    }
-
-    public List<Account> getItems() {
-        return items;
     }
 
     private class AccountViewBinder implements BindingRecyclerViewAdapter.ViewBinder<Account> {
@@ -78,7 +73,6 @@ public class ManageAccountsViewModel extends ViewModel {
             viewHolder.itemView.setSelected(x);
             viewHolder.itemView.setOnClickListener(v -> {
                 selectedAccount.postValue(account);
-
                 userManager.setActiveAccount(account);
             });
             viewHolder.itemView.setOnLongClickListener(v -> {
