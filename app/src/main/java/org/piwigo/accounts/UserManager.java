@@ -106,7 +106,13 @@ public class UserManager {
      * of a change in the accounts */
     public void refreshAccounts() {
         Account[] accounts = accountManager.getAccountsByType(resources.getString(R.string.account_type));
-        mAllAccounts.setValue(ImmutableList.copyOf(accounts));
+        ImmutableList<Account>  newAccounts = ImmutableList.copyOf(accounts);
+
+        if (newAccounts.equals(mAllAccounts.getValue())) {
+              Log.d(TAG, "no change in accounts");
+              return;
+        }
+        mAllAccounts.setValue(newAccounts);
 
         Account a = mCurrentAccount.getValue();
         setActiveAccount(a == null ? "" : a.name);
