@@ -136,6 +136,7 @@ public class ManageAccountsActivity extends BaseActivity {
     }
 
     void removedAccount() {
+        viewModel.items.clear();
         userManager.refreshAccounts();
         List<Account> currentAccounts = userManager.getAccounts().getValue();
         Log.d(TAG, currentAccounts.toString());
@@ -143,7 +144,6 @@ public class ManageAccountsActivity extends BaseActivity {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
             finish();
          } else {
-            viewModel.items.clear();
             viewModel.items.addAll(currentAccounts);
          }
     }
