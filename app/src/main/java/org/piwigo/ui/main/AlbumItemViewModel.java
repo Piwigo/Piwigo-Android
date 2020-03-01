@@ -34,12 +34,14 @@ public class AlbumItemViewModel extends ViewModel {
     private final String title;
     private final String photos;
     private final Integer catId;
+    private final String comment;
 
-    AlbumItemViewModel(String url, String title, String photos, Integer categoryId) {
+    AlbumItemViewModel(String url, String title, String comment, String photos, Integer categoryId) {
         this.url.set(url);
         this.title = title;
         this.photos = photos;
         this.catId = categoryId;
+        this.comment = comment;
     }
 
     public String getTitle() {
@@ -76,5 +78,9 @@ public class AlbumItemViewModel extends ViewModel {
                     .addToBackStack(null)
                     .commit();
         }
+    }
+
+    public String getComment() {
+        return comment;
     }
 }

@@ -25,7 +25,7 @@ public class Category {
 
     @SerializedName("name") public String name;
 
-    @SerializedName("description") public String comment;
+    @SerializedName("comment") public String comment;
 
     @SerializedName("global_rank") public String globalRank;
 

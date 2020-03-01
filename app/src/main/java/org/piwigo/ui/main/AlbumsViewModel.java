@@ -197,7 +197,7 @@ public class AlbumsViewModel extends ViewModel {
                 int subPhotos = category.totalNbImages - category.nbImages;
                 photos += resources.getQuantityString(R.plurals.album_photos_subs, subPhotos, subPhotos);
             }
-            AlbumItemViewModel viewModel = new AlbumItemViewModel(category.thumbnailUrl, category.name, photos, category.id);
+            AlbumItemViewModel viewModel = new AlbumItemViewModel(category.thumbnailUrl, category.name, category.comment, photos, category.id);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
     }

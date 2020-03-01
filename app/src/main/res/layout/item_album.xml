@@ -64,45 +64,58 @@
             android:id="@+id/second_card"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginEnd="13dp"
+            android:layout_marginStart="13dp"
+            android:layout_marginTop="9dp"
+            android:layout_marginBottom="15dp"
             android:onClick="@{viewModel::onClickDo}"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
             android:theme="@style/Theme.Piwigo.ItemAlbumCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/guideline"
-            >
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/title"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.title}"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/piwigo_orange"
-                android:background="@color/card_background"
-                tools:text="Album Title"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/title2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:singleLine="false"
-                android:text="@{viewModel.photos}"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="Description of content"
-                android:theme="@style/Theme.Piwigo.ItemAlbumCard"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/card_background"
+                    android:text="@{viewModel.title}"
+                    android:textAlignment="center"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/piwigo_orange"
+                    tools:text="Album Title" />
+
+                <TextView
+                    android:id="@+id/comment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/card_background"
+                    android:gravity="center"
+                    android:singleLine="false"
+                    android:text="@{viewModel.comment}"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:text="Album Comment" />
+
+                <TextView
+                    android:id="@+id/details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:singleLine="false"
+                    android:text="@{viewModel.photos}"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:theme="@style/Theme.Piwigo.ItemAlbumCard"
+                    tools:text="Album Details" />
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
