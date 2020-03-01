@@ -20,7 +20,9 @@ package org.piwigo.data.model;
 
 import android.net.Uri;
 
-public class ImageUploadItem
+import java.io.Serializable;
+
+public class ImageUploadItem implements Serializable
 {
     private String imageData;
     private Uri imageUri;

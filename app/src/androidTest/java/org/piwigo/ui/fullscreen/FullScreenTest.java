@@ -145,7 +145,13 @@ public class FullScreenTest {
     }
     @After
     public void tearDown() {
-        // do not use manageAccounts here as we do not know where we are
+        UiDevice device = UiDevice.getInstance(getInstrumentation());
+        try {
+            device.setOrientationNatural();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
         activityScenarioRule.getScenario().launch(ManageAccountsActivity.class);
         waitForElement(R.id.account_recycler, 3000);
 
@@ -153,14 +159,6 @@ public class FullScreenTest {
         ViewInteraction viewInteraction = onView(allOf(withText("Remove account"), isDisplayed()));
         viewInteraction.check(matches(isDisplayed()));
         viewInteraction.perform(click());
-
-        // maximum 2 accounts
-        try {
-            onView(allOf(withContentDescription("More options"), isDisplayed())).perform(click());
-            onView(allOf(withText("Remove account"), isDisplayed())).perform(click());
-        } catch (NoMatchingViewException e) {
-            // no crash teardown if there were less accounts
-        }
     }
 
 }

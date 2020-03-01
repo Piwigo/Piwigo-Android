@@ -21,7 +21,9 @@ package org.piwigo.data.model;
 import androidx.room.Embedded;
 import androidx.room.Relation;
 
-public class VariantWithImage {
+import java.io.Serializable;
+
+public class VariantWithImage implements Serializable {
     @Embedded
     public ImageVariant variant;
     @Relation(

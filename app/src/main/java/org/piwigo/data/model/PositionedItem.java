@@ -18,10 +18,12 @@
 
 package org.piwigo.data.model;
 
+import java.io.Serializable;
+
 /**
  * represents an item (photo, album, video, ...) in the gallery, at a defined position in the current result
  */
-public class PositionedItem<T> {
+public class PositionedItem<T> implements Serializable {
     private final int position;
     private final T item;
     private boolean updateNeeded;

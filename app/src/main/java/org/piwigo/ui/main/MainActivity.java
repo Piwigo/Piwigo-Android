@@ -183,8 +183,8 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 if (viewModel.loginStatus.get() == STAT_STATUS_FETCHED) {
 
                     Fragment f = getSupportFragmentManager().findFragmentById(R.id.content);
-                    Log.d("MainActivity", "fragment " + f.toString());
                     if (f instanceof AlbumsFragment) {
+                        Log.d("MainActivity", "fragment " + f.toString());
                         Integer cat = ((AlbumsFragment) f).getViewModel().getCategory();
                         Log.d("MainActivity", "category " + cat);
                         if (cat != null) {
