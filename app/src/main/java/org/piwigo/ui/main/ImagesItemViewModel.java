@@ -56,7 +56,7 @@ public class ImagesItemViewModel extends ViewModel {
     }
 
     public String getTitle() {
-        return image.image.description;
+        return image.image.name;
     }
 
     public int getImagePosition()
