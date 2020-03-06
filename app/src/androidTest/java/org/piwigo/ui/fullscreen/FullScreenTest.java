@@ -74,19 +74,22 @@ public class FullScreenTest {
         addAccount("https://tg1.kulow.org", "seessmall", "seessmall");
         waitForElement(R.id.albumRecycler, 8000);
         sleepUninterrupted(3000);
-        // enter the album
-        onView(withText("Small")).perform((click()));
-        waitForElement(R.id.photoRecycler, 8000);
 
+        // enter the album
+        waitForElement("Small", 5000);
+        onView(withText("Small")).perform((click()));
+
+        // switch to full screen
+        waitForElement("caption1", 5000);
         onView(withContentDescription("caption1")).perform((click()));
 
         waitForElement(R.id.imgDisplay, 5000);
 
         try {
             device.setOrientationLeft();
-            sleepUninterrupted(3000);
+            sleepUninterrupted(5000);
             device.setOrientationNatural();
-            sleepUninterrupted(2000);
+            sleepUninterrupted(3000);
             device.setOrientationRight();
             sleepUninterrupted(1000);
         } catch (RemoteException e) {
@@ -100,6 +103,30 @@ public class FullScreenTest {
         } catch (InterruptedException e) {
 
         }
+    }
+
+    public ViewInteraction waitForElement(final String contentDescription, final long millis) {
+
+        final long startTime = System.currentTimeMillis();
+        final long endTime = startTime + millis;
+        final Matcher<View> viewMatcher = CoreMatchers.allOf(withContentDescription(contentDescription), isDisplayed());
+
+        do {
+            ViewInteraction va = onView(viewMatcher);
+            try {
+                va.check(matches(isDisplayed()));
+                return va;
+            } catch (NoMatchingViewException e) {
+            }
+            sleepUninterrupted((100));
+        }
+        while (System.currentTimeMillis() < endTime);
+
+        ViewInteraction va = onView(viewMatcher);
+        // raise the exception
+        va.check(matches(isDisplayed()));
+        // return it in cases it just appeared the very moment
+        return va;
     }
 
     public ViewInteraction waitForElement(final int viewId, final long millis) {
