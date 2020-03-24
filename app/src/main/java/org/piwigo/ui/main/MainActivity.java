@@ -61,8 +61,6 @@ import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
 import org.piwigo.data.model.ImageUploadItem;
 import org.piwigo.io.restrepository.RestUserRepository;
-import org.piwigo.io.model.LoginResponse;
-import org.piwigo.io.model.SuccessResponse;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
 import org.piwigo.ui.account.ManageAccountsActivity;
