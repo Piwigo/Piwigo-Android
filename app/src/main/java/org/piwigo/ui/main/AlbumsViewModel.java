@@ -259,7 +259,7 @@ public class AlbumsViewModel extends ViewModel {
         @Override
         public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, VariantWithImage image) {
             // TODO: make configurable to also show the photo name here
-            ImagesItemViewModel viewModel = new ImagesItemViewModel(image, images.indexOf(image), images);
+            ImagesItemViewModel viewModel = new ImagesItemViewModel(image, images.indexOf(image), category);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
     }

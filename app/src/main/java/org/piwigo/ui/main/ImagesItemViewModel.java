@@ -35,17 +35,14 @@ public class ImagesItemViewModel extends ViewModel {
 
     private final VariantWithImage image;
     private final int imagePosition;
+    private final int categoryID;
 //    private final String title;
 
-    private final ArrayList<VariantWithImage> images;
-
-    public ImagesItemViewModel(VariantWithImage img, int imagePosition, ArrayList<VariantWithImage> images) {
-        // TODO: images should be removed, it is just there to pass it to the PhotoViewerDialogFragment
-        // for this we should better refer to the parent album
+    public ImagesItemViewModel(VariantWithImage img, int imagePosition, int categoryID) {
         this.image = img;
         this.imagePosition = imagePosition;
+        this.categoryID = categoryID;
 //        this.title = title;
-        this.images = images;
     }
 
     public VariantWithImage getImage(){
@@ -77,8 +74,7 @@ public class ImagesItemViewModel extends ViewModel {
         if(mainActivity != null)
         {
             Bundle bundle = new Bundle();
-            // TODO: don't put the list of images here, but only the imageID
-            bundle.putSerializable("images", images);
+            bundle.putInt("categoryID", categoryID);
             bundle.putInt("position", getImagePosition());
 
             FragmentTransaction ft = mainActivity.getSupportFragmentManager().beginTransaction();

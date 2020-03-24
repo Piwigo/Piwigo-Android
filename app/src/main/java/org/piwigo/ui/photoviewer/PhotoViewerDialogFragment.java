@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.DialogFragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -12,23 +14,31 @@ import com.squareup.picasso.Picasso;
 
 import org.piwigo.R;
 import org.piwigo.data.model.Image;
+import org.piwigo.data.model.PositionedItem;
 import org.piwigo.data.model.VariantWithImage;
+import org.piwigo.data.repository.ImageRepository;
+import org.piwigo.ui.main.AlbumsViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
 
 public class PhotoViewerDialogFragment extends DialogFragment
 {
-    private ArrayList<VariantWithImage> images;
+    public ObservableArrayList<VariantWithImage> images = new ObservableArrayList<>();
     private ViewPager viewPager;
     private PhotoViewerPagerAdapter pagerAdapter;
     private int selectedPosition = 0;
 
     @Inject
     Picasso picasso;
+
+    @Inject ImageRepository imageRepository;
 
     public static PhotoViewerDialogFragment newInstance() {
         PhotoViewerDialogFragment f = new PhotoViewerDialogFragment();
@@ -40,8 +50,10 @@ public class PhotoViewerDialogFragment extends DialogFragment
     {
         View v = inflater.inflate(R.layout.fragment_fullscreen_images, container, false);
         viewPager = v.findViewById(R.id.viewpager);
-        // TODO: don't pass the full list of images into the Photoviewer, but only the imageId and then requery the ImageRepository here (not really here, but do a proper Adapter implementation such that we don't load the complete list
-        images = (ArrayList<VariantWithImage>) getArguments().getSerializable("images");
+        imageRepository.getImages(getArguments().getInt("categoryID"))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new ImageSubscriber());
+
         selectedPosition = getArguments().getInt("position");
         pagerAdapter = new PhotoViewerPagerAdapter(getContext(), images);
 
@@ -69,4 +81,40 @@ public class PhotoViewerDialogFragment extends DialogFragment
         selectedPosition = 0;
         super.onDestroy();
     }
+
+    private boolean isLoadingImages = false;
+    public ObservableBoolean isLoading = new ObservableBoolean();
+
+    private class ImageSubscriber extends DisposableObserver<PositionedItem<VariantWithImage>> {
+        public ImageSubscriber(){
+            super();
+            isLoadingImages = true;
+        }
+
+        @Override
+        public void onNext(PositionedItem<VariantWithImage> item) {
+            if(images.size() == item.getPosition()){
+                images.add(item.getItem());
+            }else {
+                while (images.size() <= item.getPosition()) {
+                    images.add(null);
+                }
+                images.set(item.getPosition(), item.getItem());
+            }
+            pagerAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onComplete() {
+            isLoadingImages = false;
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            isLoadingImages = false;
+            // TODO handle errors
+            e.printStackTrace();
+        }
+    }
+
 }

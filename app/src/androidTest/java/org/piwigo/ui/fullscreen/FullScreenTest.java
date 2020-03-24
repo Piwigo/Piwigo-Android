@@ -73,7 +73,6 @@ public class FullScreenTest {
 
         addAccount("https://tg1.kulow.org", "seessmall", "seessmall");
         waitForElement(R.id.albumRecycler, 8000);
-        sleepUninterrupted(3000);
 
         // enter the album
         waitForElement("Small", 5000);
