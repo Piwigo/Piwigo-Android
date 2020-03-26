@@ -132,12 +132,6 @@ public class UploadService extends IntentService {
         if ((uploadAction = imageUploadQueue.poll()) == null)
             return;
 
-        //Chunks
-        long tmpFileSize = getFileSize(uploadAction.getUploadData().getTargetUri());
-        int chunkSize = getChunkSize();
-        int expectedChunks = tmpFileSize <= chunkSize ? 1 : (int) (tmpFileSize / chunkSize) + 1;
-        //Instances
-        MultipartBody.Part fileParts[] = new MultipartBody.Part[expectedChunks];
         UploadPromise promise = new UploadPromise();
         RestService restService;
         //Local variables
@@ -154,6 +148,12 @@ public class UploadService extends IntentService {
             Log.e("UploadService", "IOException", e.getCause());
             content = new byte[0];
         }
+        //Chunks
+        long tmpFileSize = content.length;
+        int chunkSize = getChunkSize();
+        int expectedChunks = tmpFileSize <= chunkSize ? 1 : (int) (tmpFileSize / chunkSize) + 1;
+        //Instances
+        MultipartBody.Part fileParts[] = new MultipartBody.Part[expectedChunks];
 
         byte[][] splittedContent = splitArray(content, chunkSize);
         for (int i = 0; i < splittedContent.length; i++) {
@@ -247,14 +247,14 @@ public class UploadService extends IntentService {
      * Create the request bodies for the upload form
      *
      * @param imageName  (filename with the extension)
-     * @param photoName  (filename without the extension - used for display)
+     * @param photoName  (filename without the extension - used for display, maybe unused on server side)
      * @return an array of RequestBody with the same "get" order than the parameters
      */
     private ArrayList<RequestBody> createUploadRequest(String imageName, String photoName) {
         ArrayList<RequestBody> requestBodies = new ArrayList<RequestBody>();
 
-        requestBodies.add(0, RequestBody.create(MediaType.parse("text/plain"), imageName));
-        requestBodies.add(1, RequestBody.create(MediaType.parse("text/plain"), photoName));
+        requestBodies.add(0, RequestBody.create(MediaType.parse("text/plain"), photoName)); /* photoName seems unused, Piwigo-Server uses always the file name */
+        requestBodies.add(1, RequestBody.create(MediaType.parse("text/plain"), imageName));
         requestBodies.add(2, RequestBody.create(MediaType.parse("text/plain"), userManager.sessionToken()));
         return (requestBodies);
     }
@@ -269,6 +269,7 @@ public class UploadService extends IntentService {
             onChunkedUploadStarted(imageUploadQueue);
             return;
         }
+
         Call<ImageUploadResponse> call = restService.uploadChunkedImage(
                 promise.getRequestBodies().get(0),
                 promise.getCatId(),

@@ -146,6 +146,9 @@ public class MainViewModel extends ViewModel {
         @Override
         public void onNext(StatusResponse statusResponse) {
             Log.d("mainViewModel", "status response" + statusResponse.toString());
+            if(statusResponse != null && statusResponse.result != null) {
+                userManager.setSessionToken(statusResponse.result.pwgToken);
+            }
             //apiStatus = statusResponse;
             loginStatus.set(STAT_STATUS_FETCHED);
         }
