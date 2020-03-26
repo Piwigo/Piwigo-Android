@@ -203,7 +203,7 @@ public class UserManager {
     {
         String junksize = accountManager.getUserData(account, KEY_CHUNK_SIZE);
         if(junksize == null){
-            return 128;
+            return 1024 * 1024; /* 1MB is default junk size */
         }
         return Integer.parseInt(junksize);
     }
