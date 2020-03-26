@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="Theme.Piwigo" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/piwigo_orange</item>
         <item name="colorPrimaryDark">@color/piwigo_orange_secondary</item>
         <item name="colorAccent">@color/piwigo_orange</item>
         <item name="android:windowBackground">@color/piwigo_dark_background_color</item>
         <item name="android:statusBarColor">#1E1E1E</item>
-        <item name="android:textColor" />
+        <item name="android:textColor">@color/material_white</item>
     </style>
 
     <style name="Theme.Piwigo.Login" parent="Theme.Piwigo">
