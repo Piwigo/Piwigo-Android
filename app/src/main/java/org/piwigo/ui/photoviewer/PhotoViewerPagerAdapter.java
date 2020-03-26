@@ -36,11 +36,12 @@ public class PhotoViewerPagerAdapter extends PagerAdapter {
         View view = inflater.inflate(R.layout.item_fullscreen_image, container, false);
         TouchImageView imageViewPreview = view.findViewById(R.id.imgDisplay);
         VariantWithImage image = images.get(position);
-
-        // TODO: trigger URL updates to get needed resolution and handle LiveData updates
-        // TODO: #232 load image from cache (if available)
-        picasso.load(image.image.elementUrl)
-                .into(imageViewPreview);
+        if(image != null) { // sometimes it happens that the image we'd like to show is not yet loaded...
+            // TODO: trigger URL updates to get needed resolution and handle LiveData updates
+            // TODO: #232 load image from cache (if available)
+            picasso.load(image.image.elementUrl)
+                    .into(imageViewPreview);
+        }
         container.addView(view);
         return view;
     }
