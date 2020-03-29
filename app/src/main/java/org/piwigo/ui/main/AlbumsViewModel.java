@@ -29,6 +29,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.ViewModel;
 
 import org.piwigo.BR;
+import org.piwigo.EspressoIdlingResource;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.data.model.Category;
@@ -90,9 +91,9 @@ public class AlbumsViewModel extends ViewModel {
         return category;
     }
 
-    private void forcedLoadAlbums(){
+    private void forcedLoadAlbums() {
 
-        Log.d("AlbumsViewMmodel", "forceAlbums");
+        EspressoIdlingResource.moreBusy("load albums");
         if (albumsSubscription != null) {
             // cleanup, just in case
             albumsSubscription.cancel();
@@ -104,17 +105,22 @@ public class AlbumsViewModel extends ViewModel {
             photosSubscription = null;
         }
         Account account = userManager.getActiveAccount().getValue();
-        if (account == null)
+        if (account == null) {
+            EspressoIdlingResource.lessBusy("load albums", "account null");
             return;
+        }
         if (userManager.isGuest(account) || userManager.sessionCookie() != null) {
+            EspressoIdlingResource.moreBusy("load categories");
             categoriesRepository.getCategories(category)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new CategoriesSubscriber());
 
+            EspressoIdlingResource.moreBusy("load album images");
             imageRepository.getImages(category)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new ImageSubscriber());
         }
+        EspressoIdlingResource.lessBusy("load albums", "forceLoadAlbums done");
     }
 
     void loadAlbums(Integer categoryId) {
@@ -147,6 +153,7 @@ public class AlbumsViewModel extends ViewModel {
         public void onComplete() {
             isLoadingCategories = false;
             updateLoading();
+            EspressoIdlingResource.lessBusy("load categories", "onComplete");
         }
 
         @Override
@@ -224,6 +231,7 @@ public class AlbumsViewModel extends ViewModel {
         public void onComplete() {
             isLoadingImages = false;
             updateLoading();
+            EspressoIdlingResource.lessBusy("load album images", "ImageSubscriber.onComplete");
         }
 
         @Override

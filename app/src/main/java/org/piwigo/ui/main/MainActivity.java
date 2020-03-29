@@ -34,7 +34,6 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -46,6 +45,7 @@ import com.tingyik90.snackprogressbar.SnackProgressBarManager;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.piwigo.EspressoIdlingResource;
 import org.piwigo.R;
 import org.piwigo.bg.AlbumService;
 import org.piwigo.bg.ImageUploadQueue;
@@ -59,7 +59,6 @@ import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
-import org.piwigo.data.model.ImageUploadItem;
 import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
@@ -194,8 +193,8 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                             ((AlbumsFragment) f).getViewModel().loadAlbums(0);
                         }
                         ((AlbumsFragment) f).getViewModel().onRefresh();
-
                     }
+                    EspressoIdlingResource.lessBusy("main login", "login status changed");
                 }
             }
         });
