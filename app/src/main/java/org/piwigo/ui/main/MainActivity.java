@@ -87,6 +87,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import dagger.android.AndroidInjection;
@@ -287,16 +288,15 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
-        viewModel.showingRootAlbum.removeOnPropertyChangedCallback(mDrawerCallBack);
         mBinding.drawerLayout.removeDrawerListener(mDrawerToggle);
-
         snackProgressBarManager.disable();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        MainViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
+        viewModel.showingRootAlbum.removeOnPropertyChangedCallback(mDrawerCallBack);
         EventBus.getDefault().unregister(this);
     }
 
