@@ -45,7 +45,6 @@ import com.tingyik90.snackprogressbar.SnackProgressBarManager;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.piwigo.EspressoIdlingResource;
 import org.piwigo.R;
 import org.piwigo.bg.AlbumService;
 import org.piwigo.bg.ImageUploadQueue;
@@ -87,7 +86,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
@@ -137,7 +135,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, mBinding.navigationView, false);
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
         mBinding.setViewModel(viewModel);
         headerBinding.setViewModel(viewModel);
         mBinding.navigationView.addHeaderView(headerBinding.getRoot());
@@ -194,7 +192,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                         }
                         ((AlbumsFragment) f).getViewModel().onRefresh();
                     }
-                    EspressoIdlingResource.lessBusy("main login", "login status changed");
                 }
             }
         });
@@ -240,7 +237,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Override
     public void onBackPressed() {
         if (getCurrentCategoryId() != 0 && mDrawerToggle.isDrawerIndicatorEnabled()) {
-            MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+            MainViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
             viewModel.drawerState.set(false);
         } else {
             super.onBackPressed();
@@ -279,7 +276,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Override
     protected void onResume() {
         super.onResume();
-        MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        MainViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
         speedDialView.setVisibility(viewModel.displayFab.get() ? View.VISIBLE : View.INVISIBLE);
         EventBus.getDefault().register(this);
     }

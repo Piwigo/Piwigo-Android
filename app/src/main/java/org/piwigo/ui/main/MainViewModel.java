@@ -66,7 +66,6 @@ public class MainViewModel extends ViewModel {
     private UserManager userManager;
 
     MainViewModel(UserManager userManager, @NonNull RestUserRepository userRepository) {
-        Account account = userManager.getActiveAccount().getValue();
         this.userManager = userManager;
         mUserRepository = userRepository;
         loginStatus.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
@@ -78,7 +77,6 @@ public class MainViewModel extends ViewModel {
                 }
             }
         });
-        changeAccount(account);
     }
 
     LiveData<Throwable> getError() {
@@ -90,8 +88,6 @@ public class MainViewModel extends ViewModel {
     }
 
     public void changeAccount(Account account) {
-        if (userManager.getUsername(account).equals(username.get()))
-            return;
         userManager.setSessionCookie(null);
         userManager.setSessionToken(null);
         displayFab.set(!userManager.isGuest(account));
@@ -134,6 +130,8 @@ public class MainViewModel extends ViewModel {
         @Override
         public void onComplete() {
             Log.d("StatusSubscriber", "onComplete");
+            loginStatus.set(STAT_STATUS_FETCHED);
+            EspressoIdlingResource.lessBusy("main login", "login status changed");
         }
 
         @Override
@@ -149,8 +147,6 @@ public class MainViewModel extends ViewModel {
             if(statusResponse != null && statusResponse.result != null) {
                 userManager.setSessionToken(statusResponse.result.pwgToken);
             }
-            //apiStatus = statusResponse;
-            loginStatus.set(STAT_STATUS_FETCHED);
         }
     }
 
