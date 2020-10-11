@@ -98,22 +98,22 @@ android {
     }
 }
 
-def daggerVersion = '2.27'
-def okhttpVersion = '4.4.1'
-def retrofitVersion = '2.8.1'
-def picassoVersion = '2.71828'
+def daggerVersion = '2.29.1'
+def okhttpVersion = '4.9.0'
+def retrofitVersion = '2.9.0'
+def picassoVersion = '2.8'
 def assertjVersion = '1.2.0'
-def acraVersion = '5.5.0'
+def acraVersion = '5.7.0'
 def room_version = "2.2.5"
-def espressoVersion = '3.3.0-alpha05'
+def espressoVersion = '3.3.0'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'com.android.support:multidex:1.0.3'
     implementation "com.google.dagger:dagger:${daggerVersion}"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
@@ -130,9 +130,9 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava2:${retrofitVersion}"
     implementation "com.squareup.picasso:picasso:${picassoVersion}"
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.9'
-    implementation 'com.google.guava:guava:28.1-jre'
-    annotationProcessor 'com.google.guava:guava:24.1-jre'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.20'
+    implementation 'com.google.guava:guava:29.0-android'
+    annotationProcessor 'com.google.guava:guava:29.0-android'
 
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
@@ -140,10 +140,10 @@ dependencies {
     implementation "androidx.room:room-guava:$room_version"
 
 
-    implementation 'org.apache.commons:commons-lang3:3.9'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation 'com.vipulasri:ticketview:1.0.7'
-    implementation "androidx.preference:preference:1.1.0"
+    implementation "androidx.preference:preference:1.1.1"
     
     implementation "ch.acra:acra-mail:$acraVersion"
     implementation "ch.acra:acra-dialog:$acraVersion"
@@ -151,31 +151,31 @@ dependencies {
     implementation 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     implementation "com.leinardi.android:speed-dial:3.0.0"
     implementation 'com.github.tingyik90:snackprogressbar:6.1.1'
-    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'org.greenrobot:eventbus:3.2.0'
     /* Don't forget to add to string libraries if you add a library here. */
 
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
 
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.robolectric:robolectric:4.3.1'
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.robolectric:robolectric:4.4'
     testImplementation("com.squareup.assertj:assertj-android:${assertjVersion}") {
         exclude group: 'com.android.support'
     }
     testAnnotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
-    testImplementation 'org.mockito:mockito-core:2.19.0'
-    testImplementation 'com.google.guava:guava:24.1-jre'
-    testImplementation 'androidx.appcompat:appcompat:1.1.0'
-    testAnnotationProcessor 'com.google.guava:guava:24.1-jre'
+    testImplementation 'org.mockito:mockito-core:3.5.13'
+    testImplementation 'com.google.guava:guava:29.0-android'
+    testImplementation 'androidx.appcompat:appcompat:1.2.0'
+    testAnnotationProcessor 'com.google.guava:guava:29.0-android'
     testImplementation 'com.google.code.findbugs:jsr305:3.0.2'
 
-    androidTestImplementation 'androidx.test:core:1.3.0-alpha05'
-    androidTestImplementation 'androidx.test:core-ktx:1.3.0-alpha05'
+    androidTestImplementation 'androidx.test:core:1.3.0'
+    androidTestImplementation 'androidx.test:core-ktx:1.3.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2-alpha05'
-    androidTestImplementation 'androidx.test:runner:1.3.0-alpha05'
+    androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation "androidx.test.espresso:espresso-core:${espressoVersion}"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:${espressoVersion}"
-    androidTestImplementation 'androidx.test:rules:1.3.0-alpha05'
+    androidTestImplementation 'androidx.test:rules:1.3.0'
     androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
     // Note that espresso-idling-resource is used in the code under test.
     implementation "androidx.test.espresso:espresso-idling-resource:${espressoVersion}"
