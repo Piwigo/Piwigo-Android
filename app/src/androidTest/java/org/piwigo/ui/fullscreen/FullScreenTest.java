@@ -16,30 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.piwigo.ui.fullscreen;
+package org.piwigo.ui.main;
 
 
-import android.content.pm.ActivityInfo;
 import android.os.RemoteException;
-import android.view.View;
-
-import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matcher;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.piwigo.EspressoIdlingResource;
 import org.piwigo.R;
 import org.piwigo.ui.account.ManageAccountsActivity;
-import org.piwigo.ui.main.MainActivity;
+import org.piwigo.ui.login.LoginActivity;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -59,101 +55,34 @@ import static org.hamcrest.CoreMatchers.allOf;
 public class FullScreenTest {
 
     @Rule
-    public ActivityScenarioRule<MainActivity> activityScenarioRule =
-            new ActivityScenarioRule<MainActivity>(MainActivity.class);
+    public ActivityScenarioRule<LoginActivity> activityScenarioRule =
+            new ActivityScenarioRule<LoginActivity>(LoginActivity.class);
+
+    // Register your Idling Resource before any tests regarding this component
+    @Before
+    public void registerIdlingResource() {
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.getIdlingResource());
+    }
 
     @Test
-    public void fullScreenTest() {
+    public void fullScreenTest() throws RemoteException {
         UiDevice device = UiDevice.getInstance(getInstrumentation());
-        try {
-            device.setOrientationNatural();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
         addAccount("https://tg1.kulow.org", "seessmall", "seessmall");
-        waitForElement(R.id.albumRecycler, 8000);
+        onView(withText("Small")).check(matches(isDisplayed()));
 
         // enter the album
-        waitForElement("Small", 5000);
         onView(withText("Small")).perform((click()));
 
         // switch to full screen
-        waitForElement("caption1", 5000);
         onView(withContentDescription("caption1")).perform((click()));
 
-        waitForElement(R.id.imgDisplay, 5000);
-
-        try {
-            device.setOrientationLeft();
-            sleepUninterrupted(5000);
-            device.setOrientationNatural();
-            sleepUninterrupted(3000);
-            device.setOrientationRight();
-            sleepUninterrupted(1000);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sleepUninterrupted(int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-
-        }
-    }
-
-    public ViewInteraction waitForElement(final String contentDescription, final long millis) {
-
-        final long startTime = System.currentTimeMillis();
-        final long endTime = startTime + millis;
-        final Matcher<View> viewMatcher = CoreMatchers.allOf(withContentDescription(contentDescription), isDisplayed());
-
-        do {
-            ViewInteraction va = onView(viewMatcher);
-            try {
-                va.check(matches(isDisplayed()));
-                return va;
-            } catch (NoMatchingViewException e) {
-            }
-            sleepUninterrupted((100));
-        }
-        while (System.currentTimeMillis() < endTime);
-
-        ViewInteraction va = onView(viewMatcher);
-        // raise the exception
-        va.check(matches(isDisplayed()));
-        // return it in cases it just appeared the very moment
-        return va;
-    }
-
-    public ViewInteraction waitForElement(final int viewId, final long millis) {
-
-        final long startTime = System.currentTimeMillis();
-        final long endTime = startTime + millis;
-        final Matcher<View> viewMatcher = CoreMatchers.allOf(withId(viewId), isDisplayed());
-
-        do {
-            ViewInteraction va = onView(viewMatcher);
-            try {
-                va.check(matches(isDisplayed()));
-                return va;
-            } catch (NoMatchingViewException e) {
-            }
-            sleepUninterrupted((100));
-        }
-        while (System.currentTimeMillis() < endTime);
-
-        ViewInteraction va = onView(viewMatcher);
-        // raise the exception
-        va.check(matches(isDisplayed()));
-        // return it in cases it just appeared the very moment
-        return va;
+        device.setOrientationLeft();
+        device.setOrientationNatural();
+        device.setOrientationRight();
     }
 
     private void addAccount(String url, String user, String password) {
-        ViewInteraction editUser = waitForElement(R.id.username, 5000);
+        ViewInteraction editUser = onView(withId(R.id.username));
         editUser.check(matches(withText("")));
 
         ViewInteraction editURL = onView(withId(R.id.url));
@@ -169,6 +98,7 @@ public class FullScreenTest {
         ViewInteraction loginButton = onView(withId(R.id.login_button));
         loginButton.perform(scrollTo(), click());
     }
+
     @After
     public void tearDown() {
         UiDevice device = UiDevice.getInstance(getInstrumentation());
@@ -179,12 +109,12 @@ public class FullScreenTest {
         }
 
         activityScenarioRule.getScenario().launch(ManageAccountsActivity.class);
-        waitForElement(R.id.account_recycler, 3000);
-
         onView(allOf(withContentDescription("More options"), isDisplayed())).perform(click());
         ViewInteraction viewInteraction = onView(allOf(withText("Remove account"), isDisplayed()));
         viewInteraction.check(matches(isDisplayed()));
         viewInteraction.perform(click());
+
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.getIdlingResource());
     }
 
 }

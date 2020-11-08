@@ -1,18 +1,19 @@
 package org.piwigo.ui.login;
 
-import android.view.View;
 import android.os.Build;
+import android.util.Log;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.piwigo.EspressoIdlingResource;
 import org.piwigo.R;
 import org.piwigo.ui.account.ManageAccountsActivity;
-import org.piwigo.ui.login.LoginActivity;
 
 import androidx.lifecycle.Lifecycle;
+import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -41,17 +42,18 @@ public class LoginTest {
 
     @Rule
     public ActivityScenarioRule<LoginActivity> activityScenarioRule =
-            new ActivityScenarioRule<LoginActivity>(LoginActivity.class);
+           new ActivityScenarioRule<LoginActivity>(LoginActivity.class);
+
+    // Register your Idling Resource before any tests regarding this component
+    @Before
+    public void registerIdlingResource() {
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.getIdlingResource());
+    }
 
     @Test
     public void loginTwoAccounts() {
 
         addAccount("https://tg1.kulow.org", "seessmall", "seessmall");
-        waitForElement(R.id.fab, 5000);
-
-        // TODO: the current app renders an empty main view and blocks while
-        // loading the actual infos
-        sleepUninterrupted(5000);
 
         // make sure we only see the galleries we are supposed to
         onView(withText("Small")).check(matches(isDisplayed()));
@@ -63,10 +65,6 @@ public class LoginTest {
         addAccount.perform(click());
 
         addAccount("https://tg1.kulow.org", "seeslarge", "seeslarge");
-        waitForElement(R.id.fab, 5000);
-
-        // TODO: see above
-        sleepUninterrupted((5000));
 
         // only sees large (and public)
         onView(withText("Large")).check(matches(isDisplayed()));
@@ -82,7 +80,6 @@ public class LoginTest {
     @Test
     public void backBringsUsToAccountManager() {
         addAccount("https://tg1.kulow.org", "seessmall", "seessmall");
-        waitForElement(R.id.fab, 5000);
         manageAccounts();
 
         ViewInteraction addAccount = onView(allOf(withId(R.id.action_add_account), isDisplayed()));
@@ -95,28 +92,24 @@ public class LoginTest {
     @Test
     public void invalidPasswordFails() {
         addAccount("https://tg1.kulow.org", "seessmall", "invalid");
-        waitForElement(R.id.snackbar_text, 3000);
         onView(withId(R.id.snackbar_text)).check(matches(withText("Login failed for given username 'seessmall'")));
     }
 
     @Test
     public void urlIsExpanded() {
         addAccount("tg1.kulow.org", "seessmall", "invalid");
-        waitForElement(R.id.snackbar_text, 3000);
         onView(withId(R.id.url)).check(matches(withText("https://tg1.kulow.org/")));
     }
 
     @Test
     public void httpsUrlShowsRedirect() throws InterruptedException {
         addAccount("tg1.kulow.org:81", "", "");
-        waitForElement(R.id.snackbar_text, 3000);
         onView(withId(R.id.snackbar_text)).check(matches(withText("Encrypted connection (SSL) to 'tg1.kulow.org' cannot be established")));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
           // snackbar actions are not supported in 5.0
           return;
         }
         onView(allOf(withText("Use insecure http?"), isDisplayed())).perform((click()));
-        waitForElement(R.id.cardview_background, 3000);
         // we're in
         onView(withText("Public")).check(matches(isDisplayed()));
     }
@@ -124,8 +117,7 @@ public class LoginTest {
     @Test
     public void changeGuestToLogin() {
         addAccount("https://tg1.kulow.org", "", "");
-        waitForElement(R.id.albumRecycler, 8000);
-        //sleepUninterrupted(300000);
+        onView(withText("Public")).check(matches(isDisplayed()));
         manageAccounts();
 
         onView(allOf(withContentDescription("More options"), isDisplayed())).perform(click());
@@ -133,21 +125,11 @@ public class LoginTest {
 
         // only editing here
         addAccount("https://tg1.kulow.org", "seessmall", "seessmall");
-        waitForElement(R.id.fab, 5000);
-        sleepUninterrupted(5000);
         onView(withText("Small")).check(matches(isDisplayed()));
     }
 
-    private void sleepUninterrupted(int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-
-        }
-    }
-
     private void addAccount(String url, String user, String password) {
-        ViewInteraction editUser = waitForElement(R.id.username, 5000);
+        ViewInteraction editUser = onView(allOf(withId(R.id.username), isDisplayed()));
         editUser.check(matches(withText("")));
 
         ViewInteraction editURL = onView(withId(R.id.url));
@@ -168,39 +150,12 @@ public class LoginTest {
         onView(withId(R.id.drawer_layout)).perform(open());
         ViewInteraction navigation = onView(allOf(withText("Manage Accounts"), isDisplayed()));
         navigation.perform(click());
-        waitForElement(R.id.account_recycler, 3000);
     }
-
-    public ViewInteraction waitForElement(final int viewId, final long millis) {
-
-        final long startTime = System.currentTimeMillis();
-        final long endTime = startTime + millis;
-        final Matcher<View> viewMatcher = allOf(withId(viewId), isDisplayed());
-
-        do {
-            ViewInteraction va = onView(viewMatcher);
-            try {
-                va.check(matches(isDisplayed()));
-                return va;
-            } catch (NoMatchingViewException e) {
-            }
-            sleepUninterrupted((100));
-        }
-        while (System.currentTimeMillis() < endTime);
-
-        ViewInteraction va = onView(viewMatcher);
-        // raise the exception
-        va.check(matches(isDisplayed()));
-        // return it in cases it just appeared the very moment
-        return va;
-    }
-
 
     @After
     public void tearDown() {
         // do not use manageAccounts here as we do not know where we are
         activityScenarioRule.getScenario().launch(ManageAccountsActivity.class);
-        waitForElement(R.id.account_recycler, 3000);
 
         onView(allOf(withContentDescription("More options"), isDisplayed())).perform(click());
         ViewInteraction viewInteraction = onView(allOf(withText("Remove account"), isDisplayed()));
@@ -214,5 +169,7 @@ public class LoginTest {
         } catch (NoMatchingViewException e) {
             // no crash teardown if there were less accounts
         }
-    }
+
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.getIdlingResource());
+   }
 }

@@ -202,13 +202,15 @@ public class UserManager {
     public int getChunkSize(Account account)
     {
         String junksize = accountManager.getUserData(account, KEY_CHUNK_SIZE);
-        if(junksize == null){
+        if (junksize == null) {
             return 1024 * 1024; /* 1MB is default junk size */
         }
         return Integer.parseInt(junksize);
     }
 
     public boolean isGuest(Account account) {
+	if (account == null)
+           return true;
         return GUEST_ACCOUNT_NAME.equals(getUsername(account));
     }
 

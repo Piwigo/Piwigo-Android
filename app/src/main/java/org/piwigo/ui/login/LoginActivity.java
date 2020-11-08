@@ -40,6 +40,7 @@ import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.piwigo.EspressoIdlingResource;
 import org.piwigo.R;
 import org.piwigo.databinding.ActivityLoginBinding;
 import org.piwigo.helper.DialogHelper;
@@ -164,6 +165,7 @@ public class LoginActivity extends BaseActivity {
             startMainActivity();
             finish();
         }
+        EspressoIdlingResource.lessBusy("trigger login", "loginSuccess");
     }
 
     private void loginError(Throwable throwable) {

@@ -34,7 +34,6 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -59,7 +58,6 @@ import org.piwigo.io.WebServiceFactory;
 import org.piwigo.io.event.SimpleEvent;
 import org.piwigo.io.event.SnackProgressEvent;
 import org.piwigo.io.event.SnackbarShowEvent;
-import org.piwigo.data.model.ImageUploadItem;
 import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.ui.about.AboutActivity;
 import org.piwigo.ui.about.PrivacyPolicyActivity;
@@ -87,7 +85,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
@@ -137,7 +135,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         DrawerHeaderBinding headerBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, mBinding.navigationView, false);
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
         mBinding.setViewModel(viewModel);
         headerBinding.setViewModel(viewModel);
         mBinding.navigationView.addHeaderView(headerBinding.getRoot());
@@ -193,7 +191,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                             ((AlbumsFragment) f).getViewModel().loadAlbums(0);
                         }
                         ((AlbumsFragment) f).getViewModel().onRefresh();
-
                     }
                 }
             }
@@ -240,7 +237,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Override
     public void onBackPressed() {
         if (getCurrentCategoryId() != 0 && mDrawerToggle.isDrawerIndicatorEnabled()) {
-            MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+            MainViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
             viewModel.drawerState.set(false);
         } else {
             super.onBackPressed();
@@ -279,7 +276,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Override
     protected void onResume() {
         super.onResume();
-        MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        MainViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
         speedDialView.setVisibility(viewModel.displayFab.get() ? View.VISIBLE : View.INVISIBLE);
         EventBus.getDefault().register(this);
     }
@@ -287,16 +284,15 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
-        viewModel.showingRootAlbum.removeOnPropertyChangedCallback(mDrawerCallBack);
         mBinding.drawerLayout.removeDrawerListener(mDrawerToggle);
-
         snackProgressBarManager.disable();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        MainViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
+        viewModel.showingRootAlbum.removeOnPropertyChangedCallback(mDrawerCallBack);
         EventBus.getDefault().unregister(this);
     }
 
