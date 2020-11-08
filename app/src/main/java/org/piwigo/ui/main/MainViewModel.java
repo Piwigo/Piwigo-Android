@@ -21,26 +21,23 @@ package org.piwigo.ui.main;
 
 import android.accounts.Account;
 import android.util.Log;
-import android.widget.TabHost;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.annotation.NonNull;
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
-import org.piwigo.R;
+import org.piwigo.EspressoIdlingResource;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.restmodel.StatusResponse;
-import org.piwigo.io.restrepository.RestUserRepository;
 import org.piwigo.io.restmodel.SuccessResponse;
-import org.reactivestreams.Subscriber;
+import org.piwigo.io.restrepository.RestUserRepository;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends ViewModel {
     // TODO: cleanup here...
@@ -68,14 +65,8 @@ public class MainViewModel extends ViewModel {
     private RestUserRepository mUserRepository;
     private UserManager userManager;
 
-    MainViewModel(UserManager userManager, RestUserRepository userRepository) {
-        Account account = userManager.getActiveAccount().getValue();
+    MainViewModel(UserManager userManager, @NonNull RestUserRepository userRepository) {
         this.userManager = userManager;
-        if (account != null) {
-            username.set(userManager.getUsername(account));
-            url.set(userManager.getSiteUrl(account));
-            displayFab.set(!userManager.isGuest(account));
-        }
         mUserRepository = userRepository;
         loginStatus.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
@@ -99,9 +90,12 @@ public class MainViewModel extends ViewModel {
     public void changeAccount(Account account) {
         userManager.setSessionCookie(null);
         userManager.setSessionToken(null);
+        displayFab.set(!userManager.isGuest(account));
+        if (account == null)
+            return;
+        EspressoIdlingResource.moreBusy("main login");
         username.set(userManager.getUsername(account));
         url.set(userManager.getSiteUrl(account));
-        displayFab.set(!userManager.isGuest(account));
         Log.d("MainViewModel", "login " + username.get() + " on " + url.get());
         LoginSubscriber loginSubscriber = new LoginSubscriber();
         if (userManager.isGuest(account)) {
@@ -122,6 +116,7 @@ public class MainViewModel extends ViewModel {
         public void onError(Throwable e) {
             // TODO
             loginStatus.set(STAT_AUTH_FAILED);
+            EspressoIdlingResource.lessBusy("main login", "LoginSubscriber.onError");
         }
 
         @Override
@@ -135,12 +130,15 @@ public class MainViewModel extends ViewModel {
         @Override
         public void onComplete() {
             Log.d("StatusSubscriber", "onComplete");
+            loginStatus.set(STAT_STATUS_FETCHED);
+            EspressoIdlingResource.lessBusy("main login", "login status changed");
         }
 
         @Override
         public void onError(Throwable e) {
             // TODO
             loginStatus.set(STAT_AUTH_FAILED);
+            EspressoIdlingResource.lessBusy("main login", "StatusSubscriber.onError");
         }
 
         @Override
@@ -149,8 +147,6 @@ public class MainViewModel extends ViewModel {
             if(statusResponse != null && statusResponse.result != null) {
                 userManager.setSessionToken(statusResponse.result.pwgToken);
             }
-            //apiStatus = statusResponse;
-            loginStatus.set(STAT_STATUS_FETCHED);
         }
     }
 

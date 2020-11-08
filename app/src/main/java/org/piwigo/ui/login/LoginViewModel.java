@@ -36,6 +36,7 @@ import android.util.Patterns;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 
+import org.piwigo.EspressoIdlingResource;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.io.PiwigoLoginException;
@@ -86,7 +87,7 @@ public class LoginViewModel extends ViewModel {
 
     // also used from the activity
     void triggerLogin() {
-        Log.d(TAG, "triggerLogin");
+        EspressoIdlingResource.moreBusy("trigger login");
         try {
             if (isGuest()) {
                 userRepository.status(url.get())
@@ -102,6 +103,7 @@ public class LoginViewModel extends ViewModel {
         } catch (IllegalArgumentException illArgE) {
             Log.e(TAG, illArgE.getMessage() + illArgE);
             loginError.setValue(illArgE);
+            EspressoIdlingResource.lessBusy("trigger login", "illegal argument");
         }
     }
 
@@ -204,18 +206,17 @@ public class LoginViewModel extends ViewModel {
     private class LoginSubscriber extends DisposableObserver<SuccessResponse> {
 
         @Override
-        public void onComplete() {
-
-        }
+        public void onComplete() {}
 
         @Override
         public void onError(Throwable e) {
+            EspressoIdlingResource.lessBusy("trigger login", "loginSubscriber.onError");
             loginError.setValue(e);
         }
 
         @Override
         public void onNext(SuccessResponse loginResponse) {
-            Log.d(TAG, "login was successfull '" + loginResponse.stat + "'");
+            Log.d(TAG, "login was successful '" + loginResponse.stat + "'");
             if (loginResponse.stat.equals("fail")) {
                 onError(new PiwigoLoginException("Login for user '" + username.get() + "' failed with: " + loginResponse.message));
                 return;
@@ -233,11 +234,12 @@ public class LoginViewModel extends ViewModel {
 
     private class StatusSubscriber extends DisposableObserver<StatusResponse> {
 
-        public void onComplete() {
-        }
+        @Override
+        public void onComplete() {}
 
         @Override
         public void onError(Throwable e) {
+            EspressoIdlingResource.lessBusy("trigger login", "StatusSubscriber.onError");
             Log.e(TAG, e.getMessage());
             loginError.setValue(e);
         }
