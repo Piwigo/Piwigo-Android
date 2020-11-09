@@ -21,6 +21,7 @@ package org.piwigo.data.repository;
 import android.accounts.Account;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
@@ -186,7 +187,7 @@ public class ImageRepository implements Observer<Account> {
                             for (ImageVariantDao.VariantInfo inf : all) {
                                 if (inf.url.equals(d.url)) {
                                     existingVariant = db.variantDao().getVariantsWithImage(inf.imageId).get(0);
-                                    File f = new File(inf.storageLocation);
+                                    File f = new File(Uri.parse(inf.storageLocation).getPath());
                                     if (f.exists()) {
                                         // redownload if - for whatever reason - the cached file doesn't exist anymore
                                         addHeaders = new HashMap<>();
@@ -299,7 +300,6 @@ public class ImageRepository implements Observer<Account> {
                                 String fullPath = directory
                                         + File.separator + fileName;
 
-                                // TODO: store path in DB
                                 File destinationFile = new File(fullPath);
 
                                 File outputDir = destinationFile.getParentFile();
@@ -314,7 +314,7 @@ public class ImageRepository implements Observer<Account> {
                                 int h = options.outHeight;
                                 int w = options.outWidth;
 
-                                ImageVariant iv = new ImageVariant(imageId, w, h, fullPath, last_mod, url);
+                                ImageVariant iv = new ImageVariant(imageId, w, h, Uri.fromFile(destinationFile).toString(), last_mod, url);
                                 db.variantDao().insert(iv);
 
                                 return Observable.just(fullPath);

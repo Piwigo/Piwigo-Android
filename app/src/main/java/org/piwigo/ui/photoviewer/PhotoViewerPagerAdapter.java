@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
+
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.R;
@@ -40,6 +43,7 @@ public class PhotoViewerPagerAdapter extends PagerAdapter {
             // TODO: trigger URL updates to get needed resolution and handle LiveData updates
             // TODO: #232 load image from cache (if available)
             picasso.load(image.image.elementUrl)
+// TODO:                    .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(imageViewPreview);
         }
         container.addView(view);

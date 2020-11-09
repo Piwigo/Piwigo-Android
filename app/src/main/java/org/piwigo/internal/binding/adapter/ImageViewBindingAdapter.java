@@ -22,6 +22,7 @@ import androidx.databinding.BindingAdapter;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.R;
@@ -35,13 +36,13 @@ public class ImageViewBindingAdapter {
     }
 
     @BindingAdapter("android:src") public void loadImage(ImageView imageView, String url) {
-//        picasso.setLoggingEnabled(true);
         picasso.load(url)
 // TODO: Add Downloader, which retruns the proper image for the size in the request.??
                 // or better go with refreshing the URL?
                 .resize(imageView.getWidth(),0)
                 .centerCrop()
                 .placeholder(R.mipmap.ic_placeholder)
+// TODO:                .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(imageView); // centering and cropping is done by ImageView from the resources
     }
 
