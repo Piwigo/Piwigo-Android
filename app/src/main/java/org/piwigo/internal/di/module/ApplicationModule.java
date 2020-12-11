@@ -28,7 +28,7 @@ import org.piwigo.PiwigoApplication;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.internal.cache.PiwigoImageCache;
 import org.piwigo.io.repository.PreferencesRepository;
-
+import com.jakewharton.picasso.OkHttp3Downloader;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -51,6 +51,7 @@ public class ApplicationModule {
         return new Picasso.Builder(application)
                 .indicatorsEnabled(BuildConfig.DEBUG) //We may not want this for production build..
                 .memoryCache(new PiwigoImageCache(application)) //What about this ?
+                .downloader(new OkHttp3Downloader(application))
                 .build();
     }
 
