@@ -18,7 +18,7 @@
 
 package org.piwigo.internal.di.component;
 
-import com.squareup.picasso.Picasso;
+
 
 import org.piwigo.PiwigoApplication;
 import org.piwigo.bg.UploadService;
@@ -39,5 +39,4 @@ public interface ApplicationComponent {
 
     void inject(UploadService service);
 
-    Picasso picasso();
 }

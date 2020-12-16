@@ -47,13 +47,6 @@ public class ApplicationModule {
         return application;
     }
 
-    @Provides @Singleton Picasso providePicasso() {
-        return new Picasso.Builder(application)
-                .indicatorsEnabled(BuildConfig.DEBUG) //We may not want this for production build..
-                .memoryCache(new PiwigoImageCache(application)) //What about this ?
-                .downloader(new OkHttp3Downloader(application))
-                .build();
-    }
 
     @Provides @Singleton AccountManager provideAccountManager() {
         return AccountManager.get(application);

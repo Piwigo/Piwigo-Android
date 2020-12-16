@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
+
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import org.piwigo.R;
@@ -19,7 +21,7 @@ public class PhotoViewerPagerAdapter extends PagerAdapter {
     private Context context;
     private List<ImageInfo> images;
     private LayoutInflater inflater;
-    private Picasso picasso;
+
 
     public PhotoViewerPagerAdapter(Context context, List<ImageInfo> images)
     {
@@ -36,7 +38,7 @@ public class PhotoViewerPagerAdapter extends PagerAdapter {
         TouchImageView imageViewPreview = view.findViewById(R.id.imgDisplay);
         ImageInfo image = images.get(position);
 
-        picasso.load(image.derivatives.medium.url).noFade().into(imageViewPreview);
+        Glide.with(container).load(image.derivatives.medium.url).into(imageViewPreview);
         container.addView(view);
         return view;
     }
@@ -56,8 +58,4 @@ public class PhotoViewerPagerAdapter extends PagerAdapter {
         container.removeView((View) object);
     }
 
-    void setPicassoInstance(Picasso picasso)
-    {
-        this.picasso = picasso;
-    }
 }

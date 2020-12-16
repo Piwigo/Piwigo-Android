@@ -96,23 +96,25 @@ android {
     }
 }
 
-def daggerVersion = '2.24'
-def okhttpVersion = '4.2.2'
-def retrofitVersion = '2.6.1'
-def picassoVersion = '2.5.2'
+def daggerVersion = '2.30.1'
+def okhttpVersion = '4.9.0'
+def retrofitVersion = '2.9.0'
+def picassoVersion = '2.71828'
 def assertjVersion = '1.2.0'
 def acraVersion = '5.4.0'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.android.support:multidex:1.0.3'
     implementation "com.google.dagger:dagger:${daggerVersion}"
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
-    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.2.0'
 
     annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
     implementation "com.google.dagger:dagger-android:${daggerVersion}"
@@ -123,12 +125,12 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:${retrofitVersion}"
     implementation "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
     implementation "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}"
-    implementation "com.squareup.picasso:picasso:${picassoVersion}"
-    implementation 'io.reactivex:rxjava:1.3.2'
+
+    implementation 'io.reactivex:rxjava:1.3.8'
     implementation 'io.reactivex:rxandroid:1.2.1'
-    implementation 'com.google.guava:guava:28.1-jre'
-    annotationProcessor 'com.google.guava:guava:24.1-jre'
-    implementation 'org.apache.commons:commons-lang3:3.9'
+    implementation 'com.google.guava:guava:30.1-jre'
+    annotationProcessor 'com.google.guava:guava:30.1-jre'
+    implementation 'org.apache.commons:commons-lang3:3.11'
 
     implementation "ch.acra:acra-mail:$acraVersion"
     implementation "ch.acra:acra-dialog:$acraVersion"
@@ -136,22 +138,25 @@ dependencies {
     implementation 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     implementation "com.leinardi.android:speed-dial:3.0.0"
     implementation 'com.github.tingyik90:snackprogressbar:6.1.1'
-    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'org.greenrobot:eventbus:3.2.0'
     /* Don't forget to add to string libraries if you add a library here. */
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'org.robolectric:robolectric:4.4'
     testImplementation("com.squareup.assertj:assertj-android:${assertjVersion}") {
         exclude group: 'com.android.support'
     }
+    implementation ("com.github.bumptech.glide:glide:4.11.0") {
+        exclude group: "com.android.support"
+    }
     testAnnotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
-    testImplementation 'org.mockito:mockito-core:2.19.0'
-    testImplementation 'com.google.guava:guava:24.1-jre'
-    testImplementation 'androidx.appcompat:appcompat:1.1.0'
-    testAnnotationProcessor 'com.google.guava:guava:24.1-jre'
+    testImplementation 'org.mockito:mockito-core:3.6.28'
+    testImplementation 'com.google.guava:guava:30.1-jre'
+    testImplementation 'androidx.appcompat:appcompat:1.2.0'
+    testAnnotationProcessor 'com.google.guava:guava:30.1-jre'
     testImplementation 'com.google.code.findbugs:jsr305:3.0.2'
-    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+    implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
 }

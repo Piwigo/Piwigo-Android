@@ -29,7 +29,7 @@ import dagger.Provides;
 @Module
 public class BindingModule {
 
-    @Provides @DataBinding ImageViewBindingAdapter provideImageBindingAdapter(Picasso picasso) {
-        return new ImageViewBindingAdapter(picasso);
+    @Provides @DataBinding ImageViewBindingAdapter provideImageBindingAdapter() {
+        return new ImageViewBindingAdapter();
     }
 }

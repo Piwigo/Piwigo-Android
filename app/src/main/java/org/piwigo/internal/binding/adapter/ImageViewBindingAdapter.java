@@ -22,20 +22,18 @@ import androidx.databinding.BindingAdapter;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
+import  com.bumptech.glide.Glide;
 
 public class ImageViewBindingAdapter {
 
-    private final Picasso picasso;
 
-    public ImageViewBindingAdapter(Picasso picasso) {
-        this.picasso = picasso;
+
+    public ImageViewBindingAdapter() {
+
     }
 
     @BindingAdapter("android:src") public void loadImage(ImageView imageView, String url) {
-        picasso.load(url)
-                .resize(500,0)
-                .into(imageView); // centering and cropping is done by ImageView from the resources
+        Glide.with(imageView).load(url).override(imageView.getWidth(),0).centerCrop().into(imageView);
     }
 
     @BindingAdapter("heightRatio") public void setHeighRatio(ImageView imageView, double ratio) {
