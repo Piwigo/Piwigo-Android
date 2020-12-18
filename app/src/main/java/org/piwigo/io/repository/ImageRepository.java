@@ -41,11 +41,11 @@ public class ImageRepository extends BaseRepository {
         super(restServiceFactory, ioScheduler, uiScheduler, userManager);
     }
 
-    public Observable<List<ImageInfo>> getImages(Account account, @Nullable Integer categoryId) {
+    public Observable<List<ImageInfo>> getImages(Account account, @Nullable Integer categoryId, @Nullable Integer number_of_images) {
         RestService restService = restServiceFactory.createForAccount(account);
 
         return restService
-                .getImages(categoryId)
+                .getImages(categoryId, number_of_images)
                 .compose(applySchedulers())
 //                .map(imageListResponse -> imageListResponse.result.images)
                   .map(imageListResponse -> {

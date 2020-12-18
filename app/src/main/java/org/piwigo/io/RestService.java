@@ -72,7 +72,9 @@ public interface RestService {
     );
 
     @GET("ws.php?method=pwg.categories.getImages")
-    Observable<ImageListResponse> getImages(@Query("cat_id") int categoryId);
+    Observable<ImageListResponse> getImages(
+            @Query("cat_id") int categoryId,
+            @Query("per_page") int count_to_fetch  );
 
     @Multipart
     @POST("ws.php?method=pwg.images.upload")

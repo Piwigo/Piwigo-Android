@@ -21,13 +21,12 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@{viewModel.url}"
             android:contentDescription="@{viewModel.title}"
-            android:onClick="@{viewModel::onClickDo}"
-            app:heightRatio="@{0.66}"
             android:cropToPadding="false"
-            android:scaleType="centerCrop"
-            />
+            android:onClick="@{viewModel::onClickDo}"
+            android:scaleType="fitCenter"
+            android:src="@{viewModel.url}"
+            app:heightRatio="@{0.66}" />
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -57,6 +57,7 @@ public class AlbumsFragment extends BaseFragment {
     private FragmentAlbumsBinding binding;
     private int categoryID;
     private String categoryName;
+    private int imageCount;
 
     public AlbumsFragment() {
         super();
@@ -73,6 +74,7 @@ public class AlbumsFragment extends BaseFragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             categoryID = bundle.getInt("Category", 0);
+            imageCount = bundle.getInt( "ImageCount", 100);
             categoryName = bundle.getString("Title", getString(R.string.nav_albums));
         }
         super.onAttach(context);
@@ -120,7 +122,7 @@ public class AlbumsFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
         AlbumsViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(AlbumsViewModel.class);
         binding.setViewModel(viewModel);
-        binding.getViewModel().loadAlbums(categoryID);
+        binding.getViewModel().loadAlbums(categoryID, imageCount);
     }
 
     private int calculateColumnCount() {

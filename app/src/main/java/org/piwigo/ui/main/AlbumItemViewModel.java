@@ -34,12 +34,14 @@ public class AlbumItemViewModel extends ViewModel {
     private final String title;
     private final String photos;
     private final Integer catId;
+    private final Integer nbImages;
 
-    AlbumItemViewModel(String url, String title, String photos, Integer categoryId) {
+    AlbumItemViewModel(String url, String title, String photos, Integer categoryId, Integer nbImages) {
         this.url = url;
         this.title = title;
         this.photos = photos;
         this.catId = categoryId;
+        this.nbImages = nbImages;
     }
 
     public String getUrl() {
@@ -55,6 +57,8 @@ public class AlbumItemViewModel extends ViewModel {
     }
 
     public Integer getCatId() { return catId;}
+
+    public Integer getImageCount() { return nbImages; }
 
     public void onClickDo(View v){
         Context ctx = v.getContext();
@@ -72,6 +76,7 @@ public class AlbumItemViewModel extends ViewModel {
             Bundle bndl = new Bundle();
             bndl.putInt("Category", getCatId());
             bndl.putString("Title", getTitle());
+            bndl.putInt("ImageCount", getImageCount());
             AlbumsFragment frag = new AlbumsFragment();
             frag.setArguments(bndl);
             ((AppCompatActivity) ctx).getSupportFragmentManager()

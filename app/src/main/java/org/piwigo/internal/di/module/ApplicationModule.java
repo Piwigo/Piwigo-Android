@@ -21,14 +21,10 @@ package org.piwigo.internal.di.module;
 import android.accounts.AccountManager;
 import android.content.Context;
 
-import com.squareup.picasso.Picasso;
-
 import org.piwigo.BuildConfig;
 import org.piwigo.PiwigoApplication;
 import org.piwigo.accounts.UserManager;
-import org.piwigo.internal.cache.PiwigoImageCache;
 import org.piwigo.io.repository.PreferencesRepository;
-import com.jakewharton.picasso.OkHttp3Downloader;
 import javax.inject.Singleton;
 
 import dagger.Module;

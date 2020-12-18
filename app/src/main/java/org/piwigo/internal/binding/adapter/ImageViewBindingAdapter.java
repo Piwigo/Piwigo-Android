@@ -23,6 +23,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import  com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+
+import org.piwigo.R;
 
 public class ImageViewBindingAdapter {
 
@@ -33,7 +36,13 @@ public class ImageViewBindingAdapter {
     }
 
     @BindingAdapter("android:src") public void loadImage(ImageView imageView, String url) {
-        Glide.with(imageView).load(url).override(imageView.getWidth(),0).centerCrop().into(imageView);
+
+        Glide.with(imageView)
+                .load(url)
+                .placeholder(R.drawable.ic_downloading_placeholder)
+                .override(300)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(imageView);
     }
 
     @BindingAdapter("heightRatio") public void setHeighRatio(ImageView imageView, double ratio) {

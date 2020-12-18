@@ -81,8 +81,8 @@ android {
         preDexLibraries = preDexEnabled && !isCi
 
     }
-    dataBinding {
-        enabled = true
+    buildFeatures {
+        dataBinding true
     }
     testOptions {
         unitTests {

@@ -63,6 +63,7 @@ public class AlbumsViewModel extends ViewModel {
     private Subscription photosSubscription;
 
     private Integer category = null;
+    private Integer mImageCount;
 
     AlbumsViewModel(UserManager userManager, CategoriesRepository categoriesRepository,
                     ImageRepository imageRepository, Resources resources) {
@@ -99,14 +100,16 @@ public class AlbumsViewModel extends ViewModel {
         if (account != null) {
             albumsSubscription = categoriesRepository.getCategories(account, category)
                     .subscribe(new CategoriesSubscriber());
-            photosSubscription = imageRepository.getImages(account, category)
+            photosSubscription = imageRepository.getImages( account, category, mImageCount )
                     .subscribe(new ImagesSubscriber());
+
         }
     }
 
-    void loadAlbums(Integer categoryId) {
+    void loadAlbums(Integer categoryId, Integer imageCount) {
         if(category == null || category != category) {
             category = categoryId;
+            mImageCount = imageCount;
             forcedLoadAlbums();
         }
     }
@@ -120,6 +123,7 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override
         public void onCompleted() {
+
         }
 
         @Override
@@ -161,7 +165,7 @@ public class AlbumsViewModel extends ViewModel {
                 int subPhotos = category.totalNbImages - category.nbImages;
                 photos += resources.getQuantityString(R.plurals.album_photos_subs, subPhotos, subPhotos);
             }
-            AlbumItemViewModel viewModel = new AlbumItemViewModel(category.thumbnailUrl, category.name, photos, category.id);
+            AlbumItemViewModel viewModel = new AlbumItemViewModel(category.thumbnailUrl, category.name, photos, category.id, category.nbImages);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
     }
@@ -209,7 +213,7 @@ public class AlbumsViewModel extends ViewModel {
         public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, ImageInfo image) {
             // TODO: make image size selectable via settings (jca)
             // TODO: make configurable to also show the photo name here
-            ImagesItemViewModel viewModel = new ImagesItemViewModel(image.derivatives.medium.url, images.indexOf(image), image.name, images);
+            ImagesItemViewModel viewModel = new ImagesItemViewModel(image.derivatives.small.url, images.indexOf(image), image.name, images);
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
         }
 

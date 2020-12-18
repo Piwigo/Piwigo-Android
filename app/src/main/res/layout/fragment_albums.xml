@@ -41,15 +41,15 @@
                     android:id="@+id/photoRecycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="0dp"
-                    android:nestedScrollingEnabled="false"
-                    android:scrollbars="vertical"
-                    android:orientation="vertical"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
+                    android:minHeight="8dp"
+                    android:nestedScrollingEnabled="false"
+                    android:orientation="vertical"
+                    android:padding="0dp"
+                    android:scrollbars="vertical"
                     app:items="@{viewModel.images}"
-                    app:viewBinder="@{viewModel.photoViewBinder}"
-                    android:minHeight="8dp"/>
+                    app:viewBinder="@{viewModel.photoViewBinder}" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
