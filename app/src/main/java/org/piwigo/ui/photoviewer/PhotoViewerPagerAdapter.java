@@ -38,7 +38,7 @@ public class PhotoViewerPagerAdapter extends PagerAdapter {
         TouchImageView imageViewPreview = view.findViewById(R.id.imgDisplay);
         ImageInfo image = images.get(position);
 
-        Glide.with(container).load(image.derivatives.medium.url).into(imageViewPreview);
+        Glide.with(container).load(image.derivatives.large.url).into(imageViewPreview);
         container.addView(view);
         return view;
     }

@@ -40,7 +40,8 @@ public class ImageViewBindingAdapter {
         Glide.with(imageView)
                 .load(url)
                 .placeholder(R.drawable.ic_downloading_placeholder)
-                .override(300)
+                //.override(400)
+                .fitCenter()
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(imageView);
     }
