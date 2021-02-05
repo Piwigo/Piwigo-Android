@@ -199,10 +199,17 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override
         public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, Category category) {
-            String photos = resources.getQuantityString(R.plurals.album_photos, category.nbImages, category.nbImages);
-            if (category.totalNbImages > category.nbImages) {
+            String photos = resources.getString(R.string.album_empty);
+
+            if(category.nbImages > 0) {
+                photos = resources.getQuantityString(R.plurals.album_photos, category.nbImages, category.nbImages);
+                if (category.totalNbImages > category.nbImages) {
+                    int subPhotos = category.totalNbImages - category.nbImages;
+                    photos += resources.getString(R.string.comma)+resources.getQuantityString(R.plurals.album_photos_subs, subPhotos, subPhotos);
+                }
+            } else if (category.totalNbImages > category.nbImages) {
                 int subPhotos = category.totalNbImages - category.nbImages;
-                photos += resources.getQuantityString(R.plurals.album_photos_subs, subPhotos, subPhotos);
+                photos = resources.getQuantityString(R.plurals.album_photos_subs, subPhotos, subPhotos);
             }
 // TODO: Get Image URL from local stored image instead ofr the thumbnailUrl
             AlbumItemViewModel viewModel = new AlbumItemViewModel(category.thumbnailUrl, category.name, category.comment, photos, category.id);

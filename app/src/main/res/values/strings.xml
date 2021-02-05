@@ -22,6 +22,7 @@
     <!-- General strings -->
     <string name="app_name">Piwigo</string>
     <string name="gen_error">Failure</string>
+    <string name="comma">, </string>
 
     <!-- titles -->
     <string name="title_activity_main" translatable="false">@string/app_name</string>
@@ -125,13 +126,14 @@
         <p>appcompat, support-annotations, cardview, design, constraint-layout, recyclerview, design, preference, exifinterface, guava, dagger, room license <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE-2.0</a></p>
         ]]></string>
     <!-- Albums -->
+    <string name="album_empty">Empty</string>
     <plurals name="album_photos">
         <item quantity="one">1 photo</item>
         <item quantity="other">%1$d photos</item>
     </plurals>
     <plurals name="album_photos_subs">
-        <item quantity="one">, 1 photo in sub-albums</item>
-        <item quantity="other">, %1$d photos in sub-albums</item>
+        <item quantity="one">1 photo in sub-albums</item>
+        <item quantity="other">%1$d photos in sub-albums</item>
     </plurals>
 
     <!-- Privacy Policy -->
