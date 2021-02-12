@@ -59,4 +59,7 @@ abstract public class ImageDao {
     @Query("SELECT Image.* FROM Image INNER JOIN ImageCategoryMap ON Image.id=ImageCategoryMap.imageId WHERE ImageCategoryMap.categoryId=:categoryId")
     abstract public Single<List<Image>> getImagesInCategory(int categoryId) throws SQLException;
 
+    @Query("DELETE FROM Image WHERE id IN (SELECT id FROM Image INNER JOIN ImageCategoryMap ON Image.id=ImageCategoryMap.imageId WHERE ImageCategoryMap.categoryId=:categoryId)")
+    abstract public void deleteImagesInCategory(int categoryId) throws SQLException;
+
 }

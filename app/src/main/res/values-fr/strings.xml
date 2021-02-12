@@ -84,8 +84,8 @@
         <item quantity="other">%1$d photos</item>
     </plurals>
     <plurals name="album_photos_subs">
-        <item quantity="one">, 1 photo dans les sous-albums</item>
-        <item quantity="other">, %1$d photos dans les sous-albums</item>
+        <item quantity="one">1 photo dans les sous-albums</item>
+        <item quantity="other">%1$d photos dans les sous-albums</item>
     </plurals>
     <!-- Privacy Policy -->
     <string name="privacy_text">Piwigo-Android et Piwigo-Mobile sont des applications clientes gratuites, libres et open source pour les galeries Piwigo. Cette politique de confidentialité s\'applique à ces applications natives Android et iOS, qui se connectent aux sites Piwigo eux-mêmes hors du contrôle des auteurs. Vérifiez la politique de confidentialité des sites correspondants avant de configurer un compte dans Piwigo-Android ou Piwigo-Mobile pour vous connecter à une galerie.</string>

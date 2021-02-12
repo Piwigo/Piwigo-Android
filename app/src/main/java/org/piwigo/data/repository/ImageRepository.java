@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -55,10 +56,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import okio.BufferedSink;
 import okio.Okio;
 
@@ -110,8 +115,28 @@ public class ImageRepository implements Observer<Account> {
         Single<List<String>> folder = db.categoryDao().getCategoryPath(categoryId);
         AtomicReference<String> folderStr = new AtomicReference<>(null);
 
-        Flowable<PositionedItem<VariantWithImage>> remotes = mRestImageRepo.getImages(categoryId)
-                .subscribeOn(ioScheduler)
+        Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                db.imageDao().deleteImagesInCategory(categoryId);
+            }
+        }).subscribeOn(ioScheduler).observeOn(ioScheduler).subscribe(new CompletableObserver() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d("m_cache","Deletion completed");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+        });
+
+        Flowable<PositionedItem<VariantWithImage>> remotes = mRestImageRepo.getImages(categoryId).subscribeOn(ioScheduler)
                 .observeOn(ioScheduler)
                 .toFlowable(BackpressureStrategy.BUFFER)
                 .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> {
@@ -154,6 +179,7 @@ public class ImageRepository implements Observer<Account> {
                     i.creationDate = info.dateCreation;
                     i.availableDate = info.dateAvailable;
                     db.imageDao().upsert(i);
+                    Log.d("m_cache","added: "+info.file);
                     List<CacheDBInternals.ImageCategoryMap> join = new ArrayList<>(info.categories.size());
                     for (ImageInfo.CategoryID c : info.categories) {
                         join.add(new CacheDBInternals.ImageCategoryMap(c.id, i.id));
