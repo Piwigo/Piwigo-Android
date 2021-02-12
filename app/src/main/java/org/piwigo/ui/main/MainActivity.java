@@ -156,7 +156,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 mDrawerToggle.setDrawerIndicatorEnabled(((ObservableBoolean) sender).get());
             }
         };
-        viewModel.showingRootAlbum.addOnPropertyChangedCallback(mDrawerCallBack);
 
         snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
 
