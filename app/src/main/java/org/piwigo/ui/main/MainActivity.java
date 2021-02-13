@@ -156,7 +156,6 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                 mDrawerToggle.setDrawerIndicatorEnabled(((ObservableBoolean) sender).get());
             }
         };
-        viewModel.showingRootAlbum.addOnPropertyChangedCallback(mDrawerCallBack);
 
         snackProgressBarManager = new SnackProgressBarManager(findViewById(android.R.id.content), null);
 
@@ -277,6 +276,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
     protected void onResume() {
         super.onResume();
         MainViewModel viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
+        viewModel.showingRootAlbum.addOnPropertyChangedCallback(mDrawerCallBack);
         speedDialView.setVisibility(viewModel.displayFab.get() ? View.VISIBLE : View.INVISIBLE);
         EventBus.getDefault().register(this);
     }
