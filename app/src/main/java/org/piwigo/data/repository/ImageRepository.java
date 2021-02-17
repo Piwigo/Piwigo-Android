@@ -23,6 +23,7 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -56,14 +57,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.reactivex.BackpressureStrategy;
-import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
 import okio.BufferedSink;
 import okio.Okio;
 
@@ -115,28 +115,11 @@ public class ImageRepository implements Observer<Account> {
         Single<List<String>> folder = db.categoryDao().getCategoryPath(categoryId);
         AtomicReference<String> folderStr = new AtomicReference<>(null);
 
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                db.imageDao().deleteImagesInCategory(categoryId);
-            }
-        }).subscribeOn(ioScheduler).observeOn(ioScheduler).subscribe(new CompletableObserver() {
-            @Override
-            public void onSubscribe(Disposable d) {
 
-            }
+        Observable<ImageInfo> restImages = mRestImageRepo.getImages(categoryId);
+        deleteImageCache(restImages, categoryId, db);
 
-            @Override
-            public void onComplete() {
-                Log.d("m_cache","Deletion completed");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-            }
-        });
-
-        Flowable<PositionedItem<VariantWithImage>> remotes = mRestImageRepo.getImages(categoryId).subscribeOn(ioScheduler)
+        Flowable<PositionedItem<VariantWithImage>> remotes = restImages.subscribeOn(ioScheduler)
                 .observeOn(ioScheduler)
                 .toFlowable(BackpressureStrategy.BUFFER)
                 .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> {
@@ -292,6 +275,52 @@ public class ImageRepository implements Observer<Account> {
                     .concatWith(remotes)
                     .toObservable();
         }
+    }
+
+    private void deleteImageCache(Observable<ImageInfo> restImagesInfos, Integer categoryId, CacheDatabase db) {
+
+        Observable<Image> ob1 = restImagesInfos.map(info -> {
+            Image i = new Image(info.elementUrl);
+            i.name = info.name;
+            i.file = info.file;
+            i.id = info.id;
+            i.author = info.author;
+            i.description = info.comment;
+            i.height = info.height;
+            i.width = info.width;
+            i.creationDate = info.dateCreation;
+            i.availableDate = info.dateAvailable;
+            return i;
+        });
+
+//        Disposable disposable = db.imageDao().getImagesInCategory(categoryId)
+//                .toObservable()
+//                .flatMapIterable(x -> x)
+//                .subscribeOn(ioScheduler)
+//                .observeOn(ioScheduler)
+//                .subscribe(image -> Log.d("m_cache",ob1.contains(image).toString()));
+
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+        Disposable disposable = Observable.combineLatest(db.imageDao().getImagesInCategory(categoryId)
+                .toObservable()
+                .flatMapIterable(x -> x)
+                .toList().toObservable(), ob1, (list, image) -> {
+            Log.d("m_cache", "Image: " + image.elementUrl);
+            return list.contains(image) ? null : image;
+                })
+                .filter(image -> !(image==null))
+                .subscribeOn(ioScheduler)
+                .observeOn(ioScheduler)
+                .subscribe(image -> {
+                    Log.d("m_cache", "Image: " + image.elementUrl);
+
+                });
+
+        compositeDisposable.add(disposable);
+
+        compositeDisposable.dispose();
+
     }
 
 
