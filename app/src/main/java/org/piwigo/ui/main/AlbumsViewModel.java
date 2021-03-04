@@ -41,6 +41,7 @@ import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 import org.reactivestreams.Subscription;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
@@ -110,6 +111,9 @@ public class AlbumsViewModel extends ViewModel {
             return;
         }
         if (userManager.isGuest(account) || userManager.sessionCookie() != null) {
+
+            categoriesRepository.updateCategories(category);
+
             EspressoIdlingResource.moreBusy("load categories");
             categoriesRepository.getCategories(category)
                     .observeOn(AndroidSchedulers.mainThread())
@@ -147,6 +151,9 @@ public class AlbumsViewModel extends ViewModel {
             super();
             isLoadingCategories = true;
             updateLoading();
+
+//            albums.clear();
+//            Log.d("m_cache","cleared albums");
         }
 
         @Override
@@ -181,6 +188,7 @@ public class AlbumsViewModel extends ViewModel {
             while(albums.size() <= category.getPosition()) {
                 albums.add(null);
             }
+            Log.d("m_cache","Albums size: "+albums.size());
             albums.set(category.getPosition(), category.getItem());
         }
     }

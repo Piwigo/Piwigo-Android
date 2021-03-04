@@ -57,4 +57,7 @@ public abstract class ImageCategoryMapDao {
 
     @Delete()
     abstract public void delete(List<CacheDBInternals.ImageCategoryMap> join) throws SQLException;
+
+    @Query("DELETE FROM ImageCategoryMap WHERE categoryId=:categoryId")
+    abstract public void deleteFromCategory(int categoryId) throws SQLException;
 }

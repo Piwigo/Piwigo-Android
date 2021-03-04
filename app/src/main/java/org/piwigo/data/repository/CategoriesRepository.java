@@ -24,6 +24,7 @@ import android.util.Log;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.data.db.CacheDatabase;
 import org.piwigo.data.model.Category;
+import org.piwigo.data.model.Image;
 import org.piwigo.data.model.PositionedItem;
 import org.piwigo.helper.NaturalOrderComparator;
 import org.piwigo.io.PreferencesRepository;
@@ -32,13 +33,21 @@ import org.piwigo.io.restrepository.RESTCategoriesRepository;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 
 public class CategoriesRepository implements Observer<Account> {
 
@@ -69,7 +78,76 @@ public class CategoriesRepository implements Observer<Account> {
         synchronized (dbAccountLock) {
             db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
         }
-        Flowable<PositionedItem<Category>> remotes = mRestCategoryRepo.getCategories(
+
+//        Flowable<PositionedItem<Category>> remotes = mRestCategoryRepo.getCategories(
+//                categoryId,
+//                mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
+//                .subscribeOn(ioScheduler)
+//                .observeOn(ioScheduler)
+//                .toFlowable(BackpressureStrategy.BUFFER)
+//
+//                .zipWith(Flowable.range(0, Integer.MAX_VALUE), (restCat, counter) -> {
+//
+//                    Category c = new Category();
+//                    c.name = restCat.name;
+//                    c.id = restCat.id;
+//                    if (restCat.idUppercat != 0) {
+//                        c.parentCatId = restCat.idUppercat;
+//                    }
+//                    c.nbImages = restCat.nbImages;
+//                    c.thumbnailUrl = restCat.thumbnailUrl;
+//                    c.globalRank = restCat.globalRank;
+//                    c.comment = restCat.comment;
+//                    c.nbCategories = restCat.nbCategories;
+//                    c.representativePictureId = restCat.representativePictureId;
+//                    c.totalNbImages = restCat.totalNbImages;
+////                    db.categoryDao().upsert(c);
+//
+//                    return new PositionedItem<Category>(counter, c, true);
+//                })
+//                // TODO: delete categories in database after they have been deleted on the server
+//                // TODO: #90 generalize sorting
+//                .sorted((categoryItem1, categoryItem2) -> NaturalOrderComparator.compare(categoryItem1.getItem().globalRank, categoryItem2.getItem().globalRank));
+//
+//        if(db == null){
+//            return remotes.toObservable();
+//        }else {
+            return db.categoryDao().getCategoriesIn(categoryId)
+                    .subscribeOn(ioScheduler)
+                    .observeOn(ioScheduler)
+                    .flattenAsFlowable(s -> s)
+                    .zipWith(Flowable.range(0, Integer.MAX_VALUE),
+                            (item, counter) -> {
+                        Log.d("m_cache_sync","Read "+item.name);
+                        return new PositionedItem<Category>(counter, item, true);
+                    }
+                    )
+//                    .concatWith(remotes)
+                    .toObservable();
+//        }
+    }
+    /**
+     * Called when the account is changed.
+     *
+     * @param account The new data
+     */
+    @Override
+    public void onChanged(Account account) {
+        synchronized (dbAccountLock) {
+            mCache = mUserManager.getDatabaseForCurrent();
+        }
+    }
+
+    public void updateCategories(Integer categoryId) {
+        Log.d("CategoriesRepository", "getCategories");
+        CacheDatabase db;
+        synchronized (dbAccountLock) {
+            db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
+        }
+
+        AtomicReference<List<Category>> restCatsList = new AtomicReference<>();
+
+        Flowable<Category> restCategories = mRestCategoryRepo.getCategories(
                 categoryId,
                 mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
                 .subscribeOn(ioScheduler)
@@ -77,6 +155,7 @@ public class CategoriesRepository implements Observer<Account> {
                 .toFlowable(BackpressureStrategy.BUFFER)
 
                 .zipWith(Flowable.range(0, Integer.MAX_VALUE), (restCat, counter) -> {
+                    Log.d("m_cache_sync","Found "+restCat.name);
                     Category c = new Category();
                     c.name = restCat.name;
                     c.id = restCat.id;
@@ -91,35 +170,31 @@ public class CategoriesRepository implements Observer<Account> {
                     c.representativePictureId = restCat.representativePictureId;
                     c.totalNbImages = restCat.totalNbImages;
                     db.categoryDao().upsert(c);
-                    return new PositionedItem<Category>(counter, c, true);
-                })
-                // TODO: delete categories in database after they have been deleted on the server
-                // TODO: #90 generalize sorting
-                .sorted((categoryItem1, categoryItem2) -> NaturalOrderComparator.compare(categoryItem1.getItem().globalRank, categoryItem2.getItem().globalRank));
 
-        if(db == null){
-            return remotes.toObservable();
-        }else {
-            return db.categoryDao().getCategoriesIn(categoryId)
-                    .subscribeOn(ioScheduler)
-                    .observeOn(ioScheduler)
-                    .flattenAsFlowable(s -> s)
-                    .zipWith(Flowable.range(0, Integer.MAX_VALUE),
-                            (item, counter) -> new PositionedItem<Category>(counter, item, true))
-                    .concatWith(remotes)
-                    .toObservable();
-        }
-    }
-    /**
-     * Called when the account is changed.
-     *
-     * @param account The new data
-     */
-    @Override
-    public void onChanged(Account account) {
-        synchronized (dbAccountLock) {
-            mCache = mUserManager.getDatabaseForCurrent();
-        }
-    }
+                    if(restCatsList.get() == null) {
+                        restCatsList.set(new ArrayList<>());
+                    }
+                    restCatsList.get().add(c);
 
+                    return c;
+                    });
+//        restCategories.subscribe();
+
+        Flowable<Category> dbCategories = db.categoryDao().getCategoriesIn(categoryId)
+                .observeOn(ioScheduler)
+                .subscribeOn(ioScheduler)
+                .flattenAsFlowable(s -> s)
+                .zipWith(Flowable.range(0, Integer.MAX_VALUE),
+                        (item, counter) -> {
+                            if(!restCategories.contains(item).blockingGet()) {
+                                Log.d("m_cache_sync","Deleted "+item.name);
+                                db.imageCategoryMapDao().deleteFromCategory(item.id);
+                                db.categoryDao().delete(item);
+                            }
+                            return item;
+                        }
+                );
+
+        dbCategories.subscribe();
+    }
 }
