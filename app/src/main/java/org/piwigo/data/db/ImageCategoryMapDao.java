@@ -60,4 +60,7 @@ public abstract class ImageCategoryMapDao {
 
     @Query("DELETE FROM ImageCategoryMap WHERE categoryId=:categoryId")
     abstract public void deleteFromCategory(int categoryId) throws SQLException;
+
+    @Query("DELETE FROM ImageCategoryMap WHERE imageId=:imageId")
+    abstract public void deleteFromImage(int imageId) throws SQLException;
 }

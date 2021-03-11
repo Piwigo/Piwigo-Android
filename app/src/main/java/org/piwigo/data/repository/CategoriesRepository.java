@@ -45,6 +45,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
@@ -145,8 +146,6 @@ public class CategoriesRepository implements Observer<Account> {
             db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
         }
 
-        AtomicReference<List<Category>> restCatsList = new AtomicReference<>();
-
         Flowable<Category> restCategories = mRestCategoryRepo.getCategories(
                 categoryId,
                 mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
@@ -171,14 +170,9 @@ public class CategoriesRepository implements Observer<Account> {
                     c.totalNbImages = restCat.totalNbImages;
                     db.categoryDao().upsert(c);
 
-                    if(restCatsList.get() == null) {
-                        restCatsList.set(new ArrayList<>());
-                    }
-                    restCatsList.get().add(c);
-
                     return c;
                     });
-//        restCategories.subscribe();
+        restCategories.subscribe();
 
         Flowable<Category> dbCategories = db.categoryDao().getCategoriesIn(categoryId)
                 .observeOn(ioScheduler)

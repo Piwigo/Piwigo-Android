@@ -119,6 +119,8 @@ public class AlbumsViewModel extends ViewModel {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new CategoriesSubscriber());
 
+            imageRepository.updateImages(category);
+
             EspressoIdlingResource.moreBusy("load album images");
             imageRepository.getImages(category)
                     .observeOn(AndroidSchedulers.mainThread())
@@ -152,8 +154,7 @@ public class AlbumsViewModel extends ViewModel {
             isLoadingCategories = true;
             updateLoading();
 
-//            albums.clear();
-//            Log.d("m_cache","cleared albums");
+//            albums.clear(); // attempt to clear albums view list
         }
 
         @Override
