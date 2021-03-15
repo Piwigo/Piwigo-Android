@@ -21,7 +21,7 @@
 <resources>
     <!-- General strings -->
     <string name="app_name">Piwigo</string>
-    <string name="gen_error">Failure</string>
+    <string name="gen_error">Échec</string>
     <!-- titles -->
     <string name="title_activity_login">Connexion</string>
     <string name="title_activity_accounts">Gestion des comptes</string>
@@ -58,7 +58,7 @@
     <string name="login_baseurl_invalid">Aucune galerie Piwigo trouvée à l\'adresse \'%1s\'</string>
     <string name="login_invalid_credentials">Échec de la connexion avec les identifiants \'%1s/*****\'</string>
     <string name="login_as_guest_hint">Laissez le nom d\'utilisateur et le mot de passe vide pour vous connecter en tant qu\'invité</string>
-    <string name="login_retry_with_http">Use insecure http?</string>
+    <string name="login_retry_with_http">Utiliser une connexion http non sécurisée ?</string>
     <!-- Account -->
     <string name="account_image_description">Icône de raccourci de la galerie (favicon)</string>
     <string name="account_not_selected">Sélectionnez d’abord un compte pour la suppression</string>
@@ -129,9 +129,9 @@
     <string name="settings_colors">Couleurs</string>
     <string name="settings_color_palette">Palette de couleurs</string>
     <string name="settings_color_palette_summary">%1$s</string>
-    <string name="settings_expose_to_device">Expose Photos</string>
-    <string name="settings_expose_to_device_summary_pos">The Photos from Piwigo galleries are made available to other Apps on your device.</string>
-    <string name="settings_expose_to_device_summary_neg">The Photos from Piwigo galleries are not made available to other Apps on your device.</string>
+    <string name="settings_expose_to_device">Montrer les photos</string>
+    <string name="settings_expose_to_device_summary_pos">Les photos des galeries Piwigo sont disponibles pour d\'autres applications de votre appareil.</string>
+    <string name="settings_expose_to_device_summary_neg">Les photos des galeries Piwigo ne sont pas disponibles pour d\'autres applications de votre appareil.</string>
     <string name="perm_write_external_storage_xplain">To store the photos in a location accessible by other locations write permissions for external storage are required.</string>
     <!-- Upload -->
     <string name="upload_success">Téléversement réussi</string>
