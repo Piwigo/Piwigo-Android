@@ -27,12 +27,14 @@ import android.util.Log;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.ViewModel;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.piwigo.BR;
 import org.piwigo.EspressoIdlingResource;
 import org.piwigo.R;
 import org.piwigo.accounts.UserManager;
 import org.piwigo.data.model.Category;
+import org.piwigo.data.model.Image;
 import org.piwigo.data.model.PositionedItem;
 import org.piwigo.data.model.VariantWithImage;
 import org.piwigo.data.repository.CategoriesRepository;
@@ -41,7 +43,6 @@ import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 import org.reactivestreams.Subscription;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
@@ -72,6 +73,9 @@ public class AlbumsViewModel extends ViewModel {
 
     private MainViewModel mMainViewModel;
 
+    private RecyclerView.Adapter albumsAdapter = null;
+    private RecyclerView.Adapter imagesAdapter = null;
+
     AlbumsViewModel(UserManager userManager, CategoriesRepository categoriesRepository,
                     ImageRepository imageRepository, Resources resources) {
         this.userManager = userManager;
@@ -92,7 +96,7 @@ public class AlbumsViewModel extends ViewModel {
         return category;
     }
 
-    private void forcedLoadAlbums() {
+    public void forcedLoadAlbums() {
 
         EspressoIdlingResource.moreBusy("load albums");
         if (albumsSubscription != null) {
@@ -140,7 +144,9 @@ public class AlbumsViewModel extends ViewModel {
         mMainViewModel = vm;
     }
 
-    public void onRefresh() {
+    public void onRefresh(RecyclerView.Adapter albumsAdapter) {
+        this.albumsAdapter = albumsAdapter;
+        albums.clear();
         forcedLoadAlbums();
     }
 
@@ -149,16 +155,16 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     private class CategoriesSubscriber extends DisposableObserver<PositionedItem<Category>> {
+
         public CategoriesSubscriber(){
             super();
             isLoadingCategories = true;
             updateLoading();
-
-//            albums.clear(); // attempt to clear albums view list
         }
 
         @Override
         public void onComplete() {
+            if(albumsAdapter != null) { albumsAdapter.notifyDataSetChanged(); }
             isLoadingCategories = false;
             updateLoading();
             EspressoIdlingResource.lessBusy("load categories", "onComplete");
@@ -186,6 +192,7 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override
         public void onNext(PositionedItem<Category> category) {
+
             while(albums.size() <= category.getPosition()) {
                 albums.add(null);
             }

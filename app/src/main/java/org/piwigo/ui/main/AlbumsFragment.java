@@ -28,10 +28,12 @@ import android.view.ViewGroup;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.piwigo.R;
+import org.piwigo.data.model.Category;
 import org.piwigo.databinding.FragmentAlbumsBinding;
 import org.piwigo.io.event.RefreshRequestEvent;
 import org.piwigo.io.PreferencesRepository;
 import org.piwigo.ui.shared.BaseFragment;
+import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
 
 import javax.inject.Inject;
 
@@ -40,9 +42,11 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import dagger.android.support.AndroidSupportInjection;
 
-public class AlbumsFragment extends BaseFragment {
+public class AlbumsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final int PHONE_MIN_WIDTH = 320;
     private static final int TABLET_MIN_WIDTH = 360;
@@ -85,7 +89,7 @@ public class AlbumsFragment extends BaseFragment {
 
     @Subscribe
     public void onEvent(RefreshRequestEvent event) {
-        binding.getViewModel().onRefresh();
+        binding.getViewModel().onRefresh(binding.albumRecycler.getAdapter());
     }
 
     @Override
@@ -107,7 +111,7 @@ public class AlbumsFragment extends BaseFragment {
         binding.photoRecycler.setHasFixedSize(true);
         binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(),
                 calculateColumnCount() * preferences.getInt(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW)));
-
+        binding.swiperefresh.setOnRefreshListener(this);
         return binding.getRoot();
     }
 
@@ -131,4 +135,8 @@ public class AlbumsFragment extends BaseFragment {
     }
 
 
+    @Override
+    public void onRefresh() {
+        binding.getViewModel().onRefresh(binding.albumRecycler.getAdapter());
+    }
 }

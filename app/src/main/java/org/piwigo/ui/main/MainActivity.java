@@ -189,7 +189,7 @@ public class MainActivity extends BaseActivity implements HasAndroidInjector {
                         } else {
                             ((AlbumsFragment) f).getViewModel().loadAlbums(0);
                         }
-                        ((AlbumsFragment) f).getViewModel().onRefresh();
+                        ((AlbumsFragment) f).getViewModel().forcedLoadAlbums();
                     }
                 }
             }
