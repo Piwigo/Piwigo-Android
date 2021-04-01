@@ -144,9 +144,13 @@ public class AlbumsViewModel extends ViewModel {
         mMainViewModel = vm;
     }
 
-    public void onRefresh(RecyclerView.Adapter albumsAdapter) {
+    public void onRefresh(RecyclerView.Adapter albumsAdapter, RecyclerView.Adapter imagesAdapter) {
         this.albumsAdapter = albumsAdapter;
+        this.imagesAdapter = imagesAdapter;
         albums.clear();
+        images.clear();
+        albumsAdapter.notifyDataSetChanged();
+        imagesAdapter.notifyDataSetChanged();
         forcedLoadAlbums();
     }
 
@@ -246,6 +250,7 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override
         public void onComplete() {
+            if(imagesAdapter != null) { imagesAdapter.notifyDataSetChanged(); }
             isLoadingImages = false;
             updateLoading();
             EspressoIdlingResource.lessBusy("load album images", "ImageSubscriber.onComplete");

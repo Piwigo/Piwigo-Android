@@ -89,7 +89,7 @@ public class AlbumsFragment extends BaseFragment implements SwipeRefreshLayout.O
 
     @Subscribe
     public void onEvent(RefreshRequestEvent event) {
-        binding.getViewModel().onRefresh(binding.albumRecycler.getAdapter());
+        binding.getViewModel().onRefresh(binding.albumRecycler.getAdapter(), binding.photoRecycler.getAdapter());
     }
 
     @Override
@@ -137,6 +137,6 @@ public class AlbumsFragment extends BaseFragment implements SwipeRefreshLayout.O
 
     @Override
     public void onRefresh() {
-        binding.getViewModel().onRefresh(binding.albumRecycler.getAdapter());
+        binding.getViewModel().onRefresh(binding.albumRecycler.getAdapter(), binding.photoRecycler.getAdapter());
     }
 }

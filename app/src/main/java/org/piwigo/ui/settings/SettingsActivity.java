@@ -53,7 +53,7 @@ public class SettingsActivity extends AppCompatActivity {
         private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 815;
         PiwigoApplication piwigo;
 
-        private ListPreference mPreferenceThumbnailSize;
+//        private ListPreference mPreferenceThumbnailSize;
         private SeekBarPreference mPreferencePhotosPerRow;
         private ListPreference mPreferenceDarkTheme;
 // TODO: #222 private SwitchPreferenceCompat mPreferenceExposePhotos;
@@ -65,16 +65,16 @@ public class SettingsActivity extends AppCompatActivity {
             setPreferencesFromResource(R.xml.settings_preferences, rootKey);
 
             mPreferencePhotosPerRow = findPreference(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
-            mPreferenceThumbnailSize = findPreference(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE);
+//            mPreferenceThumbnailSize = findPreference(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE);
             mPreferenceDarkTheme = findPreference(PreferencesRepository.KEY_PREF_COLOR_PALETTE);
 // TODO: #222             mPreferenceExposePhotos = findPreference(PreferencesRepository.KEY_PREF_EXPOSE_PHOTOS);
 
             mPreferencePhotosPerRow.setOnPreferenceChangeListener((preference, value) -> true);
 
-            mPreferenceThumbnailSize.setOnPreferenceChangeListener((preference, value) -> {
-                mPreferenceThumbnailSize.setSummary(getString(R.string.settings_download_size_summary, value.toString()));
-                return true;
-            });
+//            mPreferenceThumbnailSize.setOnPreferenceChangeListener((preference, value) -> {
+//                mPreferenceThumbnailSize.setSummary(getString(R.string.settings_download_size_summary, value.toString()));
+//                return true;
+//            });
 
             mPreferenceDarkTheme.setOnPreferenceChangeListener(((preference, value) -> {
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
