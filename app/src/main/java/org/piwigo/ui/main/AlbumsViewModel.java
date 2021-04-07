@@ -116,14 +116,10 @@ public class AlbumsViewModel extends ViewModel {
         }
         if (userManager.isGuest(account) || userManager.sessionCookie() != null) {
 
-            categoriesRepository.updateCategories(category);
-
             EspressoIdlingResource.moreBusy("load categories");
             categoriesRepository.getCategories(category)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new CategoriesSubscriber());
-
-            imageRepository.updateImages(category);
 
             EspressoIdlingResource.moreBusy("load album images");
             imageRepository.getImages(category)
