@@ -116,7 +116,7 @@ public class CategoriesRepository implements Observer<Account> {
             // TODO: #90 generalize sorting
             .sorted((categoryItem1, categoryItem2) -> NaturalOrderComparator.compare(categoryItem1.getItem().globalRank, categoryItem2.getItem().globalRank));
 
-        remotes.subscribe();
+//        remotes.subscribe();
         if(db == null){
             return remotes.toObservable();
         }else {
@@ -125,19 +125,16 @@ public class CategoriesRepository implements Observer<Account> {
                 .observeOn(ioScheduler)
                 .flattenAsFlowable(s -> s)
                 .filter(category -> {
+                    Log.d("m_cache_sync_cat","Read "+category.name);
                     if(!remoteIDs.contains(category.id).blockingGet()) {
-                        Log.d("m_cache_sync","Deleted "+category.name);
-                        db.imageCategoryMapDao().deleteFromCategory(category.id);
-                        db.categoryDao().delete(category);
+                        Log.d("m_cache_sync_cat","Deleted "+category.name);
                         return false;
                     }
                     return true;
                 })
                 .zipWith(Flowable.range(0, Integer.MAX_VALUE), (item, counter) -> {
-                    Log.d("m_cache_sync","Read "+item.name);
                     return new PositionedItem<Category>(counter, item, true);
                 })
-
                 .concatWith(remotes)
                 .toObservable();
         }
@@ -151,6 +148,38 @@ public class CategoriesRepository implements Observer<Account> {
     public void onChanged(Account account) {
         synchronized (dbAccountLock) {
             mCache = mUserManager.getDatabaseForCurrent();
+        }
+    }
+
+    public void updateCategoryCache(@Nullable Integer categoryId) {
+        CacheDatabase db;
+        synchronized (dbAccountLock) {
+            db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
+        }
+
+        Flowable<Integer> remoteIDs = mRestCategoryRepo.getCategories(
+                categoryId,
+                mPreferences.getString(PreferencesRepository.KEY_PREF_DOWNLOAD_SIZE))
+                .subscribeOn(ioScheduler)
+                .observeOn(ioScheduler)
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .zipWith(Flowable.range(0, Integer.MAX_VALUE), (restCat, counter) -> restCat.id);
+
+        if(db != null) {
+            db.categoryDao().getCategoriesIn(categoryId)
+                    .subscribeOn(ioScheduler)
+                    .observeOn(ioScheduler)
+                    .flattenAsFlowable(s -> s)
+                    .zipWith(Flowable.range(0, Integer.MAX_VALUE), (item, counter) -> {
+                        if(!remoteIDs.contains(item.id).blockingGet()) {
+                            Log.d("m_cache_sync_cat","Deleted "+item.name);
+                            db.imageCategoryMapDao().deleteFromCategory(item.id);
+                            db.categoryDao().delete(item);
+                        }
+                        return new PositionedItem<Category>(counter, item, true);
+                    })
+                    .toObservable()
+                    .subscribe();
         }
     }
 }

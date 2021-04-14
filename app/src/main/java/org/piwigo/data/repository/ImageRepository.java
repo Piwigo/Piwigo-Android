@@ -228,16 +228,12 @@ public class ImageRepository implements Observer<Account> {
             .observeOn(ioScheduler)
             .flattenAsFlowable(s -> s)
             .filter(variantWithImage -> {
-                if(!remoteIDs.contains(variantWithImage.image.id).blockingGet()) {
-                    Log.d("m_cache_sync","Deleted image "+variantWithImage.image.name);
-                    db.imageCategoryMapDao().deleteFromImage(variantWithImage.image.id);
-                    db.imageDao().delete(variantWithImage.image);
-                    return false;
-                }
-                return true;
+                Log.d("m_cache_sync_img","Read "+variantWithImage.image.name);
+                return !remoteIDs.contains(variantWithImage.image.id).blockingGet();
             })
             .zipWith(Flowable.range(0, Integer.MAX_VALUE),
-                (item, counter) -> new PositionedItem<VariantWithImage>(counter, item, true))
+                (item, counter) -> new PositionedItem<>(counter, item, true))
+            .concatWith(remotes)
             .toObservable();
     }
 
@@ -339,6 +335,34 @@ public class ImageRepository implements Observer<Account> {
         synchronized (dbAccountLock) {
             mCache = mUserManager.getDatabaseForCurrent();
         }
+    }
+
+    public void updateVariantWithImageCache(@Nullable Integer categoryId) {
+        CacheDatabase db;
+        synchronized (dbAccountLock) {
+            db = mCache; // this will keep the database if the account is switched. As the old DB will be closed this thread will be reporting an exception but we accept that for now
+        }
+
+        Flowable<Integer> remoteIDs = mRestImageRepo.getImages(categoryId)
+                .subscribeOn(ioScheduler)
+                .observeOn(ioScheduler)
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .zipWith(Flowable.range(0, Integer.MAX_VALUE), (info, counter) -> info.id);
+
+        db.variantDao().getVariantsWithImageInCategory(categoryId)
+                .subscribeOn(ioScheduler)
+                .observeOn(ioScheduler)
+                .flattenAsFlowable(s -> s)
+                .zipWith(Flowable.range(0, Integer.MAX_VALUE), (item, counter) -> {
+                    if(!remoteIDs.contains(item.image.id).blockingGet()) {
+                        Log.d("m_cache_sync_img","Deleted image "+item.image.name);
+                        db.imageCategoryMapDao().deleteFromImage(item.image.id);
+                        db.imageDao().delete(item.image);
+                    }
+                    return new PositionedItem<VariantWithImage>(counter, item, true);
+                })
+                .toObservable()
+                .subscribe();
     }
 }
 

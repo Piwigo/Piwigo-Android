@@ -143,10 +143,8 @@ public class AlbumsViewModel extends ViewModel {
     public void onRefresh(RecyclerView.Adapter albumsAdapter, RecyclerView.Adapter imagesAdapter) {
         this.albumsAdapter = albumsAdapter;
         this.imagesAdapter = imagesAdapter;
-        albums.clear();
-        images.clear();
-        albumsAdapter.notifyDataSetChanged();
-        imagesAdapter.notifyDataSetChanged();
+//        images.clear();
+//        imagesAdapter.notifyDataSetChanged();
         forcedLoadAlbums();
     }
 
@@ -155,19 +153,30 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     private class CategoriesSubscriber extends DisposableObserver<PositionedItem<Category>> {
+        int nbCat;
 
         public CategoriesSubscriber(){
             super();
+            nbCat = 0;
             isLoadingCategories = true;
             updateLoading();
         }
 
         @Override
         public void onComplete() {
-            if(albumsAdapter != null) { albumsAdapter.notifyDataSetChanged(); }
+            int i = albums.size()-nbCat-1;
+            if(albumsAdapter != null) {
+                while (i > 0) {
+                    Log.d("m_cache_sync","remove album");
+                    albums.remove(albums.size()-1);
+                    albumsAdapter.notifyDataSetChanged();
+                    i--;
+                }
+            }
             isLoadingCategories = false;
             updateLoading();
             EspressoIdlingResource.lessBusy("load categories", "onComplete");
+//            categoriesRepository.updateCategoryCache(category);
         }
 
         @Override
@@ -192,12 +201,14 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override
         public void onNext(PositionedItem<Category> category) {
-
-            while(albums.size() <= category.getPosition()) {
+            while (albums.size() <= category.getPosition()) {
                 albums.add(null);
             }
-            Log.d("m_cache","Albums size: "+albums.size());
-            albums.set(category.getPosition(), category.getItem());
+
+            if (albums.get(category.getPosition()) == null || category.getItem().id != albums.get(category.getPosition()).id) {
+                albums.set(category.getPosition(), category.getItem());
+            }
+            if (nbCat < category.getPosition()) nbCat = category.getPosition();
         }
     }
 
@@ -227,29 +238,46 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     private class ImageSubscriber extends DisposableObserver<PositionedItem<VariantWithImage>>{
+        int nbImage;
+
         public ImageSubscriber(){
             super();
+            nbImage = 0;
             isLoadingImages = true;
             updateLoading();
         }
+
         @Override
         public void onNext(PositionedItem<VariantWithImage> item) {
             if(images.size() == item.getPosition()){
                 images.add(item.getItem());
-            }else {
+            } else {
                 while (images.size() <= item.getPosition()) {
                     images.add(null);
                 }
-                images.set(item.getPosition(), item.getItem());
+                if(item.getItem().image.id != images.get(item.getPosition()).image.id) {
+                    images.set(item.getPosition(), item.getItem());
+                }
             }
+            if(nbImage < item.getPosition()) nbImage = item.getPosition();
         }
 
         @Override
         public void onComplete() {
-            if(imagesAdapter != null) { imagesAdapter.notifyDataSetChanged(); }
+            int i = images.size()-nbImage-1;
+            if(albumsAdapter != null) {
+                while (i > 0) {
+                    Log.d("m_cache_sync","removed item");
+                    images.remove(images.size()-1);
+                    imagesAdapter.notifyDataSetChanged();
+                    i--;
+                }
+                imagesAdapter.notifyDataSetChanged();
+            }
             isLoadingImages = false;
             updateLoading();
             EspressoIdlingResource.lessBusy("load album images", "ImageSubscriber.onComplete");
+//            imageRepository.updateVariantWithImageCache(category);
         }
 
         @Override
