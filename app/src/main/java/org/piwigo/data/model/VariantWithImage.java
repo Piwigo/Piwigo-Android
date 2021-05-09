@@ -22,6 +22,7 @@ import androidx.room.Embedded;
 import androidx.room.Relation;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class VariantWithImage implements Serializable {
     @Embedded
@@ -31,4 +32,18 @@ public class VariantWithImage implements Serializable {
             entityColumn = "id"
     )
     public Image image;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VariantWithImage that = (VariantWithImage) o;
+        return Objects.equals(variant, that.variant) &&
+                Objects.equals(image, that.image);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(variant, image);
+    }
 }

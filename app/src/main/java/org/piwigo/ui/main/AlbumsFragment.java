@@ -42,6 +42,8 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import dagger.android.support.AndroidSupportInjection;
@@ -89,7 +91,7 @@ public class AlbumsFragment extends BaseFragment implements SwipeRefreshLayout.O
 
     @Subscribe
     public void onEvent(RefreshRequestEvent event) {
-        binding.getViewModel().onRefresh(binding.albumRecycler.getAdapter(), binding.photoRecycler.getAdapter());
+        binding.getViewModel().onRefresh(binding.dataRecycler.getAdapter());
     }
 
     @Override
@@ -106,11 +108,29 @@ public class AlbumsFragment extends BaseFragment implements SwipeRefreshLayout.O
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_albums, container, false);
-        binding.albumRecycler.setHasFixedSize(true);
-        binding.albumRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
-        binding.photoRecycler.setHasFixedSize(true);
-        binding.photoRecycler.setLayoutManager(new GridLayoutManager(getContext(),
-                calculateColumnCount() * preferences.getInt(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW)));
+        binding.dataRecycler.setHasFixedSize(true);
+
+        binding.dataRecycler.setLayoutManager(new GridLayoutManager(getContext(), calculateColumnCount()));
+        GridLayoutManager lm = new GridLayoutManager(getContext(),
+                calculateColumnCount() * preferences.getInt(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW));
+        lm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                AlbumsViewModel.ViewElement e = getViewModel().data.get(position);
+                if(e == null){
+                    return 1;
+                }
+                else {
+                    int t = e.getType();
+                    if (t == AlbumsViewModel.ViewElement.IMAGE)
+                        return 1;
+                    else
+                        return preferences.getInt(PreferencesRepository.KEY_PREF_PHOTOS_PER_ROW);
+                }
+            }
+        });
+        binding.dataRecycler.setLayoutManager(lm);
+
         binding.swiperefresh.setOnRefreshListener(this);
         return binding.getRoot();
     }
@@ -134,9 +154,8 @@ public class AlbumsFragment extends BaseFragment implements SwipeRefreshLayout.O
         return (int) Math.floor(configuration.screenWidthDp / (largeScreen ? TABLET_MIN_WIDTH : PHONE_MIN_WIDTH));
     }
 
-
     @Override
     public void onRefresh() {
-        binding.getViewModel().onRefresh(binding.albumRecycler.getAdapter(), binding.photoRecycler.getAdapter());
+        binding.getViewModel().onRefresh(binding.dataRecycler.getAdapter());
     }
 }

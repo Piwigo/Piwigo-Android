@@ -56,11 +56,11 @@ public class PhotoViewerDialogFragment extends DialogFragment
 
         selectedPosition = getArguments().getInt("position");
         pagerAdapter = new PhotoViewerPagerAdapter(getContext(), images);
-
-        pagerAdapter.setPicassoInstance(picasso);
-        viewPager.setAdapter(pagerAdapter);
-        viewPager.setOffscreenPageLimit(3);
-        setCurrentItem(selectedPosition);
+        synchronized (pagerAdapter) {
+            pagerAdapter.setPicassoInstance(picasso);
+            viewPager.setAdapter(pagerAdapter);
+            viewPager.setOffscreenPageLimit(3);
+        }
         return (v);
     }
 
@@ -93,15 +93,20 @@ public class PhotoViewerDialogFragment extends DialogFragment
 
         @Override
         public void onNext(PositionedItem<VariantWithImage> item) {
-            if(images.size() == item.getPosition()){
-                images.add(item.getItem());
-            }else {
-                while (images.size() <= item.getPosition()) {
-                    images.add(null);
+            synchronized (pagerAdapter) {
+                if (images.size() == item.getPosition()) {
+                    images.add(item.getItem());
+                } else {
+                    while (images.size() <= item.getPosition()) {
+                        images.add(null);
+                    }
+                    images.set(item.getPosition(), item.getItem());
                 }
-                images.set(item.getPosition(), item.getItem());
+                pagerAdapter.notifyDataSetChanged();
+                if (item.getPosition() == selectedPosition) {
+                    setCurrentItem(selectedPosition);
+                }
             }
-            pagerAdapter.notifyDataSetChanged();
         }
 
         @Override

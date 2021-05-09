@@ -19,7 +19,10 @@
 
 package org.piwigo.internal.binding.adapter;
 
+import android.util.Log;
+
 import androidx.databinding.BindingAdapter;
+import androidx.databinding.ObservableArrayList;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.piwigo.ui.shared.BindingRecyclerViewAdapter;
@@ -29,7 +32,7 @@ import java.util.List;
 public class RecyclerViewBindingAdapter {
 
     @BindingAdapter(value = {"items", "viewBinder"}, requireAll = false)
-    public static <T> void bindRecyclerView(RecyclerView recyclerView, List<T> items, BindingRecyclerViewAdapter.ViewBinder<T> viewBinder) {
+    public static <T> void bindRecyclerView(RecyclerView recyclerView, ObservableArrayList<T> items, BindingRecyclerViewAdapter.ViewBinder<T> viewBinder) {
         RecyclerView.Adapter adapter = recyclerView.getAdapter();
 
         if (viewBinder != null) {

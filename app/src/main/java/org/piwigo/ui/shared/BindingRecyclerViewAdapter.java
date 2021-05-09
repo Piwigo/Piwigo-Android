@@ -19,10 +19,15 @@
 
 package org.piwigo.ui.shared;
 
+import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListUpdateCallback;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -32,7 +37,7 @@ import java.util.List;
 public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingRecyclerViewAdapter.ViewHolder> {
 
     private final ViewBinder<T> viewBinder;
-    private List<T> items = new ArrayList<T>();
+    private ObservableArrayList<T> items = new ObservableArrayList<T>();
 
     public BindingRecyclerViewAdapter(ViewBinder<T> viewBinder) {
         this.viewBinder = viewBinder;
@@ -55,9 +60,26 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
         return viewBinder.getViewType(items.get(position));
     }
 
-    public void update(List<T> items) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ItemDiffCB(this.items, items));
+    public void update(ObservableArrayList<T> items) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ItemDiffCB(items, this.items), false);
         diffResult.dispatchUpdatesTo(this);
+        diffResult.dispatchUpdatesTo(new ListUpdateCallback() {
+            @Override
+            public void onInserted(int position, int count) {
+            }
+
+            @Override
+            public void onRemoved(int position, int count) {
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+            }
+
+            @Override
+            public void onChanged(int position, int count, @Nullable Object payload) {
+            }
+        });
 
         // remember as old list...
         this.items.clear();
@@ -110,7 +132,10 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
 
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldItems.get(oldItemPosition) == newItems.get(newItemPosition);
+            return oldItems.get(oldItemPosition) == newItems.get(newItemPosition)
+                    && oldItems.get(oldItemPosition) == null
+                        ||
+                       oldItems.get(oldItemPosition).equals(newItems.get(newItemPosition));
         }
 
         @Override
@@ -126,5 +151,4 @@ public class BindingRecyclerViewAdapter<T> extends RecyclerView.Adapter<BindingR
             return oldItems.get(oldItemPosition).equals(newItems.get(newItemPosition));
         }
     }
-
 }
