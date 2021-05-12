@@ -19,6 +19,8 @@
 package org.piwigo.internal.binding.adapter;
 
 import androidx.databinding.BindingAdapter;
+
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -36,10 +38,13 @@ public class ImageViewBindingAdapter {
     }
 
     @BindingAdapter("android:src") public void loadImage(ImageView imageView, String url) {
+        if(imageView.getWidth() == 0){
+            Log.d("ImageViewBindingAdapter", "size unkown");
+        }
         picasso.load(url)
 // TODO: Add Downloader, which retruns the proper image for the size in the request.??
                 // or better go with refreshing the URL?
-                .resize(imageView.getWidth(),0)
+                .resize(Math.max(100, imageView.getWidth()),0)
                 .centerCrop()
                 .placeholder(R.mipmap.ic_placeholder)
 // TODO:                .networkPolicy(NetworkPolicy.OFFLINE)

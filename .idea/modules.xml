@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Piwigo-Android.iml" filepath="$PROJECT_DIR$/Piwigo-Android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/Piwigo-Android-app.iml" filepath="$PROJECT_DIR$/app/Piwigo-Android-app.iml" group="Piwigo-Android/app" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Piwigo-Android.iml" filepath="$PROJECT_DIR$/.idea/modules/Piwigo-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Piwigo-Android.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Piwigo-Android.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Piwigo-Android/app" />
-      <module fileurl="file://$PROJECT_DIR$/prod-Piwigo-Android.iml" filepath="$PROJECT_DIR$/prod-Piwigo-Android.iml" group="Piwigo-Android" />
     </modules>
   </component>
 </project>
