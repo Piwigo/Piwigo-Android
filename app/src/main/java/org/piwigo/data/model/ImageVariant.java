@@ -26,6 +26,7 @@ import androidx.room.PrimaryKey;
 import androidx.room.Relation;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import static androidx.room.ForeignKey.CASCADE;
 
@@ -61,5 +62,24 @@ public class ImageVariant implements Serializable {
     public String storageLocation;
     public String lastModified;
     public String url;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ImageVariant that = (ImageVariant) o;
+        return id == that.id &&
+                imageId == that.imageId &&
+                height == that.height &&
+                width == that.width &&
+                Objects.equals(storageLocation, that.storageLocation) &&
+                Objects.equals(lastModified, that.lastModified) &&
+                Objects.equals(url, that.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, imageId, height, width, storageLocation, lastModified, url);
+    }
 }
 

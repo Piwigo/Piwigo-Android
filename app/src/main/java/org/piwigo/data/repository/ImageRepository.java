@@ -227,10 +227,10 @@ public class ImageRepository implements Observer<Account> {
             .subscribeOn(ioScheduler)
             .observeOn(ioScheduler)
             .flattenAsFlowable(s -> s)
-            .filter(variantWithImage -> {
+/*            .filter(variantWithImage -> {
                 Log.d("m_cache_sync_img","Read "+variantWithImage.image.name);
                 return !remoteIDs.contains(variantWithImage.image.id).blockingGet();
-            })
+            })*/
             .zipWith(Flowable.range(0, Integer.MAX_VALUE),
                 (item, counter) -> new PositionedItem<>(counter, item, true))
             .concatWith(remotes)

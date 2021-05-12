@@ -19,6 +19,7 @@
 package org.piwigo.data.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * represents an item (photo, album, video, ...) in the gallery, at a defined position in the current result
@@ -44,5 +45,20 @@ public class PositionedItem<T> implements Serializable {
 
     public boolean isUpdateNeeded(){
         return updateNeeded;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PositionedItem<?> that = (PositionedItem<?>) o;
+        return position == that.position &&
+                updateNeeded == that.updateNeeded &&
+                Objects.equals(item, that.item);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, item, updateNeeded);
     }
 }

@@ -124,14 +124,14 @@ public class CategoriesRepository implements Observer<Account> {
                 .subscribeOn(ioScheduler)
                 .observeOn(ioScheduler)
                 .flattenAsFlowable(s -> s)
-                .filter(category -> {
+/*                .filter(category -> {
                     Log.d("m_cache_sync_cat","Read "+category.name);
                     if(!remoteIDs.contains(category.id).blockingGet()) {
                         Log.d("m_cache_sync_cat","Deleted "+category.name);
                         return false;
                     }
                     return true;
-                })
+                })*/
                 .zipWith(Flowable.range(0, Integer.MAX_VALUE), (item, counter) -> {
                     return new PositionedItem<Category>(counter, item, true);
                 })

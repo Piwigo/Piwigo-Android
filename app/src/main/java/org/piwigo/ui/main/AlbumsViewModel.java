@@ -55,10 +55,13 @@ public class AlbumsViewModel extends ViewModel {
     private boolean isLoadingImages = false;
     public ObservableBoolean isLoading = new ObservableBoolean();
 
-    public ObservableArrayList<VariantWithImage> images = new ObservableArrayList<>();
-    public ObservableArrayList<Category> albums = new ObservableArrayList<>();
+    public ObservableArrayList<ViewElement> data = new ObservableArrayList<>();
+    /* only modify while holding lock on data */
+    private int nrOfAlbums = 0;
+
     public BindingRecyclerViewAdapter.ViewBinder<Category> albumsViewBinder = new CategoryViewBinder();
     public BindingRecyclerViewAdapter.ViewBinder<VariantWithImage> photoViewBinder = new ImagesViewBinder();
+    public BindingRecyclerViewAdapter.ViewBinder<ViewElement> dataViewBinder = new DataViewBinder();
 
     private final UserManager userManager;
     private final CategoriesRepository categoriesRepository;
@@ -75,6 +78,7 @@ public class AlbumsViewModel extends ViewModel {
 
     private RecyclerView.Adapter albumsAdapter = null;
     private RecyclerView.Adapter imagesAdapter = null;
+    private RecyclerView.Adapter dataAdapter = null;
 
     AlbumsViewModel(UserManager userManager, CategoriesRepository categoriesRepository,
                     ImageRepository imageRepository, Resources resources) {
@@ -115,7 +119,10 @@ public class AlbumsViewModel extends ViewModel {
             return;
         }
         if (userManager.isGuest(account) || userManager.sessionCookie() != null) {
-
+            synchronized (data) {
+                nrOfAlbums = 0;
+                data.clear();
+            }
             EspressoIdlingResource.moreBusy("load categories");
             categoriesRepository.getCategories(category)
                     .observeOn(AndroidSchedulers.mainThread())
@@ -140,11 +147,8 @@ public class AlbumsViewModel extends ViewModel {
         mMainViewModel = vm;
     }
 
-    public void onRefresh(RecyclerView.Adapter albumsAdapter, RecyclerView.Adapter imagesAdapter) {
-        this.albumsAdapter = albumsAdapter;
-        this.imagesAdapter = imagesAdapter;
-//        images.clear();
-//        imagesAdapter.notifyDataSetChanged();
+    public void onRefresh(RecyclerView.Adapter dataAdapter/*, RecyclerView.Adapter imagesAdapter*/) {
+        this.dataAdapter = dataAdapter;
         forcedLoadAlbums();
     }
 
@@ -153,30 +157,31 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     private class CategoriesSubscriber extends DisposableObserver<PositionedItem<Category>> {
-        int nbCat;
-
         public CategoriesSubscriber(){
             super();
-            nbCat = 0;
             isLoadingCategories = true;
             updateLoading();
         }
 
         @Override
         public void onComplete() {
-            int i = albums.size()-nbCat-1;
-            if(albumsAdapter != null) {
-                while (i > 0) {
-                    Log.d("m_cache_sync","remove album");
-                    albums.remove(albums.size()-1);
+            synchronized (data) {
+                /* TODO: remove deleted items
+                int i = albums.size() - nbCat - 1;
+                if (albumsAdapter != null) {
+                    while (i > 0) {
+                        Log.d("m_cache_sync", "remove album");
+                        data.remove(albums.size() - 1);
+                        albums.remove(albums.size() - 1);
+                        i--;
+                    }
                     albumsAdapter.notifyDataSetChanged();
-                    i--;
                 }
+                */
+                isLoadingCategories = false;
+                updateLoading();
             }
-            isLoadingCategories = false;
-            updateLoading();
             EspressoIdlingResource.lessBusy("load categories", "onComplete");
-//            categoriesRepository.updateCategoryCache(category);
         }
 
         @Override
@@ -201,14 +206,23 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override
         public void onNext(PositionedItem<Category> category) {
-            while (albums.size() <= category.getPosition()) {
-                albums.add(null);
+            synchronized (data) {
+                while (nrOfAlbums <= category.getPosition()) {
+                    data.add(nrOfAlbums, null);
+                    nrOfAlbums++;
+                }
+                if (data.get(category.getPosition()) == null){
+                    data.set(category.getPosition(), new ViewElement(category.getItem()));
+                }else{
+                    ViewElement ve = data.get(category.getPosition());
+                    if(ve == null || ve.getCategory() == null){
+                        Log.d("AlbumsViewModel", "data element at " + category.getPosition() + " has wrong type");
+                    }else
+                    if(category.getItem().id != ve.getCategory().id) {
+                        data.set(category.getPosition(), new ViewElement(category.getItem()));
+                    }
+                }
             }
-
-            if (albums.get(category.getPosition()) == null || category.getItem().id != albums.get(category.getPosition()).id) {
-                albums.set(category.getPosition(), category.getItem());
-            }
-            if (nbCat < category.getPosition()) nbCat = category.getPosition();
         }
     }
 
@@ -238,46 +252,47 @@ public class AlbumsViewModel extends ViewModel {
     }
 
     private class ImageSubscriber extends DisposableObserver<PositionedItem<VariantWithImage>>{
-        int nbImage;
-
         public ImageSubscriber(){
             super();
-            nbImage = 0;
             isLoadingImages = true;
             updateLoading();
         }
 
         @Override
         public void onNext(PositionedItem<VariantWithImage> item) {
-            if(images.size() == item.getPosition()){
-                images.add(item.getItem());
-            } else {
-                while (images.size() <= item.getPosition()) {
-                    images.add(null);
+            synchronized (data) {
+                // add empty spaces until the item position is available
+                while (data.size() <= nrOfAlbums + item.getPosition()) {
+                    data.add(null);
                 }
-                if(item.getItem().image.id != images.get(item.getPosition()).image.id) {
-                    images.set(item.getPosition(), item.getItem());
+                if (data.get(nrOfAlbums + item.getPosition()) != null
+                   && data.get(nrOfAlbums + item.getPosition()).getType() == ViewElement.CATEGORY){
+                    Log.d("AlbumsViewModel", "wrong type at index " + nrOfAlbums + item.getPosition() + " expected IMAGE found CATEGORY");
+                }else if (data.get(nrOfAlbums + item.getPosition()) == null
+                        || item.getItem().image.id != data.get(nrOfAlbums + item.getPosition()).getImage().image.id) {
+                    data.set(nrOfAlbums + item.getPosition(), new ViewElement(item.getItem()));
                 }
             }
-            if(nbImage < item.getPosition()) nbImage = item.getPosition();
         }
 
         @Override
         public void onComplete() {
-            int i = images.size()-nbImage-1;
-            if(albumsAdapter != null) {
-                while (i > 0) {
-                    Log.d("m_cache_sync","removed item");
-                    images.remove(images.size()-1);
+            synchronized (data) {
+                // TODO: remove data not available anymore
+/*                int i = images.size() - nbImage - 1;
+                if (albumsAdapter != null) {
+                    while (i > 0) {
+                        Log.d("m_cache_sync", "removed item");
+                        images.remove(images.size() - 1);
+                        data.remove(nrOfAlbums + images.size() - 1);
+                        i--;
+                    }
                     imagesAdapter.notifyDataSetChanged();
-                    i--;
-                }
-                imagesAdapter.notifyDataSetChanged();
+                }*/
+                isLoadingImages = false;
+                updateLoading();
             }
-            isLoadingImages = false;
-            updateLoading();
             EspressoIdlingResource.lessBusy("load album images", "ImageSubscriber.onComplete");
-//            imageRepository.updateVariantWithImageCache(category);
         }
 
         @Override
@@ -312,9 +327,96 @@ public class AlbumsViewModel extends ViewModel {
 
         @Override
         public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, VariantWithImage image) {
+            Log.d("XXX", "ImagesViewBinder.bind() " + image.image.name);
             // TODO: make configurable to also show the photo name here
-            ImagesItemViewModel viewModel = new ImagesItemViewModel(image, images.indexOf(image), category);
+            ImagesItemViewModel viewModel;
+
+            synchronized (data) {
+                int idx = 0;
+                while(data.get(idx).getImage() != image) idx++;
+
+                viewModel = new ImagesItemViewModel(image, idx - nrOfAlbums, category);
+            }
+
             viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
+        }
+    }
+
+    private class DataViewBinder implements BindingRecyclerViewAdapter.ViewBinder<ViewElement> {
+        @Override
+        public int getViewType(ViewElement element) {
+            return element.type;
+        }
+
+        @Override
+        public int getLayout(int viewType) {
+            if(viewType == ViewElement.IMAGE) {
+                return R.layout.item_images;
+            }else if(viewType == ViewElement.CATEGORY) {
+                return R.layout.item_album;
+            }else{
+                return -1;
+            }
+        }
+
+        @Override
+        public void bind(BindingRecyclerViewAdapter.ViewHolder viewHolder, ViewElement element) {
+
+            if (element.type == ViewElement.IMAGE) {
+                VariantWithImage image = element.getImage();
+                Log.d("XXX", "ImagesViewBinder.bind() " + image.image.name);
+                // TODO: make configurable to also show the photo name here
+                ImagesItemViewModel viewModel;
+                synchronized (data) {
+                    int idx = data.indexOf(element);
+                    viewModel = new ImagesItemViewModel(image, idx - nrOfAlbums, category);
+                }
+                viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
+            }
+            if (element.type == ViewElement.CATEGORY) {
+                Category category = element.getCategory();
+                String photos = resources.getQuantityString(R.plurals.album_photos, category.nbImages, category.nbImages);
+                if (category.totalNbImages > category.nbImages) {
+                    int subPhotos = category.totalNbImages - category.nbImages;
+                    photos += resources.getQuantityString(R.plurals.album_photos_subs, subPhotos, subPhotos);
+                }
+// TODO: Get Image URL from local stored image instead ofr the thumbnailUrl
+                AlbumItemViewModel viewModel = new AlbumItemViewModel(category.thumbnailUrl, category.name, category.comment, photos, category.id);
+                viewHolder.getBinding().setVariable(BR.viewModel, viewModel);
+            }
+        }
+    }
+
+    public class ViewElement{
+        public static final int IMAGE = 0;
+        public static final int CATEGORY = 1;
+
+        private int type;
+        private VariantWithImage image;
+        private Category category;
+
+        public ViewElement(VariantWithImage image){
+            this.type = IMAGE;
+            this.image = image;
+            this.category = null;
+        }
+
+        public ViewElement(Category category){
+            this.type = CATEGORY;
+            this.image = null;
+            this.category = category;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public VariantWithImage getImage() {
+            return image;
+        }
+
+        public Category getCategory() {
+            return category;
         }
     }
 }
